@@ -1,0 +1,366 @@
+# Mage Ovale script based on SimulationCraft profiles
+#
+# Revision History
+# 4.3.1 2011/12/06 - Initial version based on Hinalover's contributed script.
+#                    Use mage profiles from sc-422-4, Tier 12N.
+#                    Arcane: 4 icons - green/red for burn/conserve phase, burn rotation, conserve rotation, DPS CDs
+#                    Fire: 3 icons - main rotation, DPS CDs, mana CDs
+#                    Frost: 3 icons - main rotation, DPS CDs, mana CDs; checkbox for using Kuni's Frost PvE rotation
+
+# Spells
+Define(ARCANEBARRAGE 44425) #arcane instant
+    SpellInfo(ARCANEBARRAGE cd=4)
+    SpellAddDebuff(ARCANEBARRAGE ARCANEBLASTDEBUFF=0)
+Define(ARCANEBLAST 30451) #arcane stacks*4 cost increased
+    SpellAddDebuff(ARCANEBLAST ARCANEBLASTDEBUFF=10)
+Define(ARCANEMISSILES 5143) #arcane channel
+    SpellAddDebuff(ARCANEMISSILES ARCANEBLASTDEBUFF=0 ARCANEMISSILEBUFF=0)
+Define(ARCANEPOWER 12042) #arcane cd
+    SpellInfo(ARCANEPOWER cd=84)
+    SpellAddBuff(ARCANEPOWER ARCANEPOWER=15)
+Define(COLDSNAP 11958) #frost reset cd
+    SpellInfo(COLDSNAP cd=384)
+Define(COMBUSTION 11129) #fire cd consume dot
+    SpellInfo(COMBUSTION cd=120)
+Define(CONJUREMANAGEM 759)
+    SpellInfo(CONJUREMANAGEM cd=10) #fake
+Define(COUNTERSPELL 2139)
+    SpellInfo(COUNTERSPELL cd=24)
+Define(DEEPFREEZE 44572) #frost instant
+    SpellInfo(DEEPFREEZE cd=30)
+    SpellAddBuff(DEEPFREEZE FINGERSOFFROST=-1)
+Define(EVOCATION 12051)
+    SpellInfo(EVOCATION cd=240)
+Define(FIREBLAST 2136) #fire instant
+    SpellInfo(FIREBLAST cd=8)
+Define(FIREBALL 133) #fire 2.5
+Define(FLAMEORB 82731)
+    SpellInfo(FLAMEORB cd=60)
+Define(FROSTBOLT 116) #frost
+Define(FROSTFIREBOLT 44614) #frost+fire
+    SpellAddTargetDebuff(FROSTFIREBOLT FROSTFIREBOLT=9)
+    SpellAddBuff(FROSTFIREBOLT BRAINFREEZE=-1 FINGERSOFFROST=-1)
+Define(ICEARMOR 7302)
+    SpellAddBuff(ICEARMOR ICEARMOR=1800)
+Define(ICELANCE 30455) #frost instant
+    SpellAddBuff(ICELANCE FINGERSOFFROST=-1)
+Define(ICYVEINS 12472) #frost cd
+    SpellInfo(ICYVEINS cd=144)
+Define(LIVINGBOMB 44457) #fire dot
+    SpellAddTargetDebuff(LIVINGBOMB LIVINGBOMB=12)
+Define(MAGEARMOR 6117)
+    SpellAddBuff(MAGEARMOR MAGEARMOR=1800)
+Define(MIRRORIMAGE 55342)
+    SpellInfo(MIRRORIMAGE cd=180)
+Define(MOLTENARMOR 30482)
+    SpellAddBuff(MOLTENARMOR MOLTENARMOR=1800)
+Define(PYROBLAST 11366) #fire dot
+    SpellAddTargetDebuff(PYROBLAST PYROBLAST=12)
+    SpellAddBuff(PYROBLAST HOTSTREAK=0)
+Define(PYROBLASTBANG 92315)
+    SpellAddTargetDebuff(PYROBLASTBANG PYROBLASTBANG=12)
+    SpellAddBuff(PYROBLASTBANG HOTSTREAK=0)
+Define(SCORCH 2948) #fire 1.5 (cast while moving with firestarter talent)
+Define(SPELLSTEAL 30449)
+Define(SUMMONWATERELEMENTAL 31687) #frost pet
+    SpellInfo(SUMMONWATERELEMENTAL cd=180)
+
+Define(PETFREEZE 33395) #Frost pet freeze ability
+    SpellInfo(PETFREEZE cd=25)
+    SpellAddBuff(PETFREEZE FINGERSOFFROST=2)
+
+#Buff
+Define(BRAINFREEZE 57761) #frost (instant fireball/frostfire bolt)
+Define(FINGERSOFFROST 44544) #frost boost ice lance/deep freeze
+    SpellInfo(FINGERSOFFROST duration=14)
+Define(HOTSTREAK 48108) #fire instant pyroblast
+Define(ARCANEBLASTDEBUFF 36032)
+Define(ARCANEMISSILEBUFF 79683)
+Define(PRESENCEOFMIND 12043) #arcane next spell instant
+Define(CLEARCASTING 12536)
+Define(IMPROVEDMANAGEM 83098) #arcane
+
+#Item
+Define(MANAGEMITEM 36799)
+Define(VOLCANICPOTION 58091)
+
+#Debuff
+Define(IGNITE 12654)
+Define(CRITICALMASS 22959)
+Define(SHADOWANDFLAME 17800)
+
+#Talent
+Define(FIRESTARTERTALENT 11431)
+Define(CRITICALMASSTALENT 10541)
+Define(IMPROVEDSCORCH 10547)
+
+#Glyphs
+Define(GLYPHOFFROSTFIRE 61205)
+Define(GLYPHOFFROSTBOLT 56370)
+
+# Frost DPS Rotation from Kuni's Frost Mage PvE Guide:
+#    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
+AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
+
+ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMENTAL PETFREEZE FROSTBOLT ARCANEBLAST ARCANEMISSILES ARCANEBARRAGE
+            DEEPFREEZE ICELANCE)
+
+AddIcon help=offgcd mastery=1
+{
+    # green is for DPS cycle:  Texture(Spell_nature_elementalshields)
+    # red is for DPM cycle:    Texture(Inv_misc_orb_05)
+
+    #/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
+    #    cooldown.evocation.remains+15<target.time_to_die
+    #/arcane_blast,if=dps=1|target.time_to_die<20|\
+    #    ((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
+    if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
+        Texture(Spell_nature_elementalshields)
+    if TargetDeadIn(less 21)
+        Texture(Spell_nature_elementalshields)
+
+    if {{20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Spell(MANAGEMITEM)} and ManaPercent(more 21)}
+        Texture(Spell_nature_elementalshields)
+
+    #/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
+    #    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
+    #    cooldown.evocation.remains+15<target.time_to_die
+    if 20s before Spell(EVOCATION) and ManaPercent(less 22) and
+        {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}} and
+        {spell(EVOCATION) + 15 < target.timeToDie()}
+        Texture(Inv_misc_orb_05)
+
+    if 20s before Spell(EVOCATION) and ManaPercent(more 35)
+        Texture(Spell_nature_elementalshields)
+
+    Texture(Inv_misc_orb_05)
+}
+
+# DPS "burn" cycle
+AddIcon help=main mastery=1
+{
+    unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MAGEARMOR)
+
+    #/mage_armor
+    unless BuffPresent(MAGEARMOR) or BuffPresent(ICEARMOR) Spell(MAGEARMOR)
+    #/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
+    unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
+
+    #/evocation,if=((max_mana>max_mana_nonproc&mana_pct_nonproc<=40)|(max_mana=max_mana_nonproc&mana_pct<=35))&target.time_to_die>10
+    if ManaPercent(less 35) and TargetDeadIn(more 10) Spell(EVOCATION)
+    #/mana_gem,if=buff.arcane_blast.stack=4
+    if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
+    #/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
+    if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > spell(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
+    if Speed(more 0)
+    {
+        #/arcane_barrage,moving=1
+        Spell(ARCANEBARRAGE)
+        #/fire_blast,moving=1
+        Spell(FIREBLAST)
+        #/ice_lance,moving=1
+        Spell(ICELANCE)
+    }
+    #/arcane_blast,if=dps=1
+    Spell(ARCANEBLAST)
+}
+
+# DPM "hover" cycle
+AddIcon help=main mastery=1
+{
+    unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MAGEARMOR)
+
+    #/mage_armor
+    unless BuffPresent(MAGEARMOR) or BuffPresent(ICEARMOR) Spell(MAGEARMOR)
+    #/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
+    unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
+
+    #/mana_gem,if=buff.arcane_blast.stack=4
+    if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(MANAGEMITEM)
+    #/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
+    if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > spell(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
+    #/arcane_blast,if=buff.presence_of_mind.up
+    if BuffPresent(PRESENCEOFMIND) Spell(ARCANEBLAST)
+    #/arcane_blast,if=buff.arcane_blast.remains<0.8&buff.arcane_blast.stack=4
+    if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
+    #/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
+    #/arcane_missiles,if=mana_pct_nonproc<93&buff.arcane_missiles.react&mage_armor_timer>2
+    if ManaPercent(less 93) and BuffPresent(ARCANEMISSILEBUFF) Spell(ARCANEMISSILES)
+    #/arcane_barrage,if=mana_pct_nonproc<87&buff.arcane_blast.stack=2
+    if ManaPercent(less 87) and DebuffPresent(ARCANEBLASTDEBUFF stacks=2) Spell(ARCANEBARRAGE)
+    #/arcane_barrage,if=mana_pct_nonproc<90&buff.arcane_blast.stack=3
+    if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
+    #/arcane_barrage,if=mana_pct_nonproc<92&buff.arcane_blast.stack=4
+    if ManaPercent(less 92) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
+    if Speed(more 0)
+    {
+        #/arcane_barrage,moving=1
+        Spell(ARCANEBARRAGE)
+        #/fire_blast,moving=1
+        Spell(FIREBLAST)
+        #/ice_lance,moving=1
+        Spell(ICELANCE)
+    }
+    #/arcane_blast
+    Spell(ARCANEBLAST)
+}
+
+AddIcon help=cd mastery=1
+{
+    if TargetBuffStealable(yes) Spell(SPELLSTEAL)
+    #/counterspell
+    if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
+
+    #/volcanic_potion,if=!in_combat
+    #unless InCombat() Item(VOLCANICPOTION)
+    #/volcanic_potion,if=buff.improved_mana_gem.up|target.time_to_die<=50
+    #if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 51) Item(VOLCANICPOTION)
+    #/use_item,name=shard_of_woe,if=buff.improved_mana_gem.up|cooldown.evocation.remains>90|target.time_to_die<=50
+    #if BuffPresent(IMPROVEDMANAGEM) or {spell(EVOCATION) > 90} or TargetDeadIn(less 51) Item(SHARDOFWOE)
+    #/flame_orb,if=target.time_to_die>=10
+    if TargetDeadIn(more 9) Spell(FLAMEORB)
+    #/arcane_power,if=buff.improved_mana_gem.up|target.time_to_die<=50
+    if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 51) Spell(ARCANEPOWER)
+    #/mirror_image,if=buff.arcane_power.up|(cooldown.arcane_power.remains>20&target.time_to_die>15)
+    if BuffPresent(ARCANEPOWER) or {{spell(ARCANEPOWER) > 20} and TargetDeadIn(more 15)} Spell(MIRRORIMAGE)
+    #/presence_of_mind
+    Spell(PRESENCEOFMIND)
+    Item(Trinket0Slot usable=1)
+    Item(Trinket1Slot usable=1)
+}
+
+AddIcon help=main mastery=2
+{
+    #/scorch,debuff=1
+    if TalentPoints(CRITICALMASSTALENT more 0) and TargetDebuffExpires(magicalcrittaken 6) Spell(SCORCH)
+    #/combustion,if=dot.living_bomb.ticking&dot.ignite.ticking&dot.pyroblast.ticking
+    if TargetDebuffPresent(LIVINGBOMB mine=1) and TargetDebuffPresent(IGNITE mine=1) and
+        {TargetDebuffPresent(PYROBLAST mine=1) or TargetDebuffPresent(PYROBLASTBANG mine=1)}
+        Spell(COMBUSTION)
+    #/living_bomb,if=!ticking
+    if TargetDebuffExpires(LIVINGBOMB 0 mine=1) and TargetDeadIn(more 12) Spell(LIVINGBOMB)
+    #/pyroblast_hs,if=buff.hot_streak.react
+    if BuffPresent(HOTSTREAK) Spell(PYROBLAST)
+    if TalentPoints(FIRESTARTERTALENT more 0) and Speed(more 0) Spell(SCORCH)
+    #/frostfire_bolt
+    if Glyph(GLYPHOFFROSTFIRE) Spell(FROSTFIREBOLT usable=1)
+    #/fireball
+    Spell(FIREBALL usable=1)
+    #/scorch
+    Spell(SCORCH)
+}
+
+AddIcon help=cd mastery=2
+{
+    if TargetBuffStealable(yes) Spell(SPELLSTEAL)
+    if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
+
+    #/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
+    #if BuffPresent(heroism) or TargetDeadIn(less 40) Item(VOLCANICPOTION)
+    #/mirror_image,if=target.time_to_die>=25
+    if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
+    #/flame_orb,if=target.time_to_die>=12
+    if TargetDeadIn(more 11) Spell(FLAMEORB)
+    Item(Trinket0Slot usable=1)
+    Item(Trinket1Slot usable=1)
+}
+
+AddIcon help=mana mastery=2
+{
+    unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MOLTENARMOR)
+
+    #/molten_armor,if=buff.mage_armor.down&buff.molten_armor.down
+    unless BuffPresent(MAGEARMOR) or BuffPresent(MOLTENARMOR) or BuffPresent(ICEARMOR) Spell(MOLTENARMOR)
+    #/molten_armor,if=mana_pct>45&buff.mage_armor.up
+    if BuffPresent(MAGEARMOR) and ManaPercent(more 45) Spell(MOLTENARMOR)
+    #/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
+    unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
+
+    # If we can't use Scorch as a filler, then use Evocation like other mage specs.
+    # /evocation,if=mana_pct<40&buff.bloodlust.react
+    if TalentPoints(FIRESTARTERTALENT less 1) and
+        ManaPercent(less 40) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)} Spell(EVOCATION)
+
+    #/mana_gem,if=mana_deficit>12500
+    if {player.maxMana() - player.mana() > 12500} Item(MANAGEMITEM)
+    #/mage_armor,if=mana_pct<5
+    if BuffExpires(MAGEARMOR 0) and ManaPercent(less 5) Spell(MAGEARMOR)
+}
+
+AddIcon help=main mastery=3
+{
+    if PetPresent(no) Spell(SUMMONWATERELEMENTAL)
+
+    #/deep_freeze
+    Spell(DEEPFREEZE usable=1)
+    #/frostfire_bolt,if=buff.brain_freeze.react
+    if BuffPresent(BRAINFREEZE) {Spell(FROSTFIREBOLT) Spell(FIREBALL)}
+    if CheckBoxOff(kunifrost)
+    {
+        #/ice_lance,if=buff.fingers_of_frost.stack>1
+        if BuffPresent(FINGERSOFFROST stacks=2) Spell(ICELANCE)
+        #/ice_lance,if=buff.fingers_of_frost.react&pet.water_elemental.cooldown.freeze.remains<gcd
+        if BuffPresent(FINGERSOFFROST) and {spell(PETFREEZE) < timeWithHaste(1.5)} Spell(ICELANCE)
+        unless BuffPresent(FINGERSOFFROST) Spell(PETFREEZE)
+    }
+    if CheckBoxOn(kunifrost)
+    {
+        if BuffPresent(FINGERSOFFROST) Spell(ICELANCE)
+        if 1s before Spell(DEEPFREEZE) unless BuffPresent(FINGERSOFFROST) Spell(PETFREEZE)
+    }
+    #/ice_lance,moving=1
+    if Speed(more 0) Spell(ICELANCE)
+    #/fire_blast,moving=1
+    if Speed(more 0) Spell(FIREBLAST)
+    #/frostbolt
+    if CheckBoxOn(kunifrost) and {castTime(FROSTFIREBOLT) < 1.251} Spell(FROSTFIREBOLT)
+    if Glyph(GLYPHOFFROSTBOLT) Spell(FROSTBOLT)
+    unless Glyph(GLYPHOFFROSTBOLT)
+    {
+        #/frostbolt,if=!cooldown.early_frost.remains
+        if castTime(FROSTBOLT) < timeWithHaste(1.5) Spell(FROSTBOLT)
+        #/frostfire_bolt
+        Spell(FROSTFIREBOLT)
+        Spell(FROSTBOLT)
+    }
+}
+
+AddIcon help=cd mastery=3
+{
+    if TargetBuffStealable(yes) Spell(SPELLSTEAL)
+    if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
+
+    #/volcanic_potion,if=buff.bloodlust.react|buff.icy_veins.react|target.time_to_die<=40
+    #if BuffPresent(heroism) or BuffPresent(ICYVEINS) or TargetDeadIn(less 40) Item(VOLCANICPOTION)
+    #/cold_snap,if=cooldown.deep_freeze.remains>15&cooldown.frostfire_orb.remains>30&cooldown.icy_veins.remains>30
+    unless 15s before Spell(DEEPFREEZE) or 30s before Spell(FLAMEORB) or 30s before Spell(ICYVEINS) Spell(COLDSNAP)
+    #/frostfire_orb,if=target.time_to_die>=12
+    if TargetDeadIn(more 11) Spell(FLAMEORB)
+    #/mirror_image,if=target.time_to_die>=25
+    if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
+    #/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down
+    if BuffExpires(ICYVEINS 0) and BuffExpires(heroism 0) Spell(ICYVEINS)
+    Item(Trinket0Slot usable=1)
+    Item(Trinket1Slot usable=1)
+}
+
+AddIcon help=mana mastery=3
+{
+    unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MOLTENARMOR)
+
+    #/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
+    unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
+    #/molten_armor,if=buff.mage_armor.down&buff.molten_armor.down
+    unless BuffPresent(MAGEARMOR) or BuffPresent(MOLTENARMOR) or BuffPresent(ICEARMOR) Spell(MOLTENARMOR)
+    #/molten_armor,if=mana_pct>45&buff.mage_armor.up (r8877)
+    if BuffPresent(MAGEARMOR) and ManaPercent(more 45) Spell(MOLTENARMOR)
+
+    #/evocation,if=mana_pct<40&(buff.icy_veins.react|buff.bloodlust.react)
+    if ManaPercent(less 40) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)} Spell(EVOCATION)
+    #/mana_gem,if=mana_deficit>12500
+    if {player.maxMana() - player.mana() > 12500} Item(MANAGEMITEM)
+    #/mage_armor,if=(mana_pct*12)<target.time_to_die (r8877)
+    if Glyph(GLYPHOFFROSTBOLT) and BuffPresent(MOLTENARMOR) and {{manaPercent()*12} < target.timeToDie()} Spell(MAGEARMOR)
+    #/mage_armor,if=(mana_pct*15)<target.time_to_die (r8877)
+    if Glyph(GLYPHOFFROSTBOLT no) and BuffPresent(MOLTENARMOR) and {{manaPercent()*15} < target.timeToDie()} Spell(MAGEARMOR)
+}
