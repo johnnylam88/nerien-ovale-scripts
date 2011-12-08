@@ -11,7 +11,7 @@
 
 ## defines ##
 
-#Buff
+# Buffs
 Define(SHADOWORBS 77487)
 Define(MINDSPIKEEFFECT 87178)
 Define(EVANGELISM 87118)
@@ -20,11 +20,11 @@ Define(MINDMELT 81292)
 Define(MINDMELTRANK2 87160)
 Define(EMPOWEREDSHADOW 95799)
 
-#Talent
+# Talents
 Define(IMPROVEDDEVOURINGPLAGUETALENT 9062)
 Define(MASOCHISMTALENT 11778)
 
-#Spells
+# Spells
 Define(ARCHANGEL 87151) # Archangel
     SpellInfo(ARCHANGEL cd=90)
     SpellAddBuff(ARCHANGEL DARKARCHANGEL=18)
@@ -61,7 +61,7 @@ Define(VAMPIRICTOUCH 34914) # Vampiric Touch
     SpellInfo(VAMPIRICTOUCH duration=15)
     SpellAddTargetDebuff(VAMPIRICTOUCH VAMPIRICTOUCH=15)
 
-#Item
+# Items
 Define(VOLCANICPOTION 58091)
 
 ### end defines ###

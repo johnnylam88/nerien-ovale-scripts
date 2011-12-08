@@ -9,6 +9,33 @@
 #                    Fire: 3 icons - main rotation, DPS CDs, mana CDs
 #                    Frost: 3 icons - main rotation, DPS CDs, mana CDs; checkbox for using Kuni's Frost PvE rotation
 
+## defines ##
+
+# Buffs
+Define(BRAINFREEZE 57761) #frost (instant fireball/frostfire bolt)
+Define(FINGERSOFFROST 44544) #frost boost ice lance/deep freeze
+    SpellInfo(FINGERSOFFROST duration=14)
+Define(HOTSTREAK 48108) #fire instant pyroblast
+Define(ARCANEBLASTDEBUFF 36032)
+Define(ARCANEMISSILEBUFF 79683)
+Define(PRESENCEOFMIND 12043) #arcane next spell instant
+Define(CLEARCASTING 12536)
+Define(IMPROVEDMANAGEM 83098) #arcane
+
+# Debuffs
+Define(IGNITE 12654)
+Define(CRITICALMASS 22959)
+Define(SHADOWANDFLAME 17800)
+
+# Glyphs
+Define(GLYPHOFFROSTFIRE 61205)
+Define(GLYPHOFFROSTBOLT 56370)
+
+# Talents
+Define(FIRESTARTERTALENT 11431)
+Define(CRITICALMASSTALENT 10541)
+Define(IMPROVEDSCORCHTALENT 10547)
+
 # Spells
 Define(ARCANEBARRAGE 44425) #arcane instant
     SpellInfo(ARCANEBARRAGE cd=4)
@@ -71,34 +98,11 @@ Define(PETFREEZE 33395) #Frost pet freeze ability
     SpellInfo(PETFREEZE cd=25)
     SpellAddBuff(PETFREEZE FINGERSOFFROST=2)
 
-#Buff
-Define(BRAINFREEZE 57761) #frost (instant fireball/frostfire bolt)
-Define(FINGERSOFFROST 44544) #frost boost ice lance/deep freeze
-    SpellInfo(FINGERSOFFROST duration=14)
-Define(HOTSTREAK 48108) #fire instant pyroblast
-Define(ARCANEBLASTDEBUFF 36032)
-Define(ARCANEMISSILEBUFF 79683)
-Define(PRESENCEOFMIND 12043) #arcane next spell instant
-Define(CLEARCASTING 12536)
-Define(IMPROVEDMANAGEM 83098) #arcane
-
-#Item
+# Items
 Define(MANAGEMITEM 36799)
 Define(VOLCANICPOTION 58091)
 
-#Debuff
-Define(IGNITE 12654)
-Define(CRITICALMASS 22959)
-Define(SHADOWANDFLAME 17800)
-
-#Talent
-Define(FIRESTARTERTALENT 11431)
-Define(CRITICALMASSTALENT 10541)
-Define(IMPROVEDSCORCH 10547)
-
-#Glyphs
-Define(GLYPHOFFROSTFIRE 61205)
-Define(GLYPHOFFROSTBOLT 56370)
+## end defines ##
 
 AddCheckBox(potions "Use potions")
 
