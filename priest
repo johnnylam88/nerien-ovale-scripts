@@ -1,6 +1,10 @@
 # Shadow Priest Ovale script based on SimulationCraft profile
 #
 # Revision History
+# 4.3.3 2011/12/08 - More accurately transcribe the DoT rules under haste.
+#                    Fix Mind Blast cooldown and allow for Silence to interrupt targets.
+#                    Checkbox for using potions.
+#                    Coding style changes.
 # 4.3.2 2011/12/08 - Move SW:D at low mana levels to mana icon, and Evangelism to CD icon.
 # 4.3.1 2011/12/07 - Initial version using shadow priest profile from sc-422-4, Tier 12N.
 #                    Mind Spike usage from default Ovale script.
@@ -35,8 +39,8 @@ Define(INNERFIRE 588) # Inner Fire
 Define(INNERWILL 73413) # Inner Will
     SpellAddBuff(INNERWILL INNERWILL=1800)
 Define(MINDBLAST 8092) # Mind Blast
-    # 8s CD -0.5s per talent point in Improved Mind Blast
-    SpellInfo(MINDBLAST cd=6.5)
+    SpellInfo(MINDBLAST cd=8)
+    SpellInfo(MINDBLAST addcd=-2 talent=???) # Improved Mind Blast (Rank 2)
     SpellAddBuff(MINDBLAST SHADOW_ORBS=0)
     SpellAddBuff(MINDBLAST EMPOWEREDSHADOW=15)
 Define(MINDFLAY 15407) # Mind Flay
@@ -50,6 +54,8 @@ Define(SHADOWWORDDEATH 32379) # Shadow Word: Death
 Define(SHADOWWORDPAIN 589) # Shadow Word: Pain
     SpellInfo(SHADOWWORDPAIN duration=18)
     SpellAddTargetDebuff(SHADOWWORDPAIN SHADOWWORDPAIN=18)
+Define(SILENCE 15487) # Silence
+    SpellInfo(SILENCE cd=45)
 Define(VAMPIRICEMBRACE 15286) # Vampiric Embrace
 Define(VAMPIRICTOUCH 34914) # Vampiric Touch
     SpellInfo(VAMPIRICTOUCH duration=15)
@@ -87,11 +93,12 @@ AddIcon help=main mastery=3
     if Speed(more 0) and BuffPresent(MINDMELTRANK2 stacks=2) Spell(MINDBLAST)
     unless Speed(more 0) Spell(MINDBLAST)
     #/shadow_word_pain,if=(!ticking|dot.shadow_word_pain.remains<gcd+0.5)&miss_react
-    if TargetDebuffExpires(SHADOWWORDPAIN 2 mine=1) Spell(SHADOWWORDPAIN)
+    if target.debuffExpires(SHADOWWORDPAIN mine=1) < {timeWithHaste(1.5) + 0.5} Spell(SHADOWWORDPAIN)
     #/devouring_plague,if=(!ticking|dot.devouring_plague.remains<gcd+1.0)&miss_react
-    unless OtherDebuffPresent(DEVOURINGPLAGUE) if TargetDebuffExpires(DEVOURINGPLAGUE 2.5 mine=1) Spell(DEVOURINGPLAGUE)
+    unless OtherDebuffPresent(DEVOURINGPLAGUE)
+        if target.debuffExpires(DEVOURINGPLAGUE mine=1) < {timeWithHaste(1.5) + 0.5} Spell(DEVOURINGPLAGUE)
     #/vampiric_touch,if=(!ticking|dot.vampiric_touch.remains<cast_time+2.5)&miss_react
-    if TargetDebuffExpires(VAMPIRICTOUCH 4 mine=1) Spell(VAMPIRICTOUCH)
+    if target.debuffExpires(VAMPIRICTOUCH mine=1) < {castTime(VAMPIRICTOUCH) + 2.5} Spell(VAMPIRICTOUCH)
     #/shadow_word_death,health_percentage<=25
     if TargetLifePercent(less 25) and LifePercent(more 15) Spell(SHADOWWORDDEATH)
     if Speed(more 0)
@@ -109,10 +116,13 @@ AddIcon help=cd mastery=3
 {
     #/volcanic_potion,if=!in_combat
     #unless InCombat() Item(VOLCANICPOTION)
+    if TargetIsInterruptible(yes) Spell(SILENCE)
     #/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
     #if BuffPresent(heroism) or TargetDeadIn(less 41) Item(VOLCANICPOTION)
     #/archangel,if=buff.dark_evangelism.stack>=5&dot.vampiric_touch.remains>5&dot.devouring_plague.remains>5
-    if BuffPresent(EVANGELISM stacks=5) and TargetDebuffPresent(VAMPIRICTOUCH 5 mine=1) and TargetDebuffPresent(DEVOURINGPLAGUE 5 mine=1) Spell(ARCHANGEL)
+    if BuffPresent(EVANGELISM stacks=5)
+        and TargetDebuffPresent(VAMPIRICTOUCH 5 mine=1) and TargetDebuffPresent(DEVOURINGPLAGUE 5 mine=1)
+        Spell(ARCHANGEL)
     #/shadow_fiend
     if TargetDeadIn(more 8) Spell(SHADOWFIEND)
     Item(Trinket0Slot usable=1)

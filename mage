@@ -1,6 +1,8 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.2 2011/12/08 - Checkbox for using potions.
+#                    Coding style changes.
 # 4.3.1 2011/12/06 - Initial version based on Hinalover's contributed script.
 #                    Use mage profiles from sc-422-4, Tier 12N.
 #                    Arcane: 4 icons - green/red for burn/conserve phase, burn rotation, conserve rotation, DPS CDs
@@ -98,6 +100,8 @@ Define(IMPROVEDSCORCH 10547)
 Define(GLYPHOFFROSTFIRE 61205)
 Define(GLYPHOFFROSTBOLT 56370)
 
+AddCheckBox(potions "Use potions")
+
 # Frost DPS Rotation from Kuni's Frost Mage PvE Guide:
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
 AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
@@ -118,16 +122,16 @@ AddIcon help=offgcd mastery=1
         Texture(Spell_nature_elementalshields)
     if TargetDeadIn(less 21)
         Texture(Spell_nature_elementalshields)
-
-    if {{20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Spell(MANAGEMITEM)} and ManaPercent(more 21)}
+    if ManaPercent(more 21)
+        and {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Spell(MANAGEMITEM)}
         Texture(Spell_nature_elementalshields)
 
     #/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
     #    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
     #    cooldown.evocation.remains+15<target.time_to_die
-    if 20s before Spell(EVOCATION) and ManaPercent(less 22) and
-        {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}} and
-        {spell(EVOCATION) + 15 < target.timeToDie()}
+    if 20s before Spell(EVOCATION) and ManaPercent(less 22)
+        and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}}
+        and {spell(EVOCATION) + 15 < target.timeToDie()}
         Texture(Inv_misc_orb_05)
 
     if 20s before Spell(EVOCATION) and ManaPercent(more 35)
@@ -207,14 +211,13 @@ AddIcon help=main mastery=1
 
 AddIcon help=cd mastery=1
 {
+    #/volcanic_potion,if=!in_combat
+    if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
     if TargetBuffStealable(yes) Spell(SPELLSTEAL)
     #/counterspell
     if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
-
-    #/volcanic_potion,if=!in_combat
-    #unless InCombat() Item(VOLCANICPOTION)
     #/volcanic_potion,if=buff.improved_mana_gem.up|target.time_to_die<=50
-    #if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 51) Item(VOLCANICPOTION)
+    if CheckBoxOn(potions) and {BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 51)} Item(VOLCANICPOTION)
     #/use_item,name=shard_of_woe,if=buff.improved_mana_gem.up|cooldown.evocation.remains>90|target.time_to_die<=50
     #if BuffPresent(IMPROVEDMANAGEM) or {spell(EVOCATION) > 90} or TargetDeadIn(less 51) Item(SHARDOFWOE)
     #/flame_orb,if=target.time_to_die>=10
@@ -234,8 +237,8 @@ AddIcon help=main mastery=2
     #/scorch,debuff=1
     if TalentPoints(CRITICALMASSTALENT more 0) and TargetDebuffExpires(magicalcrittaken 6) Spell(SCORCH)
     #/combustion,if=dot.living_bomb.ticking&dot.ignite.ticking&dot.pyroblast.ticking
-    if TargetDebuffPresent(LIVINGBOMB mine=1) and TargetDebuffPresent(IGNITE mine=1) and
-        {TargetDebuffPresent(PYROBLAST mine=1) or TargetDebuffPresent(PYROBLASTBANG mine=1)}
+    if TargetDebuffPresent(LIVINGBOMB mine=1) and TargetDebuffPresent(IGNITE mine=1)
+        and {TargetDebuffPresent(PYROBLAST mine=1) or TargetDebuffPresent(PYROBLASTBANG mine=1)}
         Spell(COMBUSTION)
     #/living_bomb,if=!ticking
     if TargetDebuffExpires(LIVINGBOMB 0 mine=1) and TargetDeadIn(more 12) Spell(LIVINGBOMB)
@@ -252,11 +255,13 @@ AddIcon help=main mastery=2
 
 AddIcon help=cd mastery=2
 {
+    #/volcanic_potion,if=!in_combat
+    if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
     if TargetBuffStealable(yes) Spell(SPELLSTEAL)
+    #/counterspell
     if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
-
     #/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
-    #if BuffPresent(heroism) or TargetDeadIn(less 40) Item(VOLCANICPOTION)
+    if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
     #/mirror_image,if=target.time_to_die>=25
     if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
     #/flame_orb,if=target.time_to_die>=12
@@ -278,8 +283,9 @@ AddIcon help=mana mastery=2
 
     # If we can't use Scorch as a filler, then use Evocation like other mage specs.
     # /evocation,if=mana_pct<40&buff.bloodlust.react
-    if TalentPoints(FIRESTARTERTALENT less 1) and
-        ManaPercent(less 40) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)} Spell(EVOCATION)
+    if TalentPoints(FIRESTARTERTALENT less 1)
+        and ManaPercent(less 40) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)}
+        Spell(EVOCATION)
 
     #/mana_gem,if=mana_deficit>12500
     if {player.maxMana() - player.mana() > 12500} Item(MANAGEMITEM)
@@ -327,11 +333,13 @@ AddIcon help=main mastery=3
 
 AddIcon help=cd mastery=3
 {
+    #/volcanic_potion,if=!in_combat
+    if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
     if TargetBuffStealable(yes) Spell(SPELLSTEAL)
+    #/counterspell
     if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
-
     #/volcanic_potion,if=buff.bloodlust.react|buff.icy_veins.react|target.time_to_die<=40
-    #if BuffPresent(heroism) or BuffPresent(ICYVEINS) or TargetDeadIn(less 40) Item(VOLCANICPOTION)
+    if CheckBoxOn(potions) and {BuffPresent(heroism) or BuffPresent(ICYVEINS) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
     #/cold_snap,if=cooldown.deep_freeze.remains>15&cooldown.frostfire_orb.remains>30&cooldown.icy_veins.remains>30
     unless 15s before Spell(DEEPFREEZE) or 30s before Spell(FLAMEORB) or 30s before Spell(ICYVEINS) Spell(COLDSNAP)
     #/frostfire_orb,if=target.time_to_die>=12
