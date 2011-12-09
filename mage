@@ -1,6 +1,7 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.4 2011/12/08 - Move Combustion to the cooldown icon.
 # 4.3.3 2011/12/08 - Checkbox for using potions.
 #                    Coding style changes.
 # 4.3.2 2011/12/08 - Fix error in how MANAGEMITEM was used, which was causing it to never be suggested for arcane mages.
@@ -241,10 +242,6 @@ AddIcon help=main mastery=2
 {
     #/scorch,debuff=1
     if TalentPoints(CRITICALMASSTALENT more 0) and TargetDebuffExpires(magicalcrittaken 6) Spell(SCORCH)
-    #/combustion,if=dot.living_bomb.ticking&dot.ignite.ticking&dot.pyroblast.ticking
-    if TargetDebuffPresent(LIVINGBOMB mine=1) and TargetDebuffPresent(IGNITE mine=1)
-        and {TargetDebuffPresent(PYROBLAST mine=1) or TargetDebuffPresent(PYROBLASTBANG mine=1)}
-        Spell(COMBUSTION)
     #/living_bomb,if=!ticking
     if TargetDebuffExpires(LIVINGBOMB 0 mine=1) and TargetDeadIn(more 12) Spell(LIVINGBOMB)
     #/pyroblast_hs,if=buff.hot_streak.react
@@ -267,6 +264,10 @@ AddIcon help=cd mastery=2
     if TargetIsInterruptible(yes) Spell(COUNTERSPELL)
     #/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
     if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
+    #/combustion,if=dot.living_bomb.ticking&dot.ignite.ticking&dot.pyroblast.ticking
+    if TargetDebuffPresent(LIVINGBOMB mine=1) and TargetDebuffPresent(IGNITE mine=1)
+        and {TargetDebuffPresent(PYROBLAST mine=1) or TargetDebuffPresent(PYROBLASTBANG mine=1)}
+        Spell(COMBUSTION)
     #/mirror_image,if=target.time_to_die>=25
     if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
     #/flame_orb,if=target.time_to_die>=12
