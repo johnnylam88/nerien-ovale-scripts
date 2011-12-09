@@ -1,8 +1,9 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
-# 4.3.2 2011/12/08 - Checkbox for using potions.
+# 4.3.3 2011/12/08 - Checkbox for using potions.
 #                    Coding style changes.
+# 4.3.2 2011/12/08 - Fix error in how MANAGEMITEM was used, which was causing it to never be suggested for arcane mages.
 # 4.3.1 2011/12/06 - Initial version based on Hinalover's contributed script.
 #                    Use mage profiles from sc-422-4, Tier 12N.
 #                    Arcane: 4 icons - green/red for burn/conserve phase, burn rotation, conserve rotation, DPS CDs
