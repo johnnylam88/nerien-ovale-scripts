@@ -67,9 +67,9 @@ Define(VOLCANICPOTION 58091)
 
 ### end defines ###
 
-AddCheckBox(potions SpellName(VOLCANICPOTION))
-
 ScoreSpells(MINDBLAST SHADOWWORDPAIN VAMPIRICTOUCH DEVOURINGPLAGUE MINDFLAY SHADOWWORDDEATH MINDSPIKE)
+
+AddCheckBox(potions SpellName(VOLCANICPOTION))
 
 AddIcon help=main mastery=3
 {

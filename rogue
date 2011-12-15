@@ -97,10 +97,10 @@ SpellList(insight 84745 84746 84747)
 
 ## end defines ##
 
+ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)
+
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIR))
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) default talent=681)
-
-ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)
 
 AddFunction RogueIsStealthed { Stealthed() or BuffPresent(VANISHBUFF) }
 AddFunction RogueIsNotStealthed { Stealthed(no) and BuffExpires(VANISHBUFF 0) }
