@@ -15,6 +15,9 @@ Define(GLYPHOFGROUNDINGTOTEM 57247)
 Define(GLYPHOFSTONECLAWTOTEM 64247)
 Define(GLYPHOFUNLEASHEDLIGHTNING 101052)
 
+# Talents
+Define(TALENTFULMINATION ???)
+
 # Spells
 Define(BLOODLUST 2825)
 	SpellInfo(BLOODLUST cd=300)
@@ -132,14 +135,17 @@ AddIcon help=main mastery=1
 	if target.debuffExpires(FLAMESHOCK mine=1) < timeWithHaste(3) Spell(FLAMESHOCK)
 	#/lava_burst,if=dot.flame_shock.remains>(cast_time+travel_time)
 	if target.debuffExpires(FLAMESHOCK mine=1) > {castTime(LAVABURST) + 1} Spell(LAVABURST)
-	#/earth_shock,if=buff.lightning_shield.stack=9
-	if BuffPresent(LIGHTNINGSHIELD stacks=9) Spell(EARTHSHOCK)
-	#/earth_shock,if=buff.lightning_shield.stack>6&dot.flame_shock.remains>cooldown&\
-	#    dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
-	if {BuffPresent(LIGHTNINGSHIELD stacks=7) or BuffPresent(LIGHTNINGSHIELD stacks=8)}
-		and {target.debuffExpires(FLAMESHOCK mine=1) > spell(EARTHSHOCK)}
-		and {target.debuffExpires(FLAMESHOCK mine=1) < spell(EARTHSHOCK) + timeWithHaste(3)}
-		Spell(EARTHSHOCK)
+	if TalentPoints(TALENTFULMINATION more 0)
+	{
+		#/earth_shock,if=buff.lightning_shield.stack=9
+		if BuffPresent(LIGHTNINGSHIELD stacks=9) Spell(EARTHSHOCK)
+		#/earth_shock,if=buff.lightning_shield.stack>6&dot.flame_shock.remains>cooldown&\
+		#    dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
+		if {BuffPresent(LIGHTNINGSHIELD stacks=7) or BuffPresent(LIGHTNINGSHIELD stacks=8)}
+			and {target.debuffExpires(FLAMESHOCK mine=1) > spell(EARTHSHOCK)}
+			and {target.debuffExpires(FLAMESHOCK mine=1) < spell(EARTHSHOCK) + timeWithHaste(3)}
+			Spell(EARTHSHOCK)
+	}
 	#/searing_totem
 	if TotemExpires(fire) Spell(SEARINGTOTEM)
 	#/chain_lightning,if=target.adds>2
