@@ -97,7 +97,7 @@ SpellList(insight 84745 84746 84747)
 
 ## end defines ##
 
-AddCheckBox(potions "Use potions")
+AddCheckBox(potions SpellName(POTIONOFTHETOLVIR))
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) default talent=681)
 
 ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)

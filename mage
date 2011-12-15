@@ -107,7 +107,7 @@ Define(VOLCANICPOTION 58091)
 
 ## end defines ##
 
-AddCheckBox(potions "Use potions")
+AddCheckBox(potions SpellName(VOLCANICPOTION))
 
 # Frost DPS Rotation from Kuni's Frost Mage PvE Guide:
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide

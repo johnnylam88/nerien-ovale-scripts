@@ -119,7 +119,8 @@ Define(VOLCANICPOTION 58091)
 ScoreSpells(LIGHTNINGSHIELD CHAINLIGHTNING FLAMESHOCK LAVABURST EARTHSHOCK LIGHTNINGBOLT
 			STORMSTRIKE LAVALASH UNLEASHELEMENTS)
 
-AddCheckBox(potions "Use potions")
+AddCheckBox(elementalpotions SpellName(VOLCANICPOTION) mastery=1)
+AddCheckBox(enhancementpotions SpellName(POTIONOFTHETOLVIR) mastery=2)
 AddCheckBox(aoe L(AOE))
 
 AddIcon help=main mastery=1
@@ -158,12 +159,12 @@ AddIcon help=main mastery=1
 AddIcon help=cd mastery=1
 {
 	#/volcanic_potion,if=!in_combat
-	if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
+	if CheckBoxOn(elementalpotions) unless InCombat() Item(VOLCANICPOTION)
 	if IsFeared() Spell(TREMORTOTEM)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
+	if CheckBoxOn(elementalpotions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
 	#/elemental_mastery
 	Spell(ELEMENTALMASTERY)
 	Item(Trinket0Slot usable=1)
@@ -230,11 +231,11 @@ AddIcon help=main mastery=2
 AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
-	if CheckBoxOn(potions) unless InCombat() Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(enhancementpotions) unless InCombat() Item(POTIONOFTHETOLVIR)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(enhancementpotions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(POTIONOFTHETOLVIR)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 	#/spirit_wolf

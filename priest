@@ -67,6 +67,8 @@ Define(VOLCANICPOTION 58091)
 
 ### end defines ###
 
+AddCheckBox(potions SpellName(VOLCANICPOTION))
+
 ScoreSpells(MINDBLAST SHADOWWORDPAIN VAMPIRICTOUCH DEVOURINGPLAGUE MINDFLAY SHADOWWORDDEATH MINDSPIKE)
 
 AddIcon help=main mastery=3
@@ -118,10 +120,10 @@ AddIcon help=main mastery=3
 AddIcon help=cd mastery=3
 {
 	#/volcanic_potion,if=!in_combat
-	#unless InCombat() Item(VOLCANICPOTION)
+	if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
 	if TargetIsInterruptible(yes) Spell(SILENCE)
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	#if BuffPresent(heroism) or TargetDeadIn(less 41) Item(VOLCANICPOTION)
+	if CheckboxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
 	#/archangel,if=buff.dark_evangelism.stack>=5&dot.vampiric_touch.remains>5&dot.devouring_plague.remains>5
 	if BuffPresent(EVANGELISM stacks=5)
 		and TargetDebuffPresent(VAMPIRICTOUCH 5 mine=1) and TargetDebuffPresent(DEVOURINGPLAGUE 5 mine=1)
