@@ -321,10 +321,13 @@ AddIcon help=main mastery=3
 		if BuffPresent(FINGERSOFFROST) Spell(ICELANCE)
 		if 1s before Spell(DEEPFREEZE) unless BuffPresent(FINGERSOFFROST) Spell(PETFREEZE)
 	}
-	#/ice_lance,moving=1
-	if Speed(more 0) Spell(ICELANCE)
-	#/fire_blast,moving=1
-	if Speed(more 0) Spell(FIREBLAST)
+	if Speed(more 0)
+	{
+		#/ice_lance,moving=1
+		Spell(ICELANCE)
+		#/fire_blast,moving=1
+		Spell(FIREBLAST)
+	}
 	#/frostbolt
 	if CheckBoxOn(kunifrost) and {castTime(FROSTFIREBOLT) < 1.251} Spell(FROSTFIREBOLT)
 	if Glyph(GLYPHOFFROSTBOLT) Spell(FROSTBOLT)
