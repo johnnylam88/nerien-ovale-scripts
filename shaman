@@ -120,7 +120,7 @@ AddCheckBox(aoe L(AOE))
 
 AddIcon help=main mastery=1
 {
-	Unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(FLAMETONGUEWEAPON)
+	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(FLAMETONGUEWEAPON)
 
 	#/flametongue_weapon,weapon=main
 	if WeaponEnchantExpires(mainhand 2) Spell(FLAMETONGUEWEAPON)
@@ -134,10 +134,11 @@ AddIcon help=main mastery=1
 	if target.debuffExpires(FLAMESHOCK mine=1) > {castTime(LAVABURST) + 1} Spell(LAVABURST)
 	#/earth_shock,if=buff.lightning_shield.stack=9
 	if BuffPresent(LIGHTNINGSHIELD stacks=9) Spell(EARTHSHOCK)
-	#/earth_shock,if=buff.lightning_shield.stack>6&dot.flame_shock.remains>cooldown&dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
-	if {BuffPresent(LIGHTNINGSHIELD stacks=7) or BuffPresent(LIGHTNINGSHIELD stacks=8)} and
-		{target.debuffExpires(FLAMESHOCK mine=1) > spell(LAVABURST)} and
-		{target.debuffExpires(FLAMESHOCK mine=1) < spell(LAVABURST) + timeWithHaste(3)}
+	#/earth_shock,if=buff.lightning_shield.stack>6&dot.flame_shock.remains>cooldown&\
+	#    dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
+	if {BuffPresent(LIGHTNINGSHIELD stacks=7) or BuffPresent(LIGHTNINGSHIELD stacks=8)}
+		and {target.debuffExpires(FLAMESHOCK mine=1) > spell(EARTHSHOCK)}
+		and {target.debuffExpires(FLAMESHOCK mine=1) < spell(EARTHSHOCK) + timeWithHaste(3)}
 		Spell(EARTHSHOCK)
 	#/searing_totem
 	if TotemExpires(fire) Spell(SEARINGTOTEM)
