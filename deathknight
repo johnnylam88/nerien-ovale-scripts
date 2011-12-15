@@ -4,6 +4,8 @@
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use death knight profiles from sc-430-2, Tier 13H.
 
+## defines ##
+
 # Buffs and debuffs
 Define(BLOODSHIELD 77535)
 Define(BLOODSWARM 81141)
@@ -110,6 +112,8 @@ Define(UNHOLYPRESENCE 48265)
 Define(VAMPIRICBLOOD 55233) #blood
 	SpellInfo(VAMPIRICBLOOD cd=60)
 	SpellAddBuff(VAMPIRICBLOOD VAMPIRICBLOOD=10)
+
+## end defines ##
 
 ScoreSpells(HOWLINGBLAST HEARTSTRIKE BLOODSTRIKE DEATHSTRIKE SCOURGESTRIKE OBLITERATE HEARTSTRIKE 
 			PESTILENCE ICYTOUCH PLAGUESTRIKE FROSTSTRIKE DEATHCOIL)

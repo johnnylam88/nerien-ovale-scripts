@@ -4,6 +4,8 @@
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use warlock profiles from sc-430-2, Tier 13H.
 
+## defines ##
+
 # Buffs
 Define(DECIMATION 63167)
 Define(MOLTENCORE 71165)
@@ -117,6 +119,8 @@ Define(UNSTABLEAFFLICTION 30108)
 
 #Pet spells
 Define(FELSTORM 89751)
+
+## end defines ##
 
 ScoreSpells(CURSEELEMENTS SHADOWBOLT HAUNT UNSTABLEAFFLICTION IMMOLATE CONFLAGRATE CURSEWEAKNESS
 			BANEOFAGONY CORRUPTION SOULFIRE DRAINSOUL INCINERATE SHADOWBOLT CHAOSBOLT)
