@@ -1,6 +1,7 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 2011/12/16 - Use the proper name for the potion being used in the checkbox.
 # 4.3.4 2011/12/08 - Move Combustion to the cooldown icon.
 # 4.3.3 2011/12/08 - Checkbox for using potions.
 #                    Coding style changes.
