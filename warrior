@@ -142,9 +142,9 @@ AddCheckBox(aoe L(AOE) default)
 AddCheckBox(demo SpellName(DEMOSHOUT))
 AddCheckBox(sunder SpellName(SUNDERARMOR) default)
 AddCheckBox(dancing SpellName(BERSERKERSTANCE) default mastery=1)
-AddCheckBox(armspotions SpellName(GOLEMBLOODPOTION) mastery=1)
-AddCheckBox(furypotions SpellName(GOLEMBLOODPOTION) mastery=2)
-AddCheckBox(protectionpotions SpellName(EARTHENPOTION) mastery=3)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTION) mastery=1)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTION) mastery=2)
+AddCheckBox(potions SpellName(EARTHENPOTION) mastery=3)
 AddListItem(shout none L(None))
 AddListItem(shout battle SpellName(BATTLESHOUT) default)
 AddListItem(shout command SpellName(COMMANDINGSHOUT))
@@ -262,10 +262,10 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 AddIcon help=cd mastery=1
 {
 	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(furypotions) Item(GOLEMBLOODPOTION)
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.recklessness.up|target.time_to_die<26
-	if CheckBoxOn(furypotions) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
+	if CheckBoxOn(potions) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
 	#/recklessness,if=((target.health_pct>20&target.time_to_die>320)|target.health_pct<=20),use_off_gcd=1
 	if TargetLifePercent(more 20) and TargetDeadIn(more 320) Spell(RECKLESSNESS)
 	unless TargetLifePercent(more 20) Spell(RECKLESSNESS)
@@ -361,10 +361,10 @@ AddIcon help=offgcd mastery=2
 AddIcon help=cd mastery=2
 {
 	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(furypotions) Item(GOLEMBLOODPOTION)
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.bloodlust.react
-	if CheckBoxOn(furypotions) and BuffPresent(heroism) Item(GOLEMBLOODPOTION)
+	if CheckBoxOn(potions) and BuffPresent(heroism) Item(GOLEMBLOODPOTION)
 	#/recklessness,use_off_gcd=1
 	Spell(RECKLESSNESS)
 	#/death_wish,use_off_gcd=1
@@ -432,7 +432,7 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 
 AddIcon help=cd mastery=3
 {
-	unless InCombat() if CheckBoxOn(protectionpotions) Item(EARTHENPOTION)
+	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	if Stance(2)
 	{
 		Spell(SHIELDBLOCK usable=1)

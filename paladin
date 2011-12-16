@@ -80,8 +80,8 @@ ScoreSpells(SHIELDOFTHERIGHTEOUS JUDGEMENT AVENGERSSHIELD HAMMEROFTHERIGHTEOUS C
 			ZEALOTRY INQUISITION TEMPLARSVERDICT DIVINESTORM EXORCISM HAMMEROFWRATH JUDGEMENT CRUSADERSTRIKE)
 
 AddCheckBox(aoe L(AOE) default)
-AddCheckBox(protectionpotions SpellName(EARTHENPOTION) mastery=2)
-AddCheckBox(retributionpotions SpellName(GOLEMBLOODPOTION) mastery=3)
+AddCheckBox(potions SpellName(EARTHENPOTION) mastery=2)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTION) mastery=3)
 
 AddIcon help=main mastery=1
 {
@@ -142,7 +142,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 
 AddIcon help=cd mastery=2
 {
-	unless InCombat() if CheckBoxOn(protectionpotions) Item(EARTHENPOTION)
+	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHIELD)
@@ -192,10 +192,10 @@ AddIcon help=main mastery=3
 AddIcon help=cd mastery=3
 {
 	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(retributionpotions) Item(GOLEMBLOODPOTION)
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	#/golemblood_potion,if=buff.bloodlust.react
-	if CheckBoxOn(retributionpotions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(GOLEMBLOODPOTION)
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(GOLEMBLOODPOTION)
 	#/zealotry
 	Spell(ZEALOTRY)
 	#/guardian_of_ancient_kings,if=(buff.zealotry.remains<31&buff.zealotry.up)|cooldown.zealotry.remains>60
