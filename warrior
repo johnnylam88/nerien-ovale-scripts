@@ -360,6 +360,14 @@ AddIcon help=offgcd mastery=2
 	}
 }
 
+AddIcon help=aoe mastery=2 checkboxon=aoe
+{
+	#/cleave,if=target.adds>0,use_off_gcd=1
+	Spell(CLEAVE) 
+	#/whirlwind,if=target.adds>0
+	Spell(WHIRLWIND)
+}
+
 AddIcon help=cd mastery=2
 {
 	#/golemblood_potion,if=!in_combat
@@ -373,14 +381,6 @@ AddIcon help=cd mastery=2
 	Spell(DEATHWISH)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
-}
-
-AddIcon help=aoe mastery=2 checkboxon=aoe
-{
-	#/cleave,if=target.adds>0,use_off_gcd=1
-	Spell(CLEAVE) 
-	#/whirlwind,if=target.adds>0
-	Spell(WHIRLWIND)
 }
 
 # Protection warrior rotation from EJ for 4.2:
