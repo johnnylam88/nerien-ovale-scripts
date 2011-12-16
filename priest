@@ -124,7 +124,7 @@ AddIcon help=cd mastery=3
 	if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
 	if TargetIsInterruptible(yes) Spell(SILENCE)
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckboxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
 	#/archangel,if=buff.dark_evangelism.stack>=5&dot.vampiric_touch.remains>5&dot.devouring_plague.remains>5
 	if BuffPresent(EVANGELISM stacks=5)
 		and TargetDebuffPresent(VAMPIRICTOUCH 5 mine=1) and TargetDebuffPresent(DEVOURINGPLAGUE 5 mine=1)
