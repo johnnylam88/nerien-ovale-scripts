@@ -186,7 +186,7 @@ AddIcon help=main mastery=3
 	#/holy_wrath
 	Spell(HOLYWRATH)
 	#/consecration,if=mana>17000
-	If Mana(more 17000) Spell(CONSECRATE)
+	if Mana(more 17000) Spell(CONSECRATE)
 	#/divine_plea
 	Spell(DIVINEPLEA)
 }
