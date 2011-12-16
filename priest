@@ -22,7 +22,7 @@ Define(EMPOWEREDSHADOW 95799)
 
 # Talents
 Define(IMPROVEDDEVOURINGPLAGUETALENT 9062)
-Define(IMPROVEDMINDBASTTALENT ???)
+Define(IMPROVEDMINDBASTTALENT 9042)
 Define(MASOCHISMTALENT 11778)
 
 # Spells
@@ -41,7 +41,7 @@ Define(INNERWILL 73413) # Inner Will
 	SpellAddBuff(INNERWILL INNERWILL=1800)
 Define(MINDBLAST 8092) # Mind Blast
 	SpellInfo(MINDBLAST cd=8)
-	SpellInfo(MINDBLAST addcd=-2 talent=???) # Improved Mind Blast (Rank 2)
+	SpellInfo(MINDBLAST addcd=-1.5 talent=9042) # Improved Mind Blast (Rank 2)
 	SpellAddBuff(MINDBLAST SHADOW_ORBS=0)
 	SpellAddBuff(MINDBLAST EMPOWEREDSHADOW=15)
 Define(MINDFLAY 15407) # Mind Flay
