@@ -104,13 +104,14 @@ Define(PETFREEZE 33395) #Frost pet freeze ability
 # Items
 Define(MANAGEMITEM 36799)
 Define(VOLCANICPOTION 58091)
+	Define(VOLCANICPOTIONSPELL 80481)
 
 ## end defines ##
 
 ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMENTAL PETFREEZE FROSTBOLT ARCANEBLAST ARCANEMISSILES ARCANEBARRAGE
 			DEEPFREEZE ICELANCE)
 
-AddCheckBox(potions SpellName(VOLCANICPOTION))
+AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL))
 
 # Frost DPS Rotation from Kuni's Frost Mage PvE Guide:
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
