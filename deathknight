@@ -8,7 +8,7 @@
 
 # Buffs and debuffs
 Define(BLOODSHIELD 77535)
-Define(BLOODSWARM 81141)
+Define(CRIMSONSCOURGE 81141)
 Define(SCARLETFEVER 81130)
 Define(BLOODPLAGUE 55078)
 	SpellInfo(BLOODPLAGUE duration=15)
@@ -22,13 +22,13 @@ Define(RUNICCORRUPTION 51459)
 Define(UNHOLYSTRENGTHBUFF 53365)
 
 # Glyphs
-Define(GLYPHHOWLINGBLAST 63335)
+Define(GLYPHOFHOWLINGBLAST 63335)
 
 # Talents
-#Define(TALENTDEATSTRIKE 2259)
-#Define(TALENTFROSTSTRIKE 1975)
-#Define(TALENTHEARTSTRIKE 1957)
-#Define(TALENTBLOODYSTRIKES 2015)
+#Define(DEATHSTRIKETALENT 2259)
+#Define(FROSTSTRIKETALENT 1975)
+#Define(HEARTSTRIKETALENT 1957)
+#Define(BLOODYSTRIKESTALENT 2015)
 
 # Abilities
 Define(ARMYOFTHEDEAD 42650)
@@ -113,6 +113,12 @@ Define(VAMPIRICBLOOD 55233) #blood
 	SpellInfo(VAMPIRICBLOOD cd=60)
 	SpellAddBuff(VAMPIRICBLOOD VAMPIRICBLOOD=10)
 
+# Items
+Define(EARTHENPOTION 58090)
+	Define(EARTHENPOTIONSPELL 80478)
+Define(GOLEMBLOODPOTION 58146)
+	Define(GOLEMBLOODPOTIONSPELL 80496)
+
 ## end defines ##
 
 ScoreSpells(HOWLINGBLAST HEARTSTRIKE BLOODSTRIKE DEATHSTRIKE SCOURGESTRIKE OBLITERATE HEARTSTRIKE 
@@ -124,53 +130,58 @@ AddCheckBox(dnd SpellName(DEATHANDDECAY) mastery=3 default)
 AddCheckBox(deathstrike SpellName(DEATHSTRIKE) mastery=2)
 AddCheckBox(deathstrike SpellName(DEATHSTRIKE) mastery=3)
 AddCheckBox(mindfreeze SpellName(MINDFREEZE))
+AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
 
 AddIcon help=main mastery=1
 {
+	unless BuffPresent(BLOODPRESENCE) Spell(BLOODPRESENCE)
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
 
-	if BuffExpires(strengthagility 2) and CheckBoxOn(horn) Spell(HORNOFWINTER)
 	if TargetDebuffExpires(BLOODPLAGUE 0 mine=1) and TargetDebuffExpires(FROSTFEVER 0 mine=1) Spell(OUTBREAK)
 	if TargetDebuffExpires(lowerphysicaldamage) and CheckBoxOn(scarlet) and TargetClassification(worldboss)
 		if Runes(unholy 1) Spell(PLAGUESTRIKE)
 	unless Spell(DANCINGRUNEWEAPON) if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE usable=1)
 	if Spell(DANCINGRUNEWEAPON) and Mana(more 59) Spell(RUNESTRIKE usable=1)
-	
-	if Runes(unholy 1 frost 1) and {BuffExpires(BLOODSHIELD) or TargetTargetIsPlayer(no)} Spell(DEATHSTRIKE)
+	if {BuffExpires(BLOODSHIELD) or TargetTargetIsPlayer(no)}
+		if Runes(frost 1 unholy) Spell(DEATHSTRIKE)
 	if Runes(blood 1) Spell(HEARTSTRIKE)
-	
-	if Mana(more 69) Spell(DEATHCOIL usable=1)
-	unless Runes(blood 1) Spell(BLOODTAP usable=1 priority=2)
-	if CheckBoxOn(horn) Spell(HORNOFWINTER priority=2)
+	if Mana(more 69) Spell(DEATHCOIL)
+	Spell(HORNOFWINTER)
 }
 
-AddIcon help=offgcd checkboxon=mindfreeze mastery=1
+AddIcon help=offgcd mastery=1
 {
-	if target.IsInterruptible() Spell(MINDFREEZE)
+	if TargetIsInterruptible() Spell(MINDFREEZE)
+	unless Runes(blood 2) and Runes(frost 2) and Runes(unholy 2)
+		if Runes(blood 1) Spell(BLOODTAP)
+	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 }
 
 AddIcon help=aoe mastery=1
 {
-	if BuffExpires(strengthagility 2) and CheckBoxOn(horn) Spell(HORNOFWINTER)
+	unless BuffPresent(BLOODPRESENCE) Spell(BLOODPRESENCE)
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
 
-	if Runes(unholy 1) Spell(DEATHANDDECAY usable=1)
-	
+	if Runes(unholy 1) Spell(DEATHANDDECAY)
+
 	if TargetDebuffExpires(BLOODPLAGUE 0 mine=1) and TargetDebuffExpires(FROSTFEVER 0 mine=1) Spell(OUTBREAK)
 	if TargetDebuffExpires(FROSTFEVER 0 mine=1) and Runes(frost 1) Spell(ICYTOUCH)
 	if TargetDebuffExpires(BLOODPLAGUE 0 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
 
-	if {OtherDebuffPresent(BLOODPLAGUE) or OtherDebuffPresent(FROSTFEVER)} and {TargetDebuffPresent(BLOODPLAGUE) or TargetDebuffPresent(FROSTFEVER)}
-		if Runes(blood 1) or BuffPresent(BLOODSWARM) Spell(BLOODBOIL usable=1)
+	if {OtherDebuffPresent(BLOODPLAGUE) or OtherDebuffPresent(FROSTFEVER)}
+		and {TargetDebuffPresent(BLOODPLAGUE) or TargetDebuffPresent(FROSTFEVER)}
+		if Runes(blood 1) or BuffPresent(CRIMSONSCOURGE) Spell(BLOODBOIL)
 	if TargetDebuffPresent(BLOODPLAGUE) and TargetDebuffPresent(FROSTFEVER) 
 	{
-		if Runes(blood 1)
-			unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
-				Spell(PESTILENCE usable=1)
-		if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE usable=1)
-		if Runes(unholy 1 frost 1) Spell(DEATHSTRIKE)
+		unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
+			if Runes(blood 1) Spell(PESTILENCE)
+		if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE)
+		if Runes(frost 1 unholy 1) Spell(DEATHSTRIKE)
 		if Runes(blood 1) Spell(HEARTSTRIKE)
 	}
 	if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE usable=1)
-	if Mana(more 69) Spell(DEATHCOIL usable=1)
+	if Mana(more 69) Spell(DEATHCOIL)
 }
 
 AddIcon help=cd mastery=1
@@ -180,162 +191,195 @@ AddIcon help=cd mastery=1
 	if TotemPresent(ghoul) and LifePercent(less 61) and Mana(more 39) Spell(DEATHPACT) 
 	Spell(DANCINGRUNEWEAPON usable=1)
 	Spell(VAMPIRICBLOOD)
-	Spell(RUNETAP)
-	Spell(ICEBOUNDFORTITUDE usable=1)
+	if Runes(blood 1) Spell(RUNETAP)
+	Spell(ICEBOUNDFORTITUDE)
 }
 
 AddIcon help=main mastery=2
-{	
-	if BuffExpires(strengthagility 2) and CheckBoxOn(horn) Spell(HORNOFWINTER)
-	
+{
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
+
+	#/presence,choose=unholy
+	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
-	if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and TargetDebuffExpires(FROSTFEVER 2 mine=1) Spell(OUTBREAK)
+	if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
 	#/howling_blast,if=dot.frost_fever.remains<=2
-	if TargetDebuffExpires(FROSTFEVER 2 mine=1) and Runes(frost 1)
+	if TargetDebuffExpires(FROSTFEVER 2 mine=1)
 	{
-		#/howling_blast,if=dot.frost_fever.remains<=2
-		if Glyph(GLYPHHOWLINGBLAST) Spell(HOWLINGBLAST)
-		unless Glyph(GLYPHHOWLINGBLAST) Spell(ICYTOUCH)
+		if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
+		if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
 	}
-	
 	#/plague_strike,if=dot.blood_plague.remains<=2
 	if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
-	#/obliterate,if=frost=2&unholy=2
-	#/obliterate,if=death=2
-	if Runes(unholy 2 frost 2 nodeath=1) or Runes(death 2) Spell(OBLITERATE)
-	#/obliterate,if=buff.killing_machine.react
-	if BuffPresent(KILLINGMACHINE) and Runes(unholy 1 frost 1) Spell(OBLITERATE)
-	#/frost_strike,if=runic_power>=90&!buff.bloodlust.react
-	if Mana(more 89) and BuffExpires(heroism) Spell(FROSTSTRIKE)
-	#/frost_strike,if=runic_power>=95
-	if Mana(more 94) Spell(FORSTSTRIKE)
+	#/obliterate,if=death>=1&frost>=1&unholy>=1
+	if Runes(death 1) and Runes(frost 1 unholy 1) Spell(OBLITERATE)
+	if CheckBoxOn(masterfrost) and Mana(more 120) Spell(FROSTSTRIKE)
+	#/obliterate,if=(death=2&frost=2)|(death=2&unholy=2)|(frost=2&unholy=2)
+	if Runes(frost 2 unholy 2) Spell(OBLITERATE)
+	#/frost_strike,if=runic_power>=110
+	if Mana(more 110) Spell(FROSTSTRIKE)
 	#/howling_blast,if=buff.rime.react
 	if BuffPresent(FREEZINGFOG) Spell(HOWLINGBLAST)
-	#/howling_blast,if=(death+unholy)=0&!buff.bloodlust.react
-	unless Runes(unholy 1 nodeath=1) or Runes(death 1) or BuffPresent(heroism)
+	unless CheckBoxOn(masterfrost)
+	{
+		#/obliterate,if=(death=2|unholy=2|frost=2)
+		if Runes(death 2) or Runes(unholy 2) or Runes(frost 2)
+			if Runes(frost 1 unholy 1) Spell(OBLITERATE)
+		#/frost_strike,if=runic_power>=100
+		if Mana(more 100) Spell(FROSTSTRIKE)
+		#/obliterate
+		if Runes(frost 1 unholy 1) Spell(OBLITERATE)
+		#/frost_strike
+		Spell(FROSTSTRIKE)
+		#/howling_blast
 		if Runes(frost 1) Spell(HOWLINGBLAST)
-	#option to heal with deathstrike
-	if CheckBoxOn(deathstrike) and LifePercent(less 90) and Runes(unholy 1 frost 1) Spell(DEATHSTRIKE)
-	#/obliterate
-	if Runes(unholy 1 frost 1) Spell(OBLITERATE)
-	#/empower_rune_weapon,if=target.time_to_die<=45
-	if TargetDeadIn(less 45) Spell(EMPOWERRUNEWEAPON priority=2)
-	#/frost_strike
-	if CheckBoxOff(mindfreeze) or Mana(more 59) Spell(FROSTSTRIKE usable=1)
-	#/howling_blast
-	if Runes(frost 1) Spell(HOWLINGBLAST)
+	}
+	if CheckBoxOn(masterfrost)
+	{
+		#/frost_strike,if=runic_power>=100
+		if Mana(more 100) Spell(FROSTSTRIKE)
+		#/obliterate,if=buff.killing_machine.react
+		if BuffPresent(KILLINGMACHINE) and Runes(frost 1 unholy 1) Spell(OBLITERATE)
+		#/obliterate,if=unholy=2
+		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<=1
+		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<4&(death+frost=1)
+		if Runes(frost 1 unholy 2) Spell(OBLITERATE)
+		#/howling_blast,if=runic_power<90
+		if Mana(less 90) and Runes(frost 1) Spell(HOWLINGBLAST)
+		#/obliterate,if=runic_power>=90
+		unless Mana(less 90) if Runes(frost 1 unholy 1) Spell(OBLITERATE)
+		if BuffPresent(heroism)
+		{
+			#/howling_blast,if=runic_power<60,if=buff.bloodlust.react
+			if Mana(less 60) and Runes(frost 1) Spell(HOWLINGBLAST)
+			#/obliterate,if=runic_power>=60,if=buff.bloodlust.react
+			unless Mana(less 60) if Runes(frost 1 unholy 1) Spell(OBLITERATE)
+		}
+		#/frost_strike
+		Spell(FROSTSTRIKE)
+	}
 	#/horn_of_winter
-	if CheckBoxOn(horn) Spell(HORNOFWINTER priority=2)
+	Spell(HORNOFWINTER)
 }
 
 AddIcon help=offgcd mastery=2
 {
-	if target.IsInterruptible() Spell(MINDFREEZE)
-	#/blood_tap
-	Spell(BLOODTAP)
-	#/empower_rune_weapon
+	if TargetIsInterruptible() Spell(MINDFREEZE)
+	#/blood_tap,if=death.cooldown_remains>2.0
+	unless Runes(blood 2) and Runes(frost 2) and Runes(unholy 2)
+		if Runes(blood 1) Spell(BLOODTAP)
+	#/empower_rune_weapon,if=target.time_to_die<=45
+	#/empower_rune_weapon,if=(blood.cooldown_remains+frost.cooldown_remains+unholy.cooldown_remains)>8
 	Spell(EMPOWERRUNEWEAPON)
 }
 
 AddIcon help=aoe mastery=2
 {
-	if Runes(unholy 1 frost 1) Spell(HOWLINGBLAST)
-	if Runes(unholy 1) Spell(DEATHANDDECAY usable=1)
-	if Runes(blood 1)
-	{
-		if TargetDebuffPresent(BLOODPLAGUE) and TargetDebuffPresent(FROSTFEVER)
-			unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
-				Spell(PESTILENCE usable=1)
-		if {TargetDebuffPresent(BLOODPLAGUE) or TargetDebuffPresent(FROSTFEVER)} 
-				and {OtherDebuffPresent(BLOODPLAGUE) or OtherDebuffPresent(FROSTFEVER)}
-			Spell(BLOODBOIL usable=1)
-	}
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
+	if Runes(frost 1) or BuffPresent(FREEZINGFOG) Spell(HOWLINGBLAST)
+	if Runes(unholy 1) Spell(DEATHANDDECAY)
+	if TargetDebuffPresent(BLOODPLAGUE) and TargetDebuffPresent(FROSTFEVER)
+		unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
+			if Runes(blood 1) Spell(PESTILENCE)
+	if {TargetDebuffPresent(BLOODPLAGUE) or TargetDebuffPresent(FROSTFEVER)} 
+		and {OtherDebuffPresent(BLOODPLAGUE) or OtherDebuffPresent(FROSTFEVER)}
+		if Runes(blood 1) Spell(BLOODBOIL)
 }
 
 AddIcon help=cd mastery=2
 {
-	#/pillar_of_frost
+	#/golemblood_potion,if=!in_combat
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	#/golemblood_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(GOLEMBLOODPOTION)
 	if Runes(frost 1) Spell(PILLAROFFROST)
-	#/blood_tap,if=death!=2
-	unless Runes(death 2) Spell(BLOODTAP)
-	#/raise_dead,if=buff.rune_of_the_fallen_crusader.react
 	#/raise_dead,time>=15
-	unless TotemPresent(ghoul) if TimeInCombat(more 15) or BuffPresent(UNHOLYSTRENGTHBUFF) Spell(RAISEDEAD priority=2)
-	#/empower_rune_weapon,if=target.time_to_die<=120&buff.killing_machine.react
-	if TargetDeadIn(less 120) and BuffPresent(KILLINGMACHINE) Spell(EMPOWERRUNEWEAPON)
+	unless TotemPresent(ghoul) if TimeInCombat(more 15) Spell(RAISEDEAD)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
+	#/army_of_the_dead
+	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 }
 
-#Contributed by vitos
 AddIcon help=main mastery=3
 {
-	if BuffExpires(strengthagility 2) and CheckBoxOn(horn) Spell(HORNOFWINTER)
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
+
+	#/presence,choose=unholy
+	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
-	if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and TargetDebuffExpires(FROSTFEVER 2 mine=1) Spell(OUTBREAK)
-	#/icy_touch,if=dot.frost_fever.remains<3
-	if TargetDebuffExpires(FROSTFEVER 3 mine=1) and Runes(frost 1) Spell(ICYTOUCH)
-	#/plague_strike,if=dot.blood_plague.remains<3
-	if TargetDebuffExpires(BLOODPLAGUE 3 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
+	if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
+	if spell(OUTBREAK) > 2
+	{
+		#/icy_touch,if=dot.frost_fever.remains<2&cooldown.outbreak.remains>2
+		if TargetDebuffExpires(FROSTFEVER 2 mine=1) and Runes(frost 1) Spell(ICYTOUCH)
+		#/plague_strike,if=dot.blood_plague.remains<2&cooldown.outbreak.remains>2
+		if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
+	}
 	#/dark_transformation
 	if Runes(unholy 1) and pet.BuffPresent(SHADOWINFUSION stacks=5) Spell(DARKTRANSFORMATION)
-	#/death_and_decay,if=death=4
-	#/death_and_decay,if=unholy=2
-	if Runes(death 4) or Runes(unholy 2) if CheckBoxOn(dnd) Spell(DEATHANDDECAY)
-	#/scourge_strike,if=death=4
-	#/scourge_strike,if=unholy=2	
-	if Runes(death 4) or Runes(unholy 2) Spell(SCOURGESTRIKE)
-	#/festering_strike,if=blood=2&frost=2
-	if Runes(blood 2 frost 2 nodeath=1) Spell(FESTERINGSTRIKE)
-	unless BuffPresent(RUNICCORRUPTION mine=1)
-	{
-		#/death_coil,if=runic_power>90
-		if Mana(more 90) Spell(DEATHCOIL usable=1)
-		#/death_coil,if=buff.sudden_doom.react
-		if BuffPresent(SUDDENDOOM) Spell(DEATHCOIL usable=1)
-	}
+	#/death_and_decay,if=unholy=2&runic_power<110
+	if CheckBoxOn(dnd) and Runes(unholy 2) and Mana(less 110) Spell(DEATHANDDECAY)
+	#/scourge_strike,if=unholy=2&runic_power<110
+	if Runes(unholy 2) and Mana(less 110) Spell(SCOURGESTRIKE)
+	#/festering_strike,if=blood=2&frost=2&runic_power<110
+	if Runes(blood 2 frost 2) and Mana(less 110) Spell(FESTERINGSTRIKE)
+	#/death_coil,if=runic_power>90
+	if Mana(more 90) Spell(DEATHCOIL)
+	#/death_coil,if=buff.sudden_doom.react
+	if BuffPresent(SUDDENDOOM) Spell(DEATHCOIL)
 	#option to heal with deathstrike
-	if CheckBoxOn(deathstrike) and LifePercent(less 90) and Runes(unholy 1 frost 1) Spell(DEATHSTRIKE)
+	if CheckBoxOn(deathstrike) and LifePercent(less 90) and Runes(frost 1 unholy 1) Spell(DEATHSTRIKE)
 	#/death_and_decay
-	if Runes(unholy 1) and CheckBoxOn(dnd) Spell(DEATHANDDECAY)
+	if CheckBoxOn(dnd) and Runes(unholy 1) Spell(DEATHANDDECAY)
 	#/scourge_strike
 	if Runes(unholy 1) Spell(SCOURGESTRIKE)
 	#/festering_strike
-	if Runes(blood 1 frost 1 nodeath=1) Spell(FESTERINGSTRIKE)
+	if Runes(blood 1 frost 1) Spell(FESTERINGSTRIKE)
 	#/death_coil
-	if Mana(more 59) Spell(DEATHCOIL usable=1)
+	Spell(DEATHCOIL)
 	#/horn_of_winter
 	Spell(HORNOFWINTER)
 }
 
 AddIcon help=offgcd mastery=3
 {
-	if target.IsInterruptible() Spell(MINDFREEZE)
-	#/blood_tap,if=unholy=0&inactive_death=1
-	unless Runes(unholy 1) Spell(BLOODTAP priority=2)
-	#/empower_rune_weapon,if=unholy=0
-	unless Runes(unholy 1) Spell(EMPOWERRUNEWEAPON priority=2)
+	if TargetIsInterruptible() Spell(MINDFREEZE)
+	#/blood_tap
+	unless Runes(blood 2) and Runes(frost 2) and Runes(unholy 2)
+		if Runes(blood 1) Spell(BLOODTAP)
+	#/empower_rune_weapon
+	Spell(EMPOWERRUNEWEAPON)
 }
 
 AddIcon help=aoe mastery=3
 {
-	if Runes(unholy 1) Spell(DEATHANDDECAY usable=1)
-	if Runes(blood 1)
-	{
-		if TargetDebuffPresent(BLOODPLAGUE) and TargetDebuffPresent(FROSTFEVER)
-			unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
-				Spell(PESTILENCE usable=1)
-		if {TargetDebuffPresent(BLOODPLAGUE) or TargetDebuffPresent(FROSTFEVER)} 
-				and {OtherDebuffPresent(BLOODPLAGUE) or OtherDebuffPresent(FROSTFEVER)}
-			Spell(BLOODBOIL usable=1)
-	}
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
+	if Runes(unholy 1) Spell(DEATHANDDECAY)
+	if TargetDebuffPresent(BLOODPLAGUE) and TargetDebuffPresent(FROSTFEVER)
+		unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
+			if Runes(blood 1) Spell(PESTILENCE)
+	if {TargetDebuffPresent(BLOODPLAGUE) or TargetDebuffPresent(FROSTFEVER)} 
+		and {OtherDebuffPresent(BLOODPLAGUE) or OtherDebuffPresent(FROSTFEVER)}
+		if Runes(blood 1) Spell(BLOODBOIL)
 }
 
 AddIcon help=cd mastery=3
 {
+	#/golemblood_potion,if=!in_combat
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	#/raise_dead
 	if PetPresent(no) Spell(RAISEDEAD)
-	Spell(SUMMONGARGOYLE)
+	#/golemblood_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(GOLEMBLOODPOTION)
+	#/summon_gargoyle,time<=60
+	if TimeInCombat(less 60) Spell(SUMMONGARGOYLE)
+	#/summon_gargoyle,if=buff.bloodlust.react|buff.unholy_frenzy.react
+	if BuffPresent(heroism) or BuffPresent(UNHOLYFRENZY) Spell(SUMMONGARGOYLE)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
-	Spell(ARMYOFTHEDEAD)
+	#/army_of_the_dead
+	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
+	#/unholy_frenzy,if=!buff.bloodlust.react|target.time_to_die<=45}
+	unless BuffPresent(heroism) and TargetDeadIn(more 45) Spell(UNHOLYFRENZY)
 }
