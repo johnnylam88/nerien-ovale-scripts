@@ -198,10 +198,10 @@ AddIcon help=cd mastery=1
 
 AddIcon help=main mastery=2
 {
-	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
-
 	#/presence,choose=unholy
 	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
+
 	#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
 	if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
 	#/howling_blast,if=dot.frost_fever.remains<=2
@@ -276,6 +276,7 @@ AddIcon help=offgcd mastery=2
 
 AddIcon help=aoe mastery=2
 {
+	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
 	if Runes(frost 1) or BuffPresent(FREEZINGFOG) Spell(HOWLINGBLAST)
 	if Runes(unholy 1) Spell(DEATHANDDECAY)
@@ -304,10 +305,10 @@ AddIcon help=cd mastery=2
 
 AddIcon help=main mastery=3
 {
-	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
-
 	#/presence,choose=unholy
 	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
+	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
+
 	#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
 	if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
 	if spell(OUTBREAK) > 2
@@ -355,6 +356,7 @@ AddIcon help=offgcd mastery=3
 
 AddIcon help=aoe mastery=3
 {
+	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
 	if Runes(unholy 1) Spell(DEATHANDDECAY)
 	if TargetDebuffPresent(BLOODPLAGUE) and TargetDebuffPresent(FROSTFEVER)
