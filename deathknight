@@ -187,6 +187,7 @@ AddIcon help=aoe mastery=1
 AddIcon help=cd mastery=1
 {
 	unless BuffPresent(BONESHIELD) Spell(BONESHIELD)
+	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	unless TotemPresent(ghoul) Spell(RAISEDEAD)
 	if TotemPresent(ghoul) and LifePercent(less 61) and Mana(more 39) Spell(DEATHPACT) 
 	Spell(DANCINGRUNEWEAPON usable=1)
