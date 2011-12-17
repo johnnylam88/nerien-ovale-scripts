@@ -144,7 +144,7 @@ AddIcon help=main mastery=1
 	unless Spell(DANCINGRUNEWEAPON) if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE usable=1)
 	if Spell(DANCINGRUNEWEAPON) and Mana(more 59) Spell(RUNESTRIKE usable=1)
 	if {BuffExpires(BLOODSHIELD) or TargetTargetIsPlayer(no)}
-		if Runes(frost 1 unholy) Spell(DEATHSTRIKE)
+		if Runes(frost 1 unholy 1) Spell(DEATHSTRIKE)
 	if Runes(blood 1) Spell(HEARTSTRIKE)
 	if Mana(more 69) Spell(DEATHCOIL)
 	Spell(HORNOFWINTER)
@@ -381,6 +381,6 @@ AddIcon help=cd mastery=3
 	Item(Trinket1Slot usable=1)
 	#/army_of_the_dead
 	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
-	#/unholy_frenzy,if=!buff.bloodlust.react|target.time_to_die<=45}
+	#/unholy_frenzy,if=!buff.bloodlust.react|target.time_to_die<=45
 	unless BuffPresent(heroism) and TargetDeadIn(more 45) Spell(UNHOLYFRENZY)
 }
