@@ -180,7 +180,7 @@ AddIcon help=main mastery=3
 	#/exorcism,if=buff.the_art_of_war.react
 	if BuffPresent(THEARTOFWAR) Spell(EXORCISM)
 	#/hammer_of_wrath
-	Spell(HAMMEROFWRATH)
+	Spell(HAMMEROFWRATH usable=1)
 	#/judgement
 	Spell(JUDGEMENT)
 	#/holy_wrath
