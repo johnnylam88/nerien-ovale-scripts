@@ -1,6 +1,10 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.8 2011/12/18 - 4.3.2 fixes the maxMana() problem, so put back the exact condition for Mana Gem usage.
+#                    Checkbox for having just one main icon or separate icons for burn and hover phases with a green/red
+#                    visual aid for which cycle to use.
+#                    Use Item() as the check condition for when an item cooldown is up.
 # 4.3.7 2011/12/16 - maxMana() causes Lua errors, so use ManaPercent() instead until it's fixed.
 # 4.3.6 2011/12/16 - Don't suggest hardcasting Arcane Blast while moving.
 # 4.3.5 2011/12/16 - Use the proper name for the potion being used in the checkbox.
@@ -115,44 +119,13 @@ ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMEN
 			DEEPFREEZE ICELANCE)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL))
+AddCheckBox(cycles "Separate Cycles" mastery=1)
 
 # Frost DPS Rotation from Kuni's Frost Mage PvE Guide:
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
 AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
 
-AddIcon help=offgcd mastery=1
-{
-	# green is for DPS cycle:  Texture(Spell_nature_elementalshields)
-	# red is for DPM cycle:    Texture(Inv_misc_orb_05)
-
-	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
-	#    cooldown.evocation.remains+15<target.time_to_die
-	#/arcane_blast,if=dps=1|target.time_to_die<20|\
-	#    ((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
-	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Spell_nature_elementalshields)
-	if TargetDeadIn(less 21)
-		Texture(Spell_nature_elementalshields)
-	if ManaPercent(more 21)
-		and {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Spell(MANAGEMITEM)}
-		Texture(Spell_nature_elementalshields)
-
-	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
-	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
-	#    cooldown.evocation.remains+15<target.time_to_die
-	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
-		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}}
-		and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Inv_misc_orb_05)
-
-	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
-		Texture(Spell_nature_elementalshields)
-
-	Texture(Inv_misc_orb_05)
-}
-
-# DPS "burn" cycle
-AddIcon help=main mastery=1
+AddFunction ArcaneBurnCycle
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MAGEARMOR)
 
@@ -180,8 +153,7 @@ AddIcon help=main mastery=1
 	Spell(ARCANEBLAST)
 }
 
-# DPM "hover" cycle
-AddIcon help=main mastery=1
+AddFunction ArcaneHoverCycle
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MAGEARMOR)
 
@@ -191,7 +163,7 @@ AddIcon help=main mastery=1
 	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 
 	#/mana_gem,if=buff.arcane_blast.stack=4
-	if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(MANAGEMITEM)
+	if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
 	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > spell(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
 	#/arcane_blast,if=buff.presence_of_mind.up
@@ -218,6 +190,78 @@ AddIcon help=main mastery=1
 	}
 	#/arcane_blast
 	Spell(ARCANEBLAST)
+}
+
+AddIcon help=main mastery=1 checkboxoff=cycles
+{
+	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
+	#    cooldown.evocation.remains+15<target.time_to_die
+	#/arcane_blast,if=dps=1|target.time_to_die<20|\
+	#    ((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
+	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
+		ArcaneBurnCycle()
+	if TargetDeadIn(less 21)
+		ArcaneBurnCycle()
+	if ManaPercent(more 21)
+		and {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)}
+		ArcaneBurnCycle()
+
+	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
+	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
+	#    cooldown.evocation.remains+15<target.time_to_die
+	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
+		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}}
+		and {spell(EVOCATION) + 15 < target.timeToDie()}
+		ArcaneHoverCycle()
+
+	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
+		ArcaneBurnCycle()
+
+	ArcaneHoverCycle()
+}
+
+# Copy of above but with textures instead of cycles.
+# green is for DPS cycle:  Texture(Spell_nature_elementalshields)
+# red is for DPM cycle:    Texture(Inv_misc_orb_05)
+AddIcon help=main mastery=1 checkboxon=cycles
+{
+
+	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
+	#    cooldown.evocation.remains+15<target.time_to_die
+	#/arcane_blast,if=dps=1|target.time_to_die<20|\
+	#    ((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
+	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
+		Texture(Spell_nature_elementalshields)
+	if TargetDeadIn(less 21)
+		Texture(Spell_nature_elementalshields)
+	if ManaPercent(more 21)
+		and {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)}
+		Texture(Spell_nature_elementalshields)
+
+	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
+	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
+	#    cooldown.evocation.remains+15<target.time_to_die
+	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
+		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}}
+		and {spell(EVOCATION) + 15 < target.timeToDie()}
+		Texture(Inv_misc_orb_05)
+
+	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
+		Texture(Spell_nature_elementalshields)
+
+	Texture(Inv_misc_orb_05)
+}
+
+# DPS "burn" cycle
+AddIcon mastery=1 checkboxon=cycles
+{
+	ArcaneBurnCycle()
+}
+
+# DPM "hover" cycle
+AddIcon mastery=1 checkboxon=cycles
+{
+	ArcaneHoverCycle()
 }
 
 AddIcon help=cd mastery=1
@@ -299,7 +343,7 @@ AddIcon help=mana mastery=2
 		Spell(EVOCATION)
 
 	#/mana_gem,if=mana_deficit>12500
-	if ManaPercent(less 85) Item(MANAGEMITEM)
+	if player.maxMana() - player.mana() > 12500 Item(MANAGEMITEM)
 	#/mage_armor,if=mana_pct<5
 	if BuffExpires(MAGEARMOR 0) and ManaPercent(less 5) Spell(MAGEARMOR)
 }
@@ -380,7 +424,7 @@ AddIcon help=mana mastery=3
 	#/evocation,if=mana_pct<40&(buff.icy_veins.react|buff.bloodlust.react)
 	if ManaPercent(less 40) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)} Spell(EVOCATION)
 	#/mana_gem,if=mana_deficit>12500
-	if ManaPercent(less 85) Item(MANAGEMITEM)
+	if player.maxMana() - player.mana() > 12500 Item(MANAGEMITEM)
 	#/mage_armor,if=(mana_pct*12)<target.time_to_die (r8877)
 	if Glyph(GLYPHOFFROSTBOLT) and BuffPresent(MOLTENARMOR) and {{manaPercent()*12} < target.timeToDie()} Spell(MAGEARMOR)
 	#/mage_armor,if=(mana_pct*15)<target.time_to_die (r8877)
