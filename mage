@@ -30,6 +30,7 @@ Define(ARCANEMISSILEBUFF 79683)
 Define(PRESENCEOFMIND 12043) #arcane next spell instant
 Define(CLEARCASTING 12536)
 Define(IMPROVEDMANAGEM 83098) #arcane
+Define(STOLENTIME 105785) # 2pT13 buff stacks up to 10 times
 
 # Debuffs
 Define(IGNITE 12654)
@@ -416,7 +417,9 @@ AddIcon help=cd mastery=3
 	if TargetDeadIn(more 11) Spell(FLAMEORB)
 	#/mirror_image,if=target.time_to_die>=25
 	if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
-	#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down
+	#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down&(buff.tier13_2pc.stack>7|cooldown.cold_snap.remains<22)\
+	unless BuffPresent(ICYVEINS) or BuffPresent(heroism)
+		if BuffPresent(STOLENTIME stacks=7) or 22s before Spell(COLDSNAP) Spell(ICYVEINS)
 	if BuffExpires(ICYVEINS 0) and BuffExpires(heroism 0) Spell(ICYVEINS)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
