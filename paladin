@@ -1,6 +1,7 @@
 # Paladin Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.2 2011/12/20 - Hammer of Wrath is an execute ability, so only show when usable.
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use paladin profile from SimulationCraft, Tier 13H (r10489)
 #                    Use EJ prot pally rotation.
