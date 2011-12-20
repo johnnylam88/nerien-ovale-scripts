@@ -14,9 +14,9 @@
 # 4.3.2 2011/12/08 - Fix error in how MANAGEMITEM was used, which was causing it to never be suggested for arcane mages.
 # 4.3.1 2011/12/06 - Initial version based on Hinalover's contributed script.
 #                    Use mage profiles from sc-422-4, Tier 12N.
-#                    Arcane: 4 icons - green/red for burn/conserve phase, burn rotation, conserve rotation, DPS CDs
-#                    Fire: 3 icons - main rotation, DPS CDs, mana CDs
-#                    Frost: 3 icons - main rotation, DPS CDs, mana CDs; checkbox for using Kuni's Frost PvE rotation
+#                    Arcane (r10466): 4 icons - green/red for burn/conserve phase, burn rotation, conserve rotation, DPS CDs
+#                    Fire (r10467): 3 icons - main rotation, DPS CDs, mana CDs
+#                    Frost (r10466): 3 icons - main rotation, DPS CDs, mana CDs; checkbox for using Kuni's Frost PvE rotation
 
 ## defines ##
 
@@ -139,7 +139,19 @@ AddFunction ArcaneBurnCycle
 	#/mana_gem,if=buff.arcane_blast.stack=4
 	if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > spell(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
+	if BuffPresent(PRESENCEOFMIND) and ItemCount(MANAGEMITEM equal 0 charges=1)
+	{
+		# if target.timeToDie() > spell(MANAGEMITEM) Spell(CONJUREMANAGEM)
+		if 30s before Item(MANAGEMITEM) and TargetDeadIn(more 30) Spell(CONJUREMANAGEM)
+		if 45s before Item(MANAGEMITEM) and TargetDeadIn(more 45) Spell(CONJUREMANAGEM)
+		if 60s before Item(MANAGEMITEM) and TargetDeadIn(more 60) Spell(CONJUREMANAGEM)
+		if 75s before Item(MANAGEMITEM) and TargetDeadIn(more 75) Spell(CONJUREMANAGEM)
+		if 90s before Item(MANAGEMITEM) and TargetDeadIn(more 90) Spell(CONJUREMANAGEM)
+		if 105s before Item(MANAGEMITEM) and TargetDeadIn(more 105) Spell(CONJUREMANAGEM)
+		if Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
+	}
+
+
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
