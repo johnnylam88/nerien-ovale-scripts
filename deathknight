@@ -2,7 +2,8 @@
 #
 # Revision History
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
-#                    Use death knight profiles from sc-430-2, Tier 13H.
+#                    Use death knight profiles from SimulationCraft, Tier 13H:
+#                        Frost (r10538), Unholy (r10538)
 
 ## defines ##
 

@@ -2,7 +2,8 @@
 #
 # Revision History
 # 4.3.1 2011/12/06 - Initial version based on Ovale default script.
-#                    Use rogue profiles from sc-430-2, Tier 13H.
+#                    Use rogue profiles from SimulationCraft, Tier 13H:
+#                        Assassination (r10526), Combat (r10526), Subtlety (r10526)
 
 ## defines ##
 

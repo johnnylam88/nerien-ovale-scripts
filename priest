@@ -8,7 +8,7 @@
 #                    Checkbox for using potions.
 #                    Coding style changes.
 # 4.3.2 2011/12/08 - Move SW:D at low mana levels to mana icon, and Evangelism to CD icon.
-# 4.3.1 2011/12/07 - Initial version using shadow priest profile from sc-422-4, Tier 12N.
+# 4.3.1 2011/12/07 - Initial version using shadow priest profile from SimulationCraft, Tier 13H (r10402).
 #                    Mind Spike usage from default Ovale script.
 
 ## defines ##

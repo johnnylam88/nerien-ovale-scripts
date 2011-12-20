@@ -2,7 +2,8 @@
 #
 # Revision History
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
-#                    Use warrior profiles from sc-430-2, Tier 13H.
+#                    Use warrior profiles from SimulationCraft, Tier 13H:
+#                        Arms (r10571), Fury-1H (r10571), Fury-2H (r10571)
 
 ## defines ##
 

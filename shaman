@@ -2,7 +2,8 @@
 #
 # Revision History
 # 4.3.1 2011/12/07 - Initial version based on Ovale default script.
-#                    Use shaman profiles from sc-430-2, Tier 12N.
+#                    Use shaman profiles from SimulationCraft, Tier 13H:
+#                        Elemental (r10348), Enhancement (r10526)
 
 ## defines ##
 
