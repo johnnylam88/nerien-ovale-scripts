@@ -21,29 +21,29 @@
 ## defines ##
 
 # Buffs
-Define(BRAINFREEZE 57761) #frost (instant fireball/frostfire bolt)
-Define(FINGERSOFFROST 44544) #frost boost ice lance/deep freeze
-	SpellInfo(FINGERSOFFROST duration=14)
-Define(HOTSTREAK 48108) #fire instant pyroblast
 Define(ARCANEBLASTDEBUFF 36032)
 Define(ARCANEMISSILEBUFF 79683)
-Define(PRESENCEOFMIND 12043) #arcane next spell instant
+Define(BRAINFREEZE 57761) #frost (instant fireball/frostfire bolt)
 Define(CLEARCASTING 12536)
+Define(FINGERSOFFROST 44544) #frost boost ice lance/deep freeze
+	SpellInfo(FINGERSOFFROST duration=14)
 Define(IMPROVEDMANAGEM 83098) #arcane
+Define(HOTSTREAK 48108) #fire instant pyroblast
+Define(PRESENCEOFMIND 12043) #arcane next spell instant
 Define(STOLENTIME 105785) # 2pT13 buff stacks up to 10 times
 
 # Debuffs
-Define(IGNITE 12654)
 Define(CRITICALMASS 22959)
+Define(IGNITE 12654)
 Define(SHADOWANDFLAME 17800)
 
 # Glyphs
-Define(GLYPHOFFROSTFIRE 61205)
 Define(GLYPHOFFROSTBOLT 56370)
+Define(GLYPHOFFROSTFIRE 61205)
 
 # Talents
-Define(FIRESTARTERTALENT 11431)
 Define(CRITICALMASSTALENT 10541)
+Define(FIRESTARTERTALENT 11431)
 Define(IMPROVEDSCORCHTALENT 10547)
 
 # Spells
@@ -70,17 +70,17 @@ Define(DEEPFREEZE 44572) #frost instant
 	SpellAddBuff(DEEPFREEZE FINGERSOFFROST=-1)
 Define(EVOCATION 12051)
 	SpellInfo(EVOCATION cd=240)
+Define(FIREBALL 133) #fire 2.5
 Define(FIREBLAST 2136) #fire instant
 	SpellInfo(FIREBLAST cd=8)
-Define(FIREBALL 133) #fire 2.5
 Define(FLAMEORB 82731)
 	SpellInfo(FLAMEORB cd=60)
+Define(FROSTARMOR 7302)
+	SpellAddBuff(FROSTARMOR FROSTARMOR=1800)
 Define(FROSTBOLT 116) #frost
 Define(FROSTFIREBOLT 44614) #frost+fire
 	SpellAddTargetDebuff(FROSTFIREBOLT FROSTFIREBOLT=9)
 	SpellAddBuff(FROSTFIREBOLT BRAINFREEZE=-1 FINGERSOFFROST=-1)
-Define(ICEARMOR 7302)
-	SpellAddBuff(ICEARMOR ICEARMOR=1800)
 Define(ICELANCE 30455) #frost instant
 	SpellAddBuff(ICELANCE FINGERSOFFROST=-1)
 Define(ICYVEINS 12472) #frost cd
@@ -128,10 +128,10 @@ AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
 
 AddFunction ArcaneBurnCycle
 {
-	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MAGEARMOR)
+	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
 
 	#/mage_armor
-	unless BuffPresent(MAGEARMOR) or BuffPresent(ICEARMOR) Spell(MAGEARMOR)
+	unless BuffPresent(MAGEARMOR) or BuffPresent(FROSTARMOR) Spell(MAGEARMOR)
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
 	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 
@@ -152,7 +152,6 @@ AddFunction ArcaneBurnCycle
 		if Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
 	}
 
-
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
@@ -168,10 +167,10 @@ AddFunction ArcaneBurnCycle
 
 AddFunction ArcaneHoverCycle
 {
-	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MAGEARMOR)
+	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
 
 	#/mage_armor
-	unless BuffPresent(MAGEARMOR) or BuffPresent(ICEARMOR) Spell(MAGEARMOR)
+	unless BuffPresent(MAGEARMOR) or BuffPresent(FROSTARMOR) Spell(MAGEARMOR)
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
 	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 
@@ -340,10 +339,10 @@ AddIcon help=cd mastery=2
 
 AddIcon help=mana mastery=2
 {
-	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MOLTENARMOR)
+	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MOLTENARMOR)
 
 	#/molten_armor,if=buff.mage_armor.down&buff.molten_armor.down
-	unless BuffPresent(MAGEARMOR) or BuffPresent(MOLTENARMOR) or BuffPresent(ICEARMOR) Spell(MOLTENARMOR)
+	unless BuffPresent(MAGEARMOR) or BuffPresent(MOLTENARMOR) or BuffPresent(FROSTARMOR) Spell(MOLTENARMOR)
 	#/molten_armor,if=mana_pct>45&buff.mage_armor.up
 	if BuffPresent(MAGEARMOR) and ManaPercent(more 45) Spell(MOLTENARMOR)
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
@@ -427,12 +426,12 @@ AddIcon help=cd mastery=3
 
 AddIcon help=mana mastery=3
 {
-	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(ICEARMOR 400) Spell(MOLTENARMOR)
+	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MOLTENARMOR)
 
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
 	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 	#/molten_armor,if=buff.mage_armor.down&buff.molten_armor.down
-	unless BuffPresent(MAGEARMOR) or BuffPresent(MOLTENARMOR) or BuffPresent(ICEARMOR) Spell(MOLTENARMOR)
+	unless BuffPresent(MAGEARMOR) or BuffPresent(MOLTENARMOR) or BuffPresent(FROSTARMOR) Spell(MOLTENARMOR)
 	#/molten_armor,if=mana_pct>45&buff.mage_armor.up (r8877)
 	if BuffPresent(MAGEARMOR) and ManaPercent(more 45) Spell(MOLTENARMOR)
 
