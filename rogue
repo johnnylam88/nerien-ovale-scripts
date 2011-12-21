@@ -275,6 +275,8 @@ AddIcon help=cd mastery=3
 	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
 	unless Spell(SHADOWDANCE) and ComboPoints(less 5) and RogueIsNotStealthed()
 	{
+		#/pool_energy,for_next=1
+		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
 		unless TimeInCombat(more 10) and Spell(VANISH) and ComboPoints(less 2) and Spell(SHADOWSTEP)
 			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
 		{
