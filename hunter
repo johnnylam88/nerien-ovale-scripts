@@ -9,12 +9,12 @@
 ## defines ##
 
 # Buffs
-Define(BEASTWITHIN 34692)
 Define(CHRONOHUNTER 105919) # 4pT13 buff
 Define(FIRE 82926)
 Define(FRENZYEFFECT 19615)
 Define(LOCKANDLOAD 56453)
 Define(MARKEDFORDEATH 88691)
+Define(THEBEASTWITHIN 34692)
 
 # Glyphs
 Define(GLYPHOFARCANESHOT 56841)
@@ -98,7 +98,7 @@ AddIcon help=main mastery=1
 	#/kill_command
 	if TargetInRange(GROWL) Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
-	if Mana(more 59) or BuffPresent(BEASTWITHIN) Spell(ARCANESHOT)
+	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
 	#/cobra_shot
 	Spell(COBRASHOT)
 }
@@ -140,7 +140,7 @@ AddIcon help=cd mastery=1
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(POTIONOFTHETOLVIR)
 	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
-	unless BuffPresent(heroism) or BuffPresent(BEASTWITHIN) Spell(RAPIDFIRE)
+	unless BuffPresent(heroism) or BuffPresent(THEBEASTWITHIN) Spell(RAPIDFIRE)
 	#/fervor,if=focus<=37
 	if Mana(less 37) Spell(FERVOR)
 	Item(Trinket0Slot usable=1)
