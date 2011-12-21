@@ -212,8 +212,9 @@ AddIcon help=main mastery=2
 	Spell(STORMSTRIKE)
 	#/lava_lash
 	Spell(LAVALASH)
-	#/lightning_bolt,if=buff.maelstrom_weapon.react=5
+	#/lightning_bolt,if=buff.maelstrom_weapon.react=5|(set_bonus.tier13_4pc_melee=1&buff.maelstrom_weapon.react>=4&pet.spirit_wolf.active)
 	if BuffPresent(MAELSTROMWEAPON stacks=5) Spell(LIGHTNINGBOLT)
+	if ArmorSetParts(T13 more 3) and BuffPresent(MAELSTROMWEAPON stacks=4) and PetPresent(yes) Spell(LIGHTNINGBOLT)
 	#/unleash_elements
 	Spell(UNLEASHELEMENTS)
 	#/lava_burst,if=cooldown.shock.remains<cast_time&dot.flame_shock.remains>cast_time+travel_time&buff.unleash_flame.remains>cast_time
