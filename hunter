@@ -13,11 +13,14 @@ Define(CHRONOHUNTER 105919) # 4pT13 buff
 Define(FIRE 82926)
 Define(FRENZYEFFECT 19615)
 Define(LOCKANDLOAD 56453)
-Define(MARKEDFORDEATH 88691)
 Define(THEBEASTWITHIN 34692)
 
+# Debuffs
+Define(MARKEDFORDEATH 88691)
+
 # Glyphs
-Define(GLYPHOFARCANESHOT 56841)
+Define(GLYPHOFARCANESHOT 56995)
+Define(GLYPHOFTRAPLAUNCHER 56996)
 
 # Spells
 Define(AIMEDSHOT 19434)
@@ -48,6 +51,8 @@ Define(EXPLOSIVESHOT 53301)
 	SpellInfo(EXPLOSIVESHOT cd=6 mana=50 buffnocd=LOCKANDLOAD)
 	SpellAddTargetDebuff(EXPLOSIVESHOT EXPLOSIVESHOT=2)
 	SpellAddBuff(EXPLOSIVESHOT LOCKANDLOAD=-1)
+Define(EXPLOSIVETRAPLAUNCHER 82939)
+	SpellInfo(EXPLOSIVETRAPLAUNCHER cd=30)
 Define(FERVOR 82726)
 	SpellInfo(FERVOR mana=-50 cd=120)
 Define(FOCUSFIRE 82692)
@@ -73,6 +78,10 @@ Define(STEADYSHOT 56641)
 	SpellInfo(STEADYSHOT inccounter=ss mana=-9)
 Define(SILENCINGSHOT 34490)
 	SpellInfo(SILENCINGSHOT cd=20 resetcounter=ss)
+Define(TRAPLAUNCHER 77769)
+	SpellInfo(TRAPLAUNCHER cd=1.5 mana=20)
+	SpellInfo(TRAPLAUNCHER addmana=-10 glyph=56996) # Glyph of Trap Launcher
+	SpellAddBuff(TRAPLAUNCHER TRAPLAUNCHER=15)
 
 # Pet spells
 Define(GROWL 2649)
@@ -92,7 +101,7 @@ AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddIcon help=main mastery=1
 {
 	#/serpent_sting,if=!ticking
-	unless BuffPresent(SERPENTSTING mine=1) Spell(SERPENTSTING)
+	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
 	#/kill_command
@@ -120,11 +129,11 @@ AddIcon help=offgcd mastery=1
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
-	#Spell(EXPLOSIVETRAP)
+	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
 	#/serpent_sting,if=!ticking
-	unless BuffPresent(SERPENTSTING mine=1) Spell(SERPENTSTING)
+	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
-	Spell(MULTISHOT)
+	if Mana(more 39) Spell(MULTISHOT)
 	#/cobra_shot,if=target.adds>5
 	Spell(COBRASHOT)
 }
@@ -150,9 +159,9 @@ AddIcon help=cd mastery=1
 AddIcon help=main mastery=2
 {
 	#/serpent_sting,if=!ticking&target.health_pct<=90
-	unless TargetDebuffPresent(SERPENTSTING) if TargetLifePercent(less 90) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
 	#/chimera_shot,if=target.health_pct<=90
-	if TargetLifePercent(less 90) Spell(CHIMERASHOT)
+	if TargetLifePercent(less 90) and Mana(more 49) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
 	if Counter(ss equal 1) and BuffExpires(IMPROVEDSTEADYSHOT 3) Spell(STEADYSHOT)
 	#/kill_shot
@@ -170,9 +179,13 @@ AddIcon help=main mastery=2
 	}
 	#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 	#	buff.rapid_fire.up|target.health_pct>90
-	unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
-		if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) # or 4pT13 ICD > 0
-	if BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
+	if Mana(more 49)
+	{
+		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
+			if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) # or 4pT13 ICD > 0
+				Spell(AIMEDSHOT)
+		if BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
+	}
 	#/steady_shot
 	Spell(STEADYSHOT)
 }
@@ -190,9 +203,9 @@ AddIcon help=offgcd mastery=2
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
-	#Spell(EXPLOSIVETRAP)
+	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
 	#/multi_shot,if=target.adds>5
-	Spell(MULTISHOT)
+	if Mana(more 39) Spell(MULTISHOT)
 	#/steady_shot,if=target.adds>5
 	Spell(STEADYSHOT)
 }
@@ -211,41 +224,6 @@ AddIcon help=cd mastery=2
 	unless BuffPresent(heroism) and TargetDeadIn(more 30) Spell(RAPIDFIRE)
 	#/readiness,wait_for_rapid_fire=1
 	if BuffPresent(RAPIDFIRE) Spell(READINESS)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
-}
-
-AddIcon help=main mastery=3
-{
- 	if CheckBoxOn(multi)
-	{
-		#/multi_shot,if=target.adds>5
-		if Mana(more 56) Spell(MULTISHOT)
-		#/cobra_shot,if=target.adds>5
-		Spell(STEADYSHOT)
-	}
-
-	#/serpent_sting,if=!ticking
-	if Mana(more 24) and TargetDebuffExpires(SERPENTSTING 0 mine=1) and TargetDeadIn(more 8) Spell(SERPENTSTING)
-	#/explosive_shot,if=!ticking&!in_flight
-    if TargetDebuffExpires(EXPLOSIVESHOT 0 mine=1) Spell(EXPLOSIVESHOT)
-	#/black_arrow,if=!ticking
-    if Mana(more 35) and TargetDebuffExpires(BLACKARROW 0 mine=1) Spell(BLACKARROW)
-	#/kill_shot
-    if TargetLifePercent(less 20) Spell(KILLSHOT)
-	#/arcane_shot,if=focus>=70&buff.lock_and_load.down
-    if Mana(more 69) and BuffExpires(LOCKANDLOAD) Spell(ARCANESHOT)
-	#/cobra_shot
-    Spell(COBRASHOT) 
-	Spell(STEADYSHOT)
-}
-
-AddIcon help=cd mastery=3
-{
-	unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
-	if TargetDebuffExpires(HUNTERSMARK 2) and TargetDebuffExpires(MARKEDFORDEATH 0) and TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
-	Spell(CALLOFTHEWILD usable=1)
-	unless BuffPresent(heroism) Spell(RAPIDFIRE)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
