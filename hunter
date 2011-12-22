@@ -4,14 +4,14 @@
 #
 # To Do:
 # - Check rotations for 2pT13 and 4pT13
-# - Properly deal with the mechanics for Improved Steady Shot (every 2 SS in a row proc ISS)
 
 ## defines ##
 
 # Buffs
-Define(CHRONOHUNTER 105919) # 4pT13 buff
+Define(CHRONOHUNTER 105919) # 4pT13 buff; 110s ICD(?)
 Define(FIRE 82926)
 Define(FRENZYEFFECT 19615)
+Define(IMPROVEDSTEADYSHOT 53244) # Improved Steady Shot (Rank 3)
 Define(LOCKANDLOAD 56453)
 Define(THEBEASTWITHIN 34692)
 
@@ -24,10 +24,10 @@ Define(GLYPHOFTRAPLAUNCHER 56996)
 
 # Spells
 Define(AIMEDSHOT 19434)
-	SpellInfo(AIMEDSHOT resetcounter=ss mana=50)
+	SpellInfo(AIMEDSHOT mana=50 resetcounter=iss)
 	SpellAddBuff(AIMEDSHOT FIRE=0)
 Define(ARCANESHOT 3044)
-	SpellInfo(ARCANESHOT resetcounter=ss mana=25)
+	SpellInfo(ARCANESHOT mana=25 resetcounter=iss)
 Define(ASPECTOFTHEFOX 82661)
 	SpellAddBuff(ASPECTOFTHEFOX ASPECTOFTHEFOX=1000)
 Define(ASPECTOFTHEHAWK 13165)
@@ -42,13 +42,13 @@ Define(CALLOFTHEWILD 53434)
 	SpellInfo(CALLOFTHEWILD cd=300)
 	SpellAddBuff(CALLOFTHEWILD CALLOFTHEWILD=20)
 Define(CHIMERASHOT 53209)
-	SpellInfo(CHIMERASHOT cd=10 resetcounter=ss mana=50)
+	SpellInfo(CHIMERASHOT cd=10 mana=50 resetcounter=iss)
 	SpellAddTargetDebuff(CHIMERASHOT SERPENTSTING=refresh)
 Define(COBRASHOT 77767)
-	SpellInfo(COBRASHOT mana=-9)
+	SpellInfo(COBRASHOT mana=-9 resetcounter=iss)
 	SpellAddTargetDebuff(COBRASHOT SERPENTSTING=refresh)
 Define(EXPLOSIVESHOT 53301)
-	SpellInfo(EXPLOSIVESHOT cd=6 mana=50 buffnocd=LOCKANDLOAD)
+	SpellInfo(EXPLOSIVESHOT cd=6 mana=50 resetcounter=iss buffnocd=LOCKANDLOAD)
 	SpellAddTargetDebuff(EXPLOSIVESHOT EXPLOSIVESHOT=2)
 	SpellAddBuff(EXPLOSIVESHOT LOCKANDLOAD=-1)
 Define(EXPLOSIVETRAPLAUNCHER 82939)
@@ -59,25 +59,25 @@ Define(FOCUSFIRE 82692)
 	SpellInfo(FOCUSFIRE cd=15)
 	SpellAddBuff(FOCUSFIRE FOCUSFIRE=15)
 Define(KILLCOMMAND 34026)
-	SpellInfo(KILLCOMMAND cd=6 mana=40 resetcounter=ss)
+	SpellInfo(KILLCOMMAND cd=6 mana=40 resetcounter=iss)
 Define(KILLSHOT 53351)
-	SpellInfo(KILLSHOT cd=10 resetcounter=ss)
+	SpellInfo(KILLSHOT cd=10 resetcounter=iss)
 Define(HUNTERSMARK 1130)
 	SpellAddTargetDebuff(HUNTERSMARK HUNTERSMARK=300)
 Define(MULTISHOT 2643)
-	SpellInfo(MULTISHOT mana=40)
+	SpellInfo(MULTISHOT mana=40 resetcounter=iss)
 Define(RAPIDFIRE 3045)
+	SpellInfo(RAPIDFIRE cd=300 resetcounter=iss)
 	SpellAddBuff(RAPIDFIRE RAPIDFIRE=15)
-	SpellInfo(RAPIDFIRE cd=300 resetcounter=ss)
 Define(READINESS 23989)
-	SpellInfo(READINESS cd=180)
+	SpellInfo(READINESS cd=180 resetcounter=iss)
 Define(SERPENTSTING 1978)
-	SpellInfo(SERPENTSTING resetcounter=ss duration=15 mana=25)
+	SpellInfo(SERPENTSTING duration=15 mana=25 resetcounter=iss)
 	SpellAddTargetDebuff(SERPENTSTING SERPENTSTING=15)
 Define(STEADYSHOT 56641)
-	SpellInfo(STEADYSHOT inccounter=ss mana=-9)
+	SpellInfo(STEADYSHOT mana=-9 inccounter=iss)
 Define(SILENCINGSHOT 34490)
-	SpellInfo(SILENCINGSHOT cd=20 resetcounter=ss)
+	SpellInfo(SILENCINGSHOT cd=20 resetcounter=iss)
 Define(TRAPLAUNCHER 77769)
 	SpellInfo(TRAPLAUNCHER cd=1.5 mana=20)
 	SpellInfo(TRAPLAUNCHER addmana=-10 glyph=56996) # Glyph of Trap Launcher
@@ -163,29 +163,39 @@ AddIcon help=main mastery=2
 	#/chimera_shot,if=target.health_pct<=90
 	if TargetLifePercent(less 90) and Mana(more 49) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
-	if Counter(ss equal 1) and BuffExpires(IMPROVEDSTEADYSHOT 3) Spell(STEADYSHOT)
+	if BuffExpires(IMPROVEDSTEADYSHOT 3)
+	{
+		if Counter(iss equal 1) Spell(STEADYSHOT)
+		if Counter(iss equal 3) Spell(STEADYSHOT)
+		if Counter(iss equal 5) Spell(STEADYSHOT)
+		if Counter(iss equal 7) Spell(STEADYSHOT)
+		if Counter(iss equal 9) Spell(STEADYSHOT)
+		if Counter(iss equal 11) Spell(STEADYSHOT)
+		# if you're shooting more than 11 Steady Shots in a row, you're capping your focus and doing it wrong
+	}
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
 	#/aimed_shot,if=buff.master_marksman_fire.react
 	if BuffPresent(FIRE) Spell(AIMEDSHOT)
-	if Glyph(GLYPHOFARCANESHOT) or ArmorSetParts(T13 more 3)
+	#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
+	#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
+	#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
+	unless Mana(less 66) and 5s before Spell(CHIMERASHOT)
 	{
-		#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
-		#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
-		#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
-		unless Mana(less 66) and 5s before Spell(CHIMERASHOT)
-			unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) # or 4pT13 ICD > 0
-				Spell(ARCANESHOT)
+		unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
+		{
+			if ArmorSetParts(T13 more 3) and BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
+			unless ArmorSetParts(T13 more 3) Spell(ARCANESHOT)
+		}
 	}
 	#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 	#	buff.rapid_fire.up|target.health_pct>90
-	if Mana(more 49)
+	unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
 	{
-		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
-			if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) # or 4pT13 ICD > 0
-				Spell(AIMEDSHOT)
-		if BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
+		if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) if Mana(more 49) Spell(AIMEDSHOT)
+		unless BuffGain(CHRONOHUNTER 110) if Mana(more 49) Spell(AIMEDSHOT)
 	}
+	if BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
 	#/steady_shot
 	Spell(STEADYSHOT)
 }
