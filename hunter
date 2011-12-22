@@ -22,6 +22,9 @@ Define(MARKEDFORDEATH 88691)
 Define(GLYPHOFARCANESHOT 56995)
 Define(GLYPHOFTRAPLAUNCHER 56996)
 
+# Talents
+Define(IMPROVEDSTEADYSHOT ???) # Improved Steady Shot (Rank 3)
+
 # Spells
 Define(AIMEDSHOT 19434)
 	SpellInfo(AIMEDSHOT mana=50 resetcounter=iss)
@@ -36,7 +39,7 @@ Define(BESTIALWRATH 19574)
 	SpellInfo(BESTIALWRATH cd=120)
 	SpellAddBuff(BESTIALWRATH BESTIALWRATH=10)
 Define(BLACKARROW 3674)
-	SpellInfo(BLACKARROW cd=30 mana=35)
+	SpellInfo(BLACKARROW cd=30 sharedcd=firetrap mana=35)
 	SpellAddTargetDebuff(BLACKARROW BLACKARROW=15)
 Define(CALLOFTHEWILD 53434)
 	SpellInfo(CALLOFTHEWILD cd=300)
@@ -52,7 +55,7 @@ Define(EXPLOSIVESHOT 53301)
 	SpellAddTargetDebuff(EXPLOSIVESHOT EXPLOSIVESHOT=2)
 	SpellAddBuff(EXPLOSIVESHOT LOCKANDLOAD=-1)
 Define(EXPLOSIVETRAPLAUNCHER 82939)
-	SpellInfo(EXPLOSIVETRAPLAUNCHER cd=30)
+	SpellInfo(EXPLOSIVETRAPLAUNCHER cd=30 sharedcd=firetrap)
 Define(FERVOR 82726)
 	SpellInfo(FERVOR mana=-50 cd=120)
 Define(FOCUSFIRE 82692)
@@ -97,6 +100,7 @@ ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CH
 
 AddCheckBox(aoe L(aoe))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
+AddCheckBox(blackarrow SpellName(BLACKARROW) mastery=3)
 
 AddIcon help=main mastery=1
 {
@@ -130,6 +134,8 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
+	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
+	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
 	#/serpent_sting,if=!ticking
 	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
@@ -163,7 +169,7 @@ AddIcon help=main mastery=2
 	#/chimera_shot,if=target.health_pct<=90
 	if TargetLifePercent(less 90) and Mana(more 49) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
-	if BuffExpires(IMPROVEDSTEADYSHOT 3)
+	if TalentPoints(IMPROVEDSTEADYSHOT more 0) and BuffExpires(IMPROVEDSTEADYSHOT 3)
 	{
 		if Counter(iss equal 1) Spell(STEADYSHOT)
 		if Counter(iss equal 3) Spell(STEADYSHOT)
@@ -180,13 +186,11 @@ AddIcon help=main mastery=2
 	#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
 	#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
 	#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
-	unless Mana(less 66) and 5s before Spell(CHIMERASHOT)
+	if ArmorSetParts(T13 more 3)
 	{
-		unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
-		{
-			if ArmorSetParts(T13 more 3) and BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
-			unless ArmorSetParts(T13 more 3) Spell(ARCANESHOT)
-		}
+		unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
+			unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
+				if BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
 	}
 	#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 	#	buff.rapid_fire.up|target.health_pct>90
@@ -214,6 +218,8 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
+	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
+	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
 	#/steady_shot,if=target.adds>5
@@ -234,6 +240,71 @@ AddIcon help=cd mastery=2
 	unless BuffPresent(heroism) and TargetDeadIn(more 30) Spell(RAPIDFIRE)
 	#/readiness,wait_for_rapid_fire=1
 	if BuffPresent(RAPIDFIRE) Spell(READINESS)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddIcon help=main mastery=3
+{
+	#/serpent_sting,if=!ticking
+	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	#/explosive_shot,if=(remains<2.0)
+	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
+	#/explosive_trap
+	if CheckBoxOff(blackarrow)
+	{
+		if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
+		if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
+		if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
+	}
+	if CheckBoxOn(blackarrow) unless TargetDebuffPresent(BLACKARROW mine=1) if Mana(more 34) Spell(BLACKARROW)
+	#/kill_shot
+	Spell(KILLSHOT usable=1)
+	unless BuffPresent(LOCKANDLOAD)
+	{
+		#/arcane_shot,if=focus>=50&!buff.lock_and_load.react
+		if ArmorSetParts(T13 more 1) Mana(more 50) Spell(ARCANESHOT)
+		#/arcane_shot,if=focus>=70&!buff.lock_and_load.react (Hunter_SV_T11H, r10100)
+		unless ArmorSetParts(T13 more 1) if Mana(more 70) Spell(ARCANESHOT)
+	}
+	#/cobra_shot
+	Spell(COBRASHOT)
+}
+
+AddIcon help=offgcd mastery=3
+{
+	unless InCombat() unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
+	#/aspect_of_the_hawk,moving=0
+	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
+	#/aspect_of_the_fox,moving=1
+	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
+	Spell(CALLOFTHEWILD usable=1)
+}
+
+AddIcon help=aoe mastery=3 checkboxon=aoe
+{
+	#/explosive_trap,if=target.adds>0
+	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
+	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
+	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
+	#/multi_shot,if=target.adds>2
+	if Mana(more 39) Spell(MULTISHOT)
+	#/cobra_shot,if=target.adds>2
+	Spell(COBRASHOT)
+}
+
+AddIcon help=cd mastery=3
+{
+	#/tolvir_potion,if=!in_combat
+	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	#/hunters_mark
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
+	#/summon_pet
+	#if PetPresent(no) Spell(CALLPET)
+	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60) or BuffPresent(RAPIDFIRE)} Item(POTIONOFTHETOLVIR)
+	#/rapid_fire
+	Spell(RAPIDFIRE)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
