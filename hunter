@@ -1,9 +1,6 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
-#
-# To Do:
-# - Check rotations for 2pT13 and 4pT13
 
 ## defines ##
 
@@ -44,6 +41,11 @@ Define(BLACKARROW 3674)
 Define(CALLOFTHEWILD 53434)
 	SpellInfo(CALLOFTHEWILD cd=300)
 	SpellAddBuff(CALLOFTHEWILD CALLOFTHEWILD=20)
+Define(CALLPETONE 883)
+Define(CALLPETTWO 83242)
+Define(CALLPETTHREE 83243)
+Define(CALLPETFOUR 83244)
+Define(CALLPETFIVE 83245)
 Define(CHIMERASHOT 53209)
 	SpellInfo(CHIMERASHOT cd=10 mana=50 resetcounter=iss)
 	SpellAddTargetDebuff(CHIMERASHOT SERPENTSTING=refresh)
@@ -151,7 +153,7 @@ AddIcon help=cd mastery=1
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
-	#if PetPresent(no) Spell(CALLPET)
+	if PetPresent(no) Spell(CALLPETONE)
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(POTIONOFTHETOLVIR)
 	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
@@ -233,7 +235,7 @@ AddIcon help=cd mastery=2
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
-	#if PetPresent(no) Spell(CALLPET)
+	if PetPresent(no) Spell(CALLPETONE)
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60|buff.rapid_fire.react
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60) or BuffPresent(RAPIDFIRE)} Item(POTIONOFTHETOLVIR)
 	#/rapid_fire,if=!buff.bloodlust.up|target.time_to_die<=30
@@ -300,7 +302,7 @@ AddIcon help=cd mastery=3
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
-	#if PetPresent(no) Spell(CALLPET)
+	if PetPresent(no) Spell(CALLPETONE)
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60) or BuffPresent(RAPIDFIRE)} Item(POTIONOFTHETOLVIR)
 	#/rapid_fire
