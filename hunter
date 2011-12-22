@@ -79,10 +79,10 @@ Define(READINESS 23989)
 Define(SERPENTSTING 1978)
 	SpellInfo(SERPENTSTING duration=15 mana=25 resetcounter=iss)
 	SpellAddTargetDebuff(SERPENTSTING SERPENTSTING=15)
-Define(STEADYSHOT 56641)
-	SpellInfo(STEADYSHOT mana=-9 inccounter=iss)
 Define(SILENCINGSHOT 34490)
 	SpellInfo(SILENCINGSHOT cd=20 resetcounter=iss)
+Define(STEADYSHOT 56641)
+	SpellInfo(STEADYSHOT mana=-9 inccounter=iss)
 Define(TRAPLAUNCHER 77769)
 	SpellInfo(TRAPLAUNCHER cd=1.5 mana=20)
 	SpellInfo(TRAPLAUNCHER addmana=-10 glyph=56996) # Glyph of Trap Launcher
@@ -150,6 +150,7 @@ AddIcon help=cd mastery=1
 {
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
@@ -232,6 +233,7 @@ AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
@@ -299,6 +301,7 @@ AddIcon help=cd mastery=3
 {
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
