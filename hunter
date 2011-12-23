@@ -20,7 +20,7 @@ Define(GLYPHOFARCANESHOT 56995)
 Define(GLYPHOFTRAPLAUNCHER 56996)
 
 # Talents
-Define(IMPROVEDSTEADYSHOT ???) # Improved Steady Shot (Rank 3)
+Define(IMPROVEDSTEADYSHOT 9402) # Improved Steady Shot (Rank 3)
 
 # Spells
 Define(AIMEDSHOT 19434)
@@ -108,18 +108,18 @@ AddCheckBox(blackarrow SpellName(BLACKARROW) mastery=3)
 
 AddFunction SummonPet
 {
-	if PetPresent(no) Spell(CALLPETONE)
+	if PetPresent(no) Texture(ability_hunter_beastcall)
 	if pet.Life(equal 0) Spell(REVIVEPET)
 }
 
 AddIcon help=main mastery=1
 {
 	#/serpent_sting,if=!ticking
-	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
 	#/kill_command
-	if TargetInRange(GROWL) Spell(KILLCOMMAND)
+	if TargetInRange(GROWL) and PetPresent(yes) Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
 	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
 	#/cobra_shot
@@ -135,9 +135,9 @@ AddIcon help=offgcd mastery=1
 	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
 	Spell(CALLOFTHEWILD usable=1)
 	#/focus_fire,five_stacks=1
-	if pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
+	if PetPresent(yes) and pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
 	#/bestial_wrath,if=focus>60
-	if Mana(more 60) Spell(BESTIALWRATH)
+	if Mana(more 60) and PetPresent(yes) Spell(BESTIALWRATH)
 }
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
@@ -147,7 +147,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
 	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
 	#/serpent_sting,if=!ticking
-	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
 	#/cobra_shot,if=target.adds>5
@@ -189,8 +189,7 @@ AddIcon help=main mastery=2
 		if Counter(iss equal 5) Spell(STEADYSHOT)
 		if Counter(iss equal 7) Spell(STEADYSHOT)
 		if Counter(iss equal 9) Spell(STEADYSHOT)
-		if Counter(iss equal 11) Spell(STEADYSHOT)
-		# if you're shooting more than 11 Steady Shots in a row, you're capping your focus and doing it wrong
+		# if you're shooting more than 9 Steady Shots in a row, you're capping your focus and doing it wrong
 	}
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
@@ -212,7 +211,7 @@ AddIcon help=main mastery=2
 		if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) if Mana(more 49) Spell(AIMEDSHOT)
 		unless BuffGain(CHRONOHUNTER 110) if Mana(more 49) Spell(AIMEDSHOT)
 	}
-	if BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
+	if {BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90)} and Mana(more 49) Spell(AIMEDSHOT)
 	#/steady_shot
 	Spell(STEADYSHOT)
 }
@@ -263,7 +262,7 @@ AddIcon help=cd mastery=2
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking
-	unless BuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
 	#/explosive_trap
