@@ -1,6 +1,9 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.1 2011/12/22 - Initial version based on default Ovale script and SimulationCraft, Tier 13H profiles:
+#                        BM (r10533), MM (r10576), SV (r10526)
+#                    Support Silencing Shot and summoning pets.
 
 ## defines ##
 
