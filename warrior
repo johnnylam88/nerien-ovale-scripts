@@ -306,8 +306,6 @@ AddIcon help=main mastery=2
 		#/execute,if=rage>=50
 		if Mana(more 49) Spell(EXECUTE usable=1)
 	}
-	#/berserker_rage,if=!(buff.death_wish.up|buff.enrage.up|buff.unholy_frenzy.up)&rage>15&cooldown.raging_blow.remains<1
-	if BuffExpires(enrage 0) and Mana(more 15) and 1s before Spell(RAGINGBLOW) Spell(BERSERKERRAGE)
 	#/raging_blow
 	Spell(RAGINGBLOW usable=1)
 	if TalentPoints(TITANSGRIPTALENT more 0)
@@ -359,6 +357,8 @@ AddIcon help=offgcd mastery=2
 			if Mana(more 64) and ArmorSetParts(T13 more 1) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
 		}
 	}
+	#/berserker_rage,if=!(buff.death_wish.up|buff.enrage.up|buff.unholy_frenzy.up)&rage>15&cooldown.raging_blow.remains<1,use_off_gcd=1
+	if BuffExpires(enrage 0) and Mana(more 15) and 1s before Spell(RAGINGBLOW) Spell(BERSERKERRAGE)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
