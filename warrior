@@ -18,6 +18,7 @@ Define(SUNDERARMORDEBUFF 58567)
 Define(TASTEFORBLOOD 60503)
 Define(THUNDERSTRUCK 87096)
 Define(VICTORIOUS 32216)
+Define(WRECKINGCREW 57519) # Enrage effect from Wrecking Crew (Rank 2)
 
 # Glyphs
 Define(GLYPHOFBERSERKERRAGE 58096)
@@ -159,102 +160,93 @@ AddIcon help=main mastery=1
 	if List(shout battle) and {Mana(less 20) or BuffExpires(strengthagility 3)} Spell(BATTLESHOUT nored=1)
 	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMOSHOUT nored=1)
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
-	{
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
-	}
 
 	if CheckBoxOn(dancing)
 	{
-		#/stance,choose=berserker,if=(buff.taste_for_blood.down&rage<75),use_off_gcd=1
-		#/stance,choose=battle,if=(dot.rend.remains=0|\
-		#	((buff.overpower.up|buff.taste_for_blood.up)&cooldown.mortal_strike.remains>1)&rage<=75),use_off_gcd=1
-		unless Stance(3) if Mana(less 75) unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
+		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
+		unless Stance(3)
+			unless BuffPresent(TASTEFORBLOOD)
+				if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76) Spell(BERSERKERSTANCE)
+		#/stance,choose=battle,if=dot.rend.remains=0,use_off_gcd=1
 		unless Stance(1)
-		{
-			if TargetDebuffExpires(RENDDEBUFF 0 mine=1) Spell(BATTLESTANCE)
-			if {BuffPresent(OVERPOWER) or BuffPresent(TASTEFORBLOOD)} and {spell(MORTALSTRIKE) > 1} and Mana(less 76) Spell(BATTLESTANCE)
-		}
+			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
 	}
 	if CheckBoxOff(dancing) unless Stance(1) Spell(BATTLESTANCE)
 
-	#/berserker_rage,if=!buff.deadly_calm.up&rage<70
-	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 71) unless BuffPresent(DEADLYCALM) Spell(BERSERKERRAGE)
-	#/overpower,if=buff.taste_for_blood.remains<=1.5
-	if BuffExpires(TASTEFORBLOOD 1.5) Spell(OVERPOWER)
-	#/mortal_strike,if=target.health_pct>20|rage>=30
-	if TargetLifePercent(more 20) or Mana(more 29) Spell(MORTALSTRIKE)
-	#/execute,if=buff.battle_trance.up
-	if BuffPresent(BATTLESTANCE) spell(EXECUTE usable=1)
 	#/rend,if=!ticking
 	if Stance(1) unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
-	#/colossus_smash,if=!buff.colossus_smash.up
+	#/mortal_strike,if=target.health_pct>20
+	if TargetLifePercent(more 20) Spell(MORTALSTRIKE)
+	#/colossus_smash,if=buff.colossus_smash.down
 	unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(COLOSSUSSMASH)
-	#/execute,if=(buff.deadly_calm.up|buff.recklessness.up)
-	if BuffPresent(DEADLYCALM) or BuffPresent(RECKLESSNESS) Spell(EXECUTE usable=1)
-	#/mortal_strike
-	Spell(MORTALSTRIKE)
-	#/overpower
-	Spell(OVERPOWER)
+	#/mortal_strike,if=target.health_pct<=20&(buff.colossus_smash.down|dot.rend.remains<3|buff.wrecking_crew.down|rage<30)
+	unless TargetLifePercent(more 20)
+	{
+		unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(MORTALSTRIKE)
+		if TargetDebuffExpires(RENDDEBUFF 3 mine=1) Spell(MORTALSTRIKE)
+		unless BuffPresent(WRECKINGCREW) Spell(MORTALSTRIKE)
+		if Mana(less 30) Spell(MORTALSTRIKE)
+	}
+	#/overpower,if=buff.taste_for_blood.up|buff.overpower.up
+	if BuffPresent(TASTEFORBLOOD) Spell(OVERPOWER usable=1)
 	#/execute
 	Spell(EXECUTE usable=1)
-	#/colossus_smash,if=buff.colossus_smash.remains<=1.5
-	if TargetDebuffExpires(COLOSSUSSMASH 1.5 mine=1) Spell(COLOSSUSSMASH)
-	#/slam,if=(cooldown.mortal_strike.remains>=1.5&(rage>=35|buff.deadly_calm.up|buff.colossus_smash.up))|\
-	#	(cooldown.mortal_strike.remains>=1.2&buff.colossus_smash.remains>0.5&rage>=35)
-	if {spell(MORTALSTRIKE) > 1.5} and {Mana(more 34) or BuffPresent(DEADLYCALM) or TargetDebuffPresent(COLOSSUSSMASH mine=1)} Spell(SLAM)
-	if {spell(MORTALSTRIKE) > 1.2) and TargetDebuffExpires(COLOSSUSSMASH 0.5) and Mana(more 34) Spell(SLAM)
-	#/battle_shout,if=rage<20
-	if Mana(less 20) Spell(BATTLESHOUT)
+	#/colossus_smash,if=buff.colossus_smash.remains<=1.5&buff.inner_rage.down
+	if TargetDebuffExpires(COLOSSUSSMASH 1.5 mine=1) unless BuffPresent(INNERRAGE) Spell(COLOSSUSSMASH)
+	#/slam,if=rage>=35|buff.battle_trance.up&buff.inner_rage.down
+	if Mana(more 34) Spell(SLAM)
+	if BuffPresent(BATTLETRANCE) unless BuffPresent(INNERRAGE) Spell(SLAM)
+	#/battle_shout,if=rage<60
+	if Mana(less 60) Spell(BATTLESHOUT)
 }
 
 AddIcon help=offgcd mastery=1
 {
-	#/inner_rage,if=target.adds=0&!buff.deadly_calm.up&cooldown.deadly_calm.remains>15&\
-	#	((rage>=75&target.health_pct>=20)|\
-	#		((buff.incite.up|buff.colossus_smash.up)&\
-	#			((rage>=40&target.health_pct>=20)|(rage>=65&target.health_pct<20)))
-	#	)
-	if BuffPresent(DEADLYCALM) and {spell(DEADLYCALM) > 15}
+	#/berserker_rage,if=rage<=95,use_off_gcd=1
+	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96) Spell(BERSERKERRAGE)
+	if Glyph(GLYPHOFBERSERKERRAGE no) Spell(BERSERKERRAGE)
+	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
+	unless BuffPresent(DEADLYCALM) or 15s before Spell(DEADLYCALM) Spell(INNERRAGE)
+	if CheckBoxOff(dancing) unless Stance(1) Spell(BATTLESTANCE)
+	if CheckBoxOn(dancing)
 	{
-		if TargetLifePercent(more 20) and Mana(more 74) Spell(INNERRAGE)
-		if BuffPresent(INCITE) or TargetDebuffPresent(COLOSSUSSMASH mine=1)
-		{
-			if TargetLifePercent(more 20) and Mana(more 39) Spell(INNERRAGE)
-			unless TargetLifePercent(more 20) if Mana(more 64) Spell(INNERRAGE)
-		}
+		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
+		unless Stance(3)
+			if Spell(OVERPOWER usable=1) and TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76) Spell(BERSERKERSTANCE)
+		#/stance,choose=battle,if=dot.rend.remains=0,use_off_gcd=1
+		unless Stance(1)
+			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
+		#/stance,choose=battle,if=target.health_pct>20&(buff.taste_for_blood.up|buff.overpower.up)&\
+		#	rage<=75&cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
+		unless Stance(1)
+			if TargetLifePercent(20) and Spell(OVERPOWER usable=1) and Mana(less 76)
+				unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
 	}
-	#/heroic_strike,if=(((rage>=85|(set_bonus.tier13_2pc_melee&buff.inner_rage.up&rage>=75))&target.health_pct>=20)|\
-	#	buff.deadly_calm.up|\
-	#	buff.battle_trance.up|\
-	#	((buff.incite.up|buff.colossus_smash.up)&\
-	#		(((rage>=50|(set_bonus.tier13_2pc_melee&buff.inner_rage.up&rage>=40))&target.health_pct>=20)|\
-	#		 ((rage>=75|(set_bonus.tier13_2pc_melee&buff.inner_rage.up&rage>=65))&target.health_pct<20))
-	#	)),use_off_gcd=1
-	if TargetLifePercent(more 20)
-	{
-		if Mana(more 84) Spell(HEROICSTRIKE)
-		if Mana(more 74) and ArmorSetParts(T13 more 1) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
-	}
+	#/heroic_strike,if=buff.deadly_calm.up,use_off_gcd=1
 	if BuffPresent(DEADLYCALM) Spell(HEROICSTRIKE)
-	if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
-	if BuffPresent(INCITE) or TargetDebuffPresent(COLOSSUSSMASH mine=1)
+	#/heroic_strike,if=target.health_pct>20&rage>85,use_off_gcd=1
+	if TargetLifePercent(more 20) and Mana(more 85) Spell(HEROICSTRIKE)
+	#/heroic_strike,if=rage>75&buff.inner_rage.up,use_off_gcd=1
+	if Mana(more 75) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
+	#/heroic_strike,if=buff.incite.up&(target.health_pct>20|(target.health_pct<=20&buff.battle_trance.up)),use_off_gcd=1
+	if BuffPresent(INCITE)
 	{
-		if TargetLifePercent(more 20)
-		{
-			if Mana(more 49) Spell(HEROICSTRIKE)
-			if Mana(more 39) and ArmorSetParts(T13 more 1) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
-		}
-		unless TargetLifePercent(more 20)
-		{
-			if Mana(more 74) Spell(HEROICSTRIKE)
-			if Mana(more 64) and ArmorSetParts(T13 more 1) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
-		}
+		if TargetLifePercent(more 20) Spell(HEROICSTRIKE)
+		unless TargetLifePercent(more 20) if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
+	}
+	if BuffPresent(INNERRAGE)
+	{
+		#/heroic_strike,if=buff.inner_rage.up&target.health_pct>20&(rage>40|buff.battle_trance.up),use_off_gcd=1
+		if TargetLifePercent(more 20) and {Mana(more 40) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
+		#/heroic_strike,if=buff.inner_rage.up&target.health_pct<=20&(rage>=50|buff.battle_trance.up),use_off_gcd=1
+		unless TargetLifePercent(more 20) if {Mana(more 49) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
 	}
 }
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
-	#/sweeping_strikes,if=target.adds>0
+	#/sweeping_strikes,if=target.adds>0,use_off_gcd=1
 	Spell(SWEEPINGSTRIKES)
 	#/bladestorm,if=target.adds>0&!buff.deadly_calm.up&!buff.sweeping_strikes.up
 	unless BuffPresent(DEADLYCALM) or BuffPresent(SWEEPINGSTRIKES) Spell(BLADESTORM)
@@ -269,11 +261,10 @@ AddIcon help=cd mastery=1
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.recklessness.up|target.time_to_die<26
 	if CheckBoxOn(potions) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
-	#/recklessness,if=((target.health_pct>20&target.time_to_die>320)|target.health_pct<=20),use_off_gcd=1
-	if TargetLifePercent(more 20) and TargetDeadIn(more 320) Spell(RECKLESSNESS)
-	unless TargetLifePercent(more 20) Spell(RECKLESSNESS)
-	#/deadly_calm,if=rage<30,use_off_gcd=1
-	if Mana(less 30) Spell(DEADLYCALM usable=1)
+	#/deadly_calm,use_off_gcd=1
+	Spell(DEADLYCLAM usable=1)
+	#/recklessness,if=target.health_pct>90|target.health_pct<=20,use_off_gcd=1
+	if TargetLifePercent(more 90) or TargetLifePercent(less 20) Spell(RECKLESSNESS)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
