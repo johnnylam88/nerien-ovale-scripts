@@ -26,6 +26,7 @@ Define(GLYPHOFBERSERKERRAGE 58096)
 # Talents
 Define(IMPROVEDSLAMTALENT 2233)
 Define(SUDDENDEATHTALENT 52437)
+Define(TACTICALMASTERYTALENT ???)
 Define(TITANSGRIPTALENT 9658)
 
 # Spells
@@ -162,7 +163,7 @@ AddIcon help=main mastery=1
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
-	if CheckBoxOn(dancing)
+	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
 	{
 		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
 		unless Stance(3)
@@ -172,7 +173,8 @@ AddIcon help=main mastery=1
 		unless Stance(1)
 			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
 	}
-	if CheckBoxOff(dancing) unless Stance(1) Spell(BATTLESTANCE)
+	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
+		unless Stance(1) Spell(BATTLESTANCE)
 
 	#/rend,if=!ticking
 	if Stance(1) unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
@@ -208,8 +210,9 @@ AddIcon help=offgcd mastery=1
 	if Glyph(GLYPHOFBERSERKERRAGE no) Spell(BERSERKERRAGE)
 	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
 	unless BuffPresent(DEADLYCALM) or 15s before Spell(DEADLYCALM) Spell(INNERRAGE)
-	if CheckBoxOff(dancing) unless Stance(1) Spell(BATTLESTANCE)
-	if CheckBoxOn(dancing)
+	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
+		unless Stance(1) Spell(BATTLESTANCE)
+	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
 	{
 		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
 		unless Stance(3)
