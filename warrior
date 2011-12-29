@@ -1,6 +1,8 @@
 # Warrior Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.2 2011/12/29 - Update Arms rotation to r10711 and Fury Rotation to r10727.
+#                    Check for Tactical Mastery before stance-dancing in Arms rotation.
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use warrior profiles from SimulationCraft, Tier 13H:
 #                        Arms (r10571), Fury-1H (r10571), Fury-2H (r10571)
@@ -163,21 +165,8 @@ AddIcon help=main mastery=1
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
-	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
-	{
-		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
-		unless Stance(3)
-			unless BuffPresent(TASTEFORBLOOD)
-				if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76) Spell(BERSERKERSTANCE)
-		#/stance,choose=battle,if=dot.rend.remains=0,use_off_gcd=1
-		unless Stance(1)
-			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
-	}
-	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
-		unless Stance(1) Spell(BATTLESTANCE)
-
 	#/rend,if=!ticking
-	if Stance(1) unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
+	unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
 	#/mortal_strike,if=target.health_pct>20
 	if TargetLifePercent(more 20) Spell(MORTALSTRIKE)
 	#/colossus_smash,if=buff.colossus_smash.down
@@ -191,7 +180,7 @@ AddIcon help=main mastery=1
 		if Mana(less 30) Spell(MORTALSTRIKE)
 	}
 	#/overpower,if=buff.taste_for_blood.up|buff.overpower.up
-	if BuffPresent(TASTEFORBLOOD) Spell(OVERPOWER usable=1)
+	Spell(OVERPOWER usable=1)
 	#/execute
 	Spell(EXECUTE usable=1)
 	#/colossus_smash,if=buff.colossus_smash.remains<=1.5&buff.inner_rage.down
@@ -205,25 +194,27 @@ AddIcon help=main mastery=1
 
 AddIcon help=offgcd mastery=1
 {
+	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
+		unless Stance(1) Spell(BATTLESTANCE)
+
 	#/berserker_rage,if=rage<=95,use_off_gcd=1
 	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96) Spell(BERSERKERRAGE)
 	if Glyph(GLYPHOFBERSERKERRAGE no) Spell(BERSERKERRAGE)
 	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
-	unless BuffPresent(DEADLYCALM) or 15s before Spell(DEADLYCALM) Spell(INNERRAGE)
-	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
-		unless Stance(1) Spell(BATTLESTANCE)
+	unless BuffPresent(DEADLYCALM) Spell(INNERRAGE)
 	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
 	{
 		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
 		unless Stance(3)
-			if Spell(OVERPOWER usable=1) and TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76) Spell(BERSERKERSTANCE)
+			if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76)
+				unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
 		#/stance,choose=battle,if=dot.rend.remains=0,use_off_gcd=1
 		unless Stance(1)
 			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
 		#/stance,choose=battle,if=target.health_pct>20&(buff.taste_for_blood.up|buff.overpower.up)&\
 		#	rage<=75&cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
 		unless Stance(1)
-			if TargetLifePercent(20) and Spell(OVERPOWER usable=1) and Mana(less 76)
+			if TargetLifePercent(more 20) and Spell(OVERPOWER) and Mana(less 76)
 				unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
 	}
 	#/heroic_strike,if=buff.deadly_calm.up,use_off_gcd=1
