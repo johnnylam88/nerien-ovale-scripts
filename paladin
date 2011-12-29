@@ -1,6 +1,7 @@
 # Paladin Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.4 2011/12/29 - Add missing parenthesis in tank rotation.
 # 4.3.3 2011/12/29 - Update Retribution rotation to r10714.
 # 4.3.2 2011/12/20 - Hammer of Wrath is an execute ability, so only show when usable.
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
@@ -136,7 +137,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	if BuffExpires(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 	unless InCombat() if BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400) Spell(SEALOFTRUTH)
 
-	unless BuffPresent(INQUISITION Spell(INQUISITION usable=1)
+	unless BuffPresent(INQUISITION) Spell(INQUISITION usable=1)
 	Spell(HAMMEROFTHERIGHTEOUS)
 	Spell(AVENGERSSHIELD)
 	Spell(CONSECRATION)
