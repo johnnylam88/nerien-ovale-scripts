@@ -12,7 +12,9 @@
 
 # Buffs
 Define(DIVINEPURPOSE 90174)
+Define(GRANDCRUSADER 85416)
 Define(JUDGEMENTSOFTHEPURE 53655)
+Define(SACREDDUTY 85433)
 Define(THEARTOFWAR 59578)
 
 # Abilities
@@ -85,6 +87,7 @@ ScoreSpells(SHIELDOFTHERIGHTEOUS JUDGEMENT AVENGERSSHIELD HAMMEROFTHERIGHTEOUS C
 			ZEALOTRY INQUISITION TEMPLARSVERDICT DIVINESTORM EXORCISM HAMMEROFWRATH JUDGEMENT CRUSADERSTRIKE)
 
 AddCheckBox(aoe L(AOE) default)
+AddCheckBox(inqusition SpellName(INQUISITION) mastery=2)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
 
@@ -108,31 +111,43 @@ AddIcon help=cd mastery=1
 
 AddIcon help=main mastery=2
 {
-	# From the ElitistJerks thread "[Prot] 4.3 - Send me on my way":
-	#     http://elitistjerks.com/f76/t126438-prot_4_3_send_me_my_way/#post2013790
-	# Single Target Queue:
-	# SotR > CS > AS > HoW(if active) > J > Cons* > HW* 
+	# From the Maintankadin thread "Theck's MATLAB thread - Cataclysm/4.x":
+	#     http://maintankadin.failsafedesign.com/forum/viewtopic.php?f=6&t=29317
+	# Single Target Queue (default):
+	#     SotR > CS > AS+ > J > AS > HoW(if active) > Cons* > HW* 
+	# "Inquisition" Single Target Queue (max DPS):
+	#     SotR (if Sacred Duty or Inquisition active) > Inq > CS > AS+ > J > AS > HoW(if active) > Cons* > HW* 
 	# (*=mana permitting, boss stationary for Cons to be fully effective)
 
 	if BuffExpires(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 	unless InCombat() if BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400) Spell(SEALOFTRUTH)
 
-	if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
+	if CheckBoxOff(inquisition)
+	{
+		if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
+	}
+	if CheckBoxOn(inquisition)
+	{
+		if BuffPresent(INQUISITION) or BuffPresent(SACREDDUTY)
+			if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
+		Spell(INQUISITION usable=1)
+	}
 	Spell(CRUSADERSTRIKE)
+	if BuffPresent(GRANDCRUSADER) Spell(AVENGERSSHIELD)
+	Spell(JUDGEMENT)
 	Spell(AVENGERSSHIELD)
 	Spell(HAMMEROFWRATH usable=1)
-	Spell(JUDGEMENT)
-	unless Speed(more 0) Spell(CONSECRATION)
+	Spell(CONSECRATION)
 	Spell(HOLYWRATH)
 	Spell(DIVINEPLEA priority=2)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
-	# From the ElitistJerks thread "[Prot] 4.3 - Send me on my way":
-	#     http://elitistjerks.com/f76/t126438-prot_4_3_send_me_my_way/#post2013790
-	# HotR and Inquisition are the bulk of our AoE DPS. The queue that seems to maximize our multi-target output is:
-	# Inq(if not active) > HotR > AS > Cons > HW > J
+	# From the Maintankadin thread "Theck's MATLAB thread - Cataclysm/4.x":
+	#     http://maintankadin.failsafedesign.com/forum/viewtopic.php?f=6&t=29317
+	# AoE Queue:
+	#     Inq(if not active) > HotR > AS > Cons > HW > J
 
 	if BuffExpires(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 	unless InCombat() if BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400) Spell(SEALOFTRUTH)
