@@ -1,6 +1,7 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.2 2011/12/31 - Treat Vanish as a CD due to the long cooldown and remove some unnecessary functions.
 # 4.3.1 2011/12/06 - Initial version based on Ovale default script.
 #                    Use rogue profiles from SimulationCraft, Tier 13H:
 #                        Assassination (r10526), Combat (r10526), Subtlety (r10633)
