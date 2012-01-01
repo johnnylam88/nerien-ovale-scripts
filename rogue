@@ -215,10 +215,7 @@ AddIcon help=main mastery=3
 	{
 		#/pool_energy,for_next=1
 		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
-		if TimeInCombat(more 10) and Mana(more 60) and ComboPoints(less 2) and Spell(SHADOWSTEP)
-			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
-			Spell(VANISH)
-		unless TimeInCombat(more 10) and Spell(VANISH) and ComboPoints(less 2) and Spell(SHADOWSTEP)
+		unless Spell(VANISH) and TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP)
 			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
 		{
 			#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
@@ -274,7 +271,10 @@ AddIcon help=cd mastery=3
 	{
 		#/pool_energy,for_next=1
 		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
-		unless TimeInCombat(more 10) and Spell(VANISH) and ComboPoints(less 2) and Spell(SHADOWSTEP)
+		if TimeInCombat(more 10) and Mana(more 60) and ComboPoints(less 2) and Spell(SHADOWSTEP)
+			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
+			Spell(VANISH)
+		unless Spell(VANISH) and TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP)
 			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
 		{
 			#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
