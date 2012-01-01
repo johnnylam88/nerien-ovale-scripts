@@ -1,6 +1,7 @@
 # Paladin Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 2011/12/31 - Use the tanking rotations from Theck's MATLAB thread.
 # 4.3.4 2011/12/29 - Add missing parenthesis in tank rotation.
 # 4.3.3 2011/12/29 - Update Retribution rotation to r10714.
 # 4.3.2 2011/12/20 - Hammer of Wrath is an execute ability, so only show when usable.
@@ -130,7 +131,7 @@ AddIcon help=main mastery=2
 	{
 		if BuffPresent(INQUISITION) or BuffPresent(SACREDDUTY)
 			if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
-		Spell(INQUISITION usable=1)
+		if HolyPower(more 2) Spell(INQUISITION)
 	}
 	Spell(CRUSADERSTRIKE)
 	if BuffPresent(GRANDCRUSADER) Spell(AVENGERSSHIELD)
