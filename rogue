@@ -104,9 +104,6 @@ ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINI
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) default talent=681)
 
-AddFunction RogueIsStealthed { Stealthed() or BuffPresent(VANISHBUFF) }
-AddFunction RogueIsNotStealthed { Stealthed(no) and BuffExpires(VANISHBUFF 0) }
-
 AddIcon help=main mastery=1
 {
 	#/apply_poison,main_hand=instant,off_hand=deadly
@@ -143,7 +140,7 @@ AddIcon help=cd mastery=1
 	}
 
 	#/stealth
-	unless InCombat() or RogueIsStealthed() Spell(STEALTH)
+	unless InCombat() or Stealthed() Spell(STEALTH)
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/kick
@@ -213,8 +210,8 @@ AddIcon help=main mastery=3
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/pool_energy,for_next=1
 	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
-	if Mana(more 85) and ComboPoints(less 5) and RogueIsNotStealthed() Spell(SHADOWDANCE)
-	unless Spell(SHADOWDANCE) and ComboPoints(less 5) and RogueIsNotStealthed()
+	if Mana(more 85) and ComboPoints(less 5) and Stealthed(no) Spell(SHADOWDANCE)
+	unless Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
 		#/pool_energy,for_next=1
 		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
@@ -264,7 +261,7 @@ AddIcon help=cd mastery=3
 	}
 
 	#/stealth
-	unless InCombat() or RogueIsStealthed() Spell(STEALTH)
+	unless InCombat() or Stealthed() Spell(STEALTH)
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/kick
@@ -273,7 +270,7 @@ AddIcon help=cd mastery=3
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#/pool_energy,for_next=1
 	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
-	unless Spell(SHADOWDANCE) and ComboPoints(less 5) and RogueIsNotStealthed()
+	unless Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
 		#/pool_energy,for_next=1
 		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
