@@ -44,6 +44,7 @@ Define(GLYPHOFFROSTBOLT 56370)
 Define(GLYPHOFFROSTFIRE 61205)
 
 # Talents
+Define(ARCANEPOWERTALENT 9186)
 Define(CRITICALMASSTALENT 10541)
 Define(FIRESTARTERTALENT 11431)
 Define(IMPROVEDSCORCHTALENT 10547)
@@ -139,8 +140,14 @@ AddFunction ArcaneBurnCycle
 
 	#/evocation,if=((max_mana>max_mana_nonproc&mana_pct_nonproc<=40)|(max_mana=max_mana_nonproc&mana_pct<=35))&target.time_to_die>10
 	if ManaPercent(less 35) and TargetDeadIn(more 10) Spell(EVOCATION)
-	#/mana_gem,if=buff.arcane_blast.stack=4
-	if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
+	#if ( set_bonus.tier13_4pc_caster() )
+	#	/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
+	#else
+	#	/mana_gem,if=buff.arcane_blast.stack=4
+	if ArmorSetParts(T13 more 3) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
+		if BuffPresent(STOLENTIME stacks=7) and Spell(ARCANEPOWER) and TargetDeadIn(less 50)
+			Spell(MANAGEMITEM)
+	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
 	if BuffPresent(PRESENCEOFMIND) and ItemCount(MANAGEMITEM equal 0 charges=1)
 	{
@@ -163,6 +170,8 @@ AddFunction ArcaneBurnCycle
 		#/ice_lance,moving=1
 		Spell(ICELANCE)
 	}
+	#/arcane_blast,if=buff.presence_of_mind.up
+	if BuffPresent(PRESENCEOFMIND) Spell(ARCANEBLAST)
 	#/arcane_blast,if=dps=1
 	Spell(ARCANEBLAST)
 }
@@ -176,12 +185,49 @@ AddFunction ArcaneHoverCycle
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
 	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 
-	#/mana_gem,if=buff.arcane_blast.stack=4
-	if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
+	#if ( set_bonus.tier13_4pc_caster() )
+	#	/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
+	#else
+	#	/mana_gem,if=buff.arcane_blast.stack=4
+	if ArmorSetParts(T13 more 3) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
+		if BuffPresent(STOLENTIME stacks=7) and Spell(ARCANEPOWER) and TargetDeadIn(less 50)
+			Spell(MANAGEMITEM)
+	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > spell(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
+	if BuffPresent(PRESENCEOFMIND) and ItemCount(MANAGEMITEM equal 0 charges=1)
+	{
+		# if target.timeToDie() > spell(MANAGEMITEM) Spell(CONJUREMANAGEM)
+		if 30s before Item(MANAGEMITEM) and TargetDeadIn(more 30) Spell(CONJUREMANAGEM)
+		if 45s before Item(MANAGEMITEM) and TargetDeadIn(more 45) Spell(CONJUREMANAGEM)
+		if 60s before Item(MANAGEMITEM) and TargetDeadIn(more 60) Spell(CONJUREMANAGEM)
+		if 75s before Item(MANAGEMITEM) and TargetDeadIn(more 75) Spell(CONJUREMANAGEM)
+		if 90s before Item(MANAGEMITEM) and TargetDeadIn(more 90) Spell(CONJUREMANAGEM)
+		if 105s before Item(MANAGEMITEM) and TargetDeadIn(more 105) Spell(CONJUREMANAGEM)
+		if Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
+	}
+
+	if Speed(more 0)
+	{
+		#/arcane_barrage,moving=1
+		Spell(ARCANEBARRAGE)
+		#/fire_blast,moving=1
+		Spell(FIREBLAST)
+		#/ice_lance,moving=1
+		Spell(ICELANCE)
+	}
 	#/arcane_blast,if=buff.presence_of_mind.up
 	if BuffPresent(PRESENCEOFMIND) Spell(ARCANEBLAST)
+	#if ( set_bonus.tier13_4pc_caster() )
+	#	/arcane_blast,if=target.time_to_die<20|\
+	#		((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)|\
+	#		(buff.arcane_power.up&mana_pct_nonproc>88)
+	#else
+	#	/arcane_blast,if=target.time_to_die<20|\
+	#		((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
+	if TargetDeadIn(less 20) Spell(ARCANEBLAST)
+	if 20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)
+		if ManaPercent(more 21) Spell(ARCANEBLAST)
+	if ArmorSetParts(T13 more 3) and BuffPresent(ARCANEPOWER) and Mana(more 88) Spell(ARCANEBLAST)
 	#/arcane_blast,if=buff.arcane_blast.remains<0.8&buff.arcane_blast.stack=4
 	unless Speed(more 0) if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
 	#/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
@@ -193,15 +239,6 @@ AddFunction ArcaneHoverCycle
 	if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
 	#/arcane_barrage,if=mana_pct_nonproc<92&buff.arcane_blast.stack=4
 	if ManaPercent(less 92) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
-	if Speed(more 0)
-	{
-		#/arcane_barrage,moving=1
-		Spell(ARCANEBARRAGE)
-		#/fire_blast,moving=1
-		Spell(FIREBLAST)
-		#/ice_lance,moving=1
-		Spell(ICELANCE)
-	}
 	#/arcane_blast
 	Spell(ARCANEBLAST)
 }
@@ -210,14 +247,7 @@ AddIcon help=main mastery=1 checkboxoff=cycles
 {
 	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
 	#    cooldown.evocation.remains+15<target.time_to_die
-	#/arcane_blast,if=dps=1|target.time_to_die<20|\
-	#    ((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
 	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		ArcaneBurnCycle()
-	if TargetDeadIn(less 21)
-		ArcaneBurnCycle()
-	if ManaPercent(more 21)
-		and {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)}
 		ArcaneBurnCycle()
 
 	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
@@ -228,6 +258,7 @@ AddIcon help=main mastery=1 checkboxoff=cycles
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
 		ArcaneHoverCycle()
 
+	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
 	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
 		ArcaneBurnCycle()
 
@@ -239,17 +270,9 @@ AddIcon help=main mastery=1 checkboxoff=cycles
 # red is for DPM cycle:    Texture(Inv_misc_orb_05)
 AddIcon help=main mastery=1 checkboxon=cycles
 {
-
 	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
 	#    cooldown.evocation.remains+15<target.time_to_die
-	#/arcane_blast,if=dps=1|target.time_to_die<20|\
-	#    ((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
 	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Spell_nature_elementalshields)
-	if TargetDeadIn(less 21)
-		Texture(Spell_nature_elementalshields)
-	if ManaPercent(more 21)
-		and {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)}
 		Texture(Spell_nature_elementalshields)
 
 	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
@@ -260,6 +283,7 @@ AddIcon help=main mastery=1 checkboxon=cycles
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
 		Texture(Inv_misc_orb_05)
 
+	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
 	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
 		Texture(Spell_nature_elementalshields)
 
@@ -291,9 +315,27 @@ AddIcon help=cd mastery=1
 	#if BuffPresent(IMPROVEDMANAGEM) or {spell(EVOCATION) > 90} or TargetDeadIn(less 51) Item(SHARDOFWOE)
 	#/flame_orb,if=target.time_to_die>=10
 	if TargetDeadIn(more 9) Spell(FLAMEORB)
-	#/arcane_power,if=buff.improved_mana_gem.up|target.time_to_die<=50
-	if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 51) Spell(ARCANEPOWER)
-	#/mirror_image,if=buff.arcane_power.up|(cooldown.arcane_power.remains>20&target.time_to_die>15)
+	#if ( talents.arcane_power -> rank() )
+	#	if ( set_bonus.tier13_4pc_caster() )
+	#		/arcane_power,if=(buff.improved_mana_gem.up&buff.tier13_2pc.stack>=9)|\
+	#			(buff.tier13_2pc.stack>=10&cooldown.mana_gem.remains>30&cooldown.evocation.remains>10)|\
+	#			target.time_to_die<=50
+	#	else
+	#		/arcane_power,if=buff.improved_mana_gem.up|target.time_to_die<=50
+	#	/mirror_image,if=buff.arcane_power.up|(cooldown.arcane_power.remains>20&target.time_to_die>15)
+	#else
+	#	/mirror_image
+	if TalentPoints(ARCANEPOWERTALENT more 0)
+	{
+		if TargetDeadIn(less 51) Spell(ARCANEPOWER)
+		if TalentPoints(ARCANEPOWERTALENT more 0)
+		{
+			if BuffPresent(IMPROVEDMANAGEM) and BuffPresent(STOLENTIME stacks=9) Spell(ARCANEPOWER)
+			if BuffPresent(STOLENTIME stacks=10) unless 30s before Item(MANAGEMITEM) or 10s before Spell(EVOCATION) Spell(ARCANEPOWER)
+		}
+		unless TalentPoints(ARCANEPOWERTALENT more 0) if BuffPresent(IMPROVEDMANAGEM) Spell(ARCANEPOWER)
+	}
+	unless TalentPoints(ARCANEPOWERTALENT more 0) Spell(MIRRORIMAGE)
 	if BuffPresent(ARCANEPOWER) or {{spell(ARCANEPOWER) > 20} and TargetDeadIn(more 15)} Spell(MIRRORIMAGE)
 	#/presence_of_mind
 	Spell(PRESENCEOFMIND)
@@ -310,7 +352,7 @@ AddIcon help=main mastery=2
 	#/pyroblast_hs,if=buff.hot_streak.react
 	if BuffPresent(HOTSTREAK) Spell(PYROBLAST)
 	if TalentPoints(FIRESTARTERTALENT more 0) and Speed(more 0) Spell(SCORCH)
-	#/frostfire_bolt
+	#if ( glyphs.frostfire -> ok() ) { /frostfire_bolt {
 	if Glyph(GLYPHOFFROSTFIRE) Spell(FROSTFIREBOLT usable=1)
 	#/fireball
 	Spell(FIREBALL usable=1)
@@ -358,7 +400,7 @@ AddIcon help=mana mastery=2
 
 	#/mana_gem,if=mana_deficit>12500
 	if player.maxMana() - player.mana() > 12500 Item(MANAGEMITEM)
-	#/mage_armor,if=mana_pct<5
+	#/mage_armor,if=mana_pct<5&buff.mage_armor.down
 	if BuffExpires(MAGEARMOR 0) and ManaPercent(less 5) Spell(MAGEARMOR)
 }
 
@@ -420,7 +462,8 @@ AddIcon help=cd mastery=3
 	if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
 	#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down&(buff.tier13_2pc.stack>7|cooldown.cold_snap.remains<22)\
 	unless BuffPresent(ICYVEINS) or BuffPresent(heroism)
-		if BuffPresent(STOLENTIME stacks=7) or 22s before Spell(COLDSNAP) Spell(ICYVEINS)
+		if ArmorSetParts(T13 more 3)
+			if BuffPresent(STOLENTIME stacks=7) or 22s before Spell(COLDSNAP) Spell(ICYVEINS)
 	if BuffExpires(ICYVEINS 0) and BuffExpires(heroism 0) Spell(ICYVEINS)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
