@@ -132,6 +132,28 @@ AddCheckBox(cycles "Separate Cycles" mastery=1)
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
 AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
 
+AddFunction InstantConjureManaGem
+{
+	if ItemCount(MANAGEMITEM equal 0 charges=1)
+	{
+		# if target.timeToDie() > spell(MANAGEMITEM) Spell(CONJUREMANAGEM)
+		# Mana Gem has a cooldown of 2 minutes, so check in increments of 10s up to 120s.
+		if 10s before Item(MANAGEMITEM) and TargetDeadIn(more 10) Spell(CONJUREMANAGEM)
+		if 20s before Item(MANAGEMITEM) and TargetDeadIn(more 20) Spell(CONJUREMANAGEM)
+		if 30s before Item(MANAGEMITEM) and TargetDeadIn(more 30) Spell(CONJUREMANAGEM)
+		if 40s before Item(MANAGEMITEM) and TargetDeadIn(more 40) Spell(CONJUREMANAGEM)
+		if 50s before Item(MANAGEMITEM) and TargetDeadIn(more 50) Spell(CONJUREMANAGEM)
+		if 60s before Item(MANAGEMITEM) and TargetDeadIn(more 60) Spell(CONJUREMANAGEM)
+		if 70s before Item(MANAGEMITEM) and TargetDeadIn(more 70) Spell(CONJUREMANAGEM)
+		if 80s before Item(MANAGEMITEM) and TargetDeadIn(more 80) Spell(CONJUREMANAGEM)
+		if 90s before Item(MANAGEMITEM) and TargetDeadIn(more 90) Spell(CONJUREMANAGEM)
+		if 100s before Item(MANAGEMITEM) and TargetDeadIn(more 100) Spell(CONJUREMANAGEM)
+		if 110s before Item(MANAGEMITEM) and TargetDeadIn(more 110) Spell(CONJUREMANAGEM)
+		if 120s before Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
+	}
+}
+
+
 AddFunction ArcaneBurnCycle
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
@@ -152,18 +174,7 @@ AddFunction ArcaneBurnCycle
 			Spell(MANAGEMITEM)
 	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) and ItemCount(MANAGEMITEM equal 0 charges=1)
-	{
-		# if target.timeToDie() > spell(MANAGEMITEM) Spell(CONJUREMANAGEM)
-		if 30s before Item(MANAGEMITEM) and TargetDeadIn(more 30) Spell(CONJUREMANAGEM)
-		if 45s before Item(MANAGEMITEM) and TargetDeadIn(more 45) Spell(CONJUREMANAGEM)
-		if 60s before Item(MANAGEMITEM) and TargetDeadIn(more 60) Spell(CONJUREMANAGEM)
-		if 75s before Item(MANAGEMITEM) and TargetDeadIn(more 75) Spell(CONJUREMANAGEM)
-		if 90s before Item(MANAGEMITEM) and TargetDeadIn(more 90) Spell(CONJUREMANAGEM)
-		if 105s before Item(MANAGEMITEM) and TargetDeadIn(more 105) Spell(CONJUREMANAGEM)
-		if Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
-	}
-
+	if BuffPresent(PRESENCEOFMIND) InstantConjureManaGem()
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
@@ -197,18 +208,7 @@ AddFunction ArcaneHoverCycle
 			Spell(MANAGEMITEM)
 	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) and ItemCount(MANAGEMITEM equal 0 charges=1)
-	{
-		# if target.timeToDie() > spell(MANAGEMITEM) Spell(CONJUREMANAGEM)
-		if 30s before Item(MANAGEMITEM) and TargetDeadIn(more 30) Spell(CONJUREMANAGEM)
-		if 45s before Item(MANAGEMITEM) and TargetDeadIn(more 45) Spell(CONJUREMANAGEM)
-		if 60s before Item(MANAGEMITEM) and TargetDeadIn(more 60) Spell(CONJUREMANAGEM)
-		if 75s before Item(MANAGEMITEM) and TargetDeadIn(more 75) Spell(CONJUREMANAGEM)
-		if 90s before Item(MANAGEMITEM) and TargetDeadIn(more 90) Spell(CONJUREMANAGEM)
-		if 105s before Item(MANAGEMITEM) and TargetDeadIn(more 105) Spell(CONJUREMANAGEM)
-		if Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
-	}
-
+	if BuffPresent(PRESENCEOFMIND) InstantConjureManaGem()
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
@@ -229,8 +229,8 @@ AddFunction ArcaneHoverCycle
 	#		((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
 	if TargetDeadIn(less 20) Spell(ARCANEBLAST)
 	if 20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)
-		if ManaPercent(more 21) Spell(ARCANEBLAST)
-	if ArmorSetParts(T13 more 3) and BuffPresent(ARCANEPOWER) and Mana(more 88) Spell(ARCANEBLAST)
+		if ManaPercent(more 22) Spell(ARCANEBLAST)
+	if ArmorSetParts(T13 more 3) and BuffPresent(ARCANEPOWER) and ManaPercent(more 88) Spell(ARCANEBLAST)
 	#/arcane_blast,if=buff.arcane_blast.remains<0.8&buff.arcane_blast.stack=4
 	unless Speed(more 0) if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
 	#/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
