@@ -124,7 +124,7 @@ ScoreSpells(LIGHTNINGSHIELD CHAINLIGHTNING FLAMESHOCK LAVABURST EARTHSHOCK LIGHT
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) mastery=1)
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) mastery=2)
-AddCheckBox(aoe L(AOE))
+AddCheckBox(aoe L(AOE) mastery=2)
 
 AddIcon help=main mastery=1
 {
@@ -134,21 +134,22 @@ AddIcon help=main mastery=1
 	if WeaponEnchantExpires(mainhand 2) Spell(FLAMETONGUEWEAPON)
 	#/lightning_shield
 	if BuffExpires(LIGHTNINGSHIELD 2) Spell(LIGHTNINGSHIELD)
-	#/unleash_elements,moving=1
+	#if ( ! glyph_unleashed_lightning -> ok() ) { /unleash_elements,moving=1 }
 	if Speed(more 0) and Glyph(GLYPHOFUNLEASHEDLIGHTNING no) Spell(UNLEASHELEMENTS)
 	#/flame_shock,if=!ticking|ticks_remain<2|((buff.bloodlust.react|buff.elemental_mastery.up)&ticks_remain<3)
 	if target.debuffExpires(FLAMESHOCK mine=1) < timeWithHaste(3) Spell(FLAMESHOCK)
 	if BuffPresent(heroism) or BuffPresent(ELEMENTALMASTERY)
 		if target.debuffExpires(FLAMESHOCK mine=1) < timeWithHaste(6) Spell(FLAMESHOCK)
-	#/lava_burst,if=dot.flame_shock.remains>(cast_time+travel_time)
-	if target.debuffExpires(FLAMESHOCK mine=1) > {castTime(LAVABURST) + 1} Spell(LAVABURST)
+	#/lava_burst,if=dot.flame_shock.remains>cast_time
+	if target.debuffExpires(FLAMESHOCK mine=1) > castTime(LAVABURST) Spell(LAVABURST)
 	if TalentPoints(FULMINATIONTALENT more 0)
 	{
 		#/earth_shock,if=buff.lightning_shield.stack=9
 		if BuffPresent(LIGHTNINGSHIELD stacks=9) Spell(EARTHSHOCK)
-		#/earth_shock,if=buff.lightning_shield.stack>6&dot.flame_shock.remains>cooldown&\
+		#/earth_shock,if=buff.lightning_shield.stack>6&\
+		#    dot.flame_shock.remains>cooldown&\
 		#    dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
-		if {BuffPresent(LIGHTNINGSHIELD stacks=7) or BuffPresent(LIGHTNINGSHIELD stacks=8)}
+		if BuffPresent(LIGHTNINGSHIELD stacks=7)
 			and {target.debuffExpires(FLAMESHOCK mine=1) > spell(EARTHSHOCK)}
 			and {target.debuffExpires(FLAMESHOCK mine=1) < spell(EARTHSHOCK) + timeWithHaste(3)}
 			Spell(EARTHSHOCK)
@@ -156,7 +157,6 @@ AddIcon help=main mastery=1
 	#/searing_totem
 	if TotemExpires(fire) Spell(SEARINGTOTEM)
 	#/chain_lightning,if=target.adds>2
-	if CheckBoxOn(aoe) Spell(CHAINLIGHTNING)
 	#/lightning_bolt
 	Spell(LIGHTNINGBOLT)
 }
@@ -178,8 +178,8 @@ AddIcon help=cd mastery=1
 	Spell(FIREELEMENTALTOTEM)
 	#/earth_elemental_totem,if=!ticking
 	Spell(EARTHELEMENTALTOTEM)
-	#/spiritwalkers_grace,moving=1
-	if Speed(more 0) Spell(SPIRITWALKERSGRACE)
+	#/spiritwalkers_grace,moving=1,if=cooldown.lava_burst.remains=0&set_bonus.tier12_4pc_caster=0
+	if Speed(more 0) and Spell(LAVABURST) and ArmorSetParts(T12 less 4) Spell(SPIRITWALKERSGRACE)
 }
 
 AddIcon help=main mastery=2
@@ -196,18 +196,6 @@ AddIcon help=main mastery=2
 	if WeaponEnchantExpires(offhand 2) Spell(FLAMETONGUEWEAPON)
 	#/lightning_shield
 	if BuffExpires(LIGHTNINGSHIELD 2) Spell(LIGHTNINGSHIELD)
-	if CheckBoxOn(aoe)
-	{
-		# Enhancement 4.3 AoE rotation from ElitistJerks:
-		#    http://elitistjerks.com/f79/t127416-enhancement_4_3_least_your_old_axe_good_transmog/#post2051733
-		if BuffPresent(MAELSTROMWEAPON stacks=5) Spell(CHAINLIGHTNING)
-		if TotemExpires(fire) Spell(MAGMATOTEM)
-		Spell(UNLEASHELEMENTS)
-		if TargetDebuffExpires(FLAMESHOCK 0 mine=1) or BuffPresent(UNLEASHFLAME) Spell(FLAMESHOCK)
-		Spell(LAVALASH)
-		if OtherDebuffPresent(FLAMESHOCK mine=1) Spell(FIRENOVA)
-	}
-	#/flame_shock,previous_action=lava_burst,if=buff.unleash_flame.up
 	#/searing_totem
 	if TotemExpires(fire) Spell(SEARINGTOTEM)
 	#/stormstrike
@@ -219,19 +207,24 @@ AddIcon help=main mastery=2
 	if ArmorSetParts(T13 more 3) and BuffPresent(MAELSTROMWEAPON stacks=4) and PetPresent(yes) Spell(LIGHTNINGBOLT)
 	#/unleash_elements
 	Spell(UNLEASHELEMENTS)
-	#/lava_burst,if=cooldown.shock.remains<cast_time&dot.flame_shock.remains>cast_time+travel_time&buff.unleash_flame.remains>cast_time
-	if {spell(FLAMESHOCK) < castTime(LAVABURST)}
-		and {target.debuffExpires(FLAMESHOCK mine=1) > castTime(LAVABURST) + 1}
-		and {player.buffExpires(UNLEASHFLAME) > castTime(LAVABURST)}
-		Spell(LAVABURST)
 	#/flame_shock,if=!ticking|buff.unleash_flame.up
 	if TargetDebuffExpires(FLAMESHOCK 0 mine=1) or BuffPresent(UNLEASHFLAME) Spell(FLAMESHOCK)
 	#/earth_shock
 	Spell(EARTHSHOCK)
-	#/fire_nova,if=target.adds>1
 	#/lightning_bolt,if=buff.maelstrom_weapon.react>1
-	if CheckBoxOn(aoe) and BuffPresent(MAELSTROMWEAPON) Spell(CHAINLIGHTNING)
 	if BuffPresent(MAELSTROMWEAPON) Spell(LIGHTNINGBOLT)
+}
+
+AddIcon help=aoe mastery=2 checkboxon=aoe
+{
+	# Enhancement 4.3 AoE rotation from ElitistJerks:
+	#    http://elitistjerks.com/f79/t127416-enhancement_4_3_least_your_old_axe_good_transmog/#post2051733
+	if BuffPresent(MAELSTROMWEAPON stacks=5) Spell(CHAINLIGHTNING)
+	if TotemExpires(fire) Spell(MAGMATOTEM)
+	Spell(UNLEASHELEMENTS)
+	if TargetDebuffExpires(FLAMESHOCK 0 mine=1) or BuffPresent(UNLEASHFLAME) Spell(FLAMESHOCK)
+	Spell(LAVALASH)
+	if OtherDebuffPresent(FLAMESHOCK mine=1) Spell(FIRENOVA)
 }
 
 AddIcon help=cd mastery=2
