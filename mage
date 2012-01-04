@@ -1,6 +1,9 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.10 2012/01/03 - Add more checks for if player has 4pT13.
+#                   - Fix the suggestions for what an Arcane mage casts while moving.
+#                   - Mirror certain actions from the Arcane burn cycle to the hover cycle that were missed previously.
 # 4.3.9  2011/12/21 - Fix condition for minor burn phase in Arcane rotation.
 #                   - Update Frost rotation to SC, T13H (r10506).
 # 4.3.8  2011/12/18 - 4.3.2 fixes the maxMana() problem, so put back the exact condition for Mana Gem usage.
