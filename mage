@@ -156,7 +156,6 @@ AddFunction InstantConjureManaGem
 	}
 }
 
-
 AddFunction ArcaneBurnCycle
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
