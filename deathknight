@@ -1,6 +1,7 @@
 # Death Knight Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.4 2012/01/04 - Checkbox for toggling AoE rotation icon.
 # 4.3.3 2012/01/03 - Optimal conditions for refreshing diseases based on talents in Frost spec.
 # 4.3.2 2011/12/20 - Checkbox for Masterfrost rotation.
 #                    Pre-cast Unholy Presence before entering combat.
@@ -130,6 +131,7 @@ Define(GOLEMBLOODPOTION 58146)
 ScoreSpells(HOWLINGBLAST HEARTSTRIKE BLOODSTRIKE DEATHSTRIKE SCOURGESTRIKE OBLITERATE HEARTSTRIKE 
 			PESTILENCE ICYTOUCH PLAGUESTRIKE FROSTSTRIKE DEATHCOIL)
 
+AddCheckBox(aoe L(AOE) default)
 AddCheckBox(horn SpellName(HORNOFWINTER))
 AddCheckBox(scarlet SpellName(SCARLETFEVER) mastery=1 default)
 AddCheckBox(dnd SpellName(DEATHANDDECAY) mastery=3 default)
@@ -165,7 +167,7 @@ AddIcon help=offgcd mastery=1
 	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 }
 
-AddIcon help=aoe mastery=1
+AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	unless BuffPresent(BLOODPRESENCE) Spell(BLOODPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
@@ -315,7 +317,7 @@ AddIcon help=offgcd mastery=2
 	Spell(EMPOWERRUNEWEAPON)
 }
 
-AddIcon help=aoe mastery=2
+AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
@@ -395,7 +397,7 @@ AddIcon help=offgcd mastery=3
 	Spell(EMPOWERRUNEWEAPON)
 }
 
-AddIcon help=aoe mastery=3
+AddIcon help=aoe mastery=3 checkboxon=aoe
 {
 	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
