@@ -127,6 +127,7 @@ AddIcon help=main mastery=1
 	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
 	#/cobra_shot
 	Spell(COBRASHOT)
+	Spell(STEADYSHOT)
 }
 
 AddIcon help=offgcd mastery=1
@@ -169,7 +170,9 @@ AddIcon help=cd mastery=1
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
+	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and Glyph(GLYPHOFRAPIDFIRE) and BuffPresent(RAPIDFIRE) Item(POTIONOFTHETOLVIR)
 	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
 	unless BuffPresent(heroism) or BuffPresent(THEBEASTWITHIN) Spell(RAPIDFIRE)
 	#/fervor,if=focus<=37
@@ -198,23 +201,46 @@ AddIcon help=main mastery=2
 	Spell(KILLSHOT usable=1)
 	#/aimed_shot,if=buff.master_marksman_fire.react
 	if BuffPresent(FIRE) Spell(AIMEDSHOT)
-	#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
-	#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
-	#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
 	if ArmorSetParts(T13 more 3)
 	{
-		unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
-			unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
-				if BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
+		#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
+		#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
+		#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
+		if ArmorSetParts(T13 more 3)
+		{
+			unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
+				unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
+					if BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
+		}
+		#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
+		#	buff.rapid_fire.up|target.health_pct>90
+		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
+		{
+			if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) if Mana(more 49) Spell(AIMEDSHOT)
+			unless BuffGain(CHRONOHUNTER 110) if Mana(more 49) Spell(AIMEDSHOT)
+		}
+		if {BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90)} and Mana(more 49) Spell(AIMEDSHOT)
 	}
-	#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
-	#	buff.rapid_fire.up|target.health_pct>90
-	unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
+	unless ArmorSetParts(T13 more 3)
 	{
-		if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) if Mana(more 49) Spell(AIMEDSHOT)
-		unless BuffGain(CHRONOHUNTER 110) if Mana(more 49) Spell(AIMEDSHOT)
+		#if ( ! glyphs.arcane_shot -> ok() )
+		unless Glyph(GLYPHOFARCANESHOT)
+		{
+			#/aimed_shot,if=cooldown.chimera_shot.remains>5|focus>=80|buff.rapid_fire.up|buff.bloodlust.react|target.health_pct>90
+			unless 5s before Spell(CHIMERASHOT) if Mana(more 49) Spell(AIMEDSHOT)
+			if Mana(more 79) Spell(AIMEDSHOT)
+			if BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or TargetLifePercent(more 90) and Mana(more 49) Spell(AIMEDSHOT)
+		}
+		#else
+		if Glyph(GLYPHOFARCANESHOT)
+		{
+			#/aimed_shot,if=target.health_pct>90|buff.rapid_fire.up|buff.bloodlust.react
+			if BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or TargetLifePercent(more 90) and Mana(more 49) Spell(AIMEDSHOT)
+			#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=5)&(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react)
+			unless Mana(less 66) and 5s before Spell(CHIMERASHOT)
+				if TargetLifePercent(less 90) unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) Spell(ARCANESHOT)
+		}
 	}
-	if {BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90)} and Mana(more 49) Spell(AIMEDSHOT)
 	#/steady_shot
 	Spell(STEADYSHOT)
 }
@@ -253,7 +279,9 @@ AddIcon help=cd mastery=2
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60|buff.rapid_fire.react
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60) or BuffPresent(RAPIDFIRE)} Item(POTIONOFTHETOLVIR)
+	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and Glyph(GLYPHOFRAPIDFIRE) and BuffPresent(RAPIDFIRE) Item(POTIONOFTHETOLVIR)
 	#/rapid_fire,if=!buff.bloodlust.up|target.time_to_die<=30
 	unless BuffPresent(heroism) and TargetDeadIn(more 30) Spell(RAPIDFIRE)
 	#/readiness,wait_for_rapid_fire=1
@@ -323,7 +351,9 @@ AddIcon help=cd mastery=3
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
+	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60) or BuffPresent(RAPIDFIRE)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and Glyph(GLYPHOFRAPIDFIRE) and BuffPresent(RAPIDFIRE) Item(POTIONOFTHETOLVIR)
 	#/rapid_fire
 	Spell(RAPIDFIRE)
 	Item(Trinket0Slot usable=1)
