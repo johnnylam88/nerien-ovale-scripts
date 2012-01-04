@@ -1,6 +1,10 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.2 2012/01/03 - Add Steady Shot for low-level BM hunters.
+#                    Add conditions for using Aimed Shot and Arcane Shot as focus dumps depending on 4pT13
+#                        and Glyph of Arcane Shot
+#                    Check for Glyph of Rapid Fire for using potions.
 # 4.3.1 2011/12/22 - Initial version based on default Ovale script and SimulationCraft, Tier 13H profiles:
 #                        BM (r10533), MM (r10576), SV (r10526)
 #                    Support Silencing Shot and summoning pets.
