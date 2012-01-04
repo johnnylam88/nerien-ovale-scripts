@@ -1,6 +1,7 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.3 2012/01/04 - Fix AoE checkbox name.
 # 4.3.2 2012/01/03 - Add Steady Shot for low-level BM hunters.
 #                    Add conditions for using Aimed Shot and Arcane Shot as focus dumps depending on 4pT13
 #                        and Glyph of Arcane Shot
@@ -109,7 +110,7 @@ Define(POTIONOFTHETOLVIR 58145)
 ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CHIMERASHOT AIMEDSHOT
 			BLACKARROW EXPLOSIVESHOT)
 
-AddCheckBox(aoe L(aoe))
+AddCheckBox(aoe L(AOE))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(blackarrow SpellName(BLACKARROW) mastery=3)
 
