@@ -1,6 +1,9 @@
 # Shaman Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.2 2012/01/04 - Update shaman profiles to SimulationCraft, Tier 13H:
+#                        Elemental (r10707), Enhancement (r10630)
+#                    Move Enhancement AoE rotation to a separate icon.
 # 4.3.1 2011/12/07 - Initial version based on Ovale default script.
 #                    Use shaman profiles from SimulationCraft, Tier 13H:
 #                        Elemental (r10348), Enhancement (r10526)
