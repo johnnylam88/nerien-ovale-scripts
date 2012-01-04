@@ -1,6 +1,7 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.12 2012/01/04 - manaPercent() returns a percent, not a percentage, so don't scale it.
 # 4.3.11 2012/01/04 - Tighten up the conditions for when to cast Conjure Mana Gem in Arcane spec.
 #                   - Minor bug fixes to Arcane rotation.
 # 4.3.10 2012/01/03 - Add more checks for if player has 4pT13.
@@ -259,7 +260,7 @@ AddIcon help=main mastery=1 checkboxoff=cycles
 	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
 	#    cooldown.evocation.remains+15<target.time_to_die
 	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
-		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}}
+		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
 		ArcaneHoverCycle()
 
@@ -284,7 +285,7 @@ AddIcon help=main mastery=1 checkboxon=cycles
 	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
 	#    cooldown.evocation.remains+15<target.time_to_die
 	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
-		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent() * 100}}
+		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
 		Texture(Inv_misc_orb_05)
 
