@@ -1,6 +1,8 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.11 2012/01/04 - Tighten up the conditions for when to cast Conjure Mana Gem in Arcane spec.
+#                   - Minor bug fixes to Arcane rotation.
 # 4.3.10 2012/01/03 - Add more checks for if player has 4pT13.
 #                   - Fix the suggestions for what an Arcane mage casts while moving.
 #                   - Mirror certain actions from the Arcane burn cycle to the hover cycle that were missed previously.
