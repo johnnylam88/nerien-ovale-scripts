@@ -29,10 +29,11 @@ Define(UNHOLYSTRENGTHBUFF 53365)
 Define(GLYPHOFHOWLINGBLAST 63335)
 
 # Talents
-#Define(DEATHSTRIKETALENT 2259)
-#Define(FROSTSTRIKETALENT 1975)
-#Define(HEARTSTRIKETALENT 1957)
-#Define(BLOODYSTRIKESTALENT 2015)
+Define(BLOODYSTRIKESTALENT 2015)
+Define(DEATHSTRIKETALENT 2259)
+Define(FROSTSTRIKETALENT 1975)
+Define(HEARTSTRIKETALENT 1957)
+Define(IMPROVEDBLOODTAPTALENT 12223)
 
 # Abilities
 Define(ARMYOFTHEDEAD 42650)
@@ -206,17 +207,51 @@ AddIcon help=main mastery=2
 	#/presence,choose=unholy
 	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
-
-	#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
-	if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
-	#/howling_blast,if=dot.frost_fever.remains<=2
-	if TargetDebuffExpires(FROSTFEVER 2 mine=1)
+	#// optimal timing for diseases depends on points in epidemic, and if using improved blood tap
+	#// players with only 2 points in epidemic want a 0 second refresh to avoid two PS in one minute instead of 1
+	#// IBT players use 2 PS every minute
+	if TalentPoints(IMPROVEDBLOODTAPTALENT more 0)
 	{
-		if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
-		if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
+		#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
+		if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
+		#/howling_blast,if=dot.frost_fever.remains<=2
+		if TargetDebuffExpires(FROSTFEVER 2 mine=1)
+		{
+			if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
+			if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
+		}
+		#/plague_strike,if=dot.blood_plague.remains<=2
+		if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
 	}
-	#/plague_strike,if=dot.blood_plague.remains<=2
-	if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
+	unless TalentPoints(IMPROVEDBLOODTAPTALENT more 0)
+	{
+		if TalentPoints(EPIDEMICTALENT equal 3)
+		{
+			#/outbreak,if=dot.frost_fever.remains<=1|dot.blood_plague.remains<=1
+			if TargetDebuffExpires(FROSTFEVER 1 mine=1) or TargetDebuffExpires(BLOODPLAGUE 1 mine=1) Spell(OUTBREAK)
+			#/howling_blast,if=dot.frost_fever.remains<=1
+			if TargetDebuffExpires(FROSTFEVER 1 mine=1)
+			{
+				if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
+				if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
+			}
+			#/plague_strike,if=dot.blood_plague.remains<=1
+			if TargetDebuffExpires(BLOODPLAGUE 1 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
+		}
+		unless TalentPoints(EPIDEMICTALENT equal 3)
+		{
+			#/outbreak,if=dot.frost_fever.remains<=0|dot.blood_plague.remains<=0
+			if TargetDebuffExpires(FROSTFEVER 0 mine=1) or TargetDebuffExpires(BLOODPLAGUE 0 mine=1) Spell(OUTBREAK)
+			#/howling_blast,if=dot.frost_fever.remains<=0
+			if TargetDebuffExpires(FROSTFEVER 0 mine=1)
+			{
+				if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
+				if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
+			}
+			#/plague_strike,if=dot.blood_plague.remains<=0
+			if TargetDebuffExpires(BLOODPLAGUE 0 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
+		}
+	}
 	#/obliterate,if=death>=1&frost>=1&unholy>=1
 	if Runes(death 1) and Runes(frost 1 unholy 1) Spell(OBLITERATE)
 	if CheckBoxOn(masterfrost) and Mana(more 120) Spell(FROSTSTRIKE)
