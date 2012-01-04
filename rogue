@@ -20,11 +20,14 @@ Define(SHALLOWINSIGHT 84745)
 Define(VANISHBUFF 11327)
 
 # Talents
+Define(BANDITSGUILETALENT 11174)
 Define(CUTTOTHECHASETALENT 2070)
 Define(ENERGETICRECOVERYTALENT 11665)
 Define(HEMORRHAGETALENT 681)
 Define(MURDEROUSINTENTTALENT 6516)
+Define(OVERKILLTALENT 281)
 Define(SHADOWDANCETALENT 2081)
+Define(VENDETTATALENT 2071)
 
 # Abilities
 Define(ADRENALINERUSH 13750)
@@ -118,8 +121,16 @@ AddIcon help=main mastery=1
 	Spell(GARROTE usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	unless BuffPresent(SLICEANDDICE) Spell(SLICEANDDICE usable=1)
-	#/rupture,if=(!ticking|ticks_remain<2)&time<6
-	if TargetDebuffExpires(RUPTURE 4 mine=1) and TimeInCombat(less 6) Spell(RUPTURE usable=1)
+	#if ( ! talents.cut_to_the_chase -> rank() )
+	unless TalentPoints(CUTTOTHECHASETALENT more 0)
+	{
+		#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
+		if Mana(less 60) and Buffexpires(SLICEANDDICE 5) Spell(SLICEANDDICE usable=1 nored=1)
+		#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
+		if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
+	}
+	#if ( talents.vendetta -> rank() ) { /rupture,if=(!ticking|ticks_remain<2)&time<6 }
+	if TalentPoints(VENDETTATALENT more 0) and TargetDebuffExpires(RUPTURE 4 mine=1) and TimeInCombat(less 6) Spell(RUPTURE usable=1)
 	#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
 	if TargetDebuffExpires(RUPTURE 4 mine=1) and BuffPresent(SLICEANDDICE 6) Spell(RUPTURE usable=1)
 	#/envenom,if=combo_points>=4&buff.envenom.down
@@ -127,7 +138,7 @@ AddIcon help=main mastery=1
 	#/envenom,if=combo_points>=4&energy>90
 	if ComboPoints(more 3) and Mana(more 90) Spell(ENVENOM)
 	#/envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
-	if TalentPoints(CUTTOTHECHASETALENT more 0) and ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3) Spell(ENVENOM)
+	if ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3) Spell(ENVENOM)
 	#/backstab,if=combo_points<5&target.health_pct<35
 	if TalentPoints(MURDEROUSINTENTTALENT more 0) and ComboPoints(less 5) and TargetLifePercent(less 35) Spell(BACKSTAB)
 	#/mutilate,if=combo_points<4&target.health_pct>=35
@@ -154,8 +165,8 @@ AddIcon help=cd mastery=1
 	unless TargetDebuffPresent(VENDETTA) if BuffPresent(SLICEANDDICE) Spell(VENDETTA)
 	#/cold_blood,sync=envenom
 	if ComboPoints(more 0) and Spell(ENVENOM) Spell(COLDBLOOD)
-	#/vanish,if=time>30&energy>50
-	if TimeInCombat(more 30) and Mana(more 50) unless BuffPresent(OVERKILL) Spell(VANISH)
+	#if ( talents.overkill -> rank() ) { /vanish,if=time>30&energy>50 }
+	if TalentPoints(OVERKILLTALENT more 0) and TimeInCombat(more 30) and Mana(more 50) unless BuffPresent(OVERKILL) Spell(VANISH)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
@@ -171,7 +182,7 @@ AddIcon help=main mastery=2
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) Spell(SLICEANDDICE usable=1)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
-	if ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
+	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
 	unless TargetDebuffPresent(RUPTURE mine=1) if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
 	#/eviscerate,if=combo_points=5
