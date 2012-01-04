@@ -27,6 +27,7 @@ Define(GLYPHOFBERSERKERRAGE 58096)
 
 # Talents
 Define(IMPROVEDSLAMTALENT 2233)
+Define(RAGINGBLOWTALENT 11208)
 Define(SUDDENDEATHTALENT 52437)
 Define(TACTICALMASTERYTALENT 11416)
 Define(TITANSGRIPTALENT 9658)
@@ -197,9 +198,8 @@ AddIcon help=offgcd mastery=1
 	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
 		unless Stance(1) Spell(BATTLESTANCE)
 
-	#/berserker_rage,if=rage<=95,use_off_gcd=1
+	#if ( glyphs.berserker_rage -> ok() ) { /berserker_rage,if=rage<=95,use_off_gcd=1 }
 	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96) Spell(BERSERKERRAGE)
-	if Glyph(GLYPHOFBERSERKERRAGE no) Spell(BERSERKERRAGE)
 	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
 	unless BuffPresent(DEADLYCALM) Spell(INNERRAGE)
 	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
@@ -219,23 +219,44 @@ AddIcon help=offgcd mastery=1
 	}
 	#/heroic_strike,if=buff.deadly_calm.up,use_off_gcd=1
 	if BuffPresent(DEADLYCALM) Spell(HEROICSTRIKE)
-	#/heroic_strike,if=target.health_pct>20&rage>85,use_off_gcd=1
-	if TargetLifePercent(more 20) and Mana(more 85) Spell(HEROICSTRIKE)
-	#/heroic_strike,if=rage>75&buff.inner_rage.up,use_off_gcd=1
-	if Mana(more 75) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
-	#/heroic_strike,if=buff.incite.up&(target.health_pct>20|(target.health_pct<=20&buff.battle_trance.up)),use_off_gcd=1
-	if BuffPresent(INCITE)
+	#if ( set_bonus.tier13_2pc_melee() )
+	if ArmorSetParts(T13 more 1)
 	{
-		if TargetLifePercent(more 20) Spell(HEROICSTRIKE)
-		unless TargetLifePercent(more 20) if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
-	}
-	if BuffPresent(INNERRAGE)
-	{
-		#/heroic_strike,if=buff.inner_rage.up&target.health_pct>20&(rage>40|buff.battle_trance.up),use_off_gcd=1
-		if TargetLifePercent(more 20) and {Mana(more 40) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
-		#/heroic_strike,if=buff.inner_rage.up&target.health_pct<=20&(rage>=50|buff.battle_trance.up),use_off_gcd=1
-		unless TargetLifePercent(more 20) if {Mana(more 49) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
-	}
+		#/heroic_strike,if=target.health_pct>20&rage>85,use_off_gcd=1
+		if TargetLifePercent(more 20) and Mana(more 85) Spell(HEROICSTRIKE)
+		#/heroic_strike,if=rage>75&buff.inner_rage.up,use_off_gcd=1
+		if Mana(more 75) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
+		#/heroic_strike,if=buff.incite.up&(target.health_pct>20|(target.health_pct<=20&buff.battle_trance.up)),use_off_gcd=1
+		if BuffPresent(INCITE)
+		{
+			if TargetLifePercent(more 20) Spell(HEROICSTRIKE)
+			unless TargetLifePercent(more 20) if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
+		}
+		if BuffPresent(INNERRAGE)
+		{
+			#/heroic_strike,if=buff.inner_rage.up&target.health_pct>20&(rage>40|buff.battle_trance.up),use_off_gcd=1
+			if TargetLifePercent(more 20) and {Mana(more 40) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
+			#/heroic_strike,if=buff.inner_rage.up&target.health_pct<=20&(rage>=50|buff.battle_trance.up),use_off_gcd=1
+			unless TargetLifePercent(more 20) if {Mana(more 49) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
+		}
+	#else
+		#/heroic_strike,if=target.health_pct>20&rage>95,use_off_gcd=1
+		if TargetLifePercent(more 20) and Mana(more 95) Spell(HEROICSTRIKE)
+		#/heroic_strike,if=rage>85&buff.inner_rage.up,use_off_gcd=1
+		if Mana(more 85) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
+		#/heroic_strike,if=buff.incite.up&(target.health_pct>20|(target.health_pct<=20&buff.battle_trance.up)),use_off_gcd=1
+		if BuffPresent(INCITE)
+		{
+			if TargetLifePercent(more 20) Spell(HEROICSTRIKE)
+			unless TargetLifePercent(more 20) if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
+		}
+		if BuffPresent(INNERRAGE)
+		{
+			#/heroic_strike,if=buff.inner_rage.up&target.health_pct>20&(rage>50|buff.battle_trance.up),use_off_gcd=1
+			if TargetLifePercent(more 20) and {Mana(more 50) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
+			#/heroic_strike,if=buff.inner_rage.up&target.health_pct<=20&(rage>=60|buff.battle_trance.up),use_off_gcd=1
+			unless TargetLifePercent(more 20) if {Mana(more 59) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
+		}
 }
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
@@ -270,9 +291,7 @@ AddIcon help=main mastery=2
 	if List(shout battle) and {Mana(less 20) or BuffExpires(strengthagility 3)} Spell(BATTLESHOUT nored=1)
 	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMOSHOUT nored=1)
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
-	{
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
-	}
 
 	#/stance,choose=berserker
 	unless Stance(3) Spell(BERSERKERSTANCE)
@@ -284,38 +303,34 @@ AddIcon help=main mastery=2
 	unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
 	#/bloodthirst
 	Spell(BLOODTHIRST)
-	unless TalentPoints(TITANSGRIPTALENT more 0)
-	{
-		#/slam,if=buff.bloodsurge.react
-		if BuffPresent(BLOODSURGE) Spell(SLAM)
-		#/execute,if=rage>=50
-		if Mana(more 49) Spell(EXECUTE usable=1)
-	}
-	#/raging_blow
-	Spell(RAGINGBLOW usable=1)
-	if TalentPoints(TITANSGRIPTALENT more 0)
-	{
-		#/slam,if=buff.bloodsurge.react
-		if BuffPresent(BLOODSURGE) Spell(SLAM)
-		#/execute,if=rage>=50
-		if Mana(more 49) Spell(EXECUTE usable=1)
-	}
+	#if ( talents.raging_blow -> ok() && talents.titans_grip -> ok() ) { /raging_blow }
+	if TalentPoints(TITANSGRIPTALENT more 0) Spell(RAGINGBLOW usable=1)
+	#/slam,if=buff.bloodsurge.react
+	if BuffPresent(BLOODSURGE) Spell(SLAM)
+	#/execute,if=rage>=50
+	if Mana(more 49) Spell(EXECUTE usable=1)
+	#if ( talents.raging_blow -> ok() && ! talents.titans_grip -> ok() ) { /raging_blow }
+	unless TalentPoints(TITANSGRIPTALENT more 0) Spell(RAGINGBLOW usable=1)
 	#/battle_shout,if=rage<70
 	if Mana(less 70) Spell(BATTLESHOUT)
 }
 
 AddIcon help=offgcd mastery=2
 {
-	#/inner_rage,use_off_gcd=1,if=target.adds=0&((rage>=75&target.health_pct>=20)|\
-	#	((buff.incite.up|buff.colossus_smash.up)&\
-	#		((rage>=40&target.health_pct>=20)|
-	#		 (rage>=65&target.health_pct<20))
-	#	))
-	if TargetLifePercent(more 20) and Mana(more 74) Spell(INNERRAGE)
-	if BuffPresent(INCITE) or TargetDebuffPresent(COLOSSUSSMASH mine=1)
+	#if ( set_bonus.tier13_2pc_melee() )
+	if ArmorSetParts(T13 more 1)
 	{
-		if TargetLifePercent(more 20) and Mana(more 39) Spell(INNERRAGE)
-		unless TargetLifePercent(more 20) if Mana(more 64) Spell(INNERRAGE)
+		#/inner_rage,use_off_gcd=1,if=target.adds=0&((rage>=75&target.health_pct>=20)|\
+		#	((buff.incite.up|buff.colossus_smash.up)&\
+		#		((rage>=40&target.health_pct>=20)|
+		#		 (rage>=65&target.health_pct<20))
+		#	))
+		if TargetLifePercent(more 20) and Mana(more 74) Spell(INNERRAGE)
+		if BuffPresent(INCITE) or TargetDebuffPresent(COLOSSUSSMASH mine=1)
+		{
+			if TargetLifePercent(more 20) and Mana(more 39) Spell(INNERRAGE)
+			unless TargetLifePercent(more 20) if Mana(more 64) Spell(INNERRAGE)
+		}
 	}
 	#/heroic_strike,use_off_gcd=1,if=(((rage>=85|(set_bonus.tier13_2pc_melee&buff.inner_rage.up&rage>=75))&target.health_pct>=20)|\
 	#	buff.battle_trance.up|\
@@ -343,7 +358,7 @@ AddIcon help=offgcd mastery=2
 		}
 	}
 	#/berserker_rage,if=!(buff.death_wish.up|buff.enrage.up|buff.unholy_frenzy.up)&rage>15&cooldown.raging_blow.remains<1,use_off_gcd=1
-	if BuffExpires(enrage 0) and Mana(more 15) and 1s before Spell(RAGINGBLOW) Spell(BERSERKERRAGE)
+	if TalentPoints(RAGINGBLOWTALENT more 0) and BuffExpires(enrage 0) and Mana(more 15) and 1s before Spell(RAGINGBLOW) Spell(BERSERKERRAGE)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
@@ -380,9 +395,7 @@ AddIcon help=main mastery=3
 	if LifePercent(less 75) and BuffPresent(VICTORIOUS) Spell(VICTORYRUSH usable=1)
 
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
-	{
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(DEVASTATE)
-	}
 
 	if 1s before Spell(SHIELDSLAM) Spell(SHIELDSLAM usable=1)
 
