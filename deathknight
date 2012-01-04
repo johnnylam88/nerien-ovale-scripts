@@ -1,6 +1,7 @@
 # Death Knight Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.3 2012/01/03 - Optimal conditions for refreshing diseases based on talents in Frost spec.
 # 4.3.2 2011/12/20 - Checkbox for Masterfrost rotation.
 #                    Pre-cast Unholy Presence before entering combat.
 #                    Fix syntax errors.
