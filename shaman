@@ -140,9 +140,9 @@ AddIcon help=main mastery=1
 	#if ( ! glyph_unleashed_lightning -> ok() ) { /unleash_elements,moving=1 }
 	if Speed(more 0) and Glyph(GLYPHOFUNLEASHEDLIGHTNING no) Spell(UNLEASHELEMENTS)
 	#/flame_shock,if=!ticking|ticks_remain<2|((buff.bloodlust.react|buff.elemental_mastery.up)&ticks_remain<3)
-	if target.debuffExpires(FLAMESHOCK mine=1) < timeWithHaste(3) Spell(FLAMESHOCK)
+	if TargetDebuffExpires(FLAMESHOCK 3 haste=spell mine=1) Spell(FLAMESHOCK)
 	if BuffPresent(heroism) or BuffPresent(ELEMENTALMASTERY)
-		if target.debuffExpires(FLAMESHOCK mine=1) < timeWithHaste(6) Spell(FLAMESHOCK)
+		if TargetDebuffExpires(FLAMESHOCK 6 haste=spell mine=1) Spell(FLAMESHOCK)
 	#/lava_burst,if=dot.flame_shock.remains>cast_time
 	if target.debuffExpires(FLAMESHOCK mine=1) > castTime(LAVABURST) Spell(LAVABURST)
 	if TalentPoints(FULMINATIONTALENT more 0)

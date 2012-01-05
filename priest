@@ -99,12 +99,10 @@ AddIcon help=main mastery=3
 	if Speed(more 0) and BuffPresent(MINDMELTRANK2 stacks=2) Spell(MINDBLAST)
 	unless Speed(more 0) Spell(MINDBLAST)
 	#/shadow_word_pain,if=(!ticking|dot.shadow_word_pain.remains<gcd+0.5)&miss_react
-	if target.debuffExpires(SHADOWWORDPAIN mine=1) < {timeWithHaste(1.5) + 0.5} Spell(SHADOWWORDPAIN)
+	if TargetDebuffExpires(SHADOWWORDPAIN 2 haste=spell mine=1) Spell(SHADOWWORDPAIN)
 	#/devouring_plague,if=(!ticking|dot.devouring_plague.remains<gcd+1.0)&miss_react
 	unless OtherDebuffPresent(DEVOURINGPLAGUE)
-	{
-		if target.debuffExpires(DEVOURINGPLAGUE mine=1) < {timeWithHaste(1.5) + 0.5} Spell(DEVOURINGPLAGUE)
-	}
+		if TargetDebuffExpires(DEVOURINGPLAGUE 2 haste=spell mine=1) Spell(DEVOURINGPLAGUE)
 	#/vampiric_touch,if=(!ticking|dot.vampiric_touch.remains<cast_time+2.5)&miss_react
 	if target.debuffExpires(VAMPIRICTOUCH mine=1) < {castTime(VAMPIRICTOUCH) + 2.5} Spell(VAMPIRICTOUCH)
 	#/shadow_word_death,health_percentage<=25
