@@ -1,6 +1,7 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.7 2012/01/08 - Rupture ticks every 2s, so "less than 2 ticks remaining" means "less than 2s".
 # 4.3.6 2012/01/08 - Fix typo that was breaking Assassination script.
 # 4.3.5 2012/01/08 - Move Shadow Dance to the CD icon and only handle energy pooling (for ShD and Vanish)
 #                        in the CD icon. The main icon will continue to show actions for buff mainenance.
@@ -134,9 +135,9 @@ AddIcon help=main mastery=1
 		if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
 	}
 	#if ( talents.vendetta -> rank() ) { /rupture,if=(!ticking|ticks_remain<2)&time<6 }
-	if TalentPoints(VENDETTATALENT more 0) and TargetDebuffExpires(RUPTURE 4 mine=1) and TimeInCombat(less 6) Spell(RUPTURE usable=1)
+	if TalentPoints(VENDETTATALENT more 0) and TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) Spell(RUPTURE usable=1)
 	#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
-	if TargetDebuffExpires(RUPTURE 4 mine=1) and BuffPresent(SLICEANDDICE 6) Spell(RUPTURE usable=1)
+	if TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) Spell(RUPTURE usable=1)
 	#/envenom,if=combo_points>=4&buff.envenom.down
 	if ComboPoints(more 3) and BuffExpires(ENVENOM 0) Spell(ENVENOM)
 	#/envenom,if=combo_points>=4&energy>90
