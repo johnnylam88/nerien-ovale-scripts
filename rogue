@@ -1,6 +1,7 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.6 2012/01/08 - Fix typo that was breaking Assassination script.
 # 4.3.5 2012/01/08 - Move Shadow Dance to the CD icon and only handle energy pooling (for ShD and Vanish)
 #                        in the CD icon. The main icon will continue to show actions for buff mainenance.
 # 4.3.4 2012/01/03 - Add some talent checks for various abilities.
