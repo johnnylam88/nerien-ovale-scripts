@@ -1,6 +1,8 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 2012/01/08 - Move Shadow Dance to the CD icon and only handle energy pooling (for ShD and Vanish)
+#                        in the CD icon. The main icon will continue to show actions for buff mainenance.
 # 4.3.4 2012/01/03 - Add some talent checks for various abilities.
 # 4.3.3 2012/01/03 - Improve energy pooling and don't suggest Vanishing if already stealthed.
 # 4.3.2 2011/12/31 - Treat Vanish as a CD due to the long cooldown and remove some unnecessary functions.
@@ -126,7 +128,7 @@ AddIcon help=main mastery=1
 	unless TalentPoints(CUTTOTHECHASETALENT more 0)
 	{
 		#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
-		if Mana(less 60) and Buffexpires(SLICEANDDICE 5) Spell(SLICEANDDICE usable=1 nored=1)
+		if Mana(less 60) and BuffExpires(SLICEANDDICE 5) Spell(SLICEANDDICE usable=1 nored=1)
 		#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
 		if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
 	}
