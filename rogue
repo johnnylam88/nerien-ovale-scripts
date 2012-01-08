@@ -223,43 +223,31 @@ AddIcon help=main mastery=3
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
-	#/pool_energy,for_next=1
-	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
-	if TalentPoints(SHADOWDANCETALENT more 0) and Mana(more 85) and ComboPoints(less 5) and Stealthed(no) Spell(SHADOWDANCE)
-	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
+	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
+	if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
+	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
+	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
+	#/ambush,if=combo_points<=4
+	if ComboPoints(less 5) Spell(AMBUSH usable=1)
+	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
+	if BuffExpires(SLICEANDDICE 3) and ComboPoints(equal 5) Spell(SLICEANDDICE)
+	#/rupture,if=combo_points=5&!ticking
+	if ComboPoints(equal 5) unless TargetDebuffPresent(RUPTURE mine=1) if TargetDeadIn(more 12) Spell(RUPTURE)
+	#/recuperate,if=combo_points=5&remains<3
+	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
+	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
+	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
+	if TalentPoints(HEMORRHAGETALENT more 0)
 	{
-		#/pool_energy,for_next=1
-		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
-		unless TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
-			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
-		{
-			#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
-			if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
-			#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
-			if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
-			#/ambush,if=combo_points<=4
-			if ComboPoints(less 5) Spell(AMBUSH usable=1)
-			#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
-			if BuffExpires(SLICEANDDICE 3) and ComboPoints(equal 5) Spell(SLICEANDDICE)
-			#/rupture,if=combo_points=5&!ticking
-			if ComboPoints(equal 5) unless TargetDebuffPresent(RUPTURE mine=1) if TargetDeadIn(more 12) Spell(RUPTURE)
-			#/recuperate,if=combo_points=5&remains<3
-			if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
-			#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-			if ComboPoints(equal 5) and TargetDebuffPresent(RUPTURE 1 mine=1) Spell(EVISCERATE)
-			if TalentPoints(HEMORRHAGETALENT more 0)
-			{
-				#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
-				if ComboPoints(less 4) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
-				#/hemorrhage,if=combo_points<5&energy>80&dot.hemorrhage.remains<4
-				if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
-			}
-			#/backstab,if=combo_points<4
-			if ComboPoints(less 4) Spell(BACKSTAB)
-			#/backstab,if=combo_points<5&energy>80
-			if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
-		}
+		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
+		if ComboPoints(less 4) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
+		#/hemorrhage,if=combo_points<5&energy>80&dot.hemorrhage.remains<4
+		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
 	}
+	#/backstab,if=combo_points<4
+	if ComboPoints(less 4) Spell(BACKSTAB)
+	#/backstab,if=combo_points<5&energy>80
+	if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
 }
 
 AddIcon help=cd mastery=3
@@ -280,6 +268,7 @@ AddIcon help=cd mastery=3
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#/pool_energy,for_next=1
 	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
+	if TalentPoints(SHADOWDANCETALENT more 0) and Mana(more 85) and ComboPoints(less 5) and Stealthed(no) Spell(SHADOWDANCE)
 	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
 		#/pool_energy,for_next=1
@@ -292,10 +281,10 @@ AddIcon help=cd mastery=3
 		{
 			#/preparation,if=cooldown.vanish.remains>60
 			unless 60s before Spell(VANISH) Spell(PREPARATION)
+			Item(Trinket0Slot usable=1)
+			Item(Trinket1Slot usable=1)
 		}
 	}
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 AddIcon size=small
