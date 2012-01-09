@@ -128,19 +128,22 @@ AddIcon help=main mastery=1
 	#/garrote
 	Spell(GARROTE usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.down
-	unless BuffPresent(SLICEANDDICE) Spell(SLICEANDDICE usable=1)
+	unless BuffPresent(SLICEANDDICE) if ComboPoints(more 0) Spell(SLICEANDDICE)
 	#if ( ! talents.cut_to_the_chase -> rank() )
 	unless TalentPoints(CUTTOTHECHASETALENT more 0)
 	{
 		#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
-		if Mana(less 60) and BuffExpires(SLICEANDDICE 5) Spell(SLICEANDDICE usable=1 nored=1)
+		if Mana(less 60) and BuffExpires(SLICEANDDICE 5) and ComboPoints(more 0) Spell(SLICEANDDICE nored=1)
 		#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
 		if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
 	}
 	#if ( talents.vendetta -> rank() ) { /rupture,if=(!ticking|ticks_remain<2)&time<6 }
-	if TalentPoints(VENDETTATALENT more 0) and TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) Spell(RUPTURE usable=1)
+	if TalentPoints(VENDETTATALENT more 0)
+	{
+		if TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) and ComboPoints(more 0) Spell(RUPTURE)
+	}
 	#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
-	if TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) Spell(RUPTURE usable=1)
+	if TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) and ComboPoints(more 0) Spell(RUPTURE)
 	#/envenom,if=combo_points>=4&buff.envenom.down
 	if ComboPoints(more 3) and BuffExpires(ENVENOM 0) Spell(ENVENOM)
 	#/envenom,if=combo_points>=4&energy>90
@@ -188,7 +191,7 @@ AddIcon help=main mastery=2
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
-	if BuffExpires(SLICEANDDICE 2) Spell(SLICEANDDICE usable=1)
+	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
 	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
