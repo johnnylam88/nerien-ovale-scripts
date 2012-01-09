@@ -116,6 +116,7 @@ ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINI
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=681)
+AddCheckBox(finisher "Separate finisher icon")
 
 # Main Assassination rotation.
 AddIcon help=main mastery=1
@@ -158,7 +159,7 @@ AddIcon help=main mastery=1
 }
 
 # Main Assassination rotation (same as above) minus Backstab/Mutilate fillers.
-AddIcon help=main mastery=1
+AddIcon help=main mastery=1 checkboxon=finisher
 {
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
@@ -244,7 +245,7 @@ AddIcon help=main mastery=2
 }
 
 # Main Combat rotation (same as above) minus Sinister Strike fillers.
-AddIcon help=main mastery=2
+AddIcon help=main mastery=2 checkboxon=finisher
 {
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
@@ -336,7 +337,7 @@ AddIcon help=main mastery=3
 }
 
 # Main Subtlety rotation (same as above) minus Backstab/Hemorrhage fillers.
-AddIcon help=main mastery=3
+AddIcon help=main mastery=3 checkboxon=finisher
 {
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
