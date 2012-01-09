@@ -87,6 +87,8 @@ Define(SHADOWDANCE 51713)
 Define(SHADOWSTEP 36554)
 	SpellInfo(SHADOWSTEP cd=20)
 	SpellAddBuff(SHADOWSTEP SHADOWSTEPBUFF=10)
+Define(SHIV 5938)
+	SpellInfo(SHIV combo=1 mana=20)
 Define(SLICEANDDICE 5171)
 	SpellInfo(SLICEANDDICE combo=-5 mana=25)
 	SpellAddBuff(SLICEANDDICE SLICEANDDICE=10)
@@ -122,6 +124,7 @@ AddIcon help=main mastery=1
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
 	#/garrote
 	Spell(GARROTE usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.down
@@ -186,6 +189,7 @@ AddIcon help=main mastery=2
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) Spell(SLICEANDDICE usable=1)
+	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
@@ -231,6 +235,7 @@ AddIcon help=main mastery=3
 	if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
 	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
+	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
 	#/ambush,if=combo_points<=4
 	if ComboPoints(less 5) Spell(AMBUSH usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
