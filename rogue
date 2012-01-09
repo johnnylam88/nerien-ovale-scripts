@@ -16,13 +16,19 @@
 
 # Buffs
 Define(DEEPINSIGHT 84747)
-Define(FINDWEAKNESS 91023)
 Define(MASTEROFSUBTLETY 31223)
 Define(MODERATEINSIGHT 84746)
 Define(OVERKILL 58426)
 Define(SHADOWSTEPBUFF 36563)
 Define(SHALLOWINSIGHT 84745)
 Define(VANISHBUFF 11327)
+
+# Debuffs
+Define(FINDWEAKNESS 91023)
+Define(HEMORRHAGEDOT 89775) # Glyph of Hemorrhage
+
+# Glyphs
+Define(GLYPHOFHEMORRHAGE 57126)
 
 # Talents
 Define(BANDITSGUILETALENT 11174)
@@ -54,6 +60,9 @@ Define(ENVENOM 32645)
 	SpellAddBuff(ENVENOM ENVENOM=5 mana=35)
 Define(EVISCERATE 2098)
 	SpellInfo(EVISCERATE combo=-5 mana=35)
+Define(GARROTE 703)
+	SpellInfo(GARROTE combo=1 mana=45)
+	SpellAddTargetDebuff(GARROTE GARROTE=18)
 Define(HEMORRHAGE 16511)
 	SpellInfo(HEMORRHAGE combo=1 mana=35)
 	SpellAddTargetDebuff(HEMORRHAGE HEMORRHAGE=60)
@@ -61,9 +70,6 @@ Define(KICK 1766)
 Define(KILLINGSPREE 51690)
 	SpellInfo(KILLINGSPREE cd=120)
 	SpellAddBuff(KILLINGSPREE KILLINGSPREE=2)
-Define(GARROTE 703)
-	SpellInfo(GARROTE combo=1 mana=45)
-	SpellAddTargetDebuff(GARROTE GARROTE=18)
 Define(MUTILATE 1329)
 	SpellInfo(MUTILATE combo=1 mana=60)
 Define(PREMEDITATION 14183)
@@ -315,12 +321,12 @@ AddIcon help=main mastery=3
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
 	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
-	if TalentPoints(HEMORRHAGETALENT more 0)
+	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
-		if ComboPoints(less 4) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
+		if ComboPoints(less 4) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
 		#/hemorrhage,if=combo_points<5&energy>80&dot.hemorrhage.remains<4
-		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
+		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
 	}
 	#/backstab,if=combo_points<4
 	if ComboPoints(less 4)
@@ -359,12 +365,12 @@ AddIcon help=main mastery=3 checkboxon=finisher
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
 	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
-	if TalentPoints(HEMORRHAGETALENT more 0)
+	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
-		if ComboPoints(less 4) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
+		if ComboPoints(less 4) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
 		#/hemorrhage,if=combo_points<5&energy>80&dot.hemorrhage.remains<4
-		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
+		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
 	}
 }
 
