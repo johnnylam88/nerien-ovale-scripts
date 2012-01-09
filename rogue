@@ -115,7 +115,7 @@ SpellList(insight 84745 84746 84747)
 ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
-AddCheckBox(hemorrhage SpellName(HEMORRHAGE) default talent=681)
+AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=681)
 
 AddIcon help=main mastery=1
 {
@@ -257,9 +257,17 @@ AddIcon help=main mastery=3
 		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(bleed 4) Spell(HEMORRHAGE)
 	}
 	#/backstab,if=combo_points<4
-	if ComboPoints(less 4) Spell(BACKSTAB)
+	if ComboPoints(less 4)
+	{
+		if TalentPoints(HEMORRHAGETALENT more 0) and CheckBoxOn(hemorrhage) Spell(HEMORRHAGE)
+		Spell(BACKSTAB)
+	}
 	#/backstab,if=combo_points<5&energy>80
-	if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
+	if ComboPoints(less 5) and Mana(more 80)
+	{
+		if TalentPoints(HEMORRHAGETALENT more 0) and CheckBoxOn(hemorrhage) Spell(HEMORRHAGE)
+		Spell(BACKSTAB)
+	}
 }
 
 AddIcon help=cd mastery=3
