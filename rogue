@@ -289,6 +289,9 @@ AddIcon help=cd mastery=2
 # Main Subtlety rotation.
 AddIcon help=main mastery=3
 {
+	# Maintain raid debuffs.
+	if CheckBoxOn(hemorrhage) and TalentPoints(HEMORRHAGETALENT more 0) and TargetDebuffExpires(bleed 2) Spell(HEMORRHAGE)
+
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
@@ -317,20 +320,12 @@ AddIcon help=main mastery=3
 		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
 	}
 	#/backstab,if=combo_points<4
-	if ComboPoints(less 4)
-	{
-		if TalentPoints(HEMORRHAGETALENT more 0) and CheckBoxOn(hemorrhage) Spell(HEMORRHAGE)
-		Spell(BACKSTAB)
-	}
+	if ComboPoints(less 4) Spell(BACKSTAB)
 	#/backstab,if=combo_points<5&energy>80
-	if ComboPoints(less 5) and Mana(more 80)
-	{
-		if TalentPoints(HEMORRHAGETALENT more 0) and CheckBoxOn(hemorrhage) Spell(HEMORRHAGE)
-		Spell(BACKSTAB)
-	}
+	if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
 }
 
-# Main Subtlety rotation (same as above) minus Backstab/Hemorrhage fillers.
+# Main Subtlety rotation (same as above) minus Backstab fillers.
 AddIcon help=main mastery=3 checkboxon=finisher
 {
 	#/apply_poison,main_hand=instant,off_hand=deadly
