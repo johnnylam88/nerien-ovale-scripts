@@ -172,9 +172,6 @@ AddIcon help=main mastery=1
 # Main Assassination rotation (same as above) minus Backstab/Mutilate fillers.
 AddIcon help=main mastery=1 checkboxon=finisher
 {
-	#/apply_poison,main_hand=instant,off_hand=deadly
-	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
-	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
@@ -252,9 +249,6 @@ AddIcon help=main mastery=2
 # Main Combat rotation (same as above) minus Sinister Strike fillers.
 AddIcon help=main mastery=2 checkboxon=finisher
 {
-	#/apply_poison,main_hand=instant,off_hand=deadly
-	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
-	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
@@ -333,9 +327,6 @@ AddIcon help=main mastery=3
 # Main Subtlety rotation (same as above) minus Backstab fillers.
 AddIcon help=main mastery=3 checkboxon=finisher
 {
-	#/apply_poison,main_hand=instant,off_hand=deadly
-	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
-	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
