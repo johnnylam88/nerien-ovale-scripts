@@ -202,12 +202,6 @@ AddIcon help=main mastery=1 checkboxon=finisher
 
 AddIcon help=cd mastery=1
 {
-	unless InCombat()
-	{
-		if WeaponEnchantExpires(mainhand 300) Item(INSTANTPOISON)
-		if WeaponEnchantExpires(offhand 300) Item(DEADLYPOISON)
-	}
-
 	#/stealth
 	unless InCombat() or Stealthed() Spell(STEALTH)
 	#/tolvir_potion,if=!in_combat
@@ -278,12 +272,6 @@ AddIcon help=main mastery=2 checkboxon=finisher
 
 AddIcon help=cd mastery=2
 {
-	unless InCombat()
-	{
-		if WeaponEnchantExpires(mainhand 300) Item(INSTANTPOISON)
-		if WeaponEnchantExpires(offhand 300) Item(DEADLYPOISON)
-	}
-
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/kick
@@ -376,12 +364,6 @@ AddIcon help=main mastery=3 checkboxon=finisher
 
 AddIcon help=cd mastery=3
 {
-	unless InCombat()
-	{
-		if WeaponEnchantExpires(mainhand 300) Item(INSTANTPOISON)
-		if WeaponEnchantExpires(offhand 300) Item(DEADLYPOISON)
-	}
-
 	#/stealth
 	unless InCombat() or Stealthed() Spell(STEALTH)
 	#/tolvir_potion,if=!in_combat
