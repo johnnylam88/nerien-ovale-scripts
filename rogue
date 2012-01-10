@@ -1,6 +1,11 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.8 2012/01/09 - Warn when rogue is out of melee range by displaying "Pick Herbs" texture.
+#                    Checkbox for toggling display of "finishers-only" icon to track which (de)buff needs
+#                        refreshing next.
+#                    Fix Subtlety rotation by checking for Hemorrhage DoT and refreshing with Hemorrhage.
+#                    Remove poisoning weapons from the CD icons.
 # 4.3.7 2012/01/08 - Rupture ticks every 2s, so "less than 2 ticks remaining" means "less than 2s".
 # 4.3.6 2012/01/08 - Fix typo that was breaking Assassination script.
 # 4.3.5 2012/01/08 - Move Shadow Dance to the CD icon and only handle energy pooling (for ShD and Vanish)
