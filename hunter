@@ -132,6 +132,7 @@ AddIcon help=main mastery=1
 	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
 	#/cobra_shot
 	Spell(COBRASHOT)
+	#/steady_shot
 	Spell(STEADYSHOT)
 }
 
@@ -161,6 +162,8 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	if Mana(more 39) Spell(MULTISHOT)
 	#/cobra_shot,if=target.adds>5
 	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
 AddIcon help=cd mastery=1
@@ -211,12 +214,9 @@ AddIcon help=main mastery=2
 		#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
 		#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
 		#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
-		if ArmorSetParts(T13 more 3)
-		{
-			unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
-				unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
-					if BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
-		}
+		unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
+			unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
+				if BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
 		#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 		#	buff.rapid_fire.up|target.health_pct>90
 		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
@@ -320,6 +320,8 @@ AddIcon help=main mastery=3
 	}
 	#/cobra_shot
 	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
 AddIcon help=offgcd mastery=3
@@ -342,6 +344,8 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 	if Mana(more 39) Spell(MULTISHOT)
 	#/cobra_shot,if=target.adds>2
 	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
 AddIcon help=cd mastery=3
