@@ -13,7 +13,7 @@
 ## defines ##
 
 # Buffs
-Define(CHRONOHUNTER 105919) # 4pT13 buff; 110s ICD(?)
+Define(CHRONOHUNTER 105919) # 4pT13 buff; 105s ICD(?)
 Define(FIRE 82926)
 Define(FRENZYEFFECT 19615)
 Define(IMPROVEDSTEADYSHOT 53244) # Improved Steady Shot (Rank 3)
@@ -216,13 +216,13 @@ AddIcon help=main mastery=2
 		#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
 		unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
 			unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
-				if BuffGain(CHRONOHUNTER 110) Spell(ARCANESHOT)
+				if BuffGain(CHRONOHUNTER 105) Spell(ARCANESHOT)
 		#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 		#	buff.rapid_fire.up|target.health_pct>90
 		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
 		{
 			if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) if Mana(more 49) Spell(AIMEDSHOT)
-			unless BuffGain(CHRONOHUNTER 110) if Mana(more 49) Spell(AIMEDSHOT)
+			unless BuffGain(CHRONOHUNTER 105) if Mana(more 49) Spell(AIMEDSHOT)
 		}
 		if {BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90)} and Mana(more 49) Spell(AIMEDSHOT)
 	}
