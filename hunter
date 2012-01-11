@@ -172,7 +172,6 @@ AddIcon help=cd mastery=1
 
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
-	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
@@ -352,7 +351,6 @@ AddIcon help=cd mastery=3
 
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
-	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/hunters_mark
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
