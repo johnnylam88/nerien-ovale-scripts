@@ -1,6 +1,10 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.4 2012/01/12 - Use Steady Shot when Cobra Shot isn't yet available.
+#                    Hunter 4pT13 has a 105s ICD.
+#                    Tolerate fewer consecutive Steady Shots to prevent focus capping.
+#                    Only MM hunters have access to Silencing Shot.
 # 4.3.3 2012/01/04 - Fix AoE checkbox name.
 # 4.3.2 2012/01/03 - Add Steady Shot for low-level BM hunters.
 #                    Add conditions for using Aimed Shot and Arcane Shot as focus dumps depending on 4pT13
