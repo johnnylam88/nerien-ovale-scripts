@@ -1,6 +1,10 @@
 # Shaman Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.3 2012/01/14 - Simplify some conditions using haste=spell modifier for TargetDebuffExpires().
+#                  - Fix Glyph of Stoneclaw Totem usage.
+#                  - Add Elemental AoE rotation icon.
+#                  - Add Restoration icons for healing spells.
 # 4.3.2 2012/01/04 - Update shaman profiles to SimulationCraft, Tier 13H:
 #                        Elemental (r10707), Enhancement (r10630)
 #                    Move Enhancement AoE rotation to a separate icon.
