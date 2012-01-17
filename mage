@@ -1,6 +1,7 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.13 2012/01/17 - Use new item() function in Ovale 4.3.4 to replace InstantConjureManaGem() function.
 # 4.3.12 2012/01/04 - manaPercent() returns a percent, not a percentage, so don't scale it.
 # 4.3.11 2012/01/04 - Tighten up the conditions for when to cast Conjure Mana Gem in Arcane spec.
 #                   - Minor bug fixes to Arcane rotation.
@@ -135,27 +136,6 @@ AddCheckBox(cycles "Separate Cycles" mastery=1)
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
 AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
 
-AddFunction InstantConjureManaGem
-{
-	if ItemCount(MANAGEMITEM equal 0 charges=1)
-	{
-		# if target.timeToDie() > spell(MANAGEMITEM) Spell(CONJUREMANAGEM)
-		# Mana Gem has a cooldown of 2 minutes, so check in increments of 10s up to 120s.
-		if 10s before Item(MANAGEMITEM) and TargetDeadIn(more 10) Spell(CONJUREMANAGEM)
-		if 20s before Item(MANAGEMITEM) and TargetDeadIn(more 20) Spell(CONJUREMANAGEM)
-		if 30s before Item(MANAGEMITEM) and TargetDeadIn(more 30) Spell(CONJUREMANAGEM)
-		if 40s before Item(MANAGEMITEM) and TargetDeadIn(more 40) Spell(CONJUREMANAGEM)
-		if 50s before Item(MANAGEMITEM) and TargetDeadIn(more 50) Spell(CONJUREMANAGEM)
-		if 60s before Item(MANAGEMITEM) and TargetDeadIn(more 60) Spell(CONJUREMANAGEM)
-		if 70s before Item(MANAGEMITEM) and TargetDeadIn(more 70) Spell(CONJUREMANAGEM)
-		if 80s before Item(MANAGEMITEM) and TargetDeadIn(more 80) Spell(CONJUREMANAGEM)
-		if 90s before Item(MANAGEMITEM) and TargetDeadIn(more 90) Spell(CONJUREMANAGEM)
-		if 100s before Item(MANAGEMITEM) and TargetDeadIn(more 100) Spell(CONJUREMANAGEM)
-		if 110s before Item(MANAGEMITEM) and TargetDeadIn(more 110) Spell(CONJUREMANAGEM)
-		if 120s before Item(MANAGEMITEM) and TargetDeadIn(more 120) Spell(CONJUREMANAGEM)
-	}
-}
-
 AddFunction ArcaneBurnCycle
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
@@ -176,7 +156,7 @@ AddFunction ArcaneBurnCycle
 			Spell(MANAGEMITEM)
 	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) InstantConjureManaGem()
+	if BuffPresent(PRESENCEOFMIND) and target.timeToDie() > item(MANAGEMITEM) Spell(CONJUREMANAGEM)
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
@@ -210,7 +190,7 @@ AddFunction ArcaneHoverCycle
 			Spell(MANAGEMITEM)
 	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) InstantConjureManaGem()
+	if BuffPresent(PRESENCEOFMIND) and target.timeToDie() > item(MANAGEMITEM) Spell(CONJUREMANAGEM)
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
