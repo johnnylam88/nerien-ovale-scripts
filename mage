@@ -210,18 +210,20 @@ AddFunction ArcaneHoverCycle
 	#	/arcane_blast,if=target.time_to_die<20|\
 	#		((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
 	if TargetDeadIn(less 20) Spell(ARCANEBLAST)
-	if 20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)
-		if ManaPercent(more 22) Spell(ARCANEBLAST)
-	if ArmorSetParts(T13 more 3) and BuffPresent(ARCANEPOWER) and ManaPercent(more 88) Spell(ARCANEBLAST)
+	if {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)} and ManaPercent(more 22)
+	{
+		if ArmorSetParts(T13 more 3) and BuffPresent(ARCANEPOWER) and ManaPercent(more 88) Spell(ARCANEBLAST)
+		unless ArmorSetParts(T13 more 3) Spell(ARCANEBLAST)
+	}
 	#/arcane_blast,if=buff.arcane_blast.remains<0.8&buff.arcane_blast.stack=4
 	unless Speed(more 0) if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
 	#/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
 	#/arcane_missiles,if=mana_pct_nonproc<93&buff.arcane_missiles.react&mage_armor_timer>2
 	if ManaPercent(less 93) and BuffPresent(ARCANEMISSILEBUFF) Spell(ARCANEMISSILES)
 	#/arcane_barrage,if=mana_pct_nonproc<87&buff.arcane_blast.stack=2
-	if ManaPercent(less 87) and DebuffPresent(ARCANEBLASTDEBUFF stacks=2) Spell(ARCANEBARRAGE)
+	if ManaPercent(less 87) and DebuffPresent(ARCANEBLASTDEBUFF stacks=2) unless DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
 	#/arcane_barrage,if=mana_pct_nonproc<90&buff.arcane_blast.stack=3
-	if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
+	if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3) unless DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
 	#/arcane_barrage,if=mana_pct_nonproc<92&buff.arcane_blast.stack=4
 	if ManaPercent(less 92) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
 	#/arcane_blast
