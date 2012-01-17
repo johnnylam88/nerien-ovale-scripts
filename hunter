@@ -1,6 +1,7 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 2012/01/17 - Update all specs to SC, T13H (r10913)
 # 4.3.4 2012/01/12 - Use Steady Shot when Cobra Shot isn't yet available.
 #                    Hunter 4pT13 has a 105s ICD.
 #                    Tolerate fewer consecutive Steady Shots to prevent focus capping.
@@ -177,7 +178,7 @@ AddIcon help=cd mastery=1
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/hunters_mark
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
@@ -281,7 +282,7 @@ AddIcon help=cd mastery=2
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/hunters_mark
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60|buff.rapid_fire.react
@@ -356,7 +357,7 @@ AddIcon help=cd mastery=3
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/hunters_mark
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 20) Spell(HUNTERSMARK nored=1)
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
