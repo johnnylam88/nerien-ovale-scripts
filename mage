@@ -334,12 +334,14 @@ AddIcon help=cd mastery=1
 		if TalentPoints(ARCANEPOWERTALENT more 0)
 		{
 			if BuffPresent(IMPROVEDMANAGEM) and BuffPresent(STOLENTIME stacks=9) Spell(ARCANEPOWER)
-			if BuffPresent(STOLENTIME stacks=10) unless 30s before Item(MANAGEMITEM) or 10s before Spell(EVOCATION) Spell(ARCANEPOWER)
+			if BuffPresent(STOLENTIME stacks=10)
+				unless 30s before Item(MANAGEMITEM) or 10s before Spell(EVOCATION) Spell(ARCANEPOWER)
 		}
 		unless TalentPoints(ARCANEPOWERTALENT more 0) if BuffPresent(IMPROVEDMANAGEM) Spell(ARCANEPOWER)
+		if BuffPresent(ARCANEPOWER) Spell(MIRRORIMAGE)
+		unless 20s before Spell(ARCANEPPOWER) or TargetDeadIn(less 15) Spell(MIRRORIMAGE)
 	}
 	unless TalentPoints(ARCANEPOWERTALENT more 0) Spell(MIRRORIMAGE)
-	if BuffPresent(ARCANEPOWER) or {{spell(ARCANEPOWER) > 20} and TargetDeadIn(more 15)} Spell(MIRRORIMAGE)
 	#/presence_of_mind
 	Spell(PRESENCEOFMIND)
 	Item(Trinket0Slot usable=1)
