@@ -134,13 +134,20 @@ ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMEN
 			DEEPFREEZE ICELANCE)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL))
-AddCheckBox(cycles "Separate Cycles" mastery=1)
+
+# Separate out the full Arcane rotation into "burn" (DPS) rotation and "hover" (DPM)
+# rotation to allow the player to choose when to enter each part of the rotation.
+# Show a +/- icon between the two rotations to show which rotation is optimal, with
+# "+" meaning use the burn (left) rotation, and "-" meaning to use the hover (right)
+# rotation.
+AddCheckBox(separate "Separate DPS/DPM rotations" mastery=1)
 
 # Frost DPS Rotation from Kuni's Frost Mage PvE Guide:
 #    http://www.mmo-champion.com/threads/813785-Kuni-s-Frost-Mage-PVE-Guide
 AddCheckBox(kunifrost "Kuni's DPS Rotation" mastery=3)
 
-AddFunction ArcaneBurnCycle
+# Arcane DPS rotation for maximum burst damage.
+AddFunction ArcaneDPS
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
 
@@ -176,7 +183,9 @@ AddFunction ArcaneBurnCycle
 	Spell(ARCANEBLAST)
 }
 
-AddFunction ArcaneHoverCycle
+# Arcane DPM rotation for mana-efficient damage by keeping mana level high
+# to make use of mastery.
+AddFunction ArcaneDPM
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
 
@@ -236,12 +245,13 @@ AddFunction ArcaneHoverCycle
 	Spell(ARCANEBLAST)
 }
 
-AddIcon help=main mastery=1 checkboxoff=cycles
+# Complete Arcane spell rotation.
+AddIcon help=main mastery=1 checkboxoff=separate
 {
 	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
 	#    cooldown.evocation.remains+15<target.time_to_die
 	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		ArcaneBurnCycle()
+		ArcaneDPS()
 
 	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
 	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
@@ -249,24 +259,30 @@ AddIcon help=main mastery=1 checkboxoff=cycles
 	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
 		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
-		ArcaneHoverCycle()
+		ArcaneDPM()
 
 	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
 	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
-		ArcaneBurnCycle()
+		ArcaneDPS()
 
-	ArcaneHoverCycle()
+	ArcaneDPM()
 }
 
-# Copy of above but with textures instead of cycles.
-# green is for DPS cycle:  Texture(Spell_nature_elementalshields)
-# red is for DPM cycle:    Texture(Inv_misc_orb_05)
-AddIcon help=main mastery=1 checkboxon=cycles
+# Separate DPS "burn" rotation
+AddIcon help=main mastery=1 checkboxon=separate
+{
+	ArcaneDPS()
+}
+
+# Copy of the complete Arcane spell rotation but with textures instead of functions.
+# "+" is for DPS rotation: Texture(Spell_chargepositive)
+# "-" is for DPM rotation: Texture(Spell_chargenegative)
+AddIcon mastery=1 checkboxon=separate
 {
 	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
 	#    cooldown.evocation.remains+15<target.time_to_die
 	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Spell_nature_elementalshields)
+		Texture(Spell_chargepositive)
 
 	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
 	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
@@ -274,25 +290,19 @@ AddIcon help=main mastery=1 checkboxon=cycles
 	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
 		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Inv_misc_orb_05)
+		Texture(Spell_chargenegative)
 
 	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
 	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
-		Texture(Spell_nature_elementalshields)
+		Texture(Spell_chargepositive)
 
-	Texture(Inv_misc_orb_05)
+	Texture(Spell_chargenegative)
 }
 
-# DPS "burn" cycle
-AddIcon mastery=1 checkboxon=cycles
+# Separate DPM "hover" rotation
+AddIcon help=main mastery=1 checkboxon=separate
 {
-	ArcaneBurnCycle()
-}
-
-# DPM "hover" cycle
-AddIcon mastery=1 checkboxon=cycles
-{
-	ArcaneHoverCycle()
+	ArcaneDPM()
 }
 
 AddIcon help=cd mastery=1
