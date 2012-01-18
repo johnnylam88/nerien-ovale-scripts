@@ -1,6 +1,10 @@
 # Mage Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3 16 2012/01/18 - Use a +/- icon instead of green/red icon to note whether the DPS(+) or DPM(-) rotation
+#                         is currently optimal while in Arcane spec. Move the +/- icon between the DPS and DPM
+#                         rotation icons to make it easier to see when to switch to the other rotation.
+#                     Correct the conditions for using Mirror Image when in Arcane spec.
 # 4.3.15 2012/01/17 - Check number of charges on Mana Gem before conjuring it in combat in Arcane spec.
 #                     Suggest Evocation in the Arcane hover cycle as well.
 # 4.3.14 2012/01/17 - Use Arcane Barrage appropriately by checking the number of stacks of Arcane Blast correctly.
