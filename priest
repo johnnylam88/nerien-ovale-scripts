@@ -1,6 +1,7 @@
 # Shadow Priest Ovale script based on SimulationCraft profile
 #
 # Revision History
+# 4.3.5 2012/01/19 - Code simplifications.
 # 4.3.4 2011/12/16 - Use actual potion name in checkbox for potion use.
 #                    Allow for non-talented Mind Blast.
 # 4.3.3 2011/12/08 - More accurately transcribe the DoT rules under haste.
