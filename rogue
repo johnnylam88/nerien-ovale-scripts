@@ -1,6 +1,8 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.11 2012/01/22 - Move Shadow Dance and Vanish to a separate CD window.
+#                     Change the texture for "out of melee range" to "dual wield" icon.
 # 4.3.10 2012/01/18 - Only Stealth in Assassination spec if talented into Overkill.
 # 4.3.9  2012/01/12 - Don't suggest poisons in the finishers-only icon.
 # 4.3.8  2012/01/09 - Warn when rogue is out of melee range by displaying "Pick Herbs" texture.
@@ -139,7 +141,7 @@ AddIcon help=main mastery=1
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
-	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
+	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/garrote
 	Spell(GARROTE usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.down
@@ -176,7 +178,7 @@ AddIcon help=main mastery=1 checkboxon=finisher
 {
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
-	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
+	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/garrote
 	Spell(GARROTE usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.down
@@ -235,7 +237,7 @@ AddIcon help=main mastery=2
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
-	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
+	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
@@ -256,7 +258,7 @@ AddIcon help=main mastery=2 checkboxon=finisher
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
-	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
+	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
@@ -302,7 +304,7 @@ AddIcon help=main mastery=3
 	if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
 	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
-	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
+	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/ambush,if=combo_points<=4
 	if ComboPoints(less 5) Spell(AMBUSH usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
@@ -335,7 +337,7 @@ AddIcon help=main mastery=3 checkboxon=finisher
 	if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
 	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
-	unless TargetInRange(SHIV) Texture(inv_misc_flower_02)
+	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/ambush,if=combo_points<=4
 	if ComboPoints(less 5) Spell(AMBUSH usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
@@ -359,12 +361,6 @@ AddIcon help=cd mastery=3
 {
 	#/stealth
 	unless InCombat() or Stealthed() Spell(STEALTH)
-	#/tolvir_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
-	#/kick
-	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
-	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#/pool_energy,for_next=1
 	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
 	if TalentPoints(SHADOWDANCETALENT more 0) and Mana(more 85) and ComboPoints(less 5) and Stealthed(no) Spell(SHADOWDANCE)
@@ -380,10 +376,20 @@ AddIcon help=cd mastery=3
 		{
 			#/preparation,if=cooldown.vanish.remains>60
 			unless 60s before Spell(VANISH) Spell(PREPARATION)
-			Item(Trinket0Slot usable=1)
-			Item(Trinket1Slot usable=1)
 		}
 	}
+}
+
+AddIcon help=cd mastery=3
+{
+	#/tolvir_potion,if=!in_combat
+	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	#/kick
+	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
+	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
+	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
 }
 
 AddIcon size=small
