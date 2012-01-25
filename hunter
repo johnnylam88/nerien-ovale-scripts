@@ -318,7 +318,7 @@ AddIcon help=main mastery=3
 	unless BuffPresent(LOCKANDLOAD)
 	{
 		#/arcane_shot,if=focus>=50&!buff.lock_and_load.react
-		if ArmorSetParts(T13 more 1) Mana(more 49) Spell(ARCANESHOT)
+		if ArmorSetParts(T13 more 1) and Mana(more 49) Spell(ARCANESHOT)
 		#/arcane_shot,if=focus>=70&!buff.lock_and_load.react (Hunter_SV_T11H, r10100)
 		unless ArmorSetParts(T13 more 1) if Mana(more 69) Spell(ARCANESHOT)
 	}
