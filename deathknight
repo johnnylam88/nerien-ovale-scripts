@@ -1,14 +1,17 @@
 # Death Knight Ovale script based on SimulationCraft profiles
 #
 # Revision History
-# 4.3.4 2012/01/04 - Checkbox for toggling AoE rotation icon.
-# 4.3.3 2012/01/03 - Optimal conditions for refreshing diseases based on talents in Frost spec.
-# 4.3.2 2011/12/20 - Checkbox for Masterfrost rotation.
-#                    Pre-cast Unholy Presence before entering combat.
-#                    Fix syntax errors.
-# 4.3.1 2011/12/15 - Initial version based on Ovale default script.
-#                    Use death knight profiles from SimulationCraft, Tier 13H:
-#                        Frost (r10538), Unholy (r10538)
+# 4.3.4 (2012/01/04)
+#   - Checkbox for toggling AoE rotation icon.
+# 4.3.3 (2012/01/03)
+#   - Optimal conditions for refreshing diseases based on talents in Frost spec.
+# 4.3.2 (2011/12/20)
+#   - Checkbox for Masterfrost rotation.
+#   - Pre-cast Unholy Presence before entering combat.
+#   - Fix syntax errors.
+# 4.3.1 (2011/12/15)
+#   - Initial version based on Ovale default script.
+#   - Use death knight profiles from SimulationCraft, Tier 13H: Frost (r10538), Unholy (r10538)
 #
 # Frost-1H:
 #	talents=http://www.wowhead.com/talent#deathknight-203200000000000000003133000223311201230103000000000000000000
