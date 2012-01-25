@@ -11,6 +11,10 @@
 # 4.3.2 2011/12/08 - Move SW:D at low mana levels to mana icon, and Evangelism to CD icon.
 # 4.3.1 2011/12/07 - Initial version using shadow priest profile from SimulationCraft, Tier 13H (r10402).
 #                    Mind Spike usage from default Ovale script.
+#
+# Shadow:
+#	talents=http://www.wowhead.com/talent#priest-032212000000000000000000000000000000000000322032210201222100231
+#	glyphs=mind_flay/shadow_word_pain/shadow_word_death/spirit_tap
 
 ## defines ##
 

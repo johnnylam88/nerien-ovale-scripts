@@ -20,6 +20,18 @@
 # 4.3.1  2011/12/06 - Initial version based on Ovale default script.
 #                     Use rogue profiles from SimulationCraft, Tier 13H:
 #                         Assassination (r10526), Combat (r10526), Subtlety (r10633)
+#
+# Assassination:
+#	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000
+#	glyphs=mutilate/backstab/rupture/expose_armor/tricks_of_the_trade
+#
+# Combat:
+#	talents=http://www.wowhead.com/talent#rogue-023200000000000000023320303120300123210030000000000000000
+#	glyphs=adrenaline_rush/sinister_strike/slice_and_dice/blade_flurry/tricks_of_the_trade/feint/poisons/safe_fall/blurred_speed
+#
+# Subtlety:
+#	talents=http://www.wowhead.com/talent#rogue-023003000000000000000200000000000000000332031321310012321
+#	glyphs=backstab/hemorrhage/slice_and_dice/feint/sprint/tricks_of_the_trade/blurred_speed/poisons/safe_fall
 
 ## defines ##
 

@@ -9,6 +9,18 @@
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use death knight profiles from SimulationCraft, Tier 13H:
 #                        Frost (r10538), Unholy (r10538)
+#
+# Frost-1H:
+#	talents=http://www.wowhead.com/talent#deathknight-203200000000000000003133000223311201230103000000000000000000
+#	glyphs=horn_of_winter/blood_tap/obliterate/frost_strike/howling_blast
+#
+# Frost-1H, Masterfrost:
+#	talents=http://www.wowhead.com/talent#deathknight-203200000000000000003133000223311201230103000000000000000000
+#	glyphs=horn_of_winter/blood_tap/obliterate/frost_strike/howling_blast
+#
+# Unholy-2H:
+#	talents=http://www.wowhead.com/talent#deathknight-203200000000000000002000000000000000000013300321230131021231
+#	glyphs=antimagic_shell/blood_boil/pestilence/blood_tap/deaths_embrace/horn_of_winter/death_coil/scourge_strike/raise_dead
 
 ## defines ##
 

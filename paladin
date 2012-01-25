@@ -8,6 +8,10 @@
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use paladin profile from SimulationCraft, Tier 13H (r10489)
 #                    Use EJ prot pally rotation.
+#
+# Retribution:
+#	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
+#	glyphs=the_ascetic_crusader/hammer_of_wrath/rebuke/templars_verdict/exorcism/seal_of_truth
 
 ## defines ##
 

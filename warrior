@@ -9,6 +9,18 @@
 # 4.3.1 2011/12/15 - Initial version based on Ovale default script.
 #                    Use warrior profiles from SimulationCraft, Tier 13H:
 #                        Arms (r10571), Fury-1H (r10571), Fury-2H (r10571)
+#
+# Arms:
+#	talents=http://www.wowhead.com/talent#warrior-3212030312021231220103220000000000000000030000000000000000000
+#	glyphs=colossus_smash/sweeping_strikes/rapid_charge/enduring_victory/battle/berserker_rage/mortal_strike/slam/overpower
+#
+# Fury-1H:
+#	talents=http://www.wowhead.com/talent#warrior-3200030000000000000003222103130111122320120000000000000000000
+#	glyphs=colossus_smash/death_wish/victory_rush/bloody_healing/berserker_rage/furious_sundering/bloodthirst/slam/raging_blow
+#
+# Fury-2H:
+#	talents=http://www.wowhead.com/talent#warrior-3200030000000000000003222203130111022321020000000000000000000
+#	glyphs=death_wish/cleaving/heroic_throw/bloody_healing/battle/berserker_rage/bloodthirst/raging_blow/slam
 
 ## defines ##
 

@@ -16,6 +16,18 @@
 # 4.3.1 2011/12/22 - Initial version based on default Ovale script and SimulationCraft, Tier 13H profiles:
 #                        BM (r10533), MM (r10576), SV (r10526)
 #                    Support Silencing Shot and summoning pets.
+#
+# BM:
+#	talents=http://www.wowhead.com/talent#hunter-2330230311320112121230200000000000000003000000000000000000
+#	glyphs=kill_command/arcane_shot/kill_shot/bestial_wrath
+#
+# MM:
+#	talents=http://www.wowhead.com/talent#hunter-0230020000000000000230232003212023122103000000000000000000
+#	glyphs=steady_shot/aimed_shot/rapid_fire
+#
+# SV:
+#	talents=http://www.wowhead.com/talent#hunter-0300000000000000000230200000000000000023203003023022121311
+#	glyphs=arcane_shot/kill_shot/explosive_shot
 
 ## defines ##
 
