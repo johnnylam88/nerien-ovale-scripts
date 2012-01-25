@@ -302,7 +302,7 @@ AddIcon help=cd mastery=2
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and  and TargetDeadIn(more 8) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and TargetDeadIn(more 8) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
 	#/explosive_trap
