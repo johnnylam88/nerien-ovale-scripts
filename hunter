@@ -1,6 +1,8 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.6 2012/01/24 - Don't use Serpent Sting on short-lived mobs in Survival spec.
+#                    Fix some focus conditions for dumping focus with Arcane Shot in Survival Spec.
 # 4.3.5 2012/01/17 - Update all specs to SC, T13H (r10913)
 # 4.3.4 2012/01/12 - Use Steady Shot when Cobra Shot isn't yet available.
 #                    Hunter 4pT13 has a 105s ICD.
@@ -300,7 +302,7 @@ AddIcon help=cd mastery=2
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and  and TargetDeadIn(more 8) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
 	#/explosive_trap
@@ -316,9 +318,9 @@ AddIcon help=main mastery=3
 	unless BuffPresent(LOCKANDLOAD)
 	{
 		#/arcane_shot,if=focus>=50&!buff.lock_and_load.react
-		if ArmorSetParts(T13 more 1) Mana(more 50) Spell(ARCANESHOT)
+		if ArmorSetParts(T13 more 1) Mana(more 49) Spell(ARCANESHOT)
 		#/arcane_shot,if=focus>=70&!buff.lock_and_load.react (Hunter_SV_T11H, r10100)
-		unless ArmorSetParts(T13 more 1) if Mana(more 70) Spell(ARCANESHOT)
+		unless ArmorSetParts(T13 more 1) if Mana(more 69) Spell(ARCANESHOT)
 	}
 	#/cobra_shot
 	Spell(COBRASHOT)
