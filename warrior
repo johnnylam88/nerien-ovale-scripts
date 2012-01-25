@@ -1,6 +1,8 @@
 # Warrior Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.4 2012/01/24 - Update Arms rotation to r10946, Fury-1H to r10943 and Fury-2H to r10940.
+#                    Move the Arms stance-dancing suggestions from the offgcd icon to the main icon.
 # 4.3.3 2012/01/03 - Add check for 2pT13 for various abilities.
 # 4.3.2 2011/12/29 - Update Arms rotation to r10711 and Fury Rotation to r10727.
 #                    Check for Tactical Mastery before stance-dancing in Arms rotation.
