@@ -27,6 +27,7 @@ Define(WRECKINGCREW 57519) # Enrage effect from Wrecking Crew (Rank 2)
 Define(GLYPHOFBERSERKERRAGE 58096)
 
 # Talents
+Define(EXECUTIONERTALENT 9644)
 Define(IMPROVEDSLAMTALENT 2233)
 Define(RAGINGBLOWTALENT 11208)
 Define(SUDDENDEATHTALENT 52437)
@@ -173,23 +174,25 @@ AddIcon help=main mastery=1
 	if TargetLifePercent(more 20) Spell(MORTALSTRIKE)
 	#/colossus_smash,if=buff.colossus_smash.down
 	unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(COLOSSUSSMASH)
-	#/mortal_strike,if=target.health_pct<=20&(buff.colossus_smash.down|dot.rend.remains<3|buff.wrecking_crew.down|rage<30)
+	#if ( talents.executioner -> ok() ) { /execute,if=buff.executioner_talent.remains<1.5 }
+	if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+	#/mortal_strike,if=target.health_pct<=20&(dot.rend.remains<3|buff.wrecking_crew.down|rage<=25|rage>=35)
 	unless TargetLifePercent(more 20)
 	{
-		unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(MORTALSTRIKE)
 		if TargetDebuffExpires(RENDDEBUFF 3 mine=1) Spell(MORTALSTRIKE)
 		unless BuffPresent(WRECKINGCREW) Spell(MORTALSTRIKE)
-		if Mana(less 30) Spell(MORTALSTRIKE)
+		if Mana(less 26) or Mana(more 34) Spell(MORTALSTRIKE)
 	}
+	#/execute,if=rage>90
+	if Mana(more 90) Spell(EXECUTE usable=1)
 	#/overpower,if=buff.taste_for_blood.up|buff.overpower.up
 	Spell(OVERPOWER usable=1)
 	#/execute
 	Spell(EXECUTE usable=1)
-	#/colossus_smash,if=buff.colossus_smash.remains<=1.5&buff.inner_rage.down
-	if TargetDebuffExpires(COLOSSUSSMASH 1.5 mine=1) unless BuffPresent(INNERRAGE) Spell(COLOSSUSSMASH)
-	#/slam,if=rage>=35|buff.battle_trance.up&buff.inner_rage.down
-	if Mana(more 34) Spell(SLAM)
-	if BuffPresent(BATTLETRANCE) unless BuffPresent(INNERRAGE) Spell(SLAM)
+	#/colossus_smash,if=buff.colossus_smash.remains<=1.5
+	if TargetDebuffExpires(COLOSSUSSMASH 1.5 mine=1) Spell(COLOSSUSSMASH)
+	#/slam,if=(rage>=35|buff.battle_trance.up|buff.deadly_calm.up)
+	if Mana(more 34) or BuffPresent(BATTLETRANCE) or BuffPresent(DEADLYCALM) Spell(SLAM)
 	#/battle_shout,if=rage<60
 	if Mana(less 60) Spell(BATTLESHOUT)
 }
@@ -199,10 +202,12 @@ AddIcon help=offgcd mastery=1
 	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
 		unless Stance(1) Spell(BATTLESTANCE)
 
-	#/heroic_leap,use_off_gcd=1
-	#Spell(HEROICLEAP)
-	#if ( glyphs.berserker_rage -> ok() ) { /berserker_rage,if=rage<=95,use_off_gcd=1 }
-	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96) Spell(BERSERKERRAGE)
+	#/heroic_leap,use_off_gcd=1,if=buff.colossus_smash.up
+	#if TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(HEROICLEAP)
+	#if ( glyphs.berserker_rage -> ok() ) { /berserker_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>1.5&rage<=95,use_off_gcd=1 }
+	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96)
+		unless BuffPresent(DEADLYCALM) or 1.5s before Spell(DEADLYCALM)
+			Spell(BERSERKERRAGE)
 	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
 	unless BuffPresent(DEADLYCALM) Spell(INNERRAGE)
 	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
@@ -211,65 +216,38 @@ AddIcon help=offgcd mastery=1
 		unless Stance(3)
 			if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76)
 				unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
-		#/stance,choose=battle,if=dot.rend.remains=0,use_off_gcd=1
+		#/stance,choose=battle,use_off_gcd=1,if=!dot.rend.ticking
 		unless Stance(1)
 			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
-		#/stance,choose=battle,if=target.health_pct>20&(buff.taste_for_blood.up|buff.overpower.up)&\
-		#	rage<=75&cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
+		#/stance,choose=battle,use_off_gcd=1,if=(buff.taste_for_blood.up|buff.overpower.up)&rage<=75&\
+		#	cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
 		unless Stance(1)
-			if TargetLifePercent(more 20) and Spell(OVERPOWER) and Mana(less 76)
+			if BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER) and Mana(less 76)
 				unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
 	}
-	#/heroic_strike,if=buff.deadly_calm.up,use_off_gcd=1
+	#/heroic_strike,use_off_gcd=1,if=buff.deadly_calm.up
 	if BuffPresent(DEADLYCALM) Spell(HEROICSTRIKE)
-	#if ( set_bonus.tier13_2pc_melee() )
-	if ArmorSetParts(T13 more 1)
+	#/heroic_strike,use_off_gcd=1,if=rage>85
+	if Mana(more 85) Spell(HEROICSTRIKE)
+	#/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct>20&(rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))
+	#/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct<=20&((rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))|buff.battle_trance.up)
+	if BuffPresent(INNERRAGE)
 	{
-		#/heroic_strike,if=target.health_pct>20&rage>85,use_off_gcd=1
-		if TargetLifePercent(more 20) and Mana(more 85) Spell(HEROICSTRIKE)
-		#/heroic_strike,if=rage>75&buff.inner_rage.up,use_off_gcd=1
-		if Mana(more 75) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
-		#/heroic_strike,if=buff.incite.up&(target.health_pct>20|(target.health_pct<=20&buff.battle_trance.up)),use_off_gcd=1
-		if BuffPresent(INCITE)
-		{
-			if TargetLifePercent(more 20) Spell(HEROICSTRIKE)
-			unless TargetLifePercent(more 20) if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
-		}
-		if BuffPresent(INNERRAGE)
-		{
-			#/heroic_strike,if=buff.inner_rage.up&target.health_pct>20&(rage>40|buff.battle_trance.up),use_off_gcd=1
-			if TargetLifePercent(more 20) and {Mana(more 40) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
-			#/heroic_strike,if=buff.inner_rage.up&target.health_pct<=20&(rage>=50|buff.battle_trance.up),use_off_gcd=1
-			unless TargetLifePercent(more 20) if {Mana(more 49) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
-		}
-	#else
-		#/heroic_strike,if=target.health_pct>20&rage>95,use_off_gcd=1
-		if TargetLifePercent(more 20) and Mana(more 95) Spell(HEROICSTRIKE)
-		#/heroic_strike,if=rage>85&buff.inner_rage.up,use_off_gcd=1
-		if Mana(more 85) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
-		#/heroic_strike,if=buff.incite.up&(target.health_pct>20|(target.health_pct<=20&buff.battle_trance.up)),use_off_gcd=1
-		if BuffPresent(INCITE)
-		{
-			if TargetLifePercent(more 20) Spell(HEROICSTRIKE)
-			unless TargetLifePercent(more 20) if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
-		}
-		if BuffPresent(INNERRAGE)
-		{
-			#/heroic_strike,if=buff.inner_rage.up&target.health_pct>20&(rage>50|buff.battle_trance.up),use_off_gcd=1
-			if TargetLifePercent(more 20) and {Mana(more 50) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
-			#/heroic_strike,if=buff.inner_rage.up&target.health_pct<=20&(rage>=60|buff.battle_trance.up),use_off_gcd=1
-			unless TargetLifePercent(more 20) if {Mana(more 59) or BuffPresent(BATTLETRANCE)} Spell(HEROICSTRIKE)
-		}
+		if Mana(more 59) Spell(HEROICSTRIKE)
+		if ArmorSetParts(T13 more 1) and Mana(more 49) Spell(HEROICSTRIKE)
+		unless TargetLifePercent(more 20)
+			if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
+	}
 }
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/sweeping_strikes,if=target.adds>0,use_off_gcd=1
 	Spell(SWEEPINGSTRIKES)
-	#/bladestorm,if=target.adds>0&!buff.deadly_calm.up&!buff.sweeping_strikes.up
-	unless BuffPresent(DEADLYCALM) or BuffPresent(SWEEPINGSTRIKES) Spell(BLADESTORM)
 	#/cleave,if=target.adds>0,use_off_gcd=1
 	Spell(CLEAVE)
+	#/bladestorm,if=target.adds>0&!buff.deadly_calm.up&!buff.sweeping_strikes.up
+	unless BuffPresent(DEADLYCALM) or BuffPresent(SWEEPINGSTRIKES) Spell(BLADESTORM)
 }
 
 AddIcon help=cd mastery=1
@@ -301,11 +279,11 @@ AddIcon help=main mastery=2
 	if TalentPoints(TITANSGRIPTALENT more 0)
 	{
 		#/execute,if=buff.executioner_talent.remains<1.5
-		if BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
 		#/colossus_smash
 		Spell(COLOSSUSSMASH)
 		#/execute,if=buff.executioner_talent.stack<5
-		unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
+		if TalentPoints(EXECUTIONERTALENT more 0) unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
 		#/bloodthirst
 		Spell(BLOODTHIRST)
 		#/raging_blow
@@ -320,31 +298,34 @@ AddIcon help=main mastery=2
 	unless TalentPoints(TITANSGRIPTALENT more 0)
 	{
 		#/execute,if=buff.executioner_talent.remains<1.5
-		if BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
-		#/execute,if=buff.executioner_talent.stack<5&rage>=30
-		unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
+		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+		#/execute,if=buff.executioner_talent.stack<5&rage>=30&cooldown.bloodthirst.remains>0.2
+		if TalentPoints(EXECUTIONERTALENT more 0)
+			unless BuffPresent(EXECUTIONER stacks=5) or 0.2s before Spell(BLOODTHIRST) if Mana(more 29) Spell(EXECUTE usable=1)
 		#/bloodthirst
 		Spell(BLOODTHIRST)
-		#/colossus_smash
-		Spell(COLOSSUSSMASH)
+		#/colossus_smash,if=buff.colossus_smash.down
+		unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(COLOSSUSSMASH)
 		#/slam,if=buff.bloodsurge.react
 		if BuffPresent(BLOODSURGE) Spell(SLAM)
-		#/execute,if=rage>=50
-		if Mana(more 49) Spell(EXECUTE usable=1)
+		#/execute,if=rage>=50&cooldown.bloodthirst.remains>0.2
+		unless 0.2s before Spell(BLOODTHIRST) if Mana(more 49) Spell(EXECUTE usable=1)
 		#/raging_blow,if=rage>60&cooldown.inner_rage.remains>2&buff.inner_rage.down
 		unless BuffPresent(INNERRAGE) or 2s before Spell(INNERRAGE)
 			if Mana(more 60) Spell(RAGINGBLOW usable=1)
-		#/raging_blow,if=rage>90&buff.inner_rage.up
-		if BuffPresent(INNERRAGE) and Mana(more 90) Spell(RAGINGBLOW usable=1)
-		#/battle_shout,if=rage<70
-		if Mana(less 70) Spell(BATTLESHOUT)
+		#/raging_blow,if=rage>90&buff.inner_rage.up&cooldown.bloodthirst.remains>0.2
+		unless 0.2s before Spell(BLOODTHIRST) if BuffPresent(INNERRAGE) and Mana(more 90) Spell(RAGINGBLOW usable=1)
+		#/raging_blow,if=buff.colossus_smash.up&rage>50
+		if TargetDebuffPresent(COLOSSUSSMASH mine=1) and Mana(more 50) Spell(RAGINGBLOW)
+		#/battle_shout,if=rage<70&cooldown.bloodthirst.remains>0.2
+		unless 0.2s before Spell(BLOODTHIRST) if Mana(less 70) Spell(BATTLESHOUT)
 	}
 }
 
 AddIcon help=offgcd mastery=2
 {
-	#/heroic_leap,use_off_gcd=1
-	#Spell(HEROICLEAP)
+	#/heroic_leap,use_off_gcd=1,if=buff.colossus_smash.up
+	#if TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(HEROICLEAP)
 	if TalentPoints(TITANSGRIPTALENT more 0)
 	{
 		#if ( set_bonus.tier13_2pc_melee() )
@@ -394,11 +375,13 @@ AddIcon help=offgcd mastery=2
 	{
 		#/berserker_rage,use_off_gcd=1,if=rage<95
 		if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 95) Spell(BERSERKERRAGE)
-		#/heroic_strike,use_off_gcd=1,if=set_bonus.tier13_2pc_melee&buff.inner_rage.up&rage>=40&target.health_pct>=20
+		#/heroic_strike,use_off_gcd=1,if=set_bonus.tier13_2pc_melee&buff.inner_rage.up&rage>=60&target.health_pct>=20
 		if TargetLifePercent(more 20)
-			if Mana(more 39) and ArmorSetParts(T13 more 1) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
+			if Mana(more 59) and ArmorSetParts(T13 more 1) and BuffPresent(INNERRAGE) Spell(HEROICSTRIKE)
 		#/heroic_strike,use_off_gcd=1,if=buff.battle_trance.up
 		if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
+		#/heroic_strike,use_off_gcd=1,if=buff.colossus_smash.up&rage>50
+		if TargetDebuffPresent(COLOSSUSSMASH mine=1) and Mana(more 50) Spell(HEROICSTRIKE)
 		#/inner_rage,use_off_gcd=1,if=buff.colossus_smash.up|cooldown.colossus_smash.remains<9
 		if TargetDebuffPresent(COLOSSUSSMASH mine=1) or 9s before Spell(COLOSSUSSMASH) Spell(INNERRAGE)
 		#/heroic_strike,use_off_gcd=1,if=(buff.incite.up|buff.colossus_smash.up)&\
