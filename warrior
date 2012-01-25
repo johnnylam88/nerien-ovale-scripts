@@ -161,6 +161,9 @@ AddListItem(shout command SpellName(COMMANDINGSHOUT))
 
 AddIcon help=main mastery=1
 {
+	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
+		unless Stance(1) Spell(BATTLESTANCE)
+
 	# Maintain raid buffs and debuffs.
 	if List(shout command) and {Mana(less 20) or BuffExpires(stamina 3)} Spell(COMMANDINGSHOUT nored=1)
 	if List(shout battle) and {Mana(less 20) or BuffExpires(strengthagility 3)} Spell(BATTLESHOUT nored=1)
@@ -168,6 +171,21 @@ AddIcon help=main mastery=1
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
+	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
+	{
+		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
+		unless Stance(3)
+			if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76)
+				unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
+		#/stance,choose=battle,use_off_gcd=1,if=!dot.rend.ticking
+		unless Stance(1)
+			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
+		#/stance,choose=battle,use_off_gcd=1,if=(buff.taste_for_blood.up|buff.overpower.up)&rage<=75&\
+		#	cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
+		unless Stance(1)
+			if {BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER)} and Mana(less 76)
+				unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
+	}
 	#/rend,if=!ticking
 	unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
 	#/mortal_strike,if=target.health_pct>20
@@ -199,8 +217,6 @@ AddIcon help=main mastery=1
 
 AddIcon help=offgcd mastery=1
 {
-	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
-		unless Stance(1) Spell(BATTLESTANCE)
 
 	#/heroic_leap,use_off_gcd=1,if=buff.colossus_smash.up
 	#if TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(HEROICLEAP)
@@ -210,21 +226,6 @@ AddIcon help=offgcd mastery=1
 			Spell(BERSERKERRAGE)
 	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
 	unless BuffPresent(DEADLYCALM) Spell(INNERRAGE)
-	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
-	{
-		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
-		unless Stance(3)
-			if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76)
-				unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
-		#/stance,choose=battle,use_off_gcd=1,if=!dot.rend.ticking
-		unless Stance(1)
-			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
-		#/stance,choose=battle,use_off_gcd=1,if=(buff.taste_for_blood.up|buff.overpower.up)&rage<=75&\
-		#	cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
-		unless Stance(1)
-			if BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER) and Mana(less 76)
-				unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
-	}
 	#/heroic_strike,use_off_gcd=1,if=buff.deadly_calm.up
 	if BuffPresent(DEADLYCALM) Spell(HEROICSTRIKE)
 	#/heroic_strike,use_off_gcd=1,if=rage>85
