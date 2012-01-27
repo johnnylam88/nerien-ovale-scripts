@@ -1,6 +1,8 @@
 # Shaman Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.4 (2012/01/26)
+#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.3 (2012/01/14)
 #   - Simplify some conditions using haste=spell modifier for TargetDebuffExpires().
 #   - Fix Glyph of Stoneclaw Totem usage.
@@ -135,6 +137,19 @@ Define(STRENGTHOFEARTHTOTEM 8075)
 Define(TREMORTOTEM 8143)
 	SpellInfo(TREMORTOTEM cd=60)
 
+# Racials & Professions
+Define(BERSERKING 26297) # troll
+	SpellInfo(BERSERKING duration=10 cd=180)
+	SpellAddBuff(BERSERKING BERSERKING=10)
+Define(BLOODFURY 33697) # orc
+	SpellInfo(BLOODFURY duration=15 cd=120)
+	SpellAddBuff(BLOODFURY BLOODFURY=15)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+Define(STONEFORM 20594) # dwarf
+	SpellInfo(STONEFORM duration=8 cd=120)
+	SpellInfo(STONEFORM STONEFORM=8)
+
 # Items
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
@@ -154,6 +169,24 @@ AddListItem(shock none L(None) default talent=5567)
 AddListItem(shock earth SpellName(EARTHSHOCK) talent=5567)
 AddListItem(shock flame SpellName(FLAMESHOCK) talent=5567)
 AddListItem(shock frost SpellName(FROSTSHOCK) talent=5567)
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	Spell(BERSERKING)
+	Spell(BLOODFURY)
+}
 
 AddIcon help=main mastery=1
 {
@@ -217,6 +250,12 @@ AddIcon help=cd mastery=1
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
+	#/use_item
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions()
+	UseRacialActions()
 	#/elemental_mastery
 	Spell(ELEMENTALMASTERY)
 	Item(Trinket0Slot usable=1)
@@ -282,8 +321,12 @@ AddIcon help=cd mastery=2
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(POTIONOFTHETOLVIR)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
+	#/use_item
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions()
+	UseRacialActions()
 	#/spirit_wolf
 	Spell(FERALSPIRIT)
 	Spell(FIREELEMENTALTOTEM)

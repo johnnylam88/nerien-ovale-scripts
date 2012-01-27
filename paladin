@@ -1,6 +1,8 @@
 # Paladin Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.6 (2012/01/26)
+#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.5 (2011/12/31)
 #   - Use the tanking rotations from Theck's MATLAB thread.
 # 4.3.4 (2011/12/29)
@@ -85,6 +87,15 @@ Define(ZEALOTRY 85696)
 	SpellInfo(ZEALOTRY cd=120)
 	SpellAddBuff(ZEALOTRY ZEALOTRY=20)
 
+# Racials & Professions
+Define(ARCANETORRENTMANA 28730) # blood elf
+	SpellInfo(ARCANETORRENTMANA sharedcd=racial cd=120)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+Define(STONEFORM 20594) # dwarf
+	SpellInfo(STONEFORM duration=8 cd=120)
+	SpellInfo(STONEFORM STONEFORM=8)
+
 # Items
 Define(EARTHENPOTION 58090)
 	Define(EARTHENPOTIONSPELL 80478)
@@ -100,6 +111,23 @@ AddCheckBox(aoe L(AOE) default)
 AddCheckBox(inqusition SpellName(INQUISITION) mastery=2)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
+}
 
 AddIcon help=main mastery=1
 {
@@ -176,6 +204,7 @@ AddIcon help=cd mastery=2
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHIELD)
+	Spell(STONEFORM)
 	Spell(GUARDIANOFANCIENTKINGS)
 	Spell(AVENGINGWRATH)
 	Spell(DIVINEPROTECTION)
@@ -238,12 +267,16 @@ AddIcon help=cd mastery=3
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	#/golemblood_potion,if=buff.bloodlust.react
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(GOLEMBLOODPOTION)
+	#/use_item
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+    #init_use_racial_actions()
+	UseRacialActions()
 	#/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
 	if 10s before Spell(ZEALOTRY) Spell(GUARDIANOFANCIENTKINGS)
 	#/zealotry,if=cooldown.guardian_of_ancient_kings.remains>0&cooldown.guardian_of_ancient_kings.remains<292
 	unless Spell(GUARDIANOFANCIENTKINGS) if 292s before Spell(GUARDIANOFANCIENTKINGS) Spell(ZEALOTRY usable=1)
 	#/avenging_wrath,if=buff.zealotry.up
 	if BuffPresent(ZEALOTRY) Spell(AVENGINGWRATH)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }

@@ -1,6 +1,8 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.7 (2012/01/26)
+#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.6 (2012/01/24)
 #   - Don't use Serpent Sting on short-lived mobs in Survival spec.
 #   - Fix some focus conditions for dumping focus with Arcane Shot in Survival Spec.
@@ -124,6 +126,21 @@ Define(TRAPLAUNCHER 77769)
 # Pet spells
 Define(GROWL 2649)
 
+# Racials & Professions
+Define(ARCANETORRENTFOCUS 80483) # blood elf
+	SpellInfo(ARCANETORRENTFOCUS cd=120)
+Define(BERSERKING 26297) # troll
+	SpellInfo(BERSERKING duration=10 cd=180)
+	SpellAddBuff(BERSERKING BERSERKING=10)
+Define(BLOODFURY 33697) # orc
+	SpellInfo(BLOODFURY duration=15 cd=120)
+	SpellAddBuff(BLOODFURY BLOODFURY=15)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+Define(STONEFORM 20594) # dwarf
+	SpellInfo(STONEFORM duration=8 cd=120)
+	SpellInfo(STONEFORM STONEFORM=8)
+
 # Items
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
@@ -141,6 +158,25 @@ AddFunction SummonPet
 {
 	if PetPresent(no) Texture(ability_hunter_beastcall)
 	if pet.Life(equal 0) Spell(REVIVEPET)
+}
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	if Mana(less 81) Spell(ARCANETORRENTFOCUS)
+	Spell(BERSERKING)
+	Spell(BLOODFURY)
 }
 
 AddIcon help=main mastery=1
@@ -203,12 +239,16 @@ AddIcon help=cd mastery=1
 	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(POTIONOFTHETOLVIR)
 	if CheckBoxOn(potions) and Glyph(GLYPHOFRAPIDFIRE) and BuffPresent(RAPIDFIRE) Item(POTIONOFTHETOLVIR)
+	#init_use_item_actions()
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions()
+	UseRacialActions()
 	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
 	unless BuffPresent(heroism) or BuffPresent(THEBEASTWITHIN) Spell(RAPIDFIRE)
 	#/fervor,if=focus<=37
 	if Mana(less 37) Spell(FERVOR)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 AddIcon help=main mastery=2
@@ -235,8 +275,9 @@ AddIcon help=main mastery=2
 		#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
 		#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
 		unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
-			unless TargetLifePercent(more 90) or BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(CHRONOHUNTER)
-				if BuffGain(CHRONOHUNTER 105) Spell(ARCANESHOT)
+			if TargetLifePercent(less 90)
+				unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(BERSERKING) or BuffPresent(CHRONOHUNTER)
+					if BuffGain(CHRONOHUNTER 105) Spell(ARCANESHOT)
 		#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 		#	buff.rapid_fire.up|target.health_pct>90
 		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
@@ -259,11 +300,14 @@ AddIcon help=main mastery=2
 		#else
 		if Glyph(GLYPHOFARCANESHOT)
 		{
-			#/aimed_shot,if=target.health_pct>90|buff.rapid_fire.up|buff.bloodlust.react
+			#/aimed_shot,if=target.health_pct>90|buff.rapid_fire.up|buff.bloodlust.react|buff.berserking.up
 			if BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or TargetLifePercent(more 90) and Mana(more 49) Spell(AIMEDSHOT)
-			#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=5)&(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react)
+			#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=5)&\
+			#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up)
 			unless Mana(less 66) and 5s before Spell(CHIMERASHOT)
-				if TargetLifePercent(less 90) unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) Spell(ARCANESHOT)
+				if TargetLifePercent(less 90)
+					unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(BERSERKING)
+						Spell(ARCANESHOT)
 		}
 	}
 	#/steady_shot
@@ -307,6 +351,12 @@ AddIcon help=cd mastery=2
 	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(POTIONOFTHETOLVIR)
 	if CheckBoxOn(potions) and Glyph(GLYPHOFRAPIDFIRE) and BuffPresent(RAPIDFIRE) Item(POTIONOFTHETOLVIR)
+	#init_use_item_actions()
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions()
+	UseRacialActions()
 	#/rapid_fire,if=!buff.bloodlust.up|target.time_to_die<=30
 	unless BuffPresent(heroism) and TargetDeadIn(more 30) Spell(RAPIDFIRE)
 	#/readiness,wait_for_rapid_fire=1
@@ -382,6 +432,12 @@ AddIcon help=cd mastery=3
 	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60) or BuffPresent(RAPIDFIRE)} Item(POTIONOFTHETOLVIR)
 	if CheckBoxOn(potions) and Glyph(GLYPHOFRAPIDFIRE) and BuffPresent(RAPIDFIRE) Item(POTIONOFTHETOLVIR)
+	#init_use_racial_actions()
+	UseRacialActions()
+	#init_use_item_actions()
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
 	#/rapid_fire
 	Spell(RAPIDFIRE)
 	Item(Trinket0Slot usable=1)

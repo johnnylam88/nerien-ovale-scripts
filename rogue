@@ -1,6 +1,8 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.12 (2012/01/26)
+#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.11 (2012/01/22)
 #   - Move Shadow Dance and Vanish to a separate CD window.
 #   - Change the texture for "out of melee range" to "dual wield" icon.
@@ -138,6 +140,21 @@ Define(VENDETTA 79140)
 	SpellInfo(VENDETTA cd=120)
 	SpellAddTargetDebuff(VENDETTA VENDETTA=30)
 
+# Racials & Professions
+Define(ARCANETORRENTENERGY 25046) # blood elf
+	SpellInfo(ARCANETORRENTENERGY sharedcd=racial cd=120)
+Define(BERSERKING 26297) # troll
+	SpellInfo(BERSERKING duration=10 cd=180)
+	SpellAddBuff(BERSERKING BERSERKING=10)
+Define(BLOODFURY 33697) # orc
+	SpellInfo(BLOODFURY duration=15 cd=120)
+	SpellAddBuff(BLOODFURY BLOODFURY=15)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+Define(STONEFORM 20594) # dwarf
+	SpellInfo(STONEFORM duration=8 cd=120)
+	SpellInfo(STONEFORM STONEFORM=8)
+
 # Items
 Define(DEADLYPOISON 2892)
 Define(INSTANTPOISON 6947)
@@ -153,6 +170,25 @@ ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINI
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=681)
 AddCheckBox(finisher "Separate finisher icon")
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	if Mana(less 81) Spell(ARCANETORRENTENERGY)
+	Spell(BERSERKING)
+	Spell(BLOODFURY)
+}
 
 # Main Assassination rotation.
 AddIcon help=main mastery=1
@@ -237,14 +273,18 @@ AddIcon help=cd mastery=1
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	#init_use_item_actions()
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions()
+	UseRacialActions()
 	#/vendetta (after opening SnD is up)
 	unless TargetDebuffPresent(VENDETTA) if BuffPresent(SLICEANDDICE) Spell(VENDETTA)
 	#/cold_blood,sync=envenom
 	if ComboPoints(more 0) and Spell(ENVENOM) Spell(COLDBLOOD)
 	#if ( talents.overkill -> rank() ) { /vanish,if=time>30&energy>50 }
 	if TalentPoints(OVERKILLTALENT more 0) and TimeInCombat(more 30) and Mana(more 50) unless BuffPresent(OVERKILL) Spell(VANISH)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 # Main Combat rotation.
@@ -302,12 +342,16 @@ AddIcon help=cd mastery=2
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	#init_use_item_actions()
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions()
+	UseRacialActions()
 	#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down
 	if Mana(less 35) and BuffPresent(SLICEANDDICE 4) unless BuffPresent(ADRENALINERUSH) Spell(KILLINGSPREE)
 	#/adrenaline_rush,if=energy<35
 	unless BuffPresent(KILLINGSPREE) if Mana(less 35) Spell(ADRENALINERUSH)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 # Main Subtlety rotation.
@@ -409,8 +453,18 @@ AddIcon help=cd mastery=3
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
+	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
+	{
+		if BuffPresent(SHADOWDANCE)
+		{
+			#use_item,if=buff.shadow_dance.up
+			UseItemActions()
+			#init_use_profession_actions( ( found_item >= 0 ) ? "" : ",if=buff.shadow_dance.up|position_front" )
+			UseProfessionActions()
+			#init_use_racial_actions( ",if=buff.shadow_dance.up" )
+			UseRacialActions()
+		}
+	}
 }
 
 AddIcon size=small
@@ -421,4 +475,5 @@ AddIcon size=small
 AddIcon size=small
 {
 	Spell(CLOACKOFSHADOWS)
+	Spell(STONEFORM)
 }

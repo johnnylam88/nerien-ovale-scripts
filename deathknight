@@ -1,6 +1,8 @@
 # Death Knight Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 (2012/01/26)
+#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.4 (2012/01/04)
 #   - Checkbox for toggling AoE rotation icon.
 # 4.3.3 (2012/01/03)
@@ -51,6 +53,7 @@ Define(DEATHSTRIKETALENT 2259)
 Define(FROSTSTRIKETALENT 1975)
 Define(HEARTSTRIKETALENT 1957)
 Define(IMPROVEDBLOODTAPTALENT 12223)
+Define(UNHOLYFRENZYTALENT 7574)
 
 # Abilities
 Define(ARMYOFTHEDEAD 42650)
@@ -135,6 +138,21 @@ Define(VAMPIRICBLOOD 55233) #blood
 	SpellInfo(VAMPIRICBLOOD cd=60)
 	SpellAddBuff(VAMPIRICBLOOD VAMPIRICBLOOD=10)
 
+# Racials & Professions
+Define(ARCANETORRENTRUNICPOWER 50613) # blood elf
+	SpellInfo(ARCANETORRENTRUNICPOWER cd=120)
+Define(BERSERKING 26297) # troll
+	SpellInfo(BERSERKING duration=10 cd=180)
+	SpellAddBuff(BERSERKING BERSERKING=10)
+Define(BLOODFURY 33697) # orc
+	SpellInfo(BLOODFURY duration=15 cd=120)
+	SpellAddBuff(BLOODFURY BLOODFURY=15)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+Define(STONEFORM 20594) # dwarf
+	SpellInfo(STONEFORM duration=8 cd=120)
+	SpellInfo(STONEFORM STONEFORM=8)
+
 # Items
 Define(EARTHENPOTION 58090)
 	Define(EARTHENPOTIONSPELL 80478)
@@ -156,6 +174,25 @@ AddCheckBox(masterfrost "Masterfrost" mastery=2)
 AddCheckBox(mindfreeze SpellName(MINDFREEZE))
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	if Mana(less 81) Spell(ARCANETORRENTRUNICPOWER)
+	Spell(BERSERKING)
+	Spell(BLOODFURY)
+}
 
 AddIcon help=main mastery=1
 {
@@ -214,6 +251,7 @@ AddIcon help=cd mastery=1
 	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	unless TotemPresent(ghoul) Spell(RAISEDEAD)
 	if TotemPresent(ghoul) and LifePercent(less 61) and Mana(more 39) Spell(DEATHPACT) 
+	Spell(STONEFORM)
 	Spell(DANCINGRUNEWEAPON usable=1)
 	Spell(VAMPIRICBLOOD)
 	if Runes(blood 1) Spell(RUNETAP)
@@ -350,13 +388,17 @@ AddIcon help=cd mastery=2
 {
 	#/golemblood_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	#init_use_item_actions( ",time>=10" )
+	if TimeInCombat(more 10) UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#init_use_racial_actions( ",time>=10" )
+	if TimeInCombat(more 10) UseRacialActions()
 	#/golemblood_potion,if=buff.bloodlust.react|target.time_to_die<=60
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(GOLEMBLOODPOTION)
 	if Runes(frost 1) Spell(PILLAROFFROST)
 	#/raise_dead,time>=15
 	unless TotemPresent(ghoul) if TimeInCombat(more 15) Spell(RAISEDEAD)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 	#/army_of_the_dead
 	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 }
@@ -431,14 +473,22 @@ AddIcon help=cd mastery=3
 	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
 	#/raise_dead
 	if PetPresent(no) Spell(RAISEDEAD)
+	#init_use_item_actions( ",time>=2" )
+	if TimeInCombat(more 2) UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+	#if ( talents.unholy_frenzy -> rank() && race == RACE_TROLL ) { init_use_racial_actions( ",sync=unholy_frenzy" ) }
+	if TalentPoints(UNHOLYFRENZYTALENT more 0) and 180s before Spell(BERSERKING)
+		if Spell(UNHOLYFRENZY) UseRacialActions()
+	#else { init_use_racial_actions( ",time>=2" ) }
+	unless TalentPoints(UNHOLYFRENZYTALENT more 0) and 180s before Spell(BERSERKING)
+		If TimeInCombat(more 2) UseRacialActions()
 	#/golemblood_potion,if=buff.bloodlust.react|target.time_to_die<=60
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 60)} Item(GOLEMBLOODPOTION)
 	#/summon_gargoyle,time<=60
 	if TimeInCombat(less 60) Spell(SUMMONGARGOYLE)
 	#/summon_gargoyle,if=buff.bloodlust.react|buff.unholy_frenzy.react
 	if BuffPresent(heroism) or BuffPresent(UNHOLYFRENZY) Spell(SUMMONGARGOYLE)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 	#/army_of_the_dead
 	if Runes(blood 1) and Runes(frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 	#/unholy_frenzy,if=!buff.bloodlust.react|target.time_to_die<=45

@@ -1,6 +1,8 @@
 # Warrior Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 (2012/01/26)
+#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.4 (2012/01/24)
 #   - Update Arms rotation to r10946, Fury-1H to r10943 and Fury-2H to r10940.
 #   - Move the Arms stance-dancing suggestions from the offgcd icon to the main icon.
@@ -154,6 +156,21 @@ Define(VICTORYRUSH 34428)
 Define(WHIRLWIND 1680)
 	SpellInfo(WHIRLWIND cd=10)
 
+# Racials & Professions
+Define(ARCANETORRENTRAGE 69179) # blood elf
+	SpellInfo(ARCANETORRENTRAGE cd=120)
+Define(BERSERKING 26297) # troll
+	SpellInfo(BERSERKING duration=10 cd=180)
+	SpellAddBuff(BERSERKING BERSERKING=10)
+Define(BLOODFURY 33697) # orc
+	SpellInfo(BLOODFURY duration=15 cd=120)
+	SpellAddBuff(BLOODFURY BLOODFURY=15)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+Define(STONEFORM 20594) # dwarf
+	SpellInfo(STONEFORM duration=8 cd=120)
+	SpellInfo(STONEFORM STONEFORM=8)
+
 # Items
 Define(EARTHENPOTION 58090)
 	Define(EARTHENPOTIONSPELL 80478)
@@ -175,6 +192,25 @@ AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=3)
 AddListItem(shout none L(None))
 AddListItem(shout battle SpellName(BATTLESHOUT) default)
 AddListItem(shout command SpellName(COMMANDINGSHOUT))
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	if Mana(less 81) Spell(ARCANETORRENTRAGE)
+	Spell(BERSERKING)
+	Spell(BLOODFURY)
+}
 
 AddIcon help=main mastery=1
 {
@@ -275,12 +311,16 @@ AddIcon help=cd mastery=1
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.recklessness.up|target.time_to_die<26
 	if CheckBoxOn(potions) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
+	#/use_item
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+    #init_use_racial_actions()
+	UseRacialActions()
 	#/deadly_calm,use_off_gcd=1
 	Spell(DEADLYCLAM usable=1)
 	#/recklessness,if=target.health_pct>90|target.health_pct<=20,use_off_gcd=1
 	if TargetLifePercent(more 90) or TargetLifePercent(less 20) Spell(RECKLESSNESS)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 AddIcon help=main mastery=2
@@ -442,6 +482,12 @@ AddIcon help=cd mastery=2
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.bloodlust.react
 	if CheckBoxOn(potions) and BuffPresent(heroism) Item(GOLEMBLOODPOTION)
+	#/use_item
+	UseItemActions()
+	#init_use_profession_actions()
+	UseProfessionActions()
+    #init_use_racial_actions()
+	UseRacialActions()
 	if TalentPoints(TITANSGRIPTALENT more 0)
 	{
 		#/recklessness,use_off_gcd=1
@@ -458,8 +504,6 @@ AddIcon help=cd mastery=2
 		#/recklessness,use_off_gcd=1,if=buff.death_wish.up|target.time_to_die<13
 		if BuffPresent(DEATHWISH) or TargetDeadIn(less 13) Spell(RECKLESSNESS)
 	}
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 # Protection warrior rotation from EJ for 4.2:
@@ -515,6 +559,7 @@ AddIcon help=cd mastery=3
 	if Stance(2)
 	{
 		Spell(SHIELDBLOCK usable=1)
+		Spell(STONEFORM)
 		Spell(SHIELDWALL usable=1)
 		Spell(LASTSTAND)
 	}
