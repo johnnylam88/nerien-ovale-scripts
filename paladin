@@ -271,7 +271,7 @@ AddIcon help=cd mastery=3
 	UseItemActions()
 	#init_use_profession_actions()
 	UseProfessionActions()
-    #init_use_racial_actions()
+	#init_use_racial_actions()
 	UseRacialActions()
 	#/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
 	if 10s before Spell(ZEALOTRY) Spell(GUARDIANOFANCIENTKINGS)
