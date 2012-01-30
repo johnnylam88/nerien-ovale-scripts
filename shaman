@@ -1,6 +1,8 @@
 # Shaman Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.5 (2012/01/27)
+#   - Summon the Fire Elemental in Elemental spec only when we have enough intellect or spellpower procs to make it worthwhile.
 # 4.3.4 (2012/01/26)
 #   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.3 (2012/01/14)
@@ -26,7 +28,9 @@
 ## defines ##
 
 # Buffs
+Define(LIGHTWEAVE 75170) # +580 int proc
 Define(MAELSTROMWEAPON 53817)
+Define(POWERTORRENT 74241) # +500 int proc
 Define(RIPTIDEHOT 61295)
 Define(UNLEASHWIND 73681)
 
@@ -151,10 +155,23 @@ Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM STONEFORM=8)
 
 # Items
+Define(BOTTLEDWISHES 77114)
+	Define(ULTIMATEPOWER 107948) # +2290 sp
+Define(dmcvolcano 62047)
+	Define(VOLCANICDESTRUCTION 89091) # +1600 int proc
+Define(FIERYQUINTESSENCE 69000)
+	Define(FIERYQUINTESSENCEBUFF 97008) # +1149 int
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
+	Define(VOLCANICPOWER 79476) # +1200 int
+Define(WILLOFUNBINDINGLFR 77975) # LFR
+	Define(COMBATMINDLFR 109793) # +78 int (stacks to 10)
+Define(WILLOFUNBINDING 77198) # normal
+	Define(COMBATMIND 107970) # +88 int (stacks to 10)
+Define(WILLOFUNBINDINGHEROIC 77995) # heroic
+	Define(COMBATMINDHEROIC 109795) # +99 int (stacks to 10)
 
 ## end defines ##
 
@@ -169,6 +186,96 @@ AddListItem(shock none L(None) default talent=5567)
 AddListItem(shock earth SpellName(EARTHSHOCK) talent=5567)
 AddListItem(shock flame SpellName(FLAMESHOCK) talent=5567)
 AddListItem(shock frost SpellName(FROSTSHOCK) talent=5567)
+AddCheckBox(lightweave SpellName(LIGHTWEAVE) mastery=1)
+AddCheckBox(powertorrent SpellName(POWERTORRENT) mastery=1)
+AddListItem(trinket0 none "Trinket 0 - None" default mastery=1)
+AddListItem(trinket0 bottledwishes "Trinket 0 - Bottled Wishes" mastery=1)
+AddListItem(trinket0 dmcvolcano "Trinket 0 - DMC: Volcano" mastery=1)
+AddListItem(trinket0 fieryquintessence "Trinket 0 - Fiery Quintessence" mastery=1)
+AddListItem(trinket0 willofunbinding "Trinket 0 - Will of Unbinding" mastery=1)
+AddListItem(trinket1 none "Trinket 1 - None" default mastery=1)
+AddListItem(trinket1 bottledwishes "Trinket 1 - Bottled Wishes" mastery=1)
+AddListItem(trinket1 dmcvolcano "Trinket 1 - DMC: Volcano" mastery=1)
+AddListItem(trinket1 fieryquintessence "Trinket 1 - Fiery Quintessence" mastery=1)
+AddListItem(trinket1 willofunbinding "Trinket 1 - Will of Unbinding" mastery=1)
+
+#http://code.google.com/p/simulationcraft/source/browse/trunk/engine/sc_shaman.cpp (r10951):
+#// Fire elemental summoning logic
+#// 1) Make sure we fully use some commonly used temporary int bonuses of the profile, calculating the following
+#// additively as a sum of temporary intellect buffs on the profile during iteration
+#//    - Power Torrent or Lightweave Embroidery is up (either being up is counted as a temporary int buff of 500)
+#//    - DMC: Volcano (temporary int buff of 1600)
+#//    - Will of Unbinding (all versions are a temporary int buff of 700 int)
+#// 2) If the profile hase Fiery Quintessence, align Fire Elemental summoning always with FQ (and require an
+#//    additional 1100 temporary int)
+#// 3) If the profile hase Bottled Wishes, align Fire Elemental summoning always with BW (and require an
+#//    additional 2290 temporary spell power)
+#// 4) If the profile uses pre-potting, make sure we try to use the FE during potion, so that
+#//    all the other temporary int/sp buffs are also up
+
+AddFunction BottledWishesNotEquipped
+{
+	{List(trinket0 dmcvolcano) or List(trinket0 fieryquintessence) or List(trinket0 willofunbinding)}
+		and {List(trinket1 dmcvolcano) or List(trinket1 fieryquintessence) or List(trinket1 willofunbinding)}
+}
+
+AddFunction dmcvolcanoNotEquipped
+{
+	{List(trinket0 bottledwishes) or List(trinket0 fieryquintessence) or List(trinket0 willofunbinding)}
+		and {List(trinket1 bottledwishes) or List(trinket1 fieryquintessence) or List(trinket1 willofunbinding)}
+}
+
+AddFunction FieryQuintessenceNotEquipped
+{
+	{List(trinket0 bottledwishes) or List(trinket0 dmcvolcano) or List(trinket0 willofunbinding)}
+		and {List(trinket1 bottledwishes) or List(trinket1 dmcvolcano) or List(trinket1 willofunbinding)}
+}
+
+AddFunction WillOfUnbindingNotEquipped
+{
+	{List(trinket0 bottledwishes) or List(trinket0 dmcvolcano) or List(trinket0 fieryquintessence)}
+		and {List(trinket1 bottledwishes) or List(trinket1 dmcvolcano) or List(trinket1 fieryquintessence)}
+}
+
+AddFunction EnoughSpellpower
+{
+	{{CheckBoxOff(lightweave) and CheckBoxOff(powertorrent)}
+			or {BuffPresent(LIGHTWEAVE) or BuffPresent(POWERTORRENT)}}
+		and {dmcvolcanoNotEquipped() or BuffPresent(VOLCANICDESTRUCTION)}
+		and {WillOfUnbindingNotEquipped()
+			or {BuffPresent(COMBATMINDLFR stacks=10) or BuffPresent(COMBATMIND stacks=10) or BuffPresent(COMBATMINDHEROIC stacks=10)}}
+		and {CheckBoxOff(potions) or BuffPresent(VOLCANICPOWER) or {BuffExpires(VOLCANICPOWER 0) and item(VOLCANICPOTION) > 0}}
+}
+
+AddFunction SummonFireElemental
+{
+	if EnoughSpellpower()
+	{
+		if FieryQuintessenceNotEquipped() and BottledWishesNotEquipped() Spell(FIREELEMENTALTOTEM)
+		if FieryQuintessenceNotEquipped() and BuffPresent(ULTIMATEPOWER) Spell(FIREELEMENTALTOTEM)
+		if BuffPresent(FIERYQUINTESSENCEBUFF) and BottledWishesNotEquipped() Spell(FIREELEMENTALTOTEM)
+		if BuffPresent(FIERYQUINTESSENCEBUFF) and BuffPresent(ULTIMATEPOWER) Spell(FIREELEMENTALTOTEM)
+	}
+}
+
+AddFunction UseItemActionsElemental
+{
+	Item(HandsSlot usable=1)
+	unless List(trinket0 bottledwishes) or List(trinket0 fieryquintessence) Item(Trinket0Slot usable=1)
+	unless List(trinket1 bottledwishes) or List(trinket1 fieryquintessence) Item(Trinket1Slot usable=1)
+	if ArmorSetParts(T12 more 1)
+	{
+		#/use_item,name,if=(cooldown.fire_elemental_totem.remains<25&temporary_bonus.spell_power>=( sp_threshold ))
+		if 25s before Spell(FIREELEMENTALTOTEM) and EnoughSpellpower() Item(BOTTLEDWISHES)
+		if 15s before Spell(FIREELEMENTALTOTEM) and EnoughSpellpower() Item(FIERYQUINTESSENCE)
+	}
+	unless ArmorSetParts(T12 more 1)
+	{
+		#/use_item,name,if=(cooldown.fire_elemental_totem.remains=0&temporary_bonus.spell_power>=( sp_threshold ))
+		if Spell(FIREELEMENTALTOTEM) and EnoughSpellpower() Item(BOTTLEDWISHES)
+		if Spell(FIREELEMENTALTOTEM) and EnoughSpellpower() Item(FIERYQUINTESSENCE)
+	}
+}
 
 AddFunction UseItemActions
 {
@@ -251,17 +358,16 @@ AddIcon help=cd mastery=1
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
 	#/use_item
-	UseItemActions()
+	UseItemActionsElemental()
 	#init_use_profession_actions()
 	UseProfessionActions()
 	#init_use_racial_actions()
 	UseRacialActions()
 	#/elemental_mastery
 	Spell(ELEMENTALMASTERY)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
-	#/fire_elemental_totem,if=temporary_bonus.intellect>=1600&(!ticking|remains<25)
-	Spell(FIREELEMENTALTOTEM)
+	#/fire_elemental_totem,if=!ticking
+	if ArmorSetParts(T12 more 1) and TotemExpires(fire 25) SummonFireElemental()
+	unless ArmorSetParts(T12 more 1) if TotemExpires(fire) SummonFireElemental()
 	#/earth_elemental_totem,if=!ticking
 	Spell(EARTHELEMENTALTOTEM)
 	#/spiritwalkers_grace,moving=1,if=cooldown.lava_burst.remains=0&set_bonus.tier12_4pc_caster=0
