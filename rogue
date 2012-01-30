@@ -1,6 +1,8 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.13 (2012/01/30)
+#   - Rupture doesn't hit both targets while Blade Flurry is active in Combat spec, so don't cast it then.
 # 4.3.12 (2012/01/26)
 #   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.11 (2012/01/22)
@@ -302,7 +304,8 @@ AddIcon help=main mastery=2
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
-	unless TargetDebuffPresent(RUPTURE mine=1) if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
+	unless TargetDebuffPresent(RUPTURE mine=1) or BuffPresent(BLADEFLURRY)
+		if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
 	#/eviscerate,if=combo_points=5
 	if ComboPoints(equal 5) Spell(EVISCERATE)
 	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
@@ -323,7 +326,8 @@ AddIcon help=main mastery=2 checkboxon=finisher
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
-	unless TargetDebuffPresent(RUPTURE mine=1) if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
+	unless TargetDebuffPresent(RUPTURE mine=1) or BuffPresent(BLADEFLURRY)
+		if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
 	#/eviscerate,if=combo_points=5
 	if ComboPoints(equal 5) Spell(EVISCERATE)
 	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
