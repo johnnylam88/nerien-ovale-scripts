@@ -1,6 +1,9 @@
 # Shaman Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.6 (2012/02/01)
+#   - Fix number of Maelstrom Weapon stacks needed to cast a lowest-priority Lightning Bolt in the Enhancement rotation.
+#   - Use Fire Nova for Enhancement AoE if there is a Flame Shock on the current target and not only when it's on another target.
 # 4.3.5 (2012/01/27)
 #   - Summon the Fire Elemental in Elemental spec only when we have enough intellect or spellpower procs to make it worthwhile.
 # 4.3.4 (2012/01/26)
@@ -325,7 +328,6 @@ AddIcon help=main mastery=1
 	}
 	#/searing_totem
 	if TotemExpires(fire) Spell(SEARINGTOTEM)
-	#/chain_lightning,if=target.adds>2
 	#/lightning_bolt
 	Spell(LIGHTNINGBOLT)
 }
@@ -344,7 +346,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 		#/earth_shock,if=buff.lightning_shield.stack=9
 		if BuffPresent(LIGHTNINGSHIELD stacks=9) Spell(EARTHSHOCK)
 	}
-	#/chain_lightning
+	#/chain_lightning,if=target.adds>2
 	Spell(CHAINLIGHTNING)
 }
 
@@ -404,7 +406,7 @@ AddIcon help=main mastery=2
 	#/earth_shock
 	Spell(EARTHSHOCK)
 	#/lightning_bolt,if=buff.maelstrom_weapon.react>1
-	if BuffPresent(MAELSTROMWEAPON) Spell(LIGHTNINGBOLT)
+	if BuffPresent(MAELSTROMWEAPON stacks=2) Spell(LIGHTNINGBOLT)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
@@ -416,7 +418,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	Spell(UNLEASHELEMENTS)
 	if TargetDebuffExpires(FLAMESHOCK 0 mine=1) or BuffPresent(UNLEASHFLAME) Spell(FLAMESHOCK)
 	Spell(LAVALASH)
-	if OtherDebuffPresent(FLAMESHOCK mine=1) Spell(FIRENOVA)
+	if TargetDebuffPresent(FLAMESHOCK mine=1) or OtherDebuffPresent(FLAMESHOCK mine=1) Spell(FIRENOVA)
 }
 
 AddIcon help=cd mastery=2
