@@ -1,6 +1,13 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.14 (2012/01/31)
+#   - Fix spell ID of Glyph of Hemorrhage for Subtlety.
+#   - Add a checkbox for Shadowstep for cases where you don't want to Shadowstep to a target.
+#   - Apply poisons out of combat.
+#   - Remove extra actions and fillers from the separate finisher icon for Combat.
+#   - Fix bug in Subtlety rotation that wasn't tracking when Rupture was about expire.
+#   - Backstab as Subtlety to prevent energy capping when nothing needs to be refreshed.
 # 4.3.13 (2012/01/30)
 #   - Rupture doesn't hit both targets while Blade Flurry is active in Combat spec, so don't cast it then.
 # 4.3.12 (2012/01/26)
@@ -62,7 +69,7 @@ Define(FINDWEAKNESS 91023)
 Define(HEMORRHAGEDOT 89775) # Glyph of Hemorrhage
 
 # Glyphs
-Define(GLYPHOFHEMORRHAGE 57126)
+Define(GLYPHOFHEMORRHAGE 56807)
 
 # Talents
 Define(BANDITSGUILETALENT 11174)
@@ -171,6 +178,7 @@ ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINI
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=681)
+AddCheckBox(shadowstep SpellName(SHADOWSTEP) default mastery=3)
 AddCheckBox(finisher "Separate finisher icon")
 
 AddFunction UseItemActions
@@ -195,6 +203,12 @@ AddFunction UseRacialActions
 # Main Assassination rotation.
 AddIcon help=main mastery=1
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
+	}
+
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
@@ -235,6 +249,15 @@ AddIcon help=main mastery=1
 # Main Assassination rotation (same as above) minus Backstab/Mutilate fillers.
 AddIcon help=main mastery=1 checkboxon=finisher
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
+	}
+
+	#/apply_poison,main_hand=instant,off_hand=deadly
+	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
+	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
@@ -292,6 +315,12 @@ AddIcon help=cd mastery=1
 # Main Combat rotation.
 AddIcon help=main mastery=2
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
+	}
+
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
@@ -317,6 +346,15 @@ AddIcon help=main mastery=2
 # Main Combat rotation (same as above) minus Sinister Strike fillers.
 AddIcon help=main mastery=2 checkboxon=finisher
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
+	}
+
+	#/apply_poison,main_hand=instant,off_hand=deadly
+	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
+	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
@@ -330,10 +368,6 @@ AddIcon help=main mastery=2 checkboxon=finisher
 		if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
 	#/eviscerate,if=combo_points=5
 	if ComboPoints(equal 5) Spell(EVISCERATE)
-	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
-	unless TargetBuffPresent(REVEALINGSTRIKE mine=1) if ComboPoints(equal 4) Spell(REVEALINGSTRIKE)
-	#/sinister_strike,if=combo_points<5
-	if ComboPoints(less 5) Spell(SINISTERSTRIKE)
 	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
 	unless TargetBuffPresent(REVEALINGSTRIKE mine=1) if ComboPoints(equal 4) Spell(REVEALINGSTRIKE)
 }
@@ -361,6 +395,12 @@ AddIcon help=cd mastery=2
 # Main Subtlety rotation.
 AddIcon help=main mastery=3
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
+	}
+
 	# Maintain raid debuffs.
 	if CheckBoxOn(hemorrhage) and TalentPoints(HEMORRHAGETALENT more 0) and TargetDebuffExpires(bleed 2) Spell(HEMORRHAGE)
 
@@ -370,7 +410,7 @@ AddIcon help=main mastery=3
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
-	if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
+	if CheckBoxOn(shadowstep) and {Stealthed() or BuffPresent(SHADOWDANCE)} Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
 	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
@@ -383,7 +423,7 @@ AddIcon help=main mastery=3
 	#/recuperate,if=combo_points=5&remains<3
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
+	if ComboPoints(equal 5) and {TargetDebuffExpires(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
@@ -395,15 +435,30 @@ AddIcon help=main mastery=3
 	if ComboPoints(less 4) Spell(BACKSTAB)
 	#/backstab,if=combo_points<5&energy>80
 	if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
+
+	# Fallback Backstab to prevent energy capping
+	if 1.2s before Mana(more 99) Spell(BACKSTAB)
 }
 
 # Main Subtlety rotation (same as above) minus Backstab fillers.
 AddIcon help=main mastery=3 checkboxon=finisher
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
+	}
+
+	# Maintain raid debuffs.
+	if CheckBoxOn(hemorrhage) and TalentPoints(HEMORRHAGETALENT more 0) and TargetDebuffExpires(bleed 2) Spell(HEMORRHAGE)
+
+	#/apply_poison,main_hand=instant,off_hand=deadly
+	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
+	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
 	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
-	if Stealthed() or BuffPresent(SHADOWDANCE) Spell(SHADOWSTEP)
+	if CheckBoxOn(shadowstep) and {Stealthed() or BuffPresent(SHADOWDANCE)} Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
 	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
@@ -416,7 +471,7 @@ AddIcon help=main mastery=3 checkboxon=finisher
 	#/recuperate,if=combo_points=5&remains<3
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
+	if ComboPoints(equal 5) and {TargetDebuffExpires(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
