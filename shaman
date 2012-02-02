@@ -1,6 +1,9 @@
 # Shaman Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.7 (2012/02/02)
+#   - Fix spell ID of Glyph of Grounding Totem.
+#   - Fix when Earth Shock is cast for Fulmination in the Elemental rotation.
 # 4.3.6 (2012/02/01)
 #   - Fix number of Maelstrom Weapon stacks needed to cast a lowest-priority Lightning Bolt in the Enhancement rotation.
 #   - Use Fire Nova for Enhancement AoE if there is a Flame Shock on the current target and not only when it's on another target.
@@ -38,7 +41,7 @@ Define(RIPTIDEHOT 61295)
 Define(UNLEASHWIND 73681)
 
 # Glyphs
-Define(GLYPHOFGROUNDINGTOTEM 57247)
+Define(GLYPHOFGROUNDINGTOTEM 55441)
 Define(GLYPHOFSTONECLAWTOTEM 63298)
 Define(GLYPHOFUNLEASHEDLIGHTNING 101052)
 
@@ -132,7 +135,7 @@ Define(TOTEMOFTRANQUILMIND 87718)
 # Air totems
 Define(GROUNDINGTOTEM 8177)
 	SpellInfo(GROUNDINGTOTEM cd=25)
-	SpellInfo(GROUNDINGTOTEM addcd=35 glyph=57247) # Glyph of Grounding Totem
+	SpellInfo(GROUNDINGTOTEM addcd=35 glyph=55441) # Glyph of Grounding Totem
 Define(SPIRITLINKTOTEM 98008)
 Define(WINDFURYTOTEM 8512)
 Define(WRATHOFAIRTOTEM 3738)
@@ -322,9 +325,20 @@ AddIcon help=main mastery=1
 		#    dot.flame_shock.remains>cooldown&\
 		#    dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
 		if BuffPresent(LIGHTNINGSHIELD stacks=7)
-			and {target.debuffExpires(FLAMESHOCK mine=1) > spell(EARTHSHOCK)}
-			and {target.debuffExpires(FLAMESHOCK mine=1) < spell(EARTHSHOCK) + timeWithHaste(3)}
-			Spell(EARTHSHOCK)
+		{
+			if TalentPoints(REVERBERATIONTALENT equal 0)
+				unless TargetDebuffExpires(FLAMESHOCK 6 mine=1)
+					if TargetDebuffExpires(FLAMESHOCK 9 mine=1)
+						Spell(EARTHSHOCK)
+			if TalentPoints(REVERBERATIONTALENT equal 1)
+				unless TargetDebuffExpires(FLAMESHOCK 5.5 mine=1)
+					if TargetDebuffExpires(FLAMESHOCK 8.5 mine=1)
+						Spell(EARTHSHOCK)
+			if TalentPoints(REVERBERATIONTALENT equal 2)
+				unless TargetDebuffExpires(FLAMESHOCK 5 mine=1)
+					if TargetDebuffExpires(FLAMESHOCK 8 mine=1)
+						Spell(EARTHSHOCK)
+		}
 	}
 	#/searing_totem
 	if TotemExpires(fire) Spell(SEARINGTOTEM)
