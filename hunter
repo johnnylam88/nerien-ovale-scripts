@@ -1,6 +1,15 @@
 # Hunter Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.8 (2012/02/02)
+#   - Move Hunter's Mark to the main ability icon and avoid casting it on short-lived targets.
+#   - Only suggest Cobra Shot and Steady Shot while moving if Aspect of the Fox is active.
+#   - Fix bug in MM rotation where Improved Steady Shot wasn't properly tracked.
+#   - Add more hunter pet special abilities.
+#   - Add checkbox for using the pet to maintain raid buffs and debuffs.
+#   - Update Survival to trunk/engine/sc_hunter.cpp (r10959) for WoW patch 4.3.2.
+#   - Remove the Black Arrow checkbox now that Black Arrow is always preferred over Explosive Trap for Survival hunters.
+#   - Code cleanup.
 # 4.3.7 (2012/01/26)
 #   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.6 (2012/01/24)
@@ -39,10 +48,15 @@
 
 # Buffs
 Define(CHRONOHUNTER 105919) # 4pT13 buff; 105s ICD(?)
+Define(ELEMENTALOATH 51470) # elemental shaman crit buff
 Define(FIRE 82926)
 Define(FRENZYEFFECT 19615)
+Define(HONORAMONGTHIEVES 51701) # subtlety rogue crit buff
 Define(IMPROVEDSTEADYSHOT 53244) # Improved Steady Shot (Rank 3)
+Define(LEADEROFTHEPACK 17007) # feral druid crit buff
 Define(LOCKANDLOAD 56453)
+Define(RABIDPOWER 53403) # Rabid (pet talent)
+Define(RAMPAGE 29801) # fury warrior crit buff
 Define(THEBEASTWITHIN 34692)
 
 # Debuffs
@@ -53,7 +67,8 @@ Define(GLYPHOFARCANESHOT 56995)
 Define(GLYPHOFTRAPLAUNCHER 56996)
 
 # Talents
-Define(IMPROVEDSTEADYSHOT 9402) # Improved Steady Shot (Rank 3)
+Define(BLACKARROWTALENT 9480)
+Define(IMPROVEDSTEADYSHOTTALENT 9402) # Improved Steady Shot (Rank 3)
 
 # Spells
 Define(AIMEDSHOT 19434)
@@ -71,9 +86,6 @@ Define(BESTIALWRATH 19574)
 Define(BLACKARROW 3674)
 	SpellInfo(BLACKARROW cd=30 sharedcd=firetrap mana=35)
 	SpellAddTargetDebuff(BLACKARROW BLACKARROW=15)
-Define(CALLOFTHEWILD 53434)
-	SpellInfo(CALLOFTHEWILD cd=300)
-	SpellAddBuff(CALLOFTHEWILD CALLOFTHEWILD=20)
 Define(CALLPETONE 883)
 Define(CALLPETTWO 83242)
 Define(CALLPETTHREE 83243)
@@ -124,7 +136,89 @@ Define(TRAPLAUNCHER 77769)
 	SpellAddBuff(TRAPLAUNCHER TRAPLAUNCHER=15)
 
 # Pet spells
-Define(GROWL 2649)
+Define(PETACIDSPIT 55749)
+	SpellInfo(PETACIDSPIT cd=25)
+	SpellAddDebuff(PETACIDSPIT PETACIDSPIT=25)
+Define(PETBITE 17253)
+Define(PETCALLOFTHEWILD 53434)
+	SpellInfo(PETCALLOFTHEWILD cd=300)
+	SpellAddBuff(PETCALLOFTHEWILD PETCALLOFTHEWILD=20)
+Define(PETCLAW 16827)
+Define(PETCORROSIVESPIT 35387)
+	SpellInfo(PETCORROSIVESPIT cd=6)
+	SpellAddDebuff(PETCORROSIVESPIT PETCORROSIVESPIT=30) # lowerarmor
+Define(PETDEMOROAR 50256)
+	SpellInfo(PETDEMOROAR cd=10)
+	SpellAddDebuff(PETDEMOROAR PETDEMOROAR=15) # lowerphysicaldamage
+Define(PETDEMOSCREECH 24423)
+	SpellInfo(PETDEMOSCREECH cd=10)
+	SpellAddDebuff(PETDEMOSCREECH PETDEMOSCREEH=10) # lowerphysicaldamage
+Define(PETDUSTCLOUD 50285)
+	SpellInfo(PETDUSTCLOUD cd=25)
+	SpellAddDebuff(PETDUSTCLOUD PETDUSTCLOUD=30) # meleeslow
+Define(PETFIREBREATH 34889)
+	SpellInfo(PETFIREBREATH cd=30)
+	SpellAddDebuff(PETFIREBREATH PETFIREBREATH=45) # magicaldamagetaken
+Define(PETFROSTSTORMBREATH 92380)
+Define(PETFURIOUSHOWL 24604)
+	SpellInfo(PETFURIOUSHOWL cd=45)
+	SpellAddBuff(PETFURIOUSHOWL PETFURIOUSHOWL=60) # -- criticalstrike
+Define(PETGORE 35290)
+	SpellInfo(PETGORE cd=10)
+	SpellAddDebuff(PETGORE PETGORE=15) # bleed
+Define(PETGROWL 2649)
+Define(PETHEARTOFTHEPHOENIX 55709)
+	SpellInfo(PETHEARTOFTHEPHOENIX cd=480)
+Define(PETLAVABREATH 58604)
+	SpellInfo(PETLAVABREATH cd=8)
+	SpellAddDebuff(PETLAVABREATH PETLAVABREATH=10) # castslow
+Define(PETLIGHTNINGBREATH 24844)
+	SpellInfo(PETLIGHTNINGBREATH cd=30)
+	SpellAddDebuff(PETLIGHTNINGBREATH PETLIGHTNINGBREATH=45) # magicaldamagetaken
+Define(PETMONSTROUSBITE 54680)
+	SpellInfo(PETMONSTROUSBITE cd=8)
+	SpellAddDebuff(PETMONSTROUSBITE PETMONSTROUSBITE=8)
+Define(PETNETHERSHOCK 50479)
+	SpellInfo(PETNETHERSHOCK cd=40) # interrupt
+Define(PETPUMMEL 26090)
+	SpellInfo(PETPUMMEL cd=30) # interrupt
+Define(PETQIRAJIFORTITUDE 90364)
+	SpellAddBuff(PETQIRAJIFORTITUDE PETQIRAJIFORTITUDE=1000) # stamina
+Define(PETRABID 53401)
+	SpellInfo(PETRABID cd=45)
+	SpellAddBuff(PETRABID PETRABID=20)
+Define(PETRAVAGE 50518)
+	SpellInfo(PETRAVAGE cd=15)
+	SpellAddDebuff(PETRAVAGE PETRAVAGE=25) # -- physicaldamagetaken
+Define(PETROAROFCOURAGE 93435)
+	SpellInfo(PETROAROFCOURAGE cd=45)
+	SpellAddBuff(PETROAROFCOURAGE PETROAROFCOURAGE=60) # strengthagility
+Define(PETROAROFRECOVERY 53517)
+	SpellInfo(PETROAROFRECOVERY cd=180)
+	SpellAddBuff(PETROAROFRECOVERY PETROAROFRECOVERY=9)
+Define(PETSERENITYDUST 50318)
+	SpellInfo(PETSERENITYDUST cd=60) # interrupt
+Define(PETSMACK 49966)
+Define(PETSPORECLOUD 50274)
+	SpellInfo(PETSPORECLOUD cd=8)
+	SpellAddDebuff(PETSPORECLOUD PETSPORECLOUD=10) # castslow
+Define(PETSTAMPEDE 57386)
+	SpellInfo(PETSTAMPEDE cd=15)
+	SpellAddDebuff(PETSTAMPEDE PETSTAMPEDE=30) # bleed
+Define(PETTAILSPIN 90314)
+	SpellInfo(PETTAILSPIN cd=25)
+	SpellAddDebuff(PETTAILSPIN PETTAILSPIN=30) # meleeslow
+Define(PETTEARARMOR 50498)
+	SpellInfo(PETTEARARMOR cd=6)
+	SpellAddDebuff(PETTEARARMOR PETTEARARMOR=30) # lowerarmor
+Define(PETTENDONRIP 50271)
+	SpellInfo(PETTENDONRIP cd=10)
+	SpellAddDebuff(PETTENDONRIP PETTENDONRIP=15) # bleed
+Define(PETTERRIFYINGROAR 90309)
+	SpellInfo(PETTERRIFYINGROAR cd=45)
+	SpellAddBuff(PETTERRIFYINGROAR PETTERRIFYINGROAR=60) # -- criticalstrike
+Define(PETWOLVERINEBITE 53508)
+	SpellInfo(PETWOLVERINEBITE cd=10)
 
 # Racials & Professions
 Define(ARCANETORRENTFOCUS 80483) # blood elf
@@ -152,12 +246,87 @@ ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CH
 
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
-AddCheckBox(blackarrow SpellName(BLACKARROW) mastery=3)
+AddCheckBox(petbuff "Pet raid buffs & debuffs")
 
 AddFunction SummonPet
 {
 	if PetPresent(no) Texture(ability_hunter_beastcall)
-	if pet.Life(equal 0) Spell(REVIVEPET)
+	if pet.Life(equal 0)
+	{
+		Spell(PETHEARTOFTHEPHOENIX)
+		Spell(REVIVEPET)
+	}
+}
+
+AddFunction PetMaintainBuffDebuff
+{
+	# Maintain raid buffs and debuffs.
+	if BuffExpires(stamina 3) Spell(PETQIRAJIFORTITUDE)
+	if BuffExpires(strengthagility 3) Spell(PETROAROFCOURAGE)
+	unless BuffPresent(ELEMENTALOATH) or BuffPresent(HONORAMONGTHIEVES) or BuffPresent(LEADEROFTHEPACK) or BuffPresent(RAMPAGE)
+	{
+		if BuffExpires(PETFURIOUSHOWL 2) or BuffExpires(PETTERRIFYINGROAR 2)
+		{
+			Spell(PETFURIOUSHOWL)
+			Spell(PETTERRIFYINGROAR)
+		}
+	}
+	if TargetDebuffExpires(bleed 2)
+	{
+		Spell(PETGORE)
+		Spell(PETSTAMPEDE)
+		Spell(PETTENDONRIP)
+	}
+	if TargetDebuffExpires(castslow 2)
+	{
+		Spell(PETLAVABREATH)
+		Spell(PETSPORECLOUD)
+	}
+	if TargetDebuffExpires(lowerarmor 2)
+	{
+		Spell(PETTEARARMOR)
+		Spell(PETCORROSIVESPIT)
+	}
+	if TargetDebuffExpires(lowerphysicaldamage 0) or TargetDebuffExpires(PETDEMOSCREECH 0)
+	{
+		Spell(PETDEMOROAR)
+		Spell(PETDEMOSCREECH)
+	}
+	if TargetDebuffExpires(magicaldamagetaken 2)
+	{
+		Spell(PETFIREBREATH)
+		Spell(PETLIGHTNINGBREATH)
+	}
+	if TargetDebuffExpires(meleeslow 2) or TargetDebuffExpires(PETTAILSPIN 2)
+	{
+		Spell(PETDUSTCLOUD)
+		Spell(PETTAILSPIN)
+	}
+}
+
+AddFunction PetActions
+{
+	#/call_of_the_wild
+	Spell(PETCALLOFTHEWILD)
+	#/roar_of_recovery,if=!buff.bloodlust.up
+	unless BuffPresent(heroism) Spell(PETROAROFRECOVERY)
+	#/rabid
+	Spell(PETRABID)
+	#/wolverine_bite
+	Spell(PETWOLVERINEBITE usable=1)
+	#if pet.Mana(more 25)
+	#{
+	#	Spell(PETBITE)
+	#	Spell(PETCLAW)
+	#	Spell(PETSMACK)
+	#}
+}
+
+AddFunction PetInterrupt
+{
+	if TargetInRange(PETNETHERSHOCK) Spell(PETNETHERSHOCK)
+	if TargetInRange(PETPUMMEL) Spell(PETPUMMEL)
+	if TargetInRange(PETSERENITYDUST) Spell(PETSERENITYDUST)
 }
 
 AddFunction UseItemActions
@@ -181,6 +350,8 @@ AddFunction UseRacialActions
 
 AddIcon help=main mastery=1
 {
+	#/hunters_mark,if=target.time_to_die>=21
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/serpent_sting,if=!ticking
 	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/kill_shot
@@ -189,10 +360,13 @@ AddIcon help=main mastery=1
 	if TargetInRange(GROWL) and PetPresent(yes) Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
 	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
-	#/cobra_shot
-	Spell(COBRASHOT)
-	#/steady_shot
-	Spell(STEADYSHOT)
+	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
+	{
+		#/cobra_shot,if=target.adds>5
+		Spell(COBRASHOT)
+		#/steady_shot
+		Spell(STEADYSHOT)
+	}
 }
 
 AddIcon help=offgcd mastery=1
@@ -202,11 +376,16 @@ AddIcon help=offgcd mastery=1
 	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
 	#/aspect_of_the_fox,moving=1
 	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	Spell(CALLOFTHEWILD usable=1)
-	#/focus_fire,five_stacks=1
-	if PetPresent(yes) and pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
-	#/bestial_wrath,if=focus>60
-	if Mana(more 60) and PetPresent(yes) Spell(BESTIALWRATH)
+	if PetPresent(yes)
+	{
+		if TargetIsInterruptible() PetInterrupt()
+		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
+		#/focus_fire,five_stacks=1
+		if pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
+		#/bestial_wrath,if=focus>60
+		if Mana(more 60) Spell(BESTIALWRATH)
+		PetActions()
+	}
 }
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
@@ -219,10 +398,13 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
-	#/cobra_shot,if=target.adds>5
-	Spell(COBRASHOT)
-	#/steady_shot
-	Spell(STEADYSHOT)
+	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
+	{
+		#/cobra_shot,if=target.adds>5
+		Spell(COBRASHOT)
+		#/steady_shot
+		Spell(STEADYSHOT)
+	}
 }
 
 AddIcon help=cd mastery=1
@@ -231,8 +413,6 @@ AddIcon help=cd mastery=1
 
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
-	#/hunters_mark
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
@@ -253,12 +433,14 @@ AddIcon help=cd mastery=1
 
 AddIcon help=main mastery=2
 {
+	#/hunters_mark,if=target.time_to_die>=21
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/serpent_sting,if=!ticking&target.health_pct<=90
 	unless TargetDebuffPresent(SERPENTSTING) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
 	#/chimera_shot,if=target.health_pct<=90
 	if TargetLifePercent(less 90) and Mana(more 49) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
-	if TalentPoints(IMPROVEDSTEADYSHOT more 0) and BuffExpires(IMPROVEDSTEADYSHOT 3)
+	if TalentPoints(IMPROVEDSTEADYSHOTTALENT more 0) and BuffExpires(IMPROVEDSTEADYSHOT 3)
 	{
 		if Counter(iss equal 1) Spell(STEADYSHOT)
 		if Counter(iss equal 3) Spell(STEADYSHOT)
@@ -311,7 +493,7 @@ AddIcon help=main mastery=2
 		}
 	}
 	#/steady_shot
-	Spell(STEADYSHOT)
+	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX) Spell(STEADYSHOT)
 }
 
 AddIcon help=offgcd mastery=2
@@ -321,7 +503,12 @@ AddIcon help=offgcd mastery=2
 	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
 	#/aspect_of_the_fox,moving=1
 	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	Spell(CALLOFTHEWILD usable=1)
+	if PetPresent(yes)
+	{
+		if TargetIsInterruptible() PetInterrupt()
+		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
+		PetActions()
+	}
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
@@ -333,7 +520,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
 	#/steady_shot,if=target.adds>5
-	Spell(STEADYSHOT)
+	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX) Spell(STEADYSHOT)
 }
 
 AddIcon help=cd mastery=2
@@ -343,8 +530,6 @@ AddIcon help=cd mastery=2
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
-	#/hunters_mark
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60|buff.rapid_fire.react
@@ -361,37 +546,36 @@ AddIcon help=cd mastery=2
 	unless BuffPresent(heroism) and TargetDeadIn(more 30) Spell(RAPIDFIRE)
 	#/readiness,wait_for_rapid_fire=1
 	if BuffPresent(RAPIDFIRE) Spell(READINESS)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
 
 AddIcon help=main mastery=3
 {
-	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and TargetDeadIn(more 8) Spell(SERPENTSTING)
+	#/hunters_mark,if=target.time_to_die>=21
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
+	#/serpent_sting,if=!ticking&target.time_to_die>=10
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and TargetDeadIn(more 10) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
-	#/explosive_trap
-	if CheckBoxOff(blackarrow)
+	#if ( ! talents.black_arrow -> rank() ) { /explosive_trap,not_flying=1,if=target.time_to_die>=11 }
+	unless TalentPoints(BLACKARROWTALENT more 0) and TargetDeadIn(more 11)
 	{
 		if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
 		if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
 		if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
 	}
-	if CheckBoxOn(blackarrow) unless TargetDebuffPresent(BLACKARROW mine=1) if Mana(more 34) Spell(BLACKARROW)
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
-	unless BuffPresent(LOCKANDLOAD)
+	#/black_arrow,if=target.time_to_die>=8
+	if TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
+	#/arcane_shot,if=focus>=67
+	if Mana(more 67) Spell(ARCANESHOT)
+	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
 	{
-		#/arcane_shot,if=focus>=50&!buff.lock_and_load.react
-		if ArmorSetParts(T13 more 1) and Mana(more 49) Spell(ARCANESHOT)
-		#/arcane_shot,if=focus>=70&!buff.lock_and_load.react (Hunter_SV_T11H, r10100)
-		unless ArmorSetParts(T13 more 1) if Mana(more 69) Spell(ARCANESHOT)
+		#/cobra_shot
+		Spell(COBRASHOT)
+		#/steady_shot
+		Spell(STEADYSHOT)
 	}
-	#/cobra_shot
-	Spell(COBRASHOT)
-	#/steady_shot
-	Spell(STEADYSHOT)
 }
 
 AddIcon help=offgcd mastery=3
@@ -401,7 +585,12 @@ AddIcon help=offgcd mastery=3
 	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
 	#/aspect_of_the_fox,moving=1
 	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	Spell(CALLOFTHEWILD usable=1)
+	if PetPresent(yes)
+	{
+		if TargetIsInterruptible() PetInterrupt()
+		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
+		PetActions()
+	}
 }
 
 AddIcon help=aoe mastery=3 checkboxon=aoe
@@ -412,10 +601,13 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
 	#/multi_shot,if=target.adds>2
 	if Mana(more 39) Spell(MULTISHOT)
-	#/cobra_shot,if=target.adds>2
-	Spell(COBRASHOT)
-	#/steady_shot
-	Spell(STEADYSHOT)
+	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
+	{
+		#/cobra_shot,if=target.adds>2
+		Spell(COBRASHOT)
+		#/steady_shot
+		Spell(STEADYSHOT)
+	}
 }
 
 AddIcon help=cd mastery=3
@@ -424,8 +616,6 @@ AddIcon help=cd mastery=3
 
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
-	#/hunters_mark
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
@@ -440,6 +630,4 @@ AddIcon help=cd mastery=3
 	UseProfessionActions()
 	#/rapid_fire
 	Spell(RAPIDFIRE)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
 }
