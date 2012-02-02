@@ -1,6 +1,9 @@
 # Rogue Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.15 (2012/02/02)
+#   - Only use Mutilate to generate combo points if Murderous Intent talent isn't taken in Assassination spec.
+#   - Fix harmless typo in spell name.
 # 4.3.14 (2012/01/31)
 #   - Fix spell ID of Glyph of Hemorrhage for Subtlety.
 #   - Add a checkbox for Shadowstep for cases where you don't want to Shadowstep to a target.
@@ -91,8 +94,8 @@ Define(BACKSTAB 53)
 	SpellInfo(BACKSTAB combo=1 mana=60)
 Define(BLADEFLURRY 13877)
 	SpellAddBuff(BLADEFLURRY BLADEFLURRY=1000 cd=10)
-Define(CLOACKOFSHADOWS 31224)
-	SpellInfo(CLOACKOFSHADOWS cd=90)
+Define(CLOAKOFSHADOWS 31224)
+	SpellInfo(CLOAKOFSHADOWS cd=90)
 Define(COLDBLOOD 14177)
 	SpellInfo(COLDBLOOD cd=120)
 	SpellAddBuff(COLDBLOOD COLDBLOOD=100)
@@ -170,8 +173,6 @@ Define(INSTANTPOISON 6947)
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
 
-SpellList(insight 84745 84746 84747)
-
 ## end defines ##
 
 ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)
@@ -240,10 +241,15 @@ AddIcon help=main mastery=1
 	if ComboPoints(more 3) and Mana(more 90) Spell(ENVENOM)
 	#/envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3) Spell(ENVENOM)
-	#/backstab,if=combo_points<5&target.health_pct<35
-	if TalentPoints(MURDEROUSINTENTTALENT more 0) and ComboPoints(less 5) and TargetLifePercent(less 35) Spell(BACKSTAB)
-	#/mutilate,if=combo_points<4&target.health_pct>=35
-	if ComboPoints(less 4) and TargetLifePercent(more 35) Spell(MUTILATE)
+	if TalentPoints(MURDEROUSINTENTTALENT more 0)
+	{
+		#/backstab,if=combo_points<5&target.health_pct<35
+		if ComboPoints(less 5) and TargetLifePercent(less 35) Spell(BACKSTAB)
+		#/mutilate,if=combo_points<4&target.health_pct>=35
+		if ComboPoints(less 4) and TargetLifePercent(more 35) Spell(MUTILATE)
+	}
+	unless TalentPoints(MURDEROUSINTENTTALENT more 0)
+		if ComboPoints(less 4) Spell(MUTILATE)
 }
 
 # Main Assassination rotation (same as above) minus Backstab/Mutilate fillers.
@@ -533,6 +539,6 @@ AddIcon size=small
 
 AddIcon size=small
 {
-	Spell(CLOACKOFSHADOWS)
+	Spell(CLOAKOFSHADOWS)
 	Spell(STONEFORM)
 }
