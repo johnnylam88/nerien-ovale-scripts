@@ -1,6 +1,8 @@
 # Paladin Ovale script based on SimulationCraft profiles
 #
 # Revision History
+# 4.3.7 (2012/02/01)
+#   - Pull in Holy changes from Ovale default paladin script (r459)
 # 4.3.6 (2012/01/26)
 #   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
 # 4.3.5 (2011/12/31)
@@ -52,12 +54,16 @@ Define(DIVINESTORM 53385)
 	SpellInfo(DIVINESTORM cd=4.5)
 Define(EXORCISM 879)
 	SpellAddBuff(EXORCISM THEARTOFWAR=0)
+Define(FLASHOFLIGHT 19750)
 Define(GUARDIANOFANCIENTKINGS 86150)
 	SpellInfo(GUARDIANOFANCIENTKINGS cd=300)
 Define(HAMMEROFWRATH 24275)
 	SpellInfo(HAMMEROFWRATH cd=6)
 Define(HAMMEROFTHERIGHTEOUS 53595)
 	SpellInfo(HAMMEROFTHERIGHTEOUS cd=4.5 holy=1)
+Define(HOLYLIGHT 635)
+Define(HOLYRADIANCE 82327)
+	SpellInfo(HOLYRADIANCE holy=1)
 Define(HOLYSHIELD 20925)
 	SpellInfo(HOLYSHIELD  cd=30)
 	SpellAddBuff(HOLYSHIELD HOLYSHIELD=10)
@@ -70,6 +76,10 @@ Define(INQUISITION 84963)
 	SpellAddBuff(INQUISITION INQUISITION=12 DIVINEPURPOSE=0)
 Define(JUDGEMENT 20271)
 	SpellInfo(JUDGEMENT cd=8)
+Define(LIGHTOFDAWN 85222)
+	SpellInfo(LIGHTOFDAWN holy=-3)
+Define(REBUKE 96231)
+	SpellInfo(REBUKE cd=10)
 Define(RIGHTEOUSFURY 25780)
 Define(SEALOFRIGHTEOUSNESS 20154)
 	SpellAddBuff(SEALOFRIGHTEOUSNESS SEALOFRIGHTEOUSNESS=1800)
@@ -131,20 +141,29 @@ AddFunction UseRacialActions
 
 AddIcon help=main mastery=1
 {
-	if HolyPower(more 0) and BuffExpires(INQUISITION) Spell(INQUISITION)
-	if ManaPercent(less 90) Spell(DIVINEPLEA)
-	if BuffExpires(JUDGEMENTSOFTHEPURE 2) Spell(JUDGEMENT)
+	unless InCombat() if BuffExpires(SEALOFINSIGHT 400) Spell(SEALOFINSIGHT)
+ 
+	if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHOCK)
-	Spell(EXORCISM)
+	Spell(JUDGEMENT)
+	if TargetInRange(CRUSADERSTRIKE) Spell(CRUSADERSTRIKE)
+	if BuffPresent(INFUSIONOFLIGHT) Spell(FLASHOFLIGHT)
+	Spell(HOLYLIGHT priority=2)
 }
 
 AddIcon help=cd mastery=1
 {
-	Spell(GUARDIANOFANCIENTKINGS)
 	Spell(AVENGINGWRATH)
 	Spell(DIVINEFAVOR)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
+	Spell(GUARDIANOFANCIENTKINGS)
+}
+
+AddIcon help=mana size=small mastery=1
+{
+	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
+	if ManaPercent(less 88) Spell(DIVINEPLEA)
 }
 
 AddIcon help=main mastery=2
