@@ -339,9 +339,15 @@ AddIcon help=main mastery=2
 		#/obliterate,if=buff.killing_machine.react
 		if BuffPresent(KILLINGMACHINE) and Runes(frost 1 unholy 1) Spell(OBLITERATE)
 		#/obliterate,if=unholy=2
-		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<=1
-		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<4&(death+frost=1)
 		if Runes(frost 1 unholy 2) Spell(OBLITERATE)
+		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<=1
+		unless Runes(unholy 2) if Runes(frost 1 unholy 1) and 1s before Runes(unholy 2 nodeath) Spell(OBLITERATE)
+		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<4&(death+frost=1)
+		unless Runes(unholy 2) if Runes(frost 1 unholy 1) and 4s before Runes(unholy 2 nodeath)
+		{
+			unless Runes(frost 2) or Runes(death 1) if Runes(frost 1 death 0) Spell(OBLITERATE)
+			unless Runes(frost 1) or Runes(death 2) if Runes(frost 0 death 1) Spell(OBLITERATE)
+		}
 		#/howling_blast,if=runic_power<90
 		if Mana(less 90) and Runes(frost 1) Spell(HOWLINGBLAST)
 		#/obliterate,if=runic_power>=90
@@ -364,9 +370,14 @@ AddIcon help=offgcd mastery=2
 {
 	if TargetIsInterruptible() Spell(MINDFREEZE)
 	#/blood_tap,if=death.cooldown_remains>2.0
-	unless Runes(blood 2) and Runes(frost 2) and Runes(unholy 2)
-		if Runes(blood 1) Spell(BLOODTAP)
+	unless Runes(death 6) if Runes(death 5) unless 2s before Runes(death 6) Spell(BLOODTAP)
+	unless Runes(death 5) if Runes(death 4) unless 2s before Runes(death 5) Spell(BLOODTAP)
+	unless Runes(death 4) if Runes(death 3) unless 2s before Runes(death 4) Spell(BLOODTAP)
+	unless Runes(death 3) if Runes(death 2) unless 2s before Runes(death 3) Spell(BLOODTAP)
+	unless Runes(death 2) if Runes(death 1) unless 2s before Runes(death 2) Spell(BLOODTAP)
+	unless Runes(death 1) unless 2s before Runes(death 1) Spell(BLOODTAP)
 	#/empower_rune_weapon,if=target.time_to_die<=45
+	if TargetDeadIn(less 45) Spell(EMPOWERRUNEWEAPON)
 	#/empower_rune_weapon,if=(blood.cooldown_remains+frost.cooldown_remains+unholy.cooldown_remains)>8
 	Spell(EMPOWERRUNEWEAPON)
 }
