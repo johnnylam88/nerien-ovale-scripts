@@ -172,7 +172,8 @@ AddCheckBox(deathstrike SpellName(DEATHSTRIKE) mastery=2)
 AddCheckBox(deathstrike SpellName(DEATHSTRIKE) mastery=3)
 AddCheckBox(masterfrost "Masterfrost" mastery=2)
 AddCheckBox(mindfreeze SpellName(MINDFREEZE))
-AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
+AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=1)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
 
 AddFunction UseItemActions
@@ -411,7 +412,7 @@ AddIcon help=main mastery=3
 
 	#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
 	if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
-	if spell(OUTBREAK) > 2
+	unless 2s before Spell(OUTBREAK)
 	{
 		#/icy_touch,if=dot.frost_fever.remains<2&cooldown.outbreak.remains>2
 		if TargetDebuffExpires(FROSTFEVER 2 mine=1) and Runes(frost 1) Spell(ICYTOUCH)
