@@ -39,6 +39,7 @@ Define(UNHOLYSTRENGTHBUFF 53365)
 Define(GLYPHOFHOWLINGBLAST 63335)
 
 # Talents
+Define(ENDLESSWINTERTALENT 1971)
 Define(EPIDEMICTALENT 1963)
 Define(HEARTSTRIKETALENT 1957)
 Define(IMPROVEDBLOODTAPTALENT 12223)
@@ -209,7 +210,13 @@ AddIcon help=main mastery=1
 	unless Runes(blood 2) if Runes(blood 1) and 1s before Runes(blood 2) Spell(HEARTSTRIKE)
 	if Runes(blood 2) Spell(HEARTSTRIKE)
 	#/rune_strike,if=runic_power>=40
-	if Mana(more 39) Spell(RUNESTRIKE usable=1)
+	if CheckBoxOff(mindfreeze) and Mana(more 39) Spell(RUNESTRIKE usable=1)
+	if CheckBoxOn(mindfreeze)
+	{
+		if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 39) Spell(RUNESTRIKE usable=1)
+		if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 49) Spell(RUNESTRIKE usable=1)
+		if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 59) Spell(RUNESTRIKE usable=1)
+	}
 	#/horn_of_winter
 	Spell(HORNOFWINTER)
 }
@@ -242,11 +249,23 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	{
 		unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
 			if Runes(blood 1) Spell(PESTILENCE)
-		if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE)
+		if CheckBoxOff(mindfreeze) and Mana(more 29) Spell(RUNESTRIKE usable=1)
+		if CheckBoxOn(mindfreeze)
+		{
+			if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 29) Spell(RUNESTRIKE usable=1)
+			if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 39) Spell(RUNESTRIKE usable=1)
+			if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 49) Spell(RUNESTRIKE usable=1)
+		}
 		if Runes(frost 1 unholy 1) Spell(DEATHSTRIKE)
 		if Runes(blood 1) Spell(HEARTSTRIKE)
 	}
-	if CheckBoxOff(mindfreeze) or Mana(more 49) Spell(RUNESTRIKE usable=1)
+	if CheckBoxOff(mindfreeze) and Mana(more 29) Spell(RUNESTRIKE usable=1)
+	if CheckBoxOn(mindfreeze)
+	{
+		if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 29) Spell(RUNESTRIKE usable=1)
+		if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 39) Spell(RUNESTRIKE usable=1)
+		if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 49) Spell(RUNESTRIKE usable=1)
+	}
 	if Mana(more 69) Spell(DEATHCOIL)
 }
 
