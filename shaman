@@ -1,27 +1,6 @@
-# Shaman Ovale script based on SimulationCraft profiles
-#
-# Revision History
-# 4.3.7 (2012/02/02)
-#   - Fix spell ID of Glyph of Grounding Totem.
-#   - Fix when Earth Shock is cast for Fulmination in the Elemental rotation.
-# 4.3.6 (2012/02/01)
-#   - Fix number of Maelstrom Weapon stacks needed to cast a lowest-priority Lightning Bolt in the Enhancement rotation.
-#   - Use Fire Nova for Enhancement AoE if there is a Flame Shock on the current target and not only when it's on another target.
-# 4.3.5 (2012/01/27)
-#   - Summon the Fire Elemental in Elemental spec only when we have enough intellect or spellpower procs to make it worthwhile.
-# 4.3.4 (2012/01/26)
-#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
-# 4.3.3 (2012/01/14)
-#   - Simplify some conditions using haste=spell modifier for TargetDebuffExpires().
-#   - Fix Glyph of Stoneclaw Totem usage.
-#   - Add Elemental AoE rotation icon.
-#   - Add Restoration icons for healing spells.
-# 4.3.2 (2012/01/04)
-#   - Update shaman profiles to SimulationCraft, Tier 13H: Elemental (r10707), Enhancement (r10630)
-#   - Move Enhancement AoE rotation to a separate icon.
-# 4.3.1 (2011/12/07)
-#   - Initial version based on Ovale default script.
-#   - Use shaman profiles from SimulationCraft, Tier 13H: Elemental (r10348), Enhancement (r10526)
+### Shaman Ovale script based on SimulationCraft profiles
+### https://sites.google.com/site/wownerien/ovale/shaman/script
+### Version: 4.3.7
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000

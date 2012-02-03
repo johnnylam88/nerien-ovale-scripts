@@ -1,23 +1,6 @@
-# Shadow Priest Ovale script based on SimulationCraft profile
-#
-# Revision History
-# 4.3.6 (2012/01/26)
-#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
-# 4.3.5 (2012/01/19)
-#   - Code simplifications.
-# 4.3.4 (2011/12/16)
-#   - Use actual potion name in checkbox for potion use.
-#   - Allow for non-talented Mind Blast.
-# 4.3.3 (2011/12/08)
-#   - More accurately transcribe the DoT rules under haste.
-#   - Fix Mind Blast cooldown and allow for Silence to interrupt targets.
-#   - Checkbox for using potions.
-#   - Coding style changes.
-# 4.3.2 (2011/12/08)
-#   - Move SW:D at low mana levels to mana icon, and Evangelism to CD icon.
-# 4.3.1 (2011/12/07)
-#   - Initial version using shadow priest profile from SimulationCraft, Tier 13H (r10402).
-#   - Mind Spike usage from default Ovale script.
+### Shadow Priest Ovale script based on SimulationCraft profile
+### https://sites.google.com/site/wownerien/ovale/priest/script
+### Version: 4.3.6
 #
 # Shadow:
 #	talents=http://www.wowhead.com/talent#priest-032212000000000000000000000000000000000000322032210201222100231

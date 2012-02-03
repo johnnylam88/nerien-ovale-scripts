@@ -1,48 +1,6 @@
-# Rogue Ovale script based on SimulationCraft profiles
-#
-# Revision History
-# 4.3.15 (2012/02/02)
-#   - Only use Mutilate to generate combo points if Murderous Intent talent isn't taken in Assassination spec.
-#   - Fix harmless typo in spell name.
-# 4.3.14 (2012/01/31)
-#   - Fix spell ID of Glyph of Hemorrhage for Subtlety.
-#   - Add a checkbox for Shadowstep for cases where you don't want to Shadowstep to a target.
-#   - Apply poisons out of combat.
-#   - Remove extra actions and fillers from the separate finisher icon for Combat.
-#   - Fix bug in Subtlety rotation that wasn't tracking when Rupture was about expire.
-#   - Backstab as Subtlety to prevent energy capping when nothing needs to be refreshed.
-# 4.3.13 (2012/01/30)
-#   - Rupture doesn't hit both targets while Blade Flurry is active in Combat spec, so don't cast it then.
-# 4.3.12 (2012/01/26)
-#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
-# 4.3.11 (2012/01/22)
-#   - Move Shadow Dance and Vanish to a separate CD window.
-#   - Change the texture for "out of melee range" to "dual wield" icon.
-# 4.3.10 (2012/01/18)
-#   - Only Stealth in Assassination spec if talented into Overkill.
-# 4.3.9 (2012/01/12)
-#   - Don't suggest poisons in the finishers-only icon.
-# 4.3.8 (2012/01/09)
-#   - Warn when rogue is out of melee range by displaying "Pick Herbs" texture.
-#   - Checkbox for toggling display of "finishers-only" icon to track which (de)buff needs refreshing next.
-#   - Fix Subtlety rotation by checking for Hemorrhage DoT and refreshing with Hemorrhage.
-#   - Remove poisoning weapons from the CD icons.
-# 4.3.7 (2012/01/08)
-#   - Rupture ticks every 2s, so "less than 2 ticks remaining" means "less than 2s".
-# 4.3.6 (2012/01/08)
-#   - Fix typo that was breaking Assassination script.
-# 4.3.5 (2012/01/08)
-#   - Move Shadow Dance to the CD icon and only handle energy pooling (for ShD and Vanish) in the CD icon.
-#     The main icon will continue to show actions for buff mainenance.
-# 4.3.4 (2012/01/03)
-#   - Add some talent checks for various abilities.
-# 4.3.3 (2012/01/03)
-#   - Improve energy pooling and don't suggest Vanishing if already stealthed.
-# 4.3.2 (2011/12/31)
-#   - Treat Vanish as a CD due to the long cooldown and remove some unnecessary functions.
-# 4.3.1 (2011/12/06)
-#   - Initial version based on Ovale default script.
-#   - Use rogue profiles from SimulationCraft, Tier 13H: Assassination (r10526), Combat (r10526), Subtlety (r10633)
+### Rogue Ovale script based on SimulationCraft profiles
+### https://sites.google.com/site/wownerien/ovale/rogue/script
+### Version: 4.3.15
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000

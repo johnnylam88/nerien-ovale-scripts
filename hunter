@@ -1,36 +1,6 @@
-# Hunter Ovale script based on SimulationCraft profiles
-#
-# Revision History
-# 4.3.8 (2012/02/02)
-#   - Move Hunter's Mark to the main ability icon and avoid casting it on short-lived targets.
-#   - Only suggest Cobra Shot and Steady Shot while moving if Aspect of the Fox is active.
-#   - Fix bug in MM rotation where Improved Steady Shot wasn't properly tracked.
-#   - Add more hunter pet special abilities.
-#   - Add checkbox for using the pet to maintain raid buffs and debuffs.
-#   - Update Survival to trunk/engine/sc_hunter.cpp (r10959) for WoW patch 4.3.2.
-#   - Remove the Black Arrow checkbox now that Black Arrow is always preferred over Explosive Trap for Survival hunters.
-#   - Code cleanup.
-# 4.3.7 (2012/01/26)
-#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
-# 4.3.6 (2012/01/24)
-#   - Don't use Serpent Sting on short-lived mobs in Survival spec.
-#   - Fix some focus conditions for dumping focus with Arcane Shot in Survival Spec.
-# 4.3.5 (2012/01/17)
-#   - Update all specs to SC, T13H (r10913)
-# 4.3.4 (2012/01/12)
-#   - Use Steady Shot when Cobra Shot isn't yet available.
-#   - Hunter 4pT13 has a 105s ICD.
-#   - Tolerate fewer consecutive Steady Shots to prevent focus capping.
-#   - Only MM hunters have access to Silencing Shot.
-# 4.3.3 (2012/01/04)
-#   - Fix AoE checkbox name.
-# 4.3.2 (2012/01/03)
-#   - Add Steady Shot for low-level BM hunters.
-#   - Add conditions for using Aimed Shot and Arcane Shot as focus dumps depending on 4pT13 and Glyph of Arcane Shot
-#   - Check for Glyph of Rapid Fire for using potions.
-# 4.3.1 (2011/12/22)
-#   - Initial version based on default Ovale script and SimulationCraft, Tier 13H profiles: BM (r10533), MM (r10576), SV (r10526)
-#   - Support Silencing Shot and summoning pets.
+### Hunter Ovale script based on SimulationCraft profiles
+### https://sites.google.com/site/wownerien/ovale/hunter/script
+### Version: 4.3.8
 #
 # BM:
 #	talents=http://www.wowhead.com/talent#hunter-2330230311320112121230200000000000000003000000000000000000

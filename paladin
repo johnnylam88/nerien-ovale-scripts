@@ -1,22 +1,6 @@
-# Paladin Ovale script based on SimulationCraft profiles
-#
-# Revision History
-# 4.3.7 (2012/02/01)
-#   - Pull in Holy changes from Ovale default paladin script (r459)
-# 4.3.6 (2012/01/26)
-#   - Add racial and profession CD abilities, and move item CD abilities to the correct priority.
-# 4.3.5 (2011/12/31)
-#   - Use the tanking rotations from Theck's MATLAB thread.
-# 4.3.4 (2011/12/29)
-#   - Add missing parenthesis in tank rotation.
-# 4.3.3 (2011/12/29)
-#   - Update Retribution rotation to r10714.
-# 4.3.2 (2011/12/20)
-#   - Hammer of Wrath is an execute ability, so only show when usable.
-# 4.3.1 (2011/12/15)
-#   - Initial version based on Ovale default script.
-#   - Use paladin profile from SimulationCraft, Tier 13H (r10489)
-#   - Use EJ prot pally rotation.
+### Paladin Ovale script based on SimulationCraft profiles
+### https://sites.google.com/site/wownerien/ovale/paladin/script
+### Version: 4.3.7
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
