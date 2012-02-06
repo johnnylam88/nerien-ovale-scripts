@@ -36,6 +36,7 @@ Define(RUNICCORRUPTION 51459)
 Define(UNHOLYSTRENGTHBUFF 53365)
 
 # Glyphs
+Define(GLYPHOFFROSTSTRIKE 58647)
 Define(GLYPHOFHOWLINGBLAST 63335)
 
 # Talents
@@ -231,6 +232,17 @@ AddIcon help=offgcd mastery=1
 	if Runes(blood 1 frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 }
 
+AddFunction RuneStrike
+{
+	if CheckBoxOff(mindfreeze) and Mana(more 29) Spell(RUNESTRIKE usable=1)
+	if CheckBoxOn(mindfreeze)
+	{
+		if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 29) Spell(RUNESTRIKE usable=1)
+		if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 39) Spell(RUNESTRIKE usable=1)
+		if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 49) Spell(RUNESTRIKE usable=1)
+	}
+}
+
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	unless BuffPresent(BLOODPRESENCE) Spell(BLOODPRESENCE)
@@ -249,23 +261,11 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	{
 		unless OtherDebuffPresent(BLOODPLAGUE) and OtherDebuffPresent(FROSTFEVER)
 			if Runes(blood 1) Spell(PESTILENCE)
-		if CheckBoxOff(mindfreeze) and Mana(more 29) Spell(RUNESTRIKE usable=1)
-		if CheckBoxOn(mindfreeze)
-		{
-			if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 29) Spell(RUNESTRIKE usable=1)
-			if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 39) Spell(RUNESTRIKE usable=1)
-			if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 49) Spell(RUNESTRIKE usable=1)
-		}
+		RuneStrike()
 		if Runes(frost 1 unholy 1) Spell(DEATHSTRIKE)
 		if Runes(blood 1) Spell(HEARTSTRIKE)
 	}
-	if CheckBoxOff(mindfreeze) and Mana(more 29) Spell(RUNESTRIKE usable=1)
-	if CheckBoxOn(mindfreeze)
-	{
-		if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 29) Spell(RUNESTRIKE usable=1)
-		if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 39) Spell(RUNESTRIKE usable=1)
-		if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 49) Spell(RUNESTRIKE usable=1)
-	}
+	RuneStrike()
 	if Mana(more 69) Spell(DEATHCOIL)
 }
 
@@ -287,76 +287,79 @@ AddIcon help=cd mastery=1
 	Spell(ICEBOUNDFORTITUDE)
 }
 
+#// optimal timing for diseases depends on points in epidemic, and if using improved blood tap
+#// players with only 2 points in epidemic want a 0 second refresh to avoid two PS in one minute instead of 1
+#// IBT players use 2 PS every minute
+AddFunction diseasesRefresh
+{
+	0
+	if TalentPoints(IMPROVEDBLOODTAPTALENT more 0) 2
+	if TalentPoints(EPIDEMICTALENT equal 3) 1
+	if TalentPoints(EPIDEMICTALENT equal 2) 0
+}
+
+AddFunction FrostStrike
+{
+	if CheckBoxOff(mindfreeze) Spell(FROSTSTRIKE)
+	if CheckBoxOn(mindfreeze)
+	{
+		if TalentPoints(ENDLESSWINTERTALENT equal 2)
+		{
+			if Glyph(GLYPHOFFROSTSTRIKE) and Mana(more 31) Spell(FROSTSTRIKE)
+			unless Glyph(GLYPHOFFROSTSTRIKE) and Mana(more 39) Spell(FROSTSTRIKE)
+		}
+		if TalentPoints(ENDLESSWINTERTALENT equal 1)
+		{
+			if Glyph(GLYPHOFFROSTSTRIKE) and Mana(more 41) Spell(FROSTSTRIKE)
+			unless Glyph(GLYPHOFFROSTSTRIKE) and Mana(more 49) Spell(FROSTSTRIKE)
+		}
+		if TalentPoints(ENDLESSWINTERTALENT equal 0)
+		{
+			if Glyph(GLYPHOFFROSTSTRIKE) and Mana(more 51) Spell(FROSTSTRIKE)
+			unless Glyph(GLYPHOFFROSTSTRIKE) and Mana(more 59) Spell(FROSTSTRIKE)
+		}
+	}
+}
+
 AddIcon help=main mastery=2
 {
 	#/presence,choose=unholy
 	unless BuffPresent(UNHOLYPRESENCE) Spell(UNHOLYPRESENCE)
 	if CheckBoxOn(horn) and BuffExpires(strengthagility 2) Spell(HORNOFWINTER)
-	#// optimal timing for diseases depends on points in epidemic, and if using improved blood tap
-	#// players with only 2 points in epidemic want a 0 second refresh to avoid two PS in one minute instead of 1
-	#// IBT players use 2 PS every minute
-	if TalentPoints(IMPROVEDBLOODTAPTALENT more 0)
+
+	#/outbreak,if=dot.frost_fever.remains<=drefresh|dot.blood_plague.remains<=drefresh
+	if target.debuffExpires(FROSTFEVER mine=1) < diseasesRefresh()
+		or target.debuffExpires(BLOODPLAGUE mine=1) < diseasesRefresh()
+		Spell(OUTBREAK)
+	#/howling_blast,if=dot.frost_fever.remains<=drefresh
+	if target.debuffExpires(FROSTFEVER mine=1) < diseasesRefresh()
 	{
-		#/outbreak,if=dot.frost_fever.remains<=2|dot.blood_plague.remains<=2
-		if TargetDebuffExpires(FROSTFEVER 2 mine=1) or TargetDebuffExpires(BLOODPLAGUE 2 mine=1) Spell(OUTBREAK)
-		#/howling_blast,if=dot.frost_fever.remains<=2
-		if TargetDebuffExpires(FROSTFEVER 2 mine=1)
-		{
-			if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
-			if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
-		}
-		#/plague_strike,if=dot.blood_plague.remains<=2
-		if TargetDebuffExpires(BLOODPLAGUE 2 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
+		if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
+		if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
 	}
-	unless TalentPoints(IMPROVEDBLOODTAPTALENT more 0)
-	{
-		if TalentPoints(EPIDEMICTALENT equal 3)
-		{
-			#/outbreak,if=dot.frost_fever.remains<=1|dot.blood_plague.remains<=1
-			if TargetDebuffExpires(FROSTFEVER 1 mine=1) or TargetDebuffExpires(BLOODPLAGUE 1 mine=1) Spell(OUTBREAK)
-			#/howling_blast,if=dot.frost_fever.remains<=1
-			if TargetDebuffExpires(FROSTFEVER 1 mine=1)
-			{
-				if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
-				if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
-			}
-			#/plague_strike,if=dot.blood_plague.remains<=1
-			if TargetDebuffExpires(BLOODPLAGUE 1 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
-		}
-		unless TalentPoints(EPIDEMICTALENT equal 3)
-		{
-			#/outbreak,if=dot.frost_fever.remains<=0|dot.blood_plague.remains<=0
-			if TargetDebuffExpires(FROSTFEVER 0 mine=1) or TargetDebuffExpires(BLOODPLAGUE 0 mine=1) Spell(OUTBREAK)
-			#/howling_blast,if=dot.frost_fever.remains<=0
-			if TargetDebuffExpires(FROSTFEVER 0 mine=1)
-			{
-				if Glyph(GLYPHOFHOWLINGBLAST) and {Runes(frost 1) or BuffPresent(FREEZINGFOG)} Spell(HOWLINGBLAST)
-				if Glyph(GLYPHOFHOWLINGBLAST no) and Runes(frost 1) Spell(ICYTOUCH)
-			}
-			#/plague_strike,if=dot.blood_plague.remains<=0
-			if TargetDebuffExpires(BLOODPLAGUE 0 mine=1) and Runes(unholy 1) Spell(PLAGUESTRIKE)
-		}
-	}
+	#/plague_strike,if=dot.blood_plague.remains<=drefresh
+	if target.debuffExpires(BLOODPLAGUE mine=1) < diseasesRefresh() and Runes(unholy 1) Spell(PLAGUESTRIKE)
 	#/obliterate,if=death>=1&frost>=1&unholy>=1
-	if Runes(death 1 frost 1 unholy 1) Spell(OBLITERATE)
+	if Runes(death 1 frost 1 unholy 1 nodeath=1) Spell(OBLITERATE)
 	if CheckBoxOn(masterfrost) and Mana(more 120) Spell(FROSTSTRIKE)
 	#/obliterate,if=(death=2&frost=2)|(death=2&unholy=2)|(frost=2&unholy=2)
-	if Runes(frost 2 unholy 2) Spell(OBLITERATE)
+	if Runes(death 2 frost 2 nodeath=1) or Runes(death 2 unholy 2 nodeath=1) or Runes(frost 2 unholy 2 nodeath=1)
+		Spell(OBLITERATE)
 	#/frost_strike,if=runic_power>=110
-	if Mana(more 110) Spell(FROSTSTRIKE)
+	if Mana(more 109) Spell(FROSTSTRIKE)
 	#/howling_blast,if=buff.rime.react
 	if BuffPresent(FREEZINGFOG) Spell(HOWLINGBLAST)
 	unless CheckBoxOn(masterfrost)
 	{
 		#/obliterate,if=(death=2|unholy=2|frost=2)
-		if Runes(death 2) or Runes(unholy 2) or Runes(frost 2)
+		if Runes(death 2) or Runes(unholy 2 nodeath=1) or Runes(frost 2 nodeath=1)
 			if Runes(frost 1 unholy 1) Spell(OBLITERATE)
 		#/frost_strike,if=runic_power>=100
-		if Mana(more 100) Spell(FROSTSTRIKE)
+		if Mana(more 99) Spell(FROSTSTRIKE)
 		#/obliterate
 		if Runes(frost 1 unholy 1) Spell(OBLITERATE)
 		#/frost_strike
-		Spell(FROSTSTRIKE)
+		FrostStrike()
 		#/howling_blast
 		if Runes(frost 1) Spell(HOWLINGBLAST)
 	}
@@ -369,9 +372,9 @@ AddIcon help=main mastery=2
 		#/obliterate,if=unholy=2
 		if Runes(frost 1 unholy 2) Spell(OBLITERATE)
 		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<=1
-		unless Runes(unholy 2) if Runes(frost 1 unholy 1) and 1s before Runes(unholy 2 nodeath) Spell(OBLITERATE)
+		unless Runes(unholy 2) if Runes(frost 1 unholy 1) and 1s before Runes(unholy 2 nodeath=1) Spell(OBLITERATE)
 		#/obliterate,if=unholy=1&rune.UNHOLY.cooldown_remains_all<4&(death+frost=1)
-		unless Runes(unholy 2) if Runes(frost 1 unholy 1) and 4s before Runes(unholy 2 nodeath)
+		unless Runes(unholy 2) if Runes(frost 1 unholy 1) and 4s before Runes(unholy 2 nodeath=1)
 		{
 			unless Runes(frost 2) or Runes(death 1) if Runes(frost 1 death 0) Spell(OBLITERATE)
 			unless Runes(frost 1) or Runes(death 2) if Runes(frost 0 death 1) Spell(OBLITERATE)
@@ -388,7 +391,7 @@ AddIcon help=main mastery=2
 			unless Mana(less 60) if Runes(frost 1 unholy 1) Spell(OBLITERATE)
 		}
 		#/frost_strike
-		Spell(FROSTSTRIKE)
+		FrostStrike()
 	}
 	#/horn_of_winter
 	Spell(HORNOFWINTER)
@@ -398,16 +401,12 @@ AddIcon help=offgcd mastery=2
 {
 	if TargetIsInterruptible() Spell(MINDFREEZE)
 	#/blood_tap,if=death.cooldown_remains>2.0
-	unless Runes(death 6) if Runes(death 5) unless 2s before Runes(death 6) Spell(BLOODTAP)
-	unless Runes(death 5) if Runes(death 4) unless 2s before Runes(death 5) Spell(BLOODTAP)
-	unless Runes(death 4) if Runes(death 3) unless 2s before Runes(death 4) Spell(BLOODTAP)
-	unless Runes(death 3) if Runes(death 2) unless 2s before Runes(death 3) Spell(BLOODTAP)
-	unless Runes(death 2) if Runes(death 1) unless 2s before Runes(death 2) Spell(BLOODTAP)
-	unless Runes(death 1) unless 2s before Runes(death 1) Spell(BLOODTAP)
+	if runes(death 1) > 2 Spell(BLOODTAP)
 	#/empower_rune_weapon,if=target.time_to_die<=45
 	if TargetDeadIn(less 45) Spell(EMPOWERRUNEWEAPON)
 	#/empower_rune_weapon,if=(blood.cooldown_remains+frost.cooldown_remains+unholy.cooldown_remains)>8
-	Spell(EMPOWERRUNEWEAPON)
+	if runes(blood 1) + runes(frost 1) + runes(unholy 1) > 8
+		Spell(EMPOWERRUNEWEAPON)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
@@ -479,7 +478,13 @@ AddIcon help=main mastery=3
 	#/festering_strike
 	if Runes(blood 1 frost 1) Spell(FESTERINGSTRIKE)
 	#/death_coil
-	Spell(DEATHCOIL)
+	if CheckBoxOff(mindfreeze) and Mana(more 39) Spell(DEATHCOIL)
+	if CheckBoxOn(mindfreeze)
+	{
+		if TalentPoints(ENDLESSWINTERTALENT equal 2) and Mana(more 39) Spell(DEATHCOIL)
+		if TalentPoints(ENDLESSWINTERTALENT equal 1) and Mana(more 49) Spell(DEATHCOIL)
+		if TalentPoints(ENDLESSWINTERTALENT equal 0) and Mana(more 59) Spell(DEATHCOIL)
+	}
 	#/horn_of_winter
 	Spell(HORNOFWINTER)
 }
