@@ -306,17 +306,23 @@ AddIcon help=main mastery=1
 		if BuffPresent(LIGHTNINGSHIELD stacks=7)
 		{
 			if TalentPoints(REVERBERATIONTALENT equal 0)
-				unless TargetDebuffExpires(FLAMESHOCK 6 mine=1)
-					if TargetDebuffExpires(FLAMESHOCK 9 mine=1)
-						Spell(EARTHSHOCK)
+			{
+				if targetDebuffExpires(FLAMESHOCK mine=1) > 6
+					and targetDebuffExpires(FLAMESHOCK mine=1) < 6 + timeWithHaste(3)
+					Spell(EARTHSHOCK)
+			}
 			if TalentPoints(REVERBERATIONTALENT equal 1)
-				unless TargetDebuffExpires(FLAMESHOCK 5.5 mine=1)
-					if TargetDebuffExpires(FLAMESHOCK 8.5 mine=1)
-						Spell(EARTHSHOCK)
+			{
+				if targetDebuffExpires(FLAMESHOCK mine=1) > 5.5
+					and targetDebuffExpires(FLAMESHOCK mine=1) < 5.5 + timeWithHaste(3)
+					Spell(EARTHSHOCK)
+			}
 			if TalentPoints(REVERBERATIONTALENT equal 2)
-				unless TargetDebuffExpires(FLAMESHOCK 5 mine=1)
-					if TargetDebuffExpires(FLAMESHOCK 8 mine=1)
-						Spell(EARTHSHOCK)
+			{
+				if targetDebuffExpires(FLAMESHOCK mine=1) > 5
+					and targetDebuffExpires(FLAMESHOCK mine=1) < 5 + timeWithHaste(3)
+					Spell(EARTHSHOCK)
+			}
 		}
 	}
 	#/searing_totem
