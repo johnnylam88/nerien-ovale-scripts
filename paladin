@@ -137,6 +137,7 @@ AddIcon help=main mastery=1
 
 AddIcon help=cd mastery=1
 {
+	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	Spell(AVENGINGWRATH)
 	Spell(DIVINEFAVOR)
 	Item(Trinket0Slot usable=1)
@@ -224,11 +225,7 @@ AddIcon help=main mastery=3
 	#/judgement,if=buff.judgements_of_the_pure.down
 	unless BuffPresent(JUDGEMENTSOFTHEPURE) Spell(JUDGEMENT)
 	#/crusader_strike,if=holy_power<3
-	if HolyPower(less 3)
-	{
-		if CheckBoxOff(aoe) Spell(CRUSADERSTRIKE)
-		if CheckBoxOn(aoe) Spell(DIVINESTORM)
-	}
+	if HolyPower(less 3) Spell(CRUSADERSTRIKE)
 	#/judgement,if=buff.zealotry.down&holy_power<3
 	unless BuffPresent(ZEALOTRY)
 	{
@@ -261,6 +258,13 @@ AddIcon help=main mastery=3
 		#/divine_plea
 		Spell(DIVINEPLEA)
 	}
+}
+
+AddIcon help=aoe mastery=3 checkboxon=aoe
+{
+	if HolyPower(less 3) Spell(DIVINESTORM)
+	#/consecration,if=mana>16000
+	if Mana(more 16000) Spell(CONSECRATION)
 }
 
 AddIcon help=cd mastery=3
