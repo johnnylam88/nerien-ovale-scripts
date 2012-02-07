@@ -1,6 +1,6 @@
 ### Warrior Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/warrior/script
-### Version: 4.3.5
+### Version: 4.3.6
 #
 # Arms:
 #	talents=http://www.wowhead.com/talent#warrior-3212030312021231220103220000000000000000030000000000000000000
@@ -252,7 +252,11 @@ AddIcon help=main mastery=1
 	#/slam,if=(rage>=35|buff.battle_trance.up|buff.deadly_calm.up)
 	if Mana(more 34) or BuffPresent(BATTLETRANCE) or BuffPresent(DEADLYCALM) Spell(SLAM)
 	#/battle_shout,if=rage<60
-	if Mana(less 60) Spell(BATTLESHOUT)
+	if Mana(less 60)
+	{
+		if List(shout command) Spell(COMMANDINGSHOUT)
+		if List(shout battle) Spell(BATTLESHOUT)
+	}
 }
 
 AddIcon help=offgcd mastery=1
@@ -338,7 +342,11 @@ AddIcon help=main mastery=2
 		#/execute,if=rage>=50
 		if Mana(more 49) Spell(EXECUTE usable=1)
 		#/battle_shout,if=rage<70
-		if Mana(less 70) Spell(BATTLESHOUT)
+		if Mana(less 70)
+		{
+			if List(shout command) Spell(COMMANDINGSHOUT)
+			if List(shout battle) Spell(BATTLESHOUT)
+		}
 	}
 	unless TalentPoints(TITANSGRIPTALENT more 0)
 	{
@@ -363,7 +371,11 @@ AddIcon help=main mastery=2
 		#/raging_blow,if=buff.colossus_smash.up&rage>50
 		if TargetDebuffPresent(COLOSSUSSMASH mine=1) and Mana(more 50) Spell(RAGINGBLOW)
 		#/battle_shout,if=rage<70&cooldown.bloodthirst.remains>0.2
-		unless 0.2s before Spell(BLOODTHIRST) if Mana(less 70) Spell(BATTLESHOUT)
+		unless 0.2s before Spell(BLOODTHIRST) or Mana(more 69)
+		{
+			if List(shout command) Spell(COMMANDINGSHOUT)
+			if List(shout battle) Spell(BATTLESHOUT)
+		}
 	}
 }
 
