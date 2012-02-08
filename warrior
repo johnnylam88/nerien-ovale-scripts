@@ -31,8 +31,10 @@ Define(WRECKINGCREW 57519) # Enrage effect from Wrecking Crew (Rank 2)
 
 # Glyphs
 Define(GLYPHOFBERSERKERRAGE 58096)
+Define(GLYPHOFSPELLREFLECTION 63328)
 
 # Talents
+Define(BLOODANDTHUNDERTALENT 10480)
 Define(EXECUTIONERTALENT 9644)
 Define(IMPROVEDSLAMTALENT 2233)
 Define(RAGINGBLOWTALENT 11208)
@@ -129,6 +131,10 @@ Define(SHOCKWAVE 46968)
 	SpellAddBuff(SHOCKWAVE THUNDERSTRUCK=0)
 Define(SLAM 1464)
 	SpellAddBuff(SLAM BLOODSURGE=-1)
+Define(SPELLREFLECTION 23920)
+	SpellInfo(SPELLREFLECTION cd=25)
+	SpellInfo(SPELLREFLECTION addcd=-5 glyph=63328) # Glyph of Spell Reflection
+	SpellAddBuff(SPELLREFLECTION SPELLREFLECTION=5)
 Define(STRIKE 88161)
 	SpellInfo(STRIKE cd=3)
 Define(SUNDERARMOR 7386)
@@ -505,43 +511,77 @@ AddIcon help=cd mastery=2
 	}
 }
 
-# Protection warrior rotation from EJ for 4.2:
-# http://elitistjerks.com/f81/t110315-cataclysm_protection_warrior/#post1813079
+# Cataclysm protection warrior rotation from Tengenstein at TankSpot:
+# http://www.tankspot.com/showthread.php?78294-Warrior-Tanking-Questions-(Problems-)&p=535355#post535355
+#
+# SnB cycling rotation, or "SS fish fish truck":
+#   Use Revenge/Devastate to fish for SnB procs for Shield Slam, or a heavy dmg/threat spell (that hits like
+#   a truck) right before Shield Slam is off cooldown. Revenge is only worthwhile in low-rage situations or
+#   with 2pT13, otherwise it's both lower threat and damage than Devastate.
+#
+# Off-tank protection warrior DPS rotation from Tengenstein at TankSpot:
+# http://www.tankspot.com/showthread.php?71824-The-Cataclystic-Protection-Warrior-Spreadsheet&p=535809#post535809
+#
 AddIcon help=main mastery=3
 {
-	if Stance(3) Spell(DEFENSIVESTANCE)
-	if List(shout command) and {Mana(less 20) or BuffExpires(stamina 3)} Spell(COMMANDINGSHOUT nored=1)
-	if List(shout battle) and {Mana(less 20) or BuffExpires(strengthagility 3)} Spell(BATTLESHOUT nored=1)
+	if Stance(1) or TargetIsPlayer(yes) Spell(DEFENSIVESTANCE)
+	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
+	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
 
 	if LifePercent(less 75) and BuffPresent(VICTORIOUS) Spell(VICTORYRUSH usable=1)
 
+	# Shield Slam off CD
+	Spell(SHIELDSLAM usable=1)
+
+	# Maintain raid buffs and debuffs.
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(DEVASTATE)
-
-	if 1s before Spell(SHIELDSLAM) Spell(SHIELDSLAM usable=1)
-
 	if CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 4) Spell(DEMOSHOUT)
-	if TargetDebuffExpires(meleeslow 2) Spell(THUNDERCLAP)
+	unless Stance(3) if TargetDebuffExpires(meleeslow 2) Spell(THUNDERCLAP)
 
-	Spell(VICTORYRUSH usable=1)
-	Spell(REVENGE usable=1)
-
-	# A single Rend application is only worth using on a 30%-bleed debuffed single target if it ticks at
-	# least four times. Unbuffed, it must tick all six times. Never refresh an existing Rend -- always
-	# wait for it to run its full duration or else you lose the initial application tick.
-	#
-	unless TargetDebuffPresent(RENDDEBUFF mine=1) {
-		if TargetDebuffPresent(bleed) and TargetDeadIn(more 9) or TargetDeadIn(more 15) {
-			Spell(REND)
+	# GCD before SS; "truck"
+	if 1.5s before Spell(SHIELDSLAM)
+	{
+		unless Stance(3)
+		{
+			if TalentPoints(BLOODANDTHUNDERTALENT more 0)
+				if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 6 mine=1) Spell(THUNDERCLAP)
+			unless TargetDebuffPresent(RENDDEBUFF mine=1)
+				if {TargetDebuffPresent(bleed) and TargetDeadIn(more 9)} or TargetDeadIn(more 15) Spell(REND)
 		}
+		unless Stance(2) Spell(COLOSSUSSMASH)
+		Spell(SHOCKWAVE)
+		Spell(CONCUSSIONBLOW)
 	}
+
+	# "fish"
+	unless Stance(3)
+	{
+		if TalentPoints(BLOODANDTHUNDERTALENT more 0)
+			if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 3 mine=1) Spell(THUNDERCLAP)
+	}
+	if Stance(2) and Mana(less 20) Spell(REVENGE usable=1)
 	Spell(DEVASTATE)
+
+	if Mana(less 20)
+	{
+		if List(shout command) Spell(COMMANDINGSHOUT)
+		if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+	}
 }
 
 AddIcon help=offgcd mastery=3
 {
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
-	if Mana(more 44) Spell(HEROICSTRIKE)
+	if TargetIsCasting() Spell(SPELLREFLECTION usable=1)
+	if Stance(2)
+	{
+		if Mana(more 50) Spell(HEROICSTRIKE)
+		if Mana(more 84) Spell(INNERRAGE)
+	}
+	unless Stance(2)
+		if Mana(more 96) Spell(HEROICSTRIKE)
+	if Glyph(GLYPHOFBERSERKERRAGE no) or Mana(less 96) Spell(BERSERKERRAGE)
 }
 
 AddIcon help=aoe mastery=3 checkboxon=aoe
@@ -562,7 +602,7 @@ AddIcon help=cd mastery=3
 		Spell(SHIELDWALL usable=1)
 		Spell(LASTSTAND)
 	}
-	if Stance(1) Spell(RECKLESSNESS)
+	unless Stance(2) Spell(RECKLESSNESS)
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
