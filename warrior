@@ -36,9 +36,11 @@ Define(GLYPHOFSPELLREFLECTION 63328)
 # Talents
 Define(BLOODANDTHUNDERTALENT 10480)
 Define(EXECUTIONERTALENT 9644)
+Define(IMPROVEDREVENGETALENT 10470)
 Define(IMPROVEDSLAMTALENT 2233)
 Define(RAGINGBLOWTALENT 11208)
 Define(SUDDENDEATHTALENT 52437)
+Define(SWORDANDBOARDTALENT 10496)
 Define(TACTICALMASTERYTALENT 11416)
 Define(TITANSGRIPTALENT 9658)
 
@@ -530,8 +532,8 @@ AddIcon help=main mastery=3
 
 	if LifePercent(less 75) and BuffPresent(VICTORIOUS) Spell(VICTORYRUSH usable=1)
 
-	# Shield Slam off CD
-	Spell(SHIELDSLAM usable=1)
+	# Shield Slam; we will wait up to half a GCD for Shield Slam to come off CD.
+	if spell(SHIELDSLAM) < timeWithHaste(0.75) Spell(SHIELDSLAM priority=4 usable=1)
 
 	# Maintain raid buffs and debuffs.
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
@@ -540,7 +542,7 @@ AddIcon help=main mastery=3
 	unless Stance(3) if TargetDebuffExpires(meleeslow 2) Spell(THUNDERCLAP)
 
 	# GCD before SS; "truck"
-	if 1.5s before Spell(SHIELDSLAM)
+	if TalentPoints(SWORDANDBOARDTALENT equal 0) or spell(SHIELDSLAM) < timeWithHaste(2.25)
 	{
 		unless Stance(3)
 		{
@@ -552,21 +554,32 @@ AddIcon help=main mastery=3
 		unless Stance(2) Spell(COLOSSUSSMASH)
 		Spell(SHOCKWAVE)
 		Spell(CONCUSSIONBLOW)
+		if Stance(2) and Mana(less 20) Spell(REVENGE usable=1)
+		Spell(DEVASTATE)
+
+		if Mana(less 20)
+		{
+			if List(shout command) Spell(COMMANDINGSHOUT)
+			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+		}
 	}
 
-	# "fish"
-	unless Stance(3)
+	# "fish" for SnB proc
+	unless TalentPoints(SWORDANDBOARDTALENT equal 0) or spell(SHIELDSLAM) < timeWithHaste(2.25)
 	{
-		if TalentPoints(BLOODANDTHUNDERTALENT more 0)
-			if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 3 mine=1) Spell(THUNDERCLAP)
-	}
-	if Stance(2) and Mana(less 20) Spell(REVENGE usable=1)
-	Spell(DEVASTATE)
+		unless Stance(3)
+		{
+			if TalentPoints(BLOODANDTHUNDERTALENT more 0)
+				if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 3 mine=1) Spell(THUNDERCLAP)
+		}
+		if Stance(2) and Mana(less 20) Spell(REVENGE usable=1)
+		Spell(DEVASTATE)
 
-	if Mana(less 20)
-	{
-		if List(shout command) Spell(COMMANDINGSHOUT)
-		if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+		if Mana(less 20)
+		{
+			if List(shout command) Spell(COMMANDINGSHOUT)
+			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+		}
 	}
 }
 
@@ -586,9 +599,10 @@ AddIcon help=offgcd mastery=3
 
 AddIcon help=aoe mastery=3 checkboxon=aoe
 {
-	if TargetDebuffExpires(RENDDEBUFF mine=1) Spell(REND)
+	unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
 	Spell(THUNDERCLAP)
 	Spell(SHOCKWAVE)
+	if TalentPoints(IMPROVEDREVENGETALENT more 0) Spell(REVENGE usable=1)
 	Spell(CLEAVE)
 }
 
