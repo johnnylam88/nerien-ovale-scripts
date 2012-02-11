@@ -1,6 +1,6 @@
 ### Rogue Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/rogue/script
-### Version: 4.3.15
+### Version: 4.3.16
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000
@@ -387,7 +387,7 @@ AddIcon help=main mastery=3
 	#/recuperate,if=combo_points=5&remains<3
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-	if ComboPoints(equal 5) and {TargetDebuffExpires(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
+	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
@@ -435,7 +435,7 @@ AddIcon help=main mastery=3 checkboxon=finisher
 	#/recuperate,if=combo_points=5&remains<3
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-	if ComboPoints(equal 5) and {TargetDebuffExpires(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
+	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
