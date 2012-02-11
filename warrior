@@ -75,8 +75,8 @@ Define(DEATHWISH 12292)
 	SpellInfo(DEATHWISH cd=180)
 	SpellAddBuff(DEATHWISH DEATHWISH=30)
 Define(DEFENSIVESTANCE 71)
-Define(DEMOSHOUT 1160)
-	SpellAddTargetDebuff(DEMOSHOUT DEMOSHOUT=45)
+Define(DEMORALIZINGSHOUT 1160)
+	SpellAddTargetDebuff(DEMORALIZINGSHOUT DEMORALIZINGSHOUT=45)
 Define(DEVASTATE 20243)
 	SpellAddTargetDebuff(DEVASTATE SUNDERARMORDEBUFF=30)
 Define(EXECUTE 5308)
@@ -178,7 +178,7 @@ ScoreSpells(DEADLYCALM COLOSSUSSMASH RAGINGBLOW OVERPOWER VICTORYRUSH BLOODTHIRS
 			DEVASTATE)
 
 AddCheckBox(aoe L(AOE) default)
-AddCheckBox(demo SpellName(DEMOSHOUT))
+AddCheckBox(demo SpellName(DEMORALIZINGSHOUT))
 AddCheckBox(sunder SpellName(SUNDERARMOR) default)
 AddCheckBox(dancing SpellName(BERSERKERSTANCE) default mastery=1)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=1)
@@ -215,7 +215,7 @@ AddIcon help=main mastery=1
 	# Maintain raid buffs and debuffs.
 	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
 	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
-	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMOSHOUT nored=1)
+	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMORALIZINGSHOUT nored=1)
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
@@ -327,7 +327,7 @@ AddIcon help=main mastery=2
 	# Maintain raid buffs and debuffs.
 	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
 	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
-	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMOSHOUT nored=1)
+	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMORALIZINGSHOUT nored=1)
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
@@ -538,7 +538,7 @@ AddIcon help=main mastery=3
 	# Maintain raid buffs and debuffs.
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(DEVASTATE)
-	if CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 4) Spell(DEMOSHOUT)
+	if CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 4) Spell(DEMORALIZINGSHOUT)
 	unless Stance(3) if TargetDebuffExpires(meleeslow 2) Spell(THUNDERCLAP)
 
 	# GCD before SS; "truck"
