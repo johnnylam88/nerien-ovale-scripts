@@ -1,6 +1,6 @@
 ### Rogue Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/rogue/script
-### Version: 4.3.16
+### Version: 4.3.17
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000
@@ -164,7 +164,7 @@ AddIcon help=main mastery=1
 {
 	unless InCombat()
 	{
-		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
 		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
 	}
 
@@ -215,7 +215,7 @@ AddIcon help=main mastery=1 checkboxon=finisher
 {
 	unless InCombat()
 	{
-		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
 		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
 	}
 
@@ -281,7 +281,7 @@ AddIcon help=main mastery=2
 {
 	unless InCombat()
 	{
-		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
 		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
 	}
 
@@ -312,7 +312,7 @@ AddIcon help=main mastery=2 checkboxon=finisher
 {
 	unless InCombat()
 	{
-		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
 		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
 	}
 
@@ -361,7 +361,7 @@ AddIcon help=main mastery=3
 {
 	unless InCombat()
 	{
-		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
 		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
 	}
 
@@ -409,7 +409,7 @@ AddIcon help=main mastery=3 checkboxon=finisher
 {
 	unless InCombat()
 	{
-		if WeaponEnchantExpires(mainhand 400) Spell(INSTANTPOISON)
+		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
 		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
 	}
 
