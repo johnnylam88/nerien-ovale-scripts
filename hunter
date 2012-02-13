@@ -18,15 +18,11 @@
 
 # Buffs
 Define(CHRONOHUNTER 105919) # 4pT13 buff; 105s ICD(?)
-Define(ELEMENTALOATH 51470) # elemental shaman crit buff
 Define(FIRE 82926)
 Define(FRENZYEFFECT 19615)
-Define(HONORAMONGTHIEVES 51701) # subtlety rogue crit buff
 Define(IMPROVEDSTEADYSHOT 53244) # Improved Steady Shot (Rank 3)
-Define(LEADEROFTHEPACK 17007) # feral druid crit buff
 Define(LOCKANDLOAD 56453)
 Define(RABIDPOWER 53403) # Rabid (pet talent)
-Define(RAMPAGE 29801) # fury warrior crit buff
 Define(THEBEASTWITHIN 34692)
 
 # Debuffs
@@ -110,7 +106,7 @@ Define(TRAPLAUNCHER 77769)
 # Pet spells
 Define(PETACIDSPIT 55749) # Worm
 	SpellInfo(PETACIDSPIT cd=25)
-	SpellAddDebuff(PETACIDSPIT PETACIDSPIT=25) # -- physicaldamagetaken
+	SpellAddDebuff(PETACIDSPIT PETACIDSPIT=25) # physicaldamagetaken
 Define(PETBITE 17253)
 Define(PETCALLOFTHEWILD 53434)
 	SpellInfo(PETCALLOFTHEWILD cd=300)
@@ -134,7 +130,7 @@ Define(PETFIREBREATH 34889) # Dragonhawk
 Define(PETFROSTSTORMBREATH 92380) # Chimaera
 Define(PETFURIOUSHOWL 24604) # Wolf
 	SpellInfo(PETFURIOUSHOWL cd=45)
-	SpellAddBuff(PETFURIOUSHOWL PETFURIOUSHOWL=60) # -- criticalstrike
+	SpellAddBuff(PETFURIOUSHOWL PETFURIOUSHOWL=60) # criticalstrike
 Define(PETGORE 35290) # Boar
 	SpellInfo(PETGORE cd=10)
 	SpellAddDebuff(PETGORE PETGORE=15) # bleed
@@ -161,7 +157,7 @@ Define(PETRABID 53401)
 	SpellAddBuff(PETRABID PETRABID=20)
 Define(PETRAVAGE 50518) # Ravager
 	SpellInfo(PETRAVAGE cd=15)
-	SpellAddDebuff(PETRAVAGE PETRAVAGE=25) # -- physicaldamagetaken
+	SpellAddDebuff(PETRAVAGE PETRAVAGE=25) # physicaldamagetaken
 Define(PETROAROFCOURAGE 93435) # Cat
 	SpellInfo(PETROAROFCOURAGE cd=45)
 	SpellAddBuff(PETROAROFCOURAGE PETROAROFCOURAGE=60) # strengthagility
@@ -188,7 +184,7 @@ Define(PETTENDONRIP 50271) # Hyena
 	SpellAddDebuff(PETTENDONRIP PETTENDONRIP=15) # bleed
 Define(PETTERRIFYINGROAR 90309) # Devilsaur
 	SpellInfo(PETTERRIFYINGROAR cd=45)
-	SpellAddBuff(PETTERRIFYINGROAR PETTERRIFYINGROAR=60) # -- criticalstrike
+	SpellAddBuff(PETTERRIFYINGROAR PETTERRIFYINGROAR=60) # criticalstrike
 Define(PETWOLVERINEBITE 53508)
 	SpellInfo(PETWOLVERINEBITE cd=10)
 
@@ -233,16 +229,13 @@ AddFunction SummonPet
 AddFunction PetMaintainBuffDebuff
 {
 	# Maintain raid buffs and debuffs.
+	if BuffExpires(criticalstrike 2)
+	{
+		Spell(PETFURIOUSHOWL)
+		Spell(PETTERRIFYINGROAR)
+	}
 	if BuffExpires(stamina 3) Spell(PETQIRAJIFORTITUDE)
 	if BuffExpires(strengthagility 3) Spell(PETROAROFCOURAGE)
-	unless BuffPresent(ELEMENTALOATH) or BuffPresent(HONORAMONGTHIEVES) or BuffPresent(LEADEROFTHEPACK) or BuffPresent(RAMPAGE)
-	{
-		if BuffExpires(PETFURIOUSHOWL 2) or BuffExpires(PETTERRIFYINGROAR 2)
-		{
-			Spell(PETFURIOUSHOWL)
-			Spell(PETTERRIFYINGROAR)
-		}
-	}
 	if TargetDebuffExpires(bleed 2)
 	{
 		Spell(PETGORE)
@@ -273,6 +266,11 @@ AddFunction PetMaintainBuffDebuff
 	{
 		Spell(PETDUSTCLOUD)
 		Spell(PETTAILSPIN)
+	}
+	if TargetDebuffExpires(physicaldamagetaken 2)
+	{
+		Spell(PETACIDSPIT)
+		Spell(PETRAVAGE)
 	}
 }
 
