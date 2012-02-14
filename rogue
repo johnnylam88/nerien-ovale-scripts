@@ -1,6 +1,6 @@
 ### Rogue Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/rogue/script
-### Version: 4.3.17
+### Version: 4.3.18
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000
@@ -136,6 +136,7 @@ Define(POTIONOFTHETOLVIR 58145)
 ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
+AddCheckBox(tricks SpellName(TRICKSOFTHETRADE) default)
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=681)
 AddCheckBox(shadowstep SpellName(SHADOWSTEP) default mastery=3)
 AddCheckBox(finisher "Separate finisher icon")
@@ -172,7 +173,7 @@ AddIcon help=main mastery=1
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/garrote
 	Spell(GARROTE usable=1)
@@ -223,7 +224,7 @@ AddIcon help=main mastery=1 checkboxon=finisher
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/garrote
 	Spell(GARROTE usable=1)
@@ -289,7 +290,7 @@ AddIcon help=main mastery=2
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
@@ -320,7 +321,7 @@ AddIcon help=main mastery=2 checkboxon=finisher
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
@@ -372,7 +373,7 @@ AddIcon help=main mastery=3
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
 	if CheckBoxOn(shadowstep) and {Stealthed() or BuffPresent(SHADOWDANCE)} Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
@@ -420,7 +421,7 @@ AddIcon help=main mastery=3 checkboxon=finisher
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1) Spell(TRICKSOFTHETRADE)
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
 	if CheckBoxOn(shadowstep) and {Stealthed() or BuffPresent(SHADOWDANCE)} Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
