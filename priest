@@ -10,10 +10,10 @@
 
 # Buffs
 Define(SHADOWORBS 77487)
-Define(MINDSPIKEEFFECT 87178)
+Define(MINDSPIKEBUFF 87178)
 Define(EVANGELISM 87118)
 Define(DARKARCHANGEL 87153)
-Define(MINDMELT 81292)
+Define(MINDMELTRANK1 81292)
 Define(MINDMELTRANK2 87160)
 Define(EMPOWEREDSHADOW 95799)
 
@@ -21,6 +21,7 @@ Define(EMPOWEREDSHADOW 95799)
 Define(IMPROVEDDEVOURINGPLAGUETALENT 9062)
 Define(IMPROVEDMINDBASTTALENT 9042)
 Define(MASOCHISMTALENT 11778)
+Define(SHADOWYAPPARITIONTALENT 9070)
 
 # Spells
 Define(ARCHANGEL 87151) # Archangel
@@ -39,12 +40,10 @@ Define(INNERWILL 73413) # Inner Will
 Define(MINDBLAST 8092) # Mind Blast
 	SpellInfo(MINDBLAST cd=8)
 	SpellInfo(MINDBLAST addcd=-1.5 talent=9042) # Improved Mind Blast (Rank 2)
-	SpellAddBuff(MINDBLAST SHADOW_ORBS=0)
-	SpellAddBuff(MINDBLAST EMPOWEREDSHADOW=15)
+	SpellAddBuff(MINDBLAST EMPOWEREDSHADOW=15 SHADOW_ORBS=0)
 Define(MINDFLAY 15407) # Mind Flay
 Define(MINDSPIKE 73510) # Mind Spike
-	# TODO : add talent condition for MINDMELT
-	SpellAddBuff(MINDSPIKE MINDSPIKEEFFECT=12 MINDMELT=6)
+	SpellAddBuff(MINDSPIKE MINDSPIKEBUFF=12)
 Define(SHADOWFIEND 34433)
 	SpellInfo(SHADOWFIEND cd=300)
 Define(SHADOWFORM 15473) # Shadowform
@@ -69,7 +68,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(VOLCANICPOTION 58091)
@@ -99,6 +98,18 @@ AddFunction UseRacialActions
 	Spell(BERSERKING)
 }
 
+AddIcon size=small talent=9070 mastery=3
+{
+	#/stop_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains>=0.2|dot.vampiric_touch.remains<cast_time+2.5
+	#/start_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains<=0.1
+	if TargetLifePercent(less 25)
+		and {(TargetDebuffPresent(SHADOWWORDPAIN mine=1) or OtherDebuffPresent(SHADOWWORDPAIN mine=1)}
+	{
+		unless TargetDebuffExpires(VAMPIRICTOUCH 4 mine=1 haste=spell) and TargetDeadIn(more 8)
+			if 0.2s before Spell(SHADOWWORDDEATH) Texture(ability_druid_dash) # cat dash icon for "move!"
+	}
+}
+
 AddIcon help=main mastery=3
 {
 	unless BuffPresent(SHADOWFORM) Spell(SHADOWFORM usable=1)
@@ -109,29 +120,36 @@ AddIcon help=main mastery=3
 		if BuffExpires(VAMPIRICEMBRACE 300) Spell(VAMPIRICEMBRACE)
 	}
 
-	# if the rotation isn't set up and the target has only a few seconds to live, use Mind Spike instead of normal rotation
-	if TargetDebuffExpires(SHADOWWORDPAIN 0 mine=1) and TargetDeadIn(less 10)
-	{
-		if BuffPresent(MINDSPIKEEFFECT stacks=3) or BuffPresent(MINDMELT stacks=2) Spell(MINDBLAST)
-		Spell(MINDSPIKE)
-	}
-
 	#/inner_fire
 	unless BuffPresent(INNERWILL) or BuffPresent(INNERFIRE) Spell(INNERFIRE)
 	#/vampiric_embrace
 	unless BuffPresent(VAMPIRICEMBRACE) Spell(VAMPIRICEMBRACE)
+
+	# Mind Spike rotation on short-lived mobs.
+	unless TargetDebuffPresent(SHADOWWORDPAIN mine=1) or TargetDeadIn(more 10)
+	{
+		if TargetLifePercent(less 25) and LifePercent(more 20) Spell(SHADOWWORDDEATH)
+		if BuffPresent(MINDSPIKEBUFF stacks=3) Spell(MINDBLAST)
+		if BuffPresent(MINDMELTRANK1 stacks=2) Spell(MINDBLAST)
+		if BuffPresent(MINDMELTRANK2 stacks=2) Spell(MINDBLAST)
+		Spell(MINDSPIKE)
+	}
+
 	#/mind_blast
-	if Speed(more 0) and BuffPresent(MINDMELTRANK2 stacks=2) Spell(MINDBLAST)
-	unless Speed(more 0) Spell(MINDBLAST)
+	if Speed(equal 0) or BuffPresent(MINDMELTRANK2 stacks=2) Spell(MINDBLAST)
 	#/shadow_word_pain,if=(!ticking|dot.shadow_word_pain.remains<gcd+0.5)&miss_react
-	if TargetDebuffExpires(SHADOWWORDPAIN 2 haste=spell mine=1) Spell(SHADOWWORDPAIN)
+	if TargetDebuffExpires(SHADOWWORDPAIN 2 haste=spell mine=1) and TargetDeadIn(more 10) Spell(SHADOWWORDPAIN)
 	#/devouring_plague,if=(!ticking|dot.devouring_plague.remains<gcd+1.0)&miss_react
 	unless OtherDebuffPresent(DEVOURINGPLAGUE)
-		if TargetDebuffExpires(DEVOURINGPLAGUE 2 haste=spell mine=1) Spell(DEVOURINGPLAGUE)
+		if TargetDebuffExpires(DEVOURINGPLAGUE 2.5 haste=spell mine=1) and TargetDeadIn(more 8) Spell(DEVOURINGPLAGUE)
+	#/stop_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains>=0.2|dot.vampiric_touch.remains<cast_time+2.5
 	#/vampiric_touch,if=(!ticking|dot.vampiric_touch.remains<cast_time+2.5)&miss_react
-	if target.debuffExpires(VAMPIRICTOUCH mine=1) < {castTime(VAMPIRICTOUCH) + 2.5} Spell(VAMPIRICTOUCH)
+	if TargetDebuffExpires(VAMPIRICTOUCH 4 mine=1 haste=spell) and TargetDeadIn(more 8) unless Speed(more 0) Spell(VAMPIRICTOUCH)
+	#/start_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains<=0.1
 	#/shadow_word_death,health_percentage<=25
-	if TargetLifePercent(less 25) and LifePercent(more 15) Spell(SHADOWWORDDEATH)
+	if TargetLifePercent(less 25) and LifePercent(more 20) Spell(SHADOWWORDDEATH)
+	#/shadow_word_death,if=mana_pct<10
+	if TalentPoints(MASOCHISMTALENT more 0) and ManaPercent(less 10) Spell(SHADOWWORDDEATH)
 	if Speed(more 0)
 	{
 		#/shadow_word_death,moving=1
@@ -158,16 +176,16 @@ AddIcon help=cd mastery=3
 	UseRacialActions()
 	#/archangel,if=buff.dark_evangelism.stack>=5&dot.vampiric_touch.remains>5&dot.devouring_plague.remains>5
 	if BuffPresent(EVANGELISM stacks=5)
-		and TargetDebuffPresent(VAMPIRICTOUCH 5 mine=1) and TargetDebuffPresent(DEVOURINGPLAGUE 5 mine=1)
-		Spell(ARCHANGEL)
+	{
+		if TargetDeadIn(less 10) Spell(ARCHANGEL)
+		if TargetDebuffPresent(VAMPIRICTOUCH 5 mine=1) and TargetDebuffPresent(DEVOURINGPLAGUE 5 mine=1) Spell(ARCHANGEL)
+	}
 	#/shadow_fiend
 	if TargetDeadIn(more 8) Spell(SHADOWFIEND)
 }
 
-AddIcon help=mana mastery=3
+AddIcon size=small mastery=3
 {
-	#/shadow_word_death,if=mana_pct<10
-	if TalentPoints(MASOCHISMTALENT more 0) and ManaPercent(less 10) Spell(SHADOWWORDDEATH)
 	#/dispersion
 	Spell(DISPERSION)
 }
