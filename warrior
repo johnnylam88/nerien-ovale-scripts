@@ -164,7 +164,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(EARTHENPOTION 58090)
@@ -528,14 +528,14 @@ AddIcon help=cd mastery=2
 AddIcon help=main mastery=3
 {
 	if Stance(1) Spell(DEFENSIVESTANCE)
-	unless Stance(2) if TargetTargetIsPlayer(yes) Spell(DEFENSIVESTANCE)
+	unless Stance(2) if TargetTargetIsPlayer() Spell(DEFENSIVESTANCE)
 	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
 	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
 
 	if LifePercent(less 75) and BuffPresent(VICTORIOUS) Spell(VICTORYRUSH usable=1)
 
 	# Shield Slam; we will wait up to half a GCD for Shield Slam to come off CD.
-	if spell(SHIELDSLAM) < timeWithHaste(0.75) Spell(SHIELDSLAM priority=4 usable=1)
+	if HasShield() and spell(SHIELDSLAM) < timeWithHaste(0.75) Spell(SHIELDSLAM priority=4)
 
 	# Maintain raid buffs and debuffs.
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
@@ -588,7 +588,7 @@ AddIcon help=main mastery=3
 AddIcon help=offgcd mastery=3
 {
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
-	if TargetIsCasting() Spell(SPELLREFLECTION usable=1)
+	#if HasShield() and TargetIsCasting() and TargetTargetIsPlayer() Spell(SPELLREFLECTION)
 	if Stance(2)
 	{
 		if Mana(more 50) Spell(HEROICSTRIKE)
