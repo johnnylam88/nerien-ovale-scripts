@@ -1,6 +1,6 @@
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.8
+### Version: 4.3.9
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
@@ -88,7 +88,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(EARTHENPOTION 58090)
@@ -126,13 +126,17 @@ AddFunction UseRacialActions
 AddIcon help=main mastery=1
 {
 	unless InCombat() if BuffExpires(SEALOFINSIGHT 400) Spell(SEALOFINSIGHT)
- 
+
 	if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHOCK)
-	Spell(JUDGEMENT)
-	if TargetInRange(CRUSADERSTRIKE) Spell(CRUSADERSTRIKE)
 	if BuffPresent(INFUSIONOFLIGHT) Spell(FLASHOFLIGHT)
 	Spell(HOLYLIGHT priority=2)
+}
+
+AddIcon help=aoe mastery=1 checkboxon=aoe
+{
+    if HolyPower(more 2) Spell(LIGHTOFDAWN)
+    Spell(HOLYRADIANCE)
 }
 
 AddIcon help=cd mastery=1
@@ -147,6 +151,7 @@ AddIcon help=cd mastery=1
 
 AddIcon help=mana size=small mastery=1
 {
+	unless BuffPresent(JUDGEMENTSOFTHEPURE) Spell(JUDGEMENT)
 	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
 	if ManaPercent(less 88) Spell(DIVINEPLEA)
 }
