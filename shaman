@@ -1,6 +1,6 @@
 ### Shaman Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/shaman/script
-### Version: 4.3.8
+### Version: 4.3.9
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000
@@ -137,7 +137,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(BOTTLEDWISHES 77114)

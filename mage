@@ -1,6 +1,6 @@
 ### Mage Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/mage/script
-### Version: 4.3.17
+### Version: 4.3.18
 #
 # Arcane:
 #	talents=http://www.wowhead.com/talent#mage-3033220212301002121212300200000000000000000300000000000000000
@@ -120,7 +120,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(MANAGEMITEM 36799)

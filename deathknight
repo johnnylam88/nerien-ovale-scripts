@@ -1,6 +1,6 @@
 ### Death Knight Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/deathknight/script
-### Version: 4.3.7
+### Version: 4.3.8
 #
 # Blood:
 #	talents=http://www.wowhead.com/talent#deathknight-133212031302223113210000000000000000000003200000000000000000
@@ -143,7 +143,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(EARTHENPOTION 58090)

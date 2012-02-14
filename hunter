@@ -1,6 +1,6 @@
 ### Hunter Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/hunter/script
-### Version: 4.3.9
+### Version: 4.3.10
 #
 # BM:
 #	talents=http://www.wowhead.com/talent#hunter-2330230311320112121230200000000000000003000000000000000000
@@ -201,7 +201,7 @@ Define(LIFEBLOOD 55503) # herbalism
 	SpellInfo(LIFEBLOOD duration=20 cd=120)
 Define(STONEFORM 20594) # dwarf
 	SpellInfo(STONEFORM duration=8 cd=120)
-	SpellInfo(STONEFORM STONEFORM=8)
+	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
 Define(POTIONOFTHETOLVIR 58145)
