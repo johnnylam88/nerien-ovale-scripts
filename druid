@@ -1,0 +1,325 @@
+### Druid Ovale script based on SimulationCraft profiles
+### https://sites.google.com/site/wownerien/ovale/druid/script
+### Version: 4.3.1
+#
+# Feral:
+#	talents=http://www.wowhead.com/talent#druid-000000000000000000002320322312011021222301020301000000000000000
+#	glyphs=rip/bloodletting/berserk
+
+## defines ##
+
+# Buffs
+Define(CLEARCASTING 16870)
+Define(STAMPEDE 81022)
+Define(STRENGTHOFTHEPANTHER 90166) # feral 4pT11 bonus
+
+# Debuffs
+Define(FAERIEFIREDEBUFF 91565)
+
+# Glyphs
+Define(GLYPHOFBERSERK 62969)
+Define(GLYPHOFBLOODLETTING 54815)
+
+# Spells
+Define(BARKSKIN 22812)
+	SpellInfo(BARKSKIN cd=60)
+	SpellAddBuff(BARKSKIN BARKSKIN=12)
+Define(BERSERK 50334)
+	SpellInfo(BERSERK cd=180)
+Define(CLAW 16827)
+	SpellInfo(CLAW combo=1 mana=25)
+Define(DEMORALIZINGROAR 99)
+	SpellAddTargetDebuff(DEMORALIZINGROAR DEMORALIZINGROAR=30)
+Define(ENRAGE 5229)
+	SpellInfo(ENRAGE cd=60)
+Define(FAERIEFIRE 770)
+	SpellAddTargetDebuff(FAERIEFIRE FAERIEFIREDEBUFF=300)
+Define(FAERIEFIREFERAL 16857)
+	SpellAddTargetDebuff(FAERIEFIREFERAL FAERIEFIREDEBUFF=300)
+Define(FEROCIOUSBITE 22568)
+	SpellInfo(FEROCIOUSBITE combo=-5 mana=70)
+Define(FRENZIEDREGENERATION 22842)
+	SpellInfo(FRENZIEDREGENERATION cd=180)
+	SpellAddBuff(FRENZIEDREGENERATION FRENZIEDREGENERATION=20)
+Define(INNERVATE 29166)
+	SpellInfo(INNERVATE cd=180)
+	SpellAddBuff(INNERVATE INNERVATE=10)
+Define(LACERATE 33745)
+	SpellInfo(LACERATE mana=15)
+	SpellAddTargetDebuff(LACERATE LACERATE=15)
+Define(MANGLECAT 33876)
+	SpellInfo(MANGLECAT combo=1 mana=35 inccounter=ripshreds)
+	SpellAddTargetDebuff(MANGLECAT MANGLECAT=60)
+Define(MANGLEBEAR 33878)
+	SpellInfo(MANGLEBEAR cd=6 mana=15 buffnocd=BERSERK)
+	SpellAddTargetDebuff(MANGLEBEAR MANGLEBEAR=60)
+Define(MAUL 6807)
+	SpellInfo(MAUL cd=3 mana=30)
+Define(PULVERIZE 80313)
+	SpellInfo(PULVERIZE mana=15)
+	SpellAddTargetDebuff(PULVERIZE LACERATE=0)
+Define(RAKE 1822)
+	SpellInfo(RAKE combo=1 mana=35)
+	SpellAddTargetDebuff(RAKE RAKE=9)
+Define(RAVAGE 6785)
+	SpellInfo(RAVAGE combo=1 mana=60)
+Define(RAVAGEBANG 81170)
+   SpellInfo(RAVAGEBANG combo=1 mana=0)
+   SpellAddBuff(RAVAGEBANG STAMPEDE=0)
+Define(RIP 1079)
+	SpellInfo(RIP combo=-5 duration=16 resetcounter=ripshreds)
+	SpellInfo(RIP glyph=GLYPHOFBLOODLETTING addduration=6)
+	SpellAddTargetDebuff(RIP RIP=16)
+Define(SAVAGEROAR 52610)
+	SpellInfo(SAVAGEROAR combo=-5 mana=25)
+	SpellAddBuff(SAVAGEROAR SAVAGEROAR=9)
+Define(SHRED 5221)
+	SpellInfo(SHRED mana=40 combo=1 inccounter=ripshreds)
+Define(SKULLBASHBEAR 80964)
+Define(SKULLBASHCAT 80965)
+Define(SURVIVALINSTINCTS 61336)
+	SpellInfo(SURVIVALINSTINCTS cd=180)
+	SpellAddBuff(SURVIVALINSTINCTS SURVIVALINSTINCTS=12)
+Define(SWIPEBEAR 779)
+	SpellInfo(SWIPEBEAR cd=6)
+Define(SWIPECAT 62078)
+Define(THRASH 77758)
+	SpellInfo(THRASH cd=6 mana=25)
+	SpellAddTargetDebuff(THRASH THRASH=6)
+Define(TIGERSFURY 5217)
+	SpellInfo(TIGERSFURY cd=30)
+	SpellAddBuff(TIGERSFURY TIGERSFURY=6)
+Define(WILDMUSHROOM 88747)
+Define(WILDMUSHROOMDETONATE 88751)
+
+# Racials & Professions
+Define(BERSERKING 26297) # troll
+	SpellInfo(BERSERKING duration=10 cd=180)
+	SpellAddBuff(BERSERKING BERSERKING=10)
+Define(LIFEBLOOD 55503) # herbalism
+	SpellInfo(LIFEBLOOD duration=20 cd=120)
+
+# Items
+Define(POTIONOFTHETOLVIR 58145)
+	Define(POTIONOFTHETOLVIRSPELL 80495)
+Define(VOLCANICPOTION 58091)
+	Define(VOLCANICPOTIONSPELL 80481)
+
+## end defines ##
+
+ScoreSpells(FAERIEFIREFERAL DEMORALIZINGROAR MANGLEBEAR LACERATE SAVAGEROAR RIP 
+		MANGLECAT RAKE SHRED FEROCIOUSBITE INSECTSWARM MOONFIRE
+		WRATH STARFIRE STARSURGE SUNFIRE PULVERIZE MAUL
+		CLAW)
+
+AddCheckBox(aoe L(AOE))
+AddCheckBox(faeriefire SpellName(FAERIEFIRE) default)
+AddCheckBox(mangle SpellName(MANGLECAT) default mastery=2)
+AddCheckBox(demo SpellName(DEMORALIZINGROAR) default mastery=2)
+AddCheckBox(shred SpellName(SHRED) default mastery=2)
+
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	Spell(BERSERKING)
+}
+
+AddFunction AddCombo
+{
+	if CheckBoxOn(shred) Spell(SHRED)
+	if CheckBoxOff(shred) Spell(MANGLE)
+}
+
+AddFunction BITWRange
+{
+   {ArmorSetParts(T13 more 1) and TargetLifePercent(less 60)} or TargetLifePercent(less 25)
+}
+
+AddFunction MainRotationCat
+{
+	#/feral_charge_cat,if=!in_combat
+	#if ( set_bonus.tier13_4pc_melee() )
+	#	/tigers_fury,if=energy<=45&(!buff.omen_of_clarity.react)
+	#else
+	#	/tigers_fury,if=energy<=35&(!buff.omen_of_clarity.react)
+	unless BuffPresent(CLEARCASTING)
+	{
+		if ArmorSetParts(T13 more 3) and Mana(less 46) Spell(TIGERSFURY)
+		if ArmorSetParts(T13 less 4) and Mana(less 36) Spell(TIGERSFURY)
+	}
+	#/mangle_cat,if=set_bonus.tier11_4pc_melee&buff.t11_4pc_melee.remains<4
+	if ArmorSetParts(T11 more 3) and BuffExpires(STRENGTHOFTHEPANTHER 4) Spell(MANGLECAT)
+	#/faerie_fire_feral,if=debuff.faerie_fire.stack<3|!(debuff.sunder_armor.up|debuff.expose_armor.up)
+	if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor 0 mine=0)
+		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
+	#/mangle_cat,if=debuff.mangle.remains<=2&(!debuff.mangle.up|debuff.mangle.remains>=0.0)
+	unless TargetDebuffPresent(bleed) Spell(MANGLECAT)
+	if CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1) Spell(MANGLECAT)
+	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&(buff.stampede_cat.remains<=1|buff.t13_4pc_melee.remains<=1)
+	if BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 1) Spell(RAVAGEBANG)
+	#if ( talents.blood_in_the_water -> rank() )
+	#	/ferocious_bite,if=buff.combo_points.stack>=1&dot.rip.ticking&dot.rip.remains<=2.1&target.health_pct<=( bitw_hp )
+	#	/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.ticking&target.health_pct<=( bitw_hp )
+	if TalentPoints(BLOODINTHEWATERTALENT more 0) and TargetDebuffPresent(RIP mine=1)
+	{
+		if ComboPoints(more 0) and TargetDebuffExpires(RIP 2.1 mine=1) and BiTWRange() Spell(FEROCIOUSBITE)
+		if ComboPoints(equal 5) and BiTWRange() Spell(FEROCIOUSBITE)
+	}
+	#/shred,extend_rip=1,if=position_back&dot.rip.ticking&dot.rip.remains<=4&target.health_pct>( bitw_hp )
+	if Counter(ripshreds less 3)
+	{
+		unless TalentPoints(BLOODINTHEWATERTALENT more 1) and BITWRange()
+			if Glyph(GLYPHOFBLOODLETTING) and TargetDebuffPresent(RIP mine=1) and TargetDebuffExpires(RIP 4 mine=1)
+				AddCombo()
+	}
+	#/rip,if=buff.combo_points.stack>=5&target.time_to_die>=6&dot.rip.remains<2.0&\
+	#	(buff.berserk.up|dot.rip.remains<=cooldown.tigers_fury.remains)
+	if ComboPoints(equal 5) and TargetDeadIn(more 6) and TargetDebuffExpires(RIP 2 mine=1)
+	{
+		if BuffPresent(BERSERK) Spell(RIP)
+		if target.debuffExpires(RIP mine=1) < spell(TIGERSFURY) Spell(RIP)
+	}
+	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>5.0&buff.savage_roar.remains>=3.0&buff.berserk.up
+	if ComboPoints(equal 5) and BuffPresent(BERSERK) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) Spell(FEROCIOUSBITE)
+	#/rake,if=target.time_to_die>=8.5&buff.tigers_fury.up&dot.rake.remains<9.0&(!dot.rake.ticking|dot.rake.multiplier<multiplier)
+	if TargetDeadIn(more 8.5) and BuffPresent(TIGERSFURY) and TargetDebuffExpires(RAKE 9 mine=1) Spell(RAKE)
+	#/rake,if=target.time_to_die>=dot.rake.remains&dot.rake.remains<3.0&\
+	#	(buff.berserk.up|energy>=71|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains)
+	if target.deadIn() > target.debuffExpires(RAKE mine=1) and TargetDebuffExpires(RAKE 3 mine=1)
+	{
+		if BuffPresent(BERSERK) or Mana(more 70) Spell(RAKE)
+		if spell(TIGERSFURY) + 0.8 > target.debuffExpires(RAKE mine=1) Spell(RAKE)
+	}
+	#/shred,if=position_back&buff.omen_of_clarity.react
+	if BuffPresent(CLEARCASTING) AddCombo()
+	#/savage_roar,if=buff.combo_points.stack>=1&buff.savage_roar.remains<=1
+	if ComboPoints(more 0) and BuffExpires(SAVAGEROAR 1) Spell(SAVAGEROAR)
+	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&cooldown.tigers_fury.remains=0
+	if BuffPresent(STAMPEDE) and Spell(TIGERSFURY) Spell(RAVAGEBANG)
+	#/ferocious_bite,if=(target.time_to_die<=4&buff.combo_points.stack>=5)|target.time_to_die<=1
+	if {ComboPoints(equal 5) and TargetDeadIn(less 4)} or TargetDeadIn(less 1) Spell(FEROCIOUSBITE)
+	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>=14.0&buff.savage_roar.remains>=10.0
+	if ComboPoints(equal 5) and TargetDebuffPresent(RIP 14 mine=1) or BuffPresent(SAVAGEROAR 10) Spell(FEROCIOUSBITE)
+	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&!buff.omen_of_clarity.react&buff.tigers_fury.up&time_to_max_energy>1.0
+	if BuffPresent(STAMPEDE) and BuffPresent(TIGERSFURY)
+		unless BuffPresent(CLEARCASTING) or 1s before Mana(more 99) Spell(RAVAGEBANG)
+	#/mangle_cat,if=set_bonus.tier11_4pc_melee&buff.t11_4pc_melee.stack<3
+	unless ArmorSetParts(T11 less 4) or BuffPresent(STRENGTHOFTHEPANTHER stacks=3) Spell(MANGLECAT)
+}
+
+# Main Feral Cat rotation.
+AddIcon help=main mastery=2
+{
+	if Stance(1) # bear
+	{
+  		#/enrage
+		#/mangle_bear
+		Spell(MANGLEBEAR)
+		#/demoralizing_roar,if=!debuff.demoralizing_roar.up
+		if CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMORALIZINGROAR)
+		#/lacerate,if=!ticking
+		unless TargetDebuffPresent(LACERATE mine=1) Spell(LACERATE)
+		#/thrash
+		Spell(THRASH)
+		#/pulverize,if=buff.lacerate.stack=3&buff.pulverize.remains<=2
+		if TargetDebuffPresent(LACERATE mine=1 stacks=3) and BuffExpires(PULVERIZE 2) Spell(PULVERIZE)
+		#/lacerate,if=buff.lacerate.stack<3
+		unless TargetDebuffPresent(LACERATE mine=1 stacks=3) Spell(LACERATE)
+		#/faerie_fire_feral
+		if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor 0 mine=0)
+			unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
+		Spell(FAERIEFIREFERAL)
+	}
+
+	if Stance(3) # cat
+	{
+		MainRotationCat()
+
+		#/shred,if=position_back&(buff.tigers_fury.up|buff.berserk.up)
+		if BuffPresent(BERSERK) or BuffPresent(TIGERSFURY) AddCombo()
+		#/shred,if=position_back&((buff.combo_points.stack<5&dot.rip.remains<3.0)|(buff.combo_points.stack=0&buff.savage_roar.remains<2))
+		if ComboPoints(less 5) and TargetDebuffExpires(RIP 3 mine=1) AddCombo()
+		if ComboPoints(equal 0) and BuffExpires(SAVAGEROAR 2) AddCombo()
+		#/shred,if=position_back&cooldown.tigers_fury.remains<=3.0
+		if 3s before Spell(TIGERSFURY) AddCombo()
+		#/shred,if=position_back&target.time_to_die<=8.5
+		if TargetDeadIn(less 8.5) AddCombo()
+		#/shred,if=position_back&time_to_max_energy<=1.0
+		if 1s before Mana(more 99) AddCombo()
+	}
+}
+
+# Main Feral cat rotation (same as above) minus Shred/Mangle fillers.
+AddIcon help=main mastery=2
+{
+	if Stance(1) # bear
+	{
+		#/maul,if=rage>=75
+		if Mana(more 74) Spell(MAUL)
+	}
+
+	if Stance(3) # cat
+	{
+		MainRotationCat()
+	}
+}
+
+AddIcon help=cd mastery=2
+{
+	if Stance(1) # bear
+	{
+		#/tolvir_potion,if=!in_combat
+		unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+		#skull_bash_bear
+		if TargetIsInterruptible() and TargetInRange(SKULLBASHBEAR) Spell(SKULLBASHBEAR)
+		#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
+		if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
+		#init_use_racial_actions()
+		UseRacialActions()
+		#use_str
+		UseItemActions()
+		#init_use_profession_actions()
+		UseProfessionActions()
+	}
+
+	if Stance(3) # cat
+	{
+		#/tolvir_potion,if=!in_combat
+		unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+		#skull_bash_cat
+		if TargetIsInterruptible() and TargetInRange(SKULLBASHCAT) Spell(SKULLBASHCAT)
+		#/berserk,if=buff.tigers_fury.up|(target.time_to_die<( glyphs.berserk -> ok() ? "25" : "15" )&cooldown.tigers_fury.remains>6)
+		if BuffPresent(TIGERSFURY) Spell(BERSERK)
+		unless 6s before Spell(TIGERSFURY)
+		{
+			if Glyph(GLYPHOFBERSERK yes) and TargetDeadIn(less 25) Spell(BERSERK)
+			if Glyph(GLYPHOFBERSERK no) and TargetDeadIn(less 15) Spell(BERSERK)
+		}
+		#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
+		if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
+		#init_use_racial_actions()
+		UseRacialActions()
+		#use_str
+		UseItemActions()
+		#init_use_profession_actions()
+		UseProfessionActions()
+	}
+}
+
+AddIcon help=cd size=small
+{
+	Spell(BARKSKIN)
+	Spell(SURVIVALINSTINCTS)
+	Spell(FRENZIEDREGENERATION)
+}
