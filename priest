@@ -17,6 +17,9 @@ Define(MINDMELTRANK1 81292)
 Define(MINDMELTRANK2 87160)
 Define(EMPOWEREDSHADOW 95799)
 
+# Glyphs
+Define(GLYPHOFDISPERSION 63229)
+
 # Talents
 Define(IMPROVEDDEVOURINGPLAGUETALENT 9062)
 Define(IMPROVEDMINDBASTTALENT 9042)
@@ -32,14 +35,14 @@ Define(DEVOURINGPLAGUE 2944) # Devouring Plague
 	SpellAddTargetDebuff(DEVOURINGPLAGUE DEVOURINGPLAGUE=24)
 Define(DISPERSION 47585)
 	SpellInfo(DISPERSION cd=120)
-	SpellInfo(DISPERSION addcd=-45 glyph=63229) # Glyph of Dispersion
+	SpellInfo(DISPERSION addcd=-45 glyph=GLYPHOFDISPERSION)
 Define(INNERFIRE 588) # Inner Fire
 	SpellAddBuff(INNERFIRE INNERFIRE=1800)
 Define(INNERWILL 73413) # Inner Will
 	SpellAddBuff(INNERWILL INNERWILL=1800)
 Define(MINDBLAST 8092) # Mind Blast
 	SpellInfo(MINDBLAST cd=8)
-	SpellInfo(MINDBLAST addcd=-1.5 talent=9042) # Improved Mind Blast (Rank 2)
+	SpellInfo(MINDBLAST addcd=-1.5 talent=IMPROVEDMINDBASTTALENT)
 	SpellAddBuff(MINDBLAST EMPOWEREDSHADOW=15 SHADOW_ORBS=0)
 Define(MINDFLAY 15407) # Mind Flay
 Define(MINDSPIKE 73510) # Mind Spike
@@ -98,7 +101,7 @@ AddFunction UseRacialActions
 	Spell(BERSERKING)
 }
 
-AddIcon size=small talent=9070 mastery=3
+AddIcon size=small talent=SHADOWYAPPARITIONTALENT mastery=3
 {
 	#/stop_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains>=0.2|dot.vampiric_touch.remains<cast_time+2.5
 	#/start_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains<=0.1

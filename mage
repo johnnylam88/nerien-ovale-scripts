@@ -98,7 +98,7 @@ Define(PYROBLASTBANG 92315)
 	SpellAddTargetDebuff(PYROBLASTBANG PYROBLASTBANG=12)
 	SpellAddBuff(PYROBLASTBANG HOTSTREAK=0)
 Define(SCORCH 2948) #fire 1.5 (cast while moving with Firestarter talent)
-	SpellInfo(SCORCH duration=30 talent=10541) # Critical Mass (Rank 3)
+	SpellInfo(SCORCH duration=30 talent=CRITICALMASSTALENT)
 Define(SPELLSTEAL 30449)
 Define(SUMMONWATERELEMENTAL 31687) #frost pet
 	SpellInfo(SUMMONWATERELEMENTAL cd=180)

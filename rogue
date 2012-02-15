@@ -137,7 +137,7 @@ ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINI
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(tricks SpellName(TRICKSOFTHETRADE) default)
-AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=681)
+AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=HEMORRHAGETALENT)
 AddCheckBox(shadowstep SpellName(SHADOWSTEP) default mastery=3)
 AddCheckBox(finisher "Separate finisher icon")
 

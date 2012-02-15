@@ -100,7 +100,7 @@ Define(STEADYSHOT 56641)
 	SpellInfo(STEADYSHOT mana=-9 inccounter=iss)
 Define(TRAPLAUNCHER 77769)
 	SpellInfo(TRAPLAUNCHER cd=1.5 mana=20)
-	SpellInfo(TRAPLAUNCHER addmana=-10 glyph=56996) # Glyph of Trap Launcher
+	SpellInfo(TRAPLAUNCHER addmana=-10 glyph=GLYPHOFTRAPLAUNCHER)
 	SpellAddBuff(TRAPLAUNCHER TRAPLAUNCHER=15)
 
 # Pet spells
