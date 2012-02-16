@@ -111,9 +111,7 @@ Define(VOLCANICPOTION 58091)
 ## end defines ##
 
 ScoreSpells(FAERIEFIREFERAL DEMORALIZINGROAR MANGLEBEAR LACERATE SAVAGEROAR RIP 
-		MANGLECAT RAKE SHRED FEROCIOUSBITE INSECTSWARM MOONFIRE
-		WRATH STARFIRE STARSURGE SUNFIRE PULVERIZE MAUL
-		CLAW)
+		MANGLECAT RAKE SHRED FEROCIOUSBITE PULVERIZE MAUL CLAW)
 
 AddCheckBox(aoe L(AOE))
 AddCheckBox(faeriefire SpellName(FAERIEFIRE) default)
@@ -195,7 +193,7 @@ AddFunction MainRotationCat
 		if target.debuffExpires(RIP mine=1) < spell(TIGERSFURY) Spell(RIP)
 	}
 	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>5.0&buff.savage_roar.remains>=3.0&buff.berserk.up
-	if ComboPoints(equal 5) and BuffPresent(BERSERK) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) Spell(FEROCIOUSBITE)
+	if ComboPoints(equal 5) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) and BuffPresent(BERSERK) Spell(FEROCIOUSBITE)
 	#/rake,if=target.time_to_die>=8.5&buff.tigers_fury.up&dot.rake.remains<9.0&(!dot.rake.ticking|dot.rake.multiplier<multiplier)
 	if TargetDeadIn(more 8.5) and BuffPresent(TIGERSFURY) and TargetDebuffExpires(RAKE 9 mine=1) Spell(RAKE)
 	#/rake,if=target.time_to_die>=dot.rake.remains&dot.rake.remains<3.0&\
