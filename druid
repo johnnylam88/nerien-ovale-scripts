@@ -20,6 +20,9 @@ Define(FAERIEFIREDEBUFF 91565)
 Define(GLYPHOFBERSERK 62969)
 Define(GLYPHOFBLOODLETTING 54815)
 
+# Talents
+Define(BLOODINTHEWATERTALENT 8341)
+
 # Spells
 Define(BARKSKIN 22812)
 	SpellInfo(BARKSKIN cd=60)
@@ -117,6 +120,7 @@ AddCheckBox(faeriefire SpellName(FAERIEFIRE) default)
 AddCheckBox(mangle SpellName(MANGLECAT) default mastery=2)
 AddCheckBox(demo SpellName(DEMORALIZINGROAR) default mastery=2)
 AddCheckBox(shred SpellName(SHRED) default mastery=2)
+AddCheckBox(finisher "Separate finisher icon" mastery=2)
 
 AddFunction UseItemActions
 {
@@ -261,7 +265,7 @@ AddIcon help=main mastery=2
 }
 
 # Main Feral cat rotation (same as above) minus Shred/Mangle fillers.
-AddIcon help=main mastery=2
+AddIcon help=main mastery=2 checkboxon=finisher
 {
 	if Stance(1) # bear
 	{
