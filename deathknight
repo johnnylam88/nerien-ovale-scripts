@@ -1,6 +1,6 @@
 ### Death Knight Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/deathknight/script
-### Version: 4.3.8
+### Version: 4.3.9
 #
 # Blood:
 #	talents=http://www.wowhead.com/talent#deathknight-133212031302223113210000000000000000000003200000000000000000
@@ -88,7 +88,7 @@ Define(HORNOFWINTER 57330)
 Define(HOWLINGBLAST 49184) #frost
 	SpellInfo(HOWLINGBLAST frost=-1 mana=-10)
 	SpellAddBuff(HOWLINGBLAST FREEZINGFOG=0)
-	SpellAddTargetDebuff(HOWLINGBLAST FROSTFEVER=15 glyph=GLYPHHOWLINGBLAST)
+	SpellAddTargetDebuff(HOWLINGBLAST FROSTFEVER=15 glyph=GLYPHOFHOWLINGBLAST)
 Define(ICEBOUNDFORTITUDE 48792)
 	SpellInfo(ICEBOUNDFORTITUDE cd=180)
 	SpellAddBuff(ICEBOUNDFORTITUDE ICEBOUNDFORTITUDE=18)
