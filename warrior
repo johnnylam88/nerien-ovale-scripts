@@ -185,6 +185,7 @@ AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=1)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=2)
 AddCheckBox(revenge SpellName(REVENGE) mastery=3)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=3)
+AddCheckBox(reflect SpellName(SPELLREFLECTION) mastery=3)
 AddListItem(shout none L(None))
 AddListItem(shout battle SpellName(BATTLESHOUT) default)
 AddListItem(shout command SpellName(COMMANDINGSHOUT))
@@ -587,8 +588,8 @@ AddIcon help=main mastery=3
 
 AddIcon help=offgcd mastery=3
 {
+	if CheckBoxOn(reflect) and HasShield() and TargetIsInterruptible() and TargetTargetIsPlayer() Spell(SPELLREFLECTION)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
-	#if HasShield() and TargetIsCasting() and TargetTargetIsPlayer() Spell(SPELLREFLECTION)
 	if Stance(2)
 	{
 		if Mana(more 50) Spell(HEROICSTRIKE)
