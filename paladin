@@ -1,6 +1,6 @@
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.9
+### Version: 4.3.10
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
@@ -254,14 +254,15 @@ AddIcon help=main mastery=3
 		if ArmorSetParts(T13 less 2) Spell(JUDGEMENT)
 	}
 	#/wait,sec=0.1,if=cooldown.crusader_strike.remains<0.2&cooldown.crusader_strike.remains>0
-	unless spell(CRUSADERSTRIKE) > 0 and 0.2s before Spell(CRUSADERSTRIKE)
+	unless Spell(CRUSADERSTRIKE)
 	{
-		#/holy_wrath
-		Spell(HOLYWRATH)
-		#/consecration,if=mana>16000
-		if Mana(more 16000) Spell(CONSECRATION)
-		#/divine_plea
-		Spell(DIVINEPLEA)
+		unless 0.2s before Spell(CRUSADERSTRIKE)
+		{
+			#/holy_wrath
+			Spell(HOLYWRATH)
+			#/consecration,if=mana>16000
+			if Mana(more 16000) Spell(CONSECRATION)
+		}
 	}
 }
 
@@ -291,4 +292,6 @@ AddIcon help=cd mastery=3
 	unless Spell(GUARDIANOFANCIENTKINGS) if 292s before Spell(GUARDIANOFANCIENTKINGS) Spell(ZEALOTRY usable=1)
 	#/avenging_wrath,if=buff.zealotry.up
 	if BuffPresent(ZEALOTRY) Spell(AVENGINGWRATH)
+	#/divine_plea
+	Spell(DIVINEPLEA)
 }
