@@ -446,6 +446,7 @@ AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
 	if CheckBoxOn(potions) unless InCombat() Item(POTIONOFTHETOLVIR)
+	if IsFeared() Spell(TREMORTOTEM)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
@@ -493,6 +494,7 @@ AddIcon help=cd mastery=3
 {
 	#/tolvir_potion,if=!in_combat
 	if CheckBoxOn(potions) unless InCombat() Item(POTIONOFTHETOLVIR)
+	if IsFeared() Spell(TREMORTOTEM)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
