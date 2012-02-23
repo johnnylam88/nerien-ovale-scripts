@@ -31,7 +31,7 @@ Define(ARCHANGEL 87151) # Archangel
 	SpellInfo(ARCHANGEL cd=90)
 	SpellAddBuff(ARCHANGEL DARKARCHANGEL=18)
 Define(DEVOURINGPLAGUE 2944) # Devouring Plague
-	SpellInfo(DEVOURINGPLAGUE duration=24)
+	SpellInfo(DEVOURINGPLAGUE duration=24 tick=3)
 	SpellAddTargetDebuff(DEVOURINGPLAGUE DEVOURINGPLAGUE=24)
 Define(DISPERSION 47585)
 	SpellInfo(DISPERSION cd=120)
@@ -52,13 +52,13 @@ Define(SHADOWFIEND 34433)
 Define(SHADOWFORM 15473) # Shadowform
 Define(SHADOWWORDDEATH 32379) # Shadow Word: Death
 Define(SHADOWWORDPAIN 589) # Shadow Word: Pain
-	SpellInfo(SHADOWWORDPAIN duration=18)
+	SpellInfo(SHADOWWORDPAIN duration=18 tick=3)
 	SpellAddTargetDebuff(SHADOWWORDPAIN SHADOWWORDPAIN=18)
 Define(SILENCE 15487) # Silence
 	SpellInfo(SILENCE cd=45)
 Define(VAMPIRICEMBRACE 15286) # Vampiric Embrace
 Define(VAMPIRICTOUCH 34914) # Vampiric Touch
-	SpellInfo(VAMPIRICTOUCH duration=15)
+	SpellInfo(VAMPIRICTOUCH duration=15 tick=3)
 	SpellAddTargetDebuff(VAMPIRICTOUCH VAMPIRICTOUCH=15)
 
 # Racials & Professions
