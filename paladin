@@ -65,6 +65,10 @@ Define(LIGHTOFDAWN 85222)
 Define(REBUKE 96231)
 	SpellInfo(REBUKE cd=10)
 Define(RIGHTEOUSFURY 25780)
+Define(SEALOFINSIGHT 20165)
+	SpellAddBuff(SEALOFINSIGHT SEALOFINSIGHT=1800)
+Define(SEALOFJUSTICE 20164)
+	SpellAddBuff(SEALOFJUSTICE SEALOFJUSTICE=1800)
 Define(SEALOFRIGHTEOUSNESS 20154)
 	SpellAddBuff(SEALOFRIGHTEOUSNESS SEALOFRIGHTEOUSNESS=1800)
 Define(SEALOFTRUTH 31801)
@@ -166,9 +170,14 @@ AddIcon help=main mastery=2
 	#     SotR (if Sacred Duty or Inquisition active) > Inq > CS > AS+ > J > AS > HoW(if active) > Cons* > HW* 
 	# (*=mana permitting, boss stationary for Cons to be fully effective)
 
-	if BuffExpires(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
-	unless InCombat() if BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400) Spell(SEALOFTRUTH)
+	unless BuffPresent(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
+	unless InCombat()
+	{
+		if BuffExpires(SEALOFINSIGHT 400) and BuffExpires(SEALOFJUSTICE 400) and BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400)
+			Spell(SEALOFTRUTH)
+	}
 
+	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	if CheckBoxOff(inquisition)
 	{
 		if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
@@ -196,9 +205,14 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	# AoE Queue:
 	#     Inq(if not active) > HotR > AS > Cons > HW > J
 
-	if BuffExpires(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
-	unless InCombat() if BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400) Spell(SEALOFTRUTH)
+	unless BuffPresent(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
+	unless InCombat()
+	{
+		if BuffExpires(SEALOFINSIGHT 400) and BuffExpires(SEALOFJUSTICE 400) and BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400)
+			Spell(SEALOFTRUTH)
+	}
 
+	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	unless BuffPresent(INQUISITION) Spell(INQUISITION usable=1)
 	Spell(HAMMEROFTHERIGHTEOUS)
 	Spell(AVENGERSSHIELD)
@@ -223,10 +237,14 @@ AddIcon help=cd mastery=2
 
 AddIcon help=main mastery=3
 {
-	unless InCombat() if BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400) Spell(SEALOFTRUTH)
+	unless InCombat()
+	{
+		if BuffExpires(SEALOFINSIGHT 400) and BuffExpires(SEALOFJUSTICE 400) and BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400)
+			Spell(SEALOFTRUTH)
+	}
 
 	#/seal_of_truth
-	unless BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
+	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	#/judgement,if=buff.judgements_of_the_pure.down
 	unless BuffPresent(JUDGEMENTSOFTHEPURE) Spell(JUDGEMENT)
 	#/crusader_strike,if=holy_power<3
