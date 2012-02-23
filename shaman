@@ -471,6 +471,7 @@ AddIcon help=main mastery=3
 	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(EARTHLIVINGWEAPON)
 	if WeaponEnchantExpires(mainhand 2) Spell(EARTHLIVINGWEAPON)
 	unless BuffPresent(WATERSHIELD) Spell(WATERSHIELD)
+	if TotemExpires(water) Spell(HEALINGSTREAMTOTEM)
 	Spell(RIPTIDE)
 }
 
@@ -510,7 +511,7 @@ AddIcon help=cd mastery=3
 
 AddIcon help=mana size=small
 {
-	Spell(MANATIDETOTEM)
+	if ManaPercent(less 80) Spell(MANATIDETOTEM)
 	Spell(SHAMANISTICRAGE)
 	Spell(THUNDERSTORM)
 }
