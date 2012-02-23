@@ -170,13 +170,14 @@ AddIcon help=main mastery=2
 	#     SotR (if Sacred Duty or Inquisition active) > Inq > CS > AS+ > J > AS > HoW(if active) > Cons* > HW* 
 	# (*=mana permitting, boss stationary for Cons to be fully effective)
 
-	unless BuffPresent(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 	unless InCombat()
 	{
+		unless BuffPresent(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 		if BuffExpires(SEALOFINSIGHT 400) and BuffExpires(SEALOFJUSTICE 400) and BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400)
 			Spell(SEALOFTRUTH)
 	}
 
+	if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
 	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	if CheckBoxOff(inquisition)
 	{
@@ -205,13 +206,14 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	# AoE Queue:
 	#     Inq(if not active) > HotR > AS > Cons > HW > J
 
-	unless BuffPresent(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 	unless InCombat()
 	{
+		unless BuffPresent(RIGHTEOUSFURY) Spell(RIGHTEOUSFURY)
 		if BuffExpires(SEALOFINSIGHT 400) and BuffExpires(SEALOFJUSTICE 400) and BuffExpires(SEALOFRIGHTEOUSNESS 400) and BuffExpires(SEALOFTRUTH 400)
 			Spell(SEALOFTRUTH)
 	}
 
+	if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
 	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	unless BuffPresent(INQUISITION) Spell(INQUISITION usable=1)
 	Spell(HAMMEROFTHERIGHTEOUS)
