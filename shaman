@@ -143,7 +143,7 @@ Define(STONEFORM 20594) # dwarf
 # Items
 Define(BOTTLEDWISHES 77114)
 	Define(ULTIMATEPOWER 107948) # +2290 sp
-Define(dmcvolcano 62047)
+Define(DMCVOLCANO 62047)
 	Define(VOLCANICDESTRUCTION 89091) # +1600 int proc
 Define(FIERYQUINTESSENCE 69000)
 	Define(FIERYQUINTESSENCEBUFF 97008) # +1149 int
@@ -184,6 +184,7 @@ AddListItem(trinket1 bottledwishes "Trinket 1 - Bottled Wishes" mastery=1)
 AddListItem(trinket1 dmcvolcano "Trinket 1 - DMC: Volcano" mastery=1)
 AddListItem(trinket1 fieryquintessence "Trinket 1 - Fiery Quintessence" mastery=1)
 AddListItem(trinket1 willofunbinding "Trinket 1 - Will of Unbinding" mastery=1)
+AddCheckBox(mw2lb SpellName(LIGHTNINGBOLT) mastery=2)
 
 #http://code.google.com/p/simulationcraft/source/browse/trunk/engine/sc_shaman.cpp (r10951):
 #// Fire elemental summoning logic
@@ -205,7 +206,7 @@ AddFunction BottledWishesNotEquipped
 		and {List(trinket1 dmcvolcano) or List(trinket1 fieryquintessence) or List(trinket1 willofunbinding)}
 }
 
-AddFunction dmcvolcanoNotEquipped
+AddFunction DMCVolcanoNotEquipped
 {
 	{List(trinket0 bottledwishes) or List(trinket0 fieryquintessence) or List(trinket0 willofunbinding)}
 		and {List(trinket1 bottledwishes) or List(trinket1 fieryquintessence) or List(trinket1 willofunbinding)}
@@ -227,7 +228,7 @@ AddFunction EnoughSpellpower
 {
 	{{CheckBoxOff(lightweave) and CheckBoxOff(powertorrent)}
 			or {BuffPresent(LIGHTWEAVE) or BuffPresent(POWERTORRENT)}}
-		and {dmcvolcanoNotEquipped() or BuffPresent(VOLCANICDESTRUCTION)}
+		and {DMCVolcanoNotEquipped() or BuffPresent(VOLCANICDESTRUCTION)}
 		and {WillOfUnbindingNotEquipped()
 			or {BuffPresent(COMBATMINDLFR stacks=10) or BuffPresent(COMBATMIND stacks=10) or BuffPresent(COMBATMINDHEROIC stacks=10)}}
 		and {CheckBoxOff(potions) or BuffPresent(VOLCANICPOWER) or {BuffExpires(VOLCANICPOWER 0) and item(VOLCANICPOTION) > 0}}
@@ -382,6 +383,7 @@ AddIcon help=main mastery=2
 	{
 		if WeaponEnchantExpires(mainhand 400) Spell(WINDFURYWEAPON)
 		if WeaponEnchantExpires(offhand 400) Spell(FLAMETONGUEWEAPON)
+		if BuffExpires(LIGHTNINGSHIELD 400) Spell(LIGHTNINGSHIELD)
 	}
 
 	#/windfury_weapon,weapon=main
@@ -406,11 +408,22 @@ AddIcon help=main mastery=2
 	#/earth_shock
 	Spell(EARTHSHOCK)
 	#/lightning_bolt,if=buff.maelstrom_weapon.react>1
-	if BuffPresent(MAELSTROMWEAPON stacks=2) Spell(LIGHTNINGBOLT)
+	if CheckBoxOn(mw2lb) and BuffPresent(MAELSTROMWEAPON stacks=2) Spell(LIGHTNINGBOLT)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(WINDFURYWEAPON)
+		if WeaponEnchantExpires(offhand 400) Spell(FLAMETONGUEWEAPON)
+		if BuffExpires(LIGHTNINGSHIELD 400) Spell(LIGHTNINGSHIELD)
+	}
+
+	if WeaponEnchantExpires(mainhand 2) Spell(WINDFURYWEAPON)
+	if WeaponEnchantExpires(offhand 2) Spell(FLAMETONGUEWEAPON)
+	if BuffExpires(LIGHTNINGSHIELD 2) Spell(LIGHTNINGSHIELD)
+
 	# Enhancement 4.3 AoE rotation from ElitistJerks:
 	#    http://elitistjerks.com/f79/t127416-enhancement_4_3_least_your_old_axe_good_transmog/#post2051733
 	if BuffPresent(MAELSTROMWEAPON stacks=5) Spell(CHAINLIGHTNING)
