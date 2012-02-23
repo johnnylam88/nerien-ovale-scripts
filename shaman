@@ -284,7 +284,11 @@ AddFunction UseRacialActions
 
 AddIcon help=main mastery=1
 {
-	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(FLAMETONGUEWEAPON)
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(FLAMETONGUEWEAPON)
+		if BuffExpires(LIGHTNINGSHIELD 400) Spell(LIGHTNINGSHIELD)
+	}
 
 	#/flametongue_weapon,weapon=main
 	if WeaponEnchantExpires(mainhand 2) Spell(FLAMETONGUEWEAPON)
@@ -335,7 +339,11 @@ AddIcon help=main mastery=1
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
-	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(FLAMETONGUEWEAPON)
+	unless InCombat()
+	{
+		if WeaponEnchantExpires(mainhand 400) Spell(FLAMETONGUEWEAPON)
+		if BuffExpires(LIGHTNINGSHIELD 400) Spell(LIGHTNINGSHIELD)
+	}
 
 	#/flametongue_weapon,weapon=main
 	if WeaponEnchantExpires(mainhand 2) Spell(FLAMETONGUEWEAPON)
