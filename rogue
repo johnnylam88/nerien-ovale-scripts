@@ -139,7 +139,6 @@ AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(tricks SpellName(TRICKSOFTHETRADE) default)
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=HEMORRHAGETALENT)
 AddCheckBox(shadowstep SpellName(SHADOWSTEP) default mastery=3)
-AddCheckBox(finisher "Separate finisher icon")
 
 AddFunction UseItemActions
 {
@@ -211,48 +210,6 @@ AddIcon help=main mastery=1
 		if ComboPoints(less 4) Spell(MUTILATE)
 }
 
-# Main Assassination rotation (same as above) minus Backstab/Mutilate fillers.
-AddIcon help=main mastery=1 checkboxon=finisher
-{
-	unless InCombat()
-	{
-		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
-		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
-	}
-
-	#/apply_poison,main_hand=instant,off_hand=deadly
-	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
-	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
-	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
-	unless TargetInRange(SHIV) Texture(ability_dualwield)
-	#/garrote
-	Spell(GARROTE usable=1)
-	#/slice_and_dice,if=buff.slice_and_dice.down
-	unless BuffPresent(SLICEANDDICE) if ComboPoints(more 0) Spell(SLICEANDDICE)
-	#if ( ! talents.cut_to_the_chase -> rank() )
-	unless TalentPoints(CUTTOTHECHASETALENT more 0)
-	{
-		#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
-		if Mana(less 60) and BuffExpires(SLICEANDDICE 5) and ComboPoints(more 0) Spell(SLICEANDDICE nored=1)
-		#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
-		if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
-	}
-	#if ( talents.vendetta -> rank() ) { /rupture,if=(!ticking|ticks_remain<2)&time<6 }
-	if TalentPoints(VENDETTATALENT more 0)
-	{
-		if TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) and ComboPoints(more 0) Spell(RUPTURE)
-	}
-	#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
-	if TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) and ComboPoints(more 0) Spell(RUPTURE)
-	#/envenom,if=combo_points>=4&buff.envenom.down
-	if ComboPoints(more 3) and BuffExpires(ENVENOM 0) Spell(ENVENOM)
-	#/envenom,if=combo_points>=4&energy>90
-	if ComboPoints(more 3) and Mana(more 90) Spell(ENVENOM)
-	#/envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
-	if ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3) Spell(ENVENOM)
-}
-
 AddIcon help=cd mastery=1
 {
 	#if ( talents.overkill -> rank() ) { /stealth }
@@ -306,35 +263,6 @@ AddIcon help=main mastery=2
 	unless TargetBuffPresent(REVEALINGSTRIKE mine=1) if ComboPoints(equal 4) Spell(REVEALINGSTRIKE)
 	#/sinister_strike,if=combo_points<5
 	if ComboPoints(less 5) Spell(SINISTERSTRIKE)
-}
-
-# Main Combat rotation (same as above) minus Sinister Strike fillers.
-AddIcon help=main mastery=2 checkboxon=finisher
-{
-	unless InCombat()
-	{
-		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
-		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
-	}
-
-	#/apply_poison,main_hand=instant,off_hand=deadly
-	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
-	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
-	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
-	#/slice_and_dice,if=buff.slice_and_dice.down
-	#/slice_and_dice,if=buff.slice_and_dice.remains<2
-	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
-	unless TargetInRange(SHIV) Texture(ability_dualwield)
-	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
-	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
-	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
-	unless TargetDebuffPresent(RUPTURE mine=1) or BuffPresent(BLADEFLURRY)
-		if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
-	#/eviscerate,if=combo_points=5
-	if ComboPoints(equal 5) Spell(EVISCERATE)
-	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
-	unless TargetBuffPresent(REVEALINGSTRIKE mine=1) if ComboPoints(equal 4) Spell(REVEALINGSTRIKE)
 }
 
 AddIcon help=cd mastery=2
@@ -403,47 +331,6 @@ AddIcon help=main mastery=3
 
 	# Fallback Backstab to prevent energy capping
 	if 1.2s before Mana(more 99) Spell(BACKSTAB)
-}
-
-# Main Subtlety rotation (same as above) minus Backstab fillers.
-AddIcon help=main mastery=3 checkboxon=finisher
-{
-	unless InCombat()
-	{
-		if WeaponEnchantExpires(mainhand 400) Item(INSTANTPOISON)
-		if WeaponEnchantExpires(offhand 400) Item(DEADLYPOISON)
-	}
-
-	# Maintain raid debuffs.
-	if CheckBoxOn(hemorrhage) and TalentPoints(HEMORRHAGETALENT more 0) and TargetDebuffExpires(bleed 2) Spell(HEMORRHAGE)
-
-	#/apply_poison,main_hand=instant,off_hand=deadly
-	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
-	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
-	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
-	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
-	if CheckBoxOn(shadowstep) and {Stealthed() or BuffPresent(SHADOWDANCE)} Spell(SHADOWSTEP)
-	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
-	if ComboPoints(less 3) Spell(PREMEDITATION usable=1)
-	unless TargetInRange(SHIV) Texture(ability_dualwield)
-	#/ambush,if=combo_points<=4
-	if ComboPoints(less 5) Spell(AMBUSH usable=1)
-	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
-	if BuffExpires(SLICEANDDICE 3) and ComboPoints(equal 5) Spell(SLICEANDDICE)
-	#/rupture,if=combo_points=5&!ticking
-	if ComboPoints(equal 5) unless TargetDebuffPresent(RUPTURE mine=1) if TargetDeadIn(more 12) Spell(RUPTURE)
-	#/recuperate,if=combo_points=5&remains<3
-	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
-	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-	if ComboPoints(equal 5) and {TargetDebuffPresent(RUPTURE 1 mine=1) or TargetDeadIn(less 7)} Spell(EVISCERATE)
-	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
-	{
-		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
-		if ComboPoints(less 4) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
-		#/hemorrhage,if=combo_points<5&energy>80&dot.hemorrhage.remains<4
-		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
-	}
 }
 
 AddIcon help=cd mastery=3
