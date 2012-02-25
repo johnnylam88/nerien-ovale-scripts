@@ -1,6 +1,6 @@
 ### Rogue Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/rogue/script
-### Version: 4.3.19
+### Version: 4.3.20
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000
@@ -18,11 +18,16 @@
 
 # Buffs
 Define(DEEPINSIGHT 84747)
+Define(FIERYDEVASTATION 99187) # 4pT12 critical strike bonus
+Define(FUTUREONFIRE 99186) # 4pT12 haste bonus
+Define(HONORAMONGTHIEVES 51701)
 Define(MASTEROFSUBTLETY 31223)
+Define(MASTEROFTHEFLAMES 99188) # 4pT12 mastery bonus
 Define(MODERATEINSIGHT 84746)
 Define(OVERKILL 58426)
 Define(SHADOWSTEPBUFF 36563)
 Define(SHALLOWINSIGHT 84745)
+Define(TRICKSOFTIME 105864) # 2pT13 bonus
 Define(VANISHBUFF 11327)
 
 # Debuffs
@@ -37,6 +42,7 @@ Define(BANDITSGUILETALENT 11174)
 Define(CUTTOTHECHASETALENT 2070)
 Define(ENERGETICRECOVERYTALENT 11665)
 Define(HEMORRHAGETALENT 681)
+Define(HONORAMONGTHIEVESTALENT 2078)
 Define(MURDEROUSINTENTTALENT 6516)
 Define(OVERKILLTALENT 281)
 Define(SHADOWDANCETALENT 2081)
@@ -139,6 +145,7 @@ AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(tricks SpellName(TRICKSOFTHETRADE) default)
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=HEMORRHAGETALENT)
 AddCheckBox(shadowstep SpellName(SHADOWSTEP) default mastery=3)
+AddCheckBox(honoramongthieves SpellName(HONORAMONGTHIEVES) talent=HONORAMONGTHIEVESTALENT)
 
 AddFunction UseItemActions
 {
@@ -171,8 +178,6 @@ AddIcon help=main mastery=1
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
-	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/garrote
 	Spell(GARROTE usable=1)
@@ -226,6 +231,8 @@ AddIcon help=cd mastery=1
 	UseProfessionActions()
 	#init_use_racial_actions()
 	UseRacialActions()
+	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/vendetta (after opening SnD is up)
 	unless TargetDebuffPresent(VENDETTA) if BuffPresent(SLICEANDDICE) Spell(VENDETTA)
 	#/cold_blood,sync=envenom
@@ -246,8 +253,6 @@ AddIcon help=main mastery=2
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
-	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	#/slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
@@ -279,10 +284,19 @@ AddIcon help=cd mastery=2
 	UseProfessionActions()
 	#init_use_racial_actions()
 	UseRacialActions()
+	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
+	if CheckBoxOn(tricks)
+	{
+		if ArmorSetParts(T12 more 3) Spell(TRICKSOFTHETRADE)
+		if ArmorSetParts(T13 more 1)
+			unless BuffPresent(ADRENALINERUSH) or BuffPresent(KILLINGSPREE) Spell(TRICKSOFTHETRADE)
+	}
 	#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down
-	if Mana(less 35) and BuffPresent(SLICEANDDICE 4) unless BuffPresent(ADRENALINERUSH) Spell(KILLINGSPREE)
+	if Mana(less 35) and BuffPresent(SLICEANDDICE 4)
+		unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME) Spell(KILLINGSPREE)
 	#/adrenaline_rush,if=energy<35
-	unless BuffPresent(KILLINGSPREE) if Mana(less 35) Spell(ADRENALINERUSH)
+	unless BuffPresent(KILLINGSPREE) or BuffPresent(TRICKSOFTIME)
+		if Mana(less 35) Spell(ADRENALINERUSH)
 }
 
 # Main Subtlety rotation.
@@ -300,8 +314,6 @@ AddIcon help=main mastery=3
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
 	if WeaponEnchantExpires(offhand 5) Item(DEADLYPOISON)
-	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
-	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	#/shadowstep,if=buff.stealthed.up|buff.shadow_dance.up
 	if CheckBoxOn(shadowstep) and {Stealthed() or BuffPresent(SHADOWDANCE)} Spell(SHADOWSTEP)
 	#/premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
@@ -326,11 +338,15 @@ AddIcon help=main mastery=3
 	}
 	#/backstab,if=combo_points<4
 	if ComboPoints(less 4) Spell(BACKSTAB)
-	#/backstab,if=combo_points<5&energy>80
-	if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
-
-	# Fallback Backstab to prevent energy capping
-	if 1.2s before Mana(more 99) Spell(BACKSTAB)
+	if CheckBoxOff(honoramongthieves)
+	{
+		#/backstab,if=combo_points<5&energy>80
+		if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
+		# Fallback Backstab to prevent energy capping
+		if 1.5s before Mana(more 99) Spell(BACKSTAB)
+	}
+	# We only get here if we're at 4CP or about to cap on energy.
+	if CheckBoxOn(honoramongthieves) and 1.5s before Mana(more 99) Spell(BACKSTAB)
 }
 
 AddIcon help=cd mastery=3
@@ -343,10 +359,13 @@ AddIcon help=cd mastery=3
 	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
 		#/pool_energy,for_next=1
-		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
+		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&\
+		#	!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
 		if TimeInCombat(more 10) and Mana(more 60) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
 			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
-				Spell(VANISH)
+		{
+			Spell(VANISH)
+		}
 		unless TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
 			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
 		{
@@ -364,6 +383,8 @@ AddIcon help=cd mastery=3
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
 	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
+	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
 		if BuffPresent(SHADOWDANCE)
