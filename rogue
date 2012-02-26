@@ -1,6 +1,6 @@
 ### Rogue Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/rogue/script
-### Version: 4.3.20
+### Version: 4.3.21
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000
@@ -68,6 +68,9 @@ Define(ENVENOM 32645)
 	SpellAddBuff(ENVENOM ENVENOM=5 mana=35)
 Define(EVISCERATE 2098)
 	SpellInfo(EVISCERATE combo=-5 mana=35)
+Define(FEINT 1966)
+	SpellInfo(FEINT duration=6 cd=10)
+	SpellAddBuff(FEINT FEINT=6)
 Define(GARROTE 703)
 	SpellInfo(GARROTE combo=1 mana=45)
 	SpellAddTargetDebuff(GARROTE GARROTE=18)
@@ -406,6 +409,7 @@ AddIcon size=small
 
 AddIcon size=small
 {
+	Spell(FEINT)
 	Spell(CLOAKOFSHADOWS)
 	Spell(STONEFORM)
 }
