@@ -177,7 +177,7 @@ AddIcon help=main mastery=2
 			Spell(SEALOFTRUTH)
 	}
 
-	if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
+	unless BuffPresent(RIGHTEOUSFURY) if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
 	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	if CheckBoxOff(inquisition)
 	{
@@ -213,7 +213,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 			Spell(SEALOFTRUTH)
 	}
 
-	if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
+	unless BuffPresent(RIGHTEOUSFURY) if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
 	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
 	unless BuffPresent(INQUISITION) Spell(INQUISITION usable=1)
 	Spell(HAMMEROFTHERIGHTEOUS)
