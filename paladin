@@ -1,6 +1,6 @@
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.10
+### Version: 4.3.11
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
@@ -15,6 +15,9 @@ Define(JUDGEMENTSOFTHEPURE 53655)
 Define(SACREDDUTY 85433)
 Define(THEARTOFWAR 59578)
 
+# Talents
+Define(GLYPHOFCONSECRATION 54928)
+
 # Abilities
 Define(AVENGERSSHIELD 31935)
 	SpellInfo(AVENGERSSHIELD cd=15)
@@ -22,7 +25,8 @@ Define(AVENGINGWRATH 31884)
 	SpellInfo(AVENGINGWRATH cd=180)
 	SpellAddBuff(AVENGINGWRATH AVENGINGWRATH=20)
 Define(CONSECRATION 26573)
-	SpellInfo(CONSECRATION cd=8)
+	SpellInfo(CONSECRATION cd=30)
+	SpellInfo(CONSECRATION addcd=36 glyph=GLYPHOFCONSECRATION)
 Define(CRUSADERSTRIKE 35395)
 	SpellInfo(CRUSADERSTRIKE cd=4 holy=1)
 Define(DIVINEFAVOR 31842)
@@ -109,6 +113,7 @@ AddCheckBox(aoe L(AOE) default)
 AddCheckBox(inqusition SpellName(INQUISITION) mastery=2)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
+AddCheckBox(consecration SpellName(CONSECRATION) default)
 
 AddFunction UseItemActions
 {
@@ -194,7 +199,7 @@ AddIcon help=main mastery=2
 	Spell(JUDGEMENT)
 	Spell(AVENGERSSHIELD)
 	Spell(HAMMEROFWRATH usable=1)
-	Spell(CONSECRATION)
+	if CheckBoxOn(consecration) Spell(CONSECRATION)
 	Spell(HOLYWRATH)
 	Spell(DIVINEPLEA priority=2)
 }
@@ -281,7 +286,7 @@ AddIcon help=main mastery=3
 			#/holy_wrath
 			Spell(HOLYWRATH)
 			#/consecration,if=mana>16000
-			if Mana(more 16000) Spell(CONSECRATION)
+			if CheckBoxOn(consecration) and Mana(more 16000) Spell(CONSECRATION)
 		}
 	}
 }
