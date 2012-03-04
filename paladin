@@ -314,7 +314,11 @@ AddIcon help=cd mastery=3
 	#/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
 	if 10s before Spell(ZEALOTRY) Spell(GUARDIANOFANCIENTKINGS)
 	#/zealotry,if=cooldown.guardian_of_ancient_kings.remains>0&cooldown.guardian_of_ancient_kings.remains<292
-	unless Spell(GUARDIANOFANCIENTKINGS) if 292s before Spell(GUARDIANOFANCIENTKINGS) Spell(ZEALOTRY usable=1)
+	if HolyPower(equal 3)
+	{
+		unless Spell(GUARDIANOFANCIENTKINGS) if 292s before Spell(GUARDIANOFANCIENTKINGS) Spell(ZEALOTRY)
+		if Level(less 85) Spell(ZEALOTRY)
+	}
 	#/avenging_wrath,if=buff.zealotry.up
 	if BuffPresent(ZEALOTRY) Spell(AVENGINGWRATH)
 	#/divine_plea
