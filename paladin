@@ -1,6 +1,6 @@
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.11
+### Version: 4.3.12
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
@@ -110,7 +110,7 @@ ScoreSpells(SHIELDOFTHERIGHTEOUS JUDGEMENT AVENGERSSHIELD HAMMEROFTHERIGHTEOUS C
 			ZEALOTRY INQUISITION TEMPLARSVERDICT DIVINESTORM EXORCISM HAMMEROFWRATH JUDGEMENT CRUSADERSTRIKE)
 
 AddCheckBox(aoe L(AOE) default)
-AddCheckBox(inqusition SpellName(INQUISITION) mastery=2)
+AddCheckBox(inquisition SpellName(INQUISITION) mastery=2)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
 AddCheckBox(consecration SpellName(CONSECRATION) default)
@@ -220,7 +220,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 
 	unless BuffPresent(RIGHTEOUSFURY) if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
 	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
-	unless BuffPresent(INQUISITION) Spell(INQUISITION usable=1)
+	unless BuffPresent(INQUISITION) if HolyPower(more 2) Spell(INQUISITION)
 	Spell(HAMMEROFTHERIGHTEOUS)
 	Spell(AVENGERSSHIELD)
 	Spell(CONSECRATION)
