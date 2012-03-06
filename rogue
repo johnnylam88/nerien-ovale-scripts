@@ -328,16 +328,15 @@ AddIcon help=main mastery=3
 	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
 	if BuffExpires(SLICEANDDICE 3) and ComboPoints(equal 5) Spell(SLICEANDDICE)
 	#/rupture,if=combo_points=5&!ticking
-	if ComboPoints(equal 5) unless TargetDebuffPresent(RUPTURE mine=1)
-		if TargetClassification(worldboss) and TargetDeadIn(more 20) Spell(RUPTURE)
+	if ComboPoints(equal 5) and TargetDeadIn(more 20) unless TargetDebuffPresent(RUPTURE mine=1) Spell(RUPTURE)
 	#/recuperate,if=combo_points=5&remains<3
 	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
 	if ComboPoints(equal 5)
 	{
+		if TargetDeadIn(less 20) Spell(EVICERATE)
 		if TalentPoints(SERRATEDBLADESTALENT equal 2) and TargetDebuffPresent(RUPTURE 1 mine=1) Spell(EVICERATE)
 		if TalentPoints(SERRATEDBLADESTALENT equal 1) and TargetDebuffPresent(RUPTURE 6 mine=1) Spell(EVICERATE)
-		unless TargetClassification(worldboss) and TargetDeadIn(more 20) Spell(EVICERATE)
 	}
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
