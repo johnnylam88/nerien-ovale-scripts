@@ -415,7 +415,7 @@ AddIcon size=small
 
 AddIcon size=small
 {
-	Spell(FEINT)
+	if TargetInRange(FEINT) Spell(FEINT)
 	Spell(CLOAKOFSHADOWS)
 	Spell(STONEFORM)
 }
