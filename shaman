@@ -1,6 +1,6 @@
 ### Shaman Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/shaman/script
-### Version: 4.3.10
+### Version: 4.3.11
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000
@@ -416,7 +416,7 @@ AddIcon help=main mastery=2
 	#/earth_shock
 	Spell(EARTHSHOCK)
 	#/lightning_bolt,if=buff.maelstrom_weapon.react>1
-	if CheckBoxOn(mw2lb) and BuffPresent(MAELSTROMWEAPON stacks=2) Spell(LIGHTNINGBOLT)
+	if CheckBoxOn(mw2lb) and BuffPresent(MAELSTROMWEAPON stacks=2) and Speed(equal 0) Spell(LIGHTNINGBOLT)
 }
 
 AddIcon help=aoe mastery=2 checkboxon=aoe
