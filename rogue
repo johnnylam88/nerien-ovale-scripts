@@ -147,6 +147,7 @@ ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINI
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(tricks SpellName(TRICKSOFTHETRADE) default)
+AddCheckBox(ejcombat "EJ Combat CD Usage" talent=BANDITSGUILETALENT)
 AddCheckBox(hemorrhage SpellName(HEMORRHAGE) talent=HEMORRHAGETALENT)
 AddCheckBox(shadowstep SpellName(SHADOWSTEP) default mastery=3)
 AddCheckBox(honoramongthieves SpellName(HONORAMONGTHIEVES) default talent=HONORAMONGTHIEVESTALENT)
@@ -297,10 +298,16 @@ AddIcon help=cd mastery=2
 	}
 	#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down
 	if Mana(less 35) and BuffPresent(SLICEANDDICE 4)
-		unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME) Spell(KILLINGSPREE)
+	{
+		unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME)
+			if BuffPresent(DEEPSIGHT) or CheckBoxOff(ejcombat) Spell(KILLINGSPREE)
+	}
 	#/adrenaline_rush,if=energy<35
-	unless BuffPresent(KILLINGSPREE) or BuffPresent(TRICKSOFTIME)
-		if Mana(less 35) Spell(ADRENALINERUSH)
+	if Mana(less 35)
+	{
+		unless BuffPresent(KILLINGSPREE) or BuffPresent(TRICKSOFTIME)
+			if BuffPresent(MODERATEINSIGHT) or CheckBoxOff(ejcombat) Spell(ADRENALINERUSH)
+	}
 }
 
 # Main Subtlety rotation.
@@ -335,8 +342,7 @@ AddIcon help=main mastery=3
 	if ComboPoints(equal 5)
 	{
 		if TargetDeadIn(less 20) Spell(EVICERATE)
-		if TalentPoints(SERRATEDBLADESTALENT equal 2) and TargetDebuffPresent(RUPTURE 1 mine=1) Spell(EVICERATE)
-		if TalentPoints(SERRATEDBLADESTALENT equal 1) and TargetDebuffPresent(RUPTURE 6 mine=1) Spell(EVICERATE)
+		if TargetDebuffPresent(RUPTURE 1 mine=1) Spell(EVICERATE)
 	}
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
