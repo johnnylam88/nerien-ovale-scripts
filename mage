@@ -1,6 +1,6 @@
 ### Mage Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/mage/script
-### Version: 4.3.19
+### Version: 4.3.20
 #
 # Arcane:
 #	talents=http://www.wowhead.com/talent#mage-3033220212301002121212300200000000000000000300000000000000000
@@ -141,6 +141,7 @@ ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMEN
 			DEEPFREEZE ICELANCE)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL))
+AddCheckBox(stolentime SpellName(STOLENTIME) mastery=2)
 
 # Separate out the full Arcane rotation into "burn" (DPS) rotation and "hover" (DPM)
 # rotation to allow the player to choose when to enter each part of the rotation.
@@ -420,10 +421,14 @@ AddIcon help=cd mastery=2
 	Spell(BERSERKING)
 	#/blood_fury
 	Spell(BLOODFURY)
-	#/combustion,if=dot.living_bomb.ticking&dot.ignite.ticking&dot.pyroblast.ticking
+	#/combustion,if=dot.living_bomb.ticking&dot.ignite.ticking&dot.pyroblast.ticking&dot.ignite.tick_dmg>10000
 	if TargetDebuffPresent(LIVINGBOMB mine=1) and TargetDebuffPresent(IGNITE mine=1)
 		and {TargetDebuffPresent(PYROBLAST mine=1) or TargetDebuffPresent(PYROBLASTBANG mine=1)}
-		Spell(COMBUSTION)
+		and LastSpellDamage(IGNITE more 10000)
+	{
+		if CheckBoxOff(stolentime) or ArmorSetParts(T13 less 4) Spell(COMBUSTION)
+		if CheckBoxOn(stolentime) and ArmorSetParts(T13 more 3) and BuffPresent(STOLENTIME stacks=8) Spell(COMBUSTION)
+	}
 	#/mirror_image,if=target.time_to_die>=25
 	if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
 	#/flame_orb,if=target.time_to_die>=12
@@ -461,8 +466,8 @@ AddIcon help=main mastery=3
 
 	#/deep_freeze,if=buff.fingers_of_frost.react
 	Spell(DEEPFREEZE usable=1)
-	#/frostfire_bolt,if=buff.brain_freeze.react
-	if BuffPresent(BRAINFREEZE)
+	#/frostfire_bolt,if=buff.brain_freeze.react&buff.fingers_of_frost.react
+	if BuffPresent(BRAINFREEZE) and BuffPresent(FINGERSOFFROST)
 	{
 		Spell(FROSTFIREBOLT)
 		Spell(FIREBALL)
