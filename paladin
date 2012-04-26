@@ -1,6 +1,6 @@
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.12
+### Version: 4.3.13
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
@@ -110,7 +110,9 @@ ScoreSpells(SHIELDOFTHERIGHTEOUS JUDGEMENT AVENGERSSHIELD HAMMEROFTHERIGHTEOUS C
 			ZEALOTRY INQUISITION TEMPLARSVERDICT DIVINESTORM EXORCISM HAMMEROFWRATH JUDGEMENT CRUSADERSTRIKE)
 
 AddCheckBox(aoe L(AOE) default)
-AddCheckBox(inquisition SpellName(INQUISITION) mastery=2)
+AddListItem(hpability inquisition SpellName(INQUISITION) mastery=2 default)
+AddListItem(hpability shieldoftherighteous SpellName(SHIELDOFTHERIGHTEOUS) mastery=2)
+AddListItem(hpability wordofglory SpellName(WORDOFGLORY) mastery=2)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
 AddCheckBox(consecration SpellName(CONSECRATION) default)
@@ -184,15 +186,19 @@ AddIcon help=main mastery=2
 
 	unless BuffPresent(RIGHTEOUSFURY) if TargetTargetIsPlayer() Spell(RIGHTEOUSFURY)
 	unless BuffPresent(SEALOFINSIGHT) or BuffPresent(SEALOFJUSTICE) or BuffPresent(SEALOFRIGHTEOUSNESS) or BuffPresent(SEALOFTRUTH) Spell(SEALOFTRUTH)
-	if CheckBoxOff(inquisition)
+	if HolyPower(more 2)
 	{
-		if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
-	}
-	if CheckBoxOn(inquisition)
-	{
-		if BuffPresent(INQUISITION) or BuffPresent(SACREDDUTY)
-			if HolyPower(more 2) Spell(SHIELDOFTHERIGHTEOUS)
-		if HolyPower(more 2) Spell(INQUISITION)
+		if List(hpability inquisition)
+		{
+			if BuffPresent(INQUISITION) or BuffPresent(SACREDDUTY) Spell(SHIELDOFTHERIGHTEOUS)
+			Spell(INQUISITION)
+		}
+		if List(hpability wordofglory)
+		{
+			unless 4s before Spell(WORDOFGLORY) Spell(SHIELDOFTHERIGHTEOUS)
+			Spell(WORDOFGLORY priority=4)
+		}
+		if List(hpability shieldoftherighteous) Spell(SHIELDOFTHERIGHTEOUS)
 	}
 	Spell(CRUSADERSTRIKE)
 	if BuffPresent(GRANDCRUSADER) Spell(AVENGERSSHIELD)
@@ -232,7 +238,7 @@ AddIcon help=cd mastery=2
 {
 	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
-	if HolyPower(more 2) Spell(WORDOFGLORY)
+	unless List(hpability wordofglory) if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHIELD)
 	Spell(STONEFORM)
 	Spell(GUARDIANOFANCIENTKINGS)
