@@ -76,12 +76,14 @@ Define(FERVOR 82726)
 Define(FOCUSFIRE 82692)
 	SpellInfo(FOCUSFIRE cd=15)
 	SpellAddBuff(FOCUSFIRE FOCUSFIRE=15)
+Define(HUNTERSMARK 1130)
+	SpellAddTargetDebuff(HUNTERSMARK HUNTERSMARK=300)
 Define(KILLCOMMAND 34026)
 	SpellInfo(KILLCOMMAND cd=6 mana=40 resetcounter=iss)
 Define(KILLSHOT 53351)
 	SpellInfo(KILLSHOT cd=10 resetcounter=iss)
-Define(HUNTERSMARK 1130)
-	SpellAddTargetDebuff(HUNTERSMARK HUNTERSMARK=300)
+Define(MISDIRECTION 34477)
+	SpellInfo(MISDIRECTION cd=30)
 Define(MULTISHOT 2643)
 	SpellInfo(MULTISHOT mana=40 resetcounter=iss)
 Define(RAPIDFIRE 3045)
@@ -600,4 +602,9 @@ AddIcon help=cd mastery=3
 	UseProfessionActions()
 	#/rapid_fire
 	Spell(RAPIDFIRE)
+}
+
+AddIcon size=small
+{
+	Spell(MISDIRECTION)
 }
