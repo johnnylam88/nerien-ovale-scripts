@@ -1,6 +1,6 @@
 ### Mage Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/mage/script
-### Version: 4.3.20
+### Version: 4.3.21
 #
 # Arcane:
 #	talents=http://www.wowhead.com/talent#mage-3033220212301002121212300200000000000000000300000000000000000
@@ -141,6 +141,7 @@ ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMEN
 			DEEPFREEZE ICELANCE)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL))
+AddCheckBox(mirrorimage SpellName(MIRRORIMAGE) default)
 AddCheckBox(stolentime SpellName(STOLENTIME) mastery=2)
 
 # Separate out the full Arcane rotation into "burn" (DPS) rotation and "hover" (DPM)
@@ -379,10 +380,14 @@ AddIcon help=cd mastery=1
 				unless 30s before Item(MANAGEMITEM) or 10s before Spell(EVOCATION) Spell(ARCANEPOWER)
 		}
 		unless TalentPoints(ARCANEPOWERTALENT more 0) if BuffPresent(IMPROVEDMANAGEM) Spell(ARCANEPOWER)
-		if BuffPresent(ARCANEPOWER) Spell(MIRRORIMAGE)
-		unless 20s before Spell(ARCANEPPOWER) or TargetDeadIn(less 15) Spell(MIRRORIMAGE)
+		if CheckBoxOn(mirrorimage)
+		{
+			if BuffPresent(ARCANEPOWER) Spell(MIRRORIMAGE)
+			unless 20s before Spell(ARCANEPPOWER) or TargetDeadIn(less 15) Spell(MIRRORIMAGE)
+		}
 	}
-	unless TalentPoints(ARCANEPOWERTALENT more 0) Spell(MIRRORIMAGE)
+	unless TalentPoints(ARCANEPOWERTALENT more 0)
+		if CheckBoxOn(mirrorimage) Spell(MIRRORIMAGE)
 	#/presence_of_mind
 	Spell(PRESENCEOFMIND)
 }
@@ -430,7 +435,7 @@ AddIcon help=cd mastery=2
 		if CheckBoxOn(stolentime) and ArmorSetParts(T13 more 3) and BuffPresent(STOLENTIME stacks=8) Spell(COMBUSTION)
 	}
 	#/mirror_image,if=target.time_to_die>=25
-	if TargetDeadIn(more 24) Spell(MIRRORIMAGE)
+	if CheckBoxOn(mirrorimage) and TargetDeadIn(more 24) Spell(MIRRORIMAGE)
 	#/flame_orb,if=target.time_to_die>=12
 	if TargetDeadIn(more 11) Spell(FLAMEORB)
 }
@@ -520,7 +525,7 @@ AddIcon help=cd mastery=3
 		unless TalentPoints(COLDSNAPTALENT more 0) Spell(FLAMEORB)
 	}
 	#/mirror_image,if=target.time_to_die>=25
-	if TargetDeadIn(more 25) Spell(MIRRORIMAGE)
+	if CheckBoxOn(mirrorimage) and TargetDeadIn(more 25) Spell(MIRRORIMAGE)
 	unless BuffPresent(ICYVEINS) or BuffPresent(heroism)
 	{
 		#/berserking,if=buff.icy_veins.down&buff.bloodlust.down
