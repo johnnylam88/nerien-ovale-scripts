@@ -269,7 +269,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	if Mana(more 69) Spell(DEATHCOIL)
 }
 
-AddIcon help=cd mastery=1
+AddIcon help=cd size=small mastery=1
 {
 	#/bone_shield,if=!buff.bone_shield.up
 	unless BuffPresent(BONESHIELD) if Runes(unholy 1) Spell(BONESHIELD)
@@ -285,6 +285,12 @@ AddIcon help=cd mastery=1
 	Spell(VAMPIRICBLOOD)
 	if Runes(blood 1) Spell(RUNETAP)
 	Spell(ICEBOUNDFORTITUDE)
+}
+
+AddIcon help=cd size=small mastery=1
+{
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
 }
 
 #// optimal timing for diseases depends on points in epidemic, and if using improved blood tap

@@ -234,7 +234,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	Spell(JUDGEMENT)
 }
 
-AddIcon help=cd mastery=2
+AddIcon help=cd size=small mastery=2
 {
 	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
@@ -244,6 +244,10 @@ AddIcon help=cd mastery=2
 	Spell(GUARDIANOFANCIENTKINGS)
 	Spell(AVENGINGWRATH)
 	Spell(DIVINEPROTECTION)
+}
+
+AddIcon help=cd size=small mastery=2
+{
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
