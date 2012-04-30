@@ -323,8 +323,6 @@ AddFunction UseRacialActions
 
 AddIcon help=main mastery=1
 {
-	#/hunters_mark,if=target.time_to_die>=21
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/serpent_sting,if=!ticking
 	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
 	#/kill_shot
@@ -384,6 +382,8 @@ AddIcon help=cd mastery=1
 {
 	unless InCombat() SummonPet()
 
+	#/hunters_mark,if=target.time_to_die>=21
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/summon_pet
@@ -406,8 +406,6 @@ AddIcon help=cd mastery=1
 
 AddIcon help=main mastery=2
 {
-	#/hunters_mark,if=target.time_to_die>=21
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/serpent_sting,if=!ticking&target.health_pct<=90
 	unless TargetDebuffPresent(SERPENTSTING) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
 	#/chimera_shot,if=target.health_pct<=90
@@ -500,6 +498,8 @@ AddIcon help=cd mastery=2
 {
 	unless InCombat() SummonPet()
 
+	#/hunters_mark,if=target.time_to_die>=21
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
@@ -523,8 +523,6 @@ AddIcon help=cd mastery=2
 
 AddIcon help=main mastery=3
 {
-	#/hunters_mark,if=target.time_to_die>=21
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/serpent_sting,if=!ticking&target.time_to_die>=10
 	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and TargetDeadIn(more 10) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
@@ -590,6 +588,8 @@ AddIcon help=cd mastery=3
 {
 	unless InCombat() SummonPet()
 
+	#/hunters_mark,if=target.time_to_die>=21
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
 	#/tolvir_potion,if=!in_combat
 	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
 	#/summon_pet
