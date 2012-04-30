@@ -217,6 +217,7 @@ ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CH
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(petbuff "Pet raid buffs & debuffs")
+AddCheckBox(petattack "Show pet attacks")
 AddCheckBox(blackarrow SpellName(BLACKARROW) default mastery=3)
 
 AddFunction SummonPet
@@ -286,13 +287,13 @@ AddFunction PetActions
 	#/rabid
 	Spell(PETRABID)
 	#/wolverine_bite
-	Spell(PETWOLVERINEBITE usable=1)
-	#if pet.Mana(more 25)
-	#{
-	#	Spell(PETBITE)
-	#	Spell(PETCLAW)
-	#	Spell(PETSMACK)
-	#}
+	if CheckBoxOn(petattack) Spell(PETWOLVERINEBITE usable=1)
+	if CheckBoxOn(petattack) and pet.Mana(more 25)
+	{
+		Spell(PETBITE)
+		Spell(PETCLAW)
+		Spell(PETSMACK)
+	}
 }
 
 AddFunction PetInterrupt
