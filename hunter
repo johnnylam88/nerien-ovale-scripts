@@ -217,6 +217,7 @@ ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CH
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
 AddCheckBox(petbuff "Pet raid buffs & debuffs")
+AddCheckBox(blackarrow SpellName(BLACKARROW) default mastery=3)
 
 AddFunction SummonPet
 {
@@ -334,7 +335,7 @@ AddIcon help=main mastery=1
 	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
 	{
-		#/cobra_shot,if=target.adds>5
+		#/cobra_shot
 		Spell(COBRASHOT)
 		#/steady_shot
 		Spell(STEADYSHOT)
@@ -529,16 +530,19 @@ AddIcon help=main mastery=3
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
 	#if ( ! talents.black_arrow -> rank() ) { /explosive_trap,not_flying=1,if=target.time_to_die>=11 }
-	unless TalentPoints(BLACKARROWTALENT more 0) and TargetDeadIn(more 11)
+	unless CheckBoxOn(blackarrow) and TalentPoints(BLACKARROWTALENT more 0)
 	{
-		if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-		if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
-		if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
+		if TargetDeadIn(more 11)
+		{
+			if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
+			if Glyph(GLYPHOFTRAPLAUNCHER) and Spell(EXPLOSIVETRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
+			if Glyph(GLYPHOFTRAPLAUNCHER no) and Spell(EXPLOSIVETRAPLAUNCHER) Mana(more 19) Spell(TRAPLAUNCHER)
+		}
 	}
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
 	#/black_arrow,if=target.time_to_die>=8
-	if TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
+	if CheckBoxOn(blackarrow) and TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
 	#/arcane_shot,if=focus>=67
 	if Mana(more 67) Spell(ARCANESHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
