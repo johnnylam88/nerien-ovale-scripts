@@ -326,6 +326,26 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
+###
+### Common off-gcd hunter and pet actions.
+###
+AddIcon help=offgcd size=small
+{
+	unless InCombat() unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
+	#/aspect_of_the_hawk,moving=0
+	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
+	#/aspect_of_the_fox,moving=1
+	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
+	if PetPresent(yes)
+	{
+		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
+		PetActions()
+	}
+}
+
+###
+### Beast Mastery
+###
 AddIcon help=main mastery=1
 {
 	#/serpent_sting,if=!ticking
@@ -343,25 +363,6 @@ AddIcon help=main mastery=1
 		Spell(COBRASHOT)
 		#/steady_shot
 		Spell(STEADYSHOT)
-	}
-}
-
-AddIcon help=offgcd mastery=1
-{
-	unless InCombat() unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
-	#/aspect_of_the_hawk,moving=0
-	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
-	#/aspect_of_the_fox,moving=1
-	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	if PetPresent(yes)
-	{
-		if TargetIsInterruptible() PetInterrupt()
-		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
-		#/focus_fire,five_stacks=1
-		if pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
-		#/bestial_wrath,if=focus>60
-		if Mana(more 60) Spell(BESTIALWRATH)
-		PetActions()
 	}
 }
 
@@ -387,6 +388,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 AddIcon help=cd mastery=1
 {
 	unless InCombat() SummonPet()
+	if PetPresent(yes) and TargetIsInterruptible() PetInterrupt()
 
 	#/hunters_mark,if=target.time_to_die>=21
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
@@ -401,15 +403,22 @@ AddIcon help=cd mastery=1
 	#init_use_item_actions()
 	UseItemActions()
 	#init_use_profession_actions()
+	#/focus_fire,five_stacks=1
+	if pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
 	UseProfessionActions()
 	#init_use_racial_actions()
 	UseRacialActions()
+	#/bestial_wrath,if=focus>60
+	if Mana(more 60) Spell(BESTIALWRATH)
 	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
 	unless BuffPresent(heroism) or BuffPresent(THEBEASTWITHIN) Spell(RAPIDFIRE)
 	#/fervor,if=focus<=37
 	if Mana(less 38) Spell(FERVOR)
 }
 
+###
+### Marksmanship
+###
 AddIcon help=main mastery=2
 {
 	#/serpent_sting,if=!ticking&target.health_pct<=90
@@ -479,21 +488,6 @@ AddIcon help=main mastery=2
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX) Spell(STEADYSHOT)
 }
 
-AddIcon help=offgcd mastery=2
-{
-	unless InCombat() unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
-	#/aspect_of_the_hawk,moving=0
-	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
-	#/aspect_of_the_fox,moving=1
-	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	if PetPresent(yes)
-	{
-		if TargetIsInterruptible() PetInterrupt()
-		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
-		PetActions()
-	}
-}
-
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
@@ -508,6 +502,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 AddIcon help=cd mastery=2
 {
 	unless InCombat() SummonPet()
+	if PetPresent(yes) and TargetIsInterruptible() PetInterrupt()
 
 	#/hunters_mark,if=target.time_to_die>=21
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
@@ -532,6 +527,9 @@ AddIcon help=cd mastery=2
 	if BuffPresent(RAPIDFIRE) Spell(READINESS)
 }
 
+###
+### Survival
+###
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking&target.time_to_die>=10
@@ -563,21 +561,6 @@ AddIcon help=main mastery=3
 	}
 }
 
-AddIcon help=offgcd mastery=3
-{
-	unless InCombat() unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
-	#/aspect_of_the_hawk,moving=0
-	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
-	#/aspect_of_the_fox,moving=1
-	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	if PetPresent(yes)
-	{
-		if TargetIsInterruptible() PetInterrupt()
-		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
-		PetActions()
-	}
-}
-
 AddIcon help=aoe mastery=3 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
@@ -597,6 +580,7 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 AddIcon help=cd mastery=3
 {
 	unless InCombat() SummonPet()
+	if PetPresent(yes) and TargetIsInterruptible() PetInterrupt()
 
 	#/hunters_mark,if=target.time_to_die>=21
 	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
