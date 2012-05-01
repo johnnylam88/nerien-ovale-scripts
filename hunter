@@ -41,7 +41,9 @@ Define(IMPROVEDSTEADYSHOTTALENT 9402) # Improved Steady Shot (Rank 3)
 # Spells
 Define(AIMEDSHOT 19434)
 	SpellInfo(AIMEDSHOT mana=50 resetcounter=iss)
-	SpellAddBuff(AIMEDSHOT FIRE=0)
+Define(AIMEDSHOTBANG 82928)
+	SpellInfo(AIMEDSHOTBANG resetcounter=iss)
+	SpellAddBuff(AIMEDSHOTBANG FIRE=0)
 Define(ARCANESHOT 3044)
 	SpellInfo(ARCANESHOT mana=22 resetcounter=iss) # assume Efficiency (Rank 3) (normally 25)
 Define(ASPECTOFTHEFOX 82661)
@@ -327,13 +329,14 @@ AddFunction UseRacialActions
 AddIcon help=main mastery=1
 {
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1)
+		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
 	#/kill_command
 	if TargetInRange(GROWL) and PetPresent(yes) Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
-	if Mana(more 59) or BuffPresent(THEBEASTWITHIN) Spell(ARCANESHOT)
+	if Mana(more 58) or {BuffPresent(THEBEASTWITHIN) and Mana(more 10)} Spell(ARCANESHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
 	{
 		#/cobra_shot
@@ -366,12 +369,12 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
-	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
+	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1)
+		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
-	if Mana(more 39) Spell(MULTISHOT)
+	if Mana(more 39) or {BuffPresent(THEBEASTWITHIN) and Mana(more 19)} Spell(MULTISHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
 	{
 		#/cobra_shot,if=target.adds>5
@@ -404,7 +407,7 @@ AddIcon help=cd mastery=1
 	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
 	unless BuffPresent(heroism) or BuffPresent(THEBEASTWITHIN) Spell(RAPIDFIRE)
 	#/fervor,if=focus<=37
-	if Mana(less 37) Spell(FERVOR)
+	if Mana(less 38) Spell(FERVOR)
 }
 
 AddIcon help=main mastery=2
@@ -412,7 +415,7 @@ AddIcon help=main mastery=2
 	#/serpent_sting,if=!ticking&target.health_pct<=90
 	unless TargetDebuffPresent(SERPENTSTING) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
 	#/chimera_shot,if=target.health_pct<=90
-	if TargetLifePercent(less 90) and Mana(more 49) Spell(CHIMERASHOT)
+	if TargetLifePercent(less 90) and Mana(more 43) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
 	if TalentPoints(IMPROVEDSTEADYSHOTTALENT more 0) and BuffExpires(IMPROVEDSTEADYSHOT 3)
 	{
@@ -424,7 +427,7 @@ AddIcon help=main mastery=2
 	#/kill_shot
 	Spell(KILLSHOT usable=1)
 	#/aimed_shot,if=buff.master_marksman_fire.react
-	if BuffPresent(FIRE) Spell(AIMEDSHOT)
+	if BuffPresent(FIRE) Spell(AIMEDSHOTBANG)
 	if ArmorSetParts(T13 more 3)
 	{
 		#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=4)&\
@@ -436,22 +439,28 @@ AddIcon help=main mastery=2
 					if BuffGain(CHRONOHUNTER 105) Spell(ARCANESHOT)
 		#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 		#	buff.rapid_fire.up|target.health_pct>90
-		unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
+		if Mana(more 49)
 		{
-			if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) if Mana(more 49) Spell(AIMEDSHOT)
-			unless BuffGain(CHRONOHUNTER 105) if Mana(more 49) Spell(AIMEDSHOT)
+			unless 5s before Spell(CHIMERASHOT) and Mana(less 80)
+			{
+				if BuffPresent(heroism) or BuffPresent(CHRONOHUNTER) Spell(AIMEDSHOT)
+				unless BuffGain(CHRONOHUNTER 105) Spell(AIMEDSHOT)
+			}
+			if BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
 		}
-		if {BuffPresent(RAPIDFIRE) or TargetLifePercent(more 90)} and Mana(more 49) Spell(AIMEDSHOT)
 	}
 	unless ArmorSetParts(T13 more 3)
 	{
 		#if ( ! glyphs.arcane_shot -> ok() )
 		unless Glyph(GLYPHOFARCANESHOT)
 		{
-			#/aimed_shot,if=cooldown.chimera_shot.remains>5|focus>=80|buff.rapid_fire.up|buff.bloodlust.react|target.health_pct>90
-			unless 5s before Spell(CHIMERASHOT) if Mana(more 49) Spell(AIMEDSHOT)
-			if Mana(more 79) Spell(AIMEDSHOT)
-			if BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or TargetLifePercent(more 90) and Mana(more 49) Spell(AIMEDSHOT)
+			if Mana(more 49)
+			{
+				#/aimed_shot,if=cooldown.chimera_shot.remains>5|focus>=80|buff.rapid_fire.up|buff.bloodlust.react|target.health_pct>90
+				unless 5s before Spell(CHIMERASHOT) Spell(AIMEDSHOT)
+				if Mana(more 79) Spell(AIMEDSHOT)
+				if BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
+			}
 		}
 		#else
 		if Glyph(GLYPHOFARCANESHOT)
@@ -489,8 +498,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
-	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
+	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
 	#/steady_shot,if=target.adds>5
@@ -527,17 +535,17 @@ AddIcon help=cd mastery=2
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking&target.time_to_die>=10
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if Mana(more 24) and TargetDeadIn(more 10) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTING mine=1) if TargetDeadIn(more 10) and Mana(more 24) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
-	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1) and Mana(more 49) Spell(EXPLOSIVESHOT)
+	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1)
+		if Mana(more 43) or BuffPresent(LOCKANDLOAD) Spell(EXPLOSIVESHOT)
 	#if ( ! talents.black_arrow -> rank() ) { /explosive_trap,not_flying=1,if=target.time_to_die>=11 }
 	unless CheckBoxOn(blackarrow) and TalentPoints(BLACKARROWTALENT more 0)
 	{
 		if TargetDeadIn(more 11)
 		{
 			if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-			if Glyph(GLYPHOFTRAPLAUNCHER) and Spell(EXPLOSIVETRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
-			if Glyph(GLYPHOFTRAPLAUNCHER no) and Spell(EXPLOSIVETRAPLAUNCHER) Mana(more 19) Spell(TRAPLAUNCHER)
+			if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
 		}
 	}
 	#/kill_shot
@@ -545,7 +553,7 @@ AddIcon help=main mastery=3
 	#/black_arrow,if=target.time_to_die>=8
 	if CheckBoxOn(blackarrow) and TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
 	#/arcane_shot,if=focus>=67
-	if Mana(more 67) Spell(ARCANESHOT)
+	if Mana(more 66) Spell(ARCANESHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
 	{
 		#/cobra_shot
@@ -574,8 +582,7 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9) Spell(TRAPLAUNCHER)
-	if Glyph(GLYPHOFTRAPLAUNCHER no) and Mana(more 19) Spell(TRAPLAUNCHER)
+	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
 	#/multi_shot,if=target.adds>2
 	if Mana(more 39) Spell(MULTISHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
