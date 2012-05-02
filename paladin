@@ -134,6 +134,9 @@ AddFunction UseRacialActions
 	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
 }
 
+###
+### Holy
+###
 AddIcon help=main mastery=1
 {
 	unless InCombat() if BuffExpires(SEALOFINSIGHT 400) Spell(SEALOFINSIGHT)
@@ -167,6 +170,9 @@ AddIcon help=mana size=small mastery=1
 	if ManaPercent(less 88) Spell(DIVINEPLEA)
 }
 
+###
+### Protection
+###
 AddIcon help=main mastery=2
 {
 	# From the Maintankadin thread "Theck's MATLAB thread - Cataclysm/4.x":
@@ -252,6 +258,9 @@ AddIcon help=cd size=small mastery=2
 	Item(Trinket1Slot usable=1)
 }
 
+###
+### Retribution
+###
 AddIcon help=main mastery=3
 {
 	unless InCombat()

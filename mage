@@ -163,6 +163,10 @@ AddFunction UseProfessionActions
 	Spell(LIFEBLOOD)
 }
 
+###
+### Arcane
+###
+
 # Arcane DPS rotation for maximum burst damage.
 AddFunction ArcaneDPS
 {
@@ -392,6 +396,9 @@ AddIcon help=cd mastery=1
 	Spell(PRESENCEOFMIND)
 }
 
+###
+### Fire
+###
 AddIcon help=main mastery=2
 {
 	#/scorch,debuff=1
@@ -463,6 +470,9 @@ AddIcon help=mana mastery=2
 	if BuffExpires(MAGEARMOR 0) and ManaPercent(less 5) Spell(MAGEARMOR)
 }
 
+###
+### Frost
+###
 AddIcon help=main mastery=3
 {
 	if PetPresent(no) Spell(SUMMONWATERELEMENTAL)

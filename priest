@@ -101,6 +101,9 @@ AddFunction UseRacialActions
 	Spell(BERSERKING)
 }
 
+###
+### Shadow
+###
 AddIcon size=small talent=SHADOWYAPPARITIONTALENT mastery=3
 {
 	#/stop_moving,health_percentage<=25,if=cooldown.shadow_word_death.remains>=0.2|dot.vampiric_touch.remains<cast_time+2.5

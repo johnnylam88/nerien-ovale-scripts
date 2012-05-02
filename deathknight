@@ -187,6 +187,9 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
+###
+### Blood
+###
 AddIcon help=main mastery=1
 {
 	unless BuffPresent(BLOODPRESENCE) Spell(BLOODPRESENCE)
@@ -292,6 +295,10 @@ AddIcon help=cd size=small mastery=1
 	Item(Trinket0Slot usable=1)
 	Item(Trinket1Slot usable=1)
 }
+
+###
+### Frost
+###
 
 #// optimal timing for diseases depends on points in epidemic, and if using improved blood tap
 #// players with only 2 points in epidemic want a 0 second refresh to avoid two PS in one minute instead of 1
@@ -448,6 +455,9 @@ AddIcon help=cd mastery=2
 	if Runes(blood 1 frost 1 unholy 1) Spell(ARMYOFTHEDEAD)
 }
 
+###
+### Unholy
+###
 AddIcon help=main mastery=3
 {
 	#/presence,choose=unholy

@@ -186,6 +186,28 @@ AddListItem(trinket1 fieryquintessence "Trinket 1 - Fiery Quintessence" mastery=
 AddListItem(trinket1 willofunbinding "Trinket 1 - Will of Unbinding" mastery=1)
 AddCheckBox(mw2lb SpellName(LIGHTNINGBOLT) mastery=2)
 
+AddFunction UseItemActions
+{
+	Item(HandsSlot usable=1)
+	Item(Trinket0Slot usable=1)
+	Item(Trinket1Slot usable=1)
+}
+
+AddFunction UseProfessionActions
+{
+	Spell(LIFEBLOOD)
+}
+
+AddFunction UseRacialActions
+{
+	Spell(BERSERKING)
+	Spell(BLOODFURY)
+}
+
+###
+### Elemental
+###
+
 #http://code.google.com/p/simulationcraft/source/browse/trunk/engine/sc_shaman.cpp (r10951):
 #// Fire elemental summoning logic
 #// 1) Make sure we fully use some commonly used temporary int bonuses of the profile, calculating the following
@@ -262,24 +284,6 @@ AddFunction UseItemActionsElemental
 		if Spell(FIREELEMENTALTOTEM) and EnoughSpellpower() Item(BOTTLEDWISHES)
 		if Spell(FIREELEMENTALTOTEM) and EnoughSpellpower() Item(FIERYQUINTESSENCE)
 	}
-}
-
-AddFunction UseItemActions
-{
-	Item(HandsSlot usable=1)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
-}
-
-AddFunction UseProfessionActions
-{
-	Spell(LIFEBLOOD)
-}
-
-AddFunction UseRacialActions
-{
-	Spell(BERSERKING)
-	Spell(BLOODFURY)
 }
 
 AddIcon help=main mastery=1
@@ -385,6 +389,9 @@ AddIcon help=cd mastery=1
 	if Speed(more 0) and Spell(LAVABURST) and ArmorSetParts(T12 less 4) Spell(SPIRITWALKERSGRACE)
 }
 
+###
+### Enhancement
+###
 AddIcon help=main mastery=2
 {
 	unless InCombat()
@@ -466,6 +473,9 @@ AddIcon help=cd mastery=2
 	if Speed(more 0) Spell(SPIRITWALKERSGRACE)
 }
 
+###
+### Restoration
+###
 AddIcon help=main mastery=3
 {
 	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(EARTHLIVINGWEAPON)

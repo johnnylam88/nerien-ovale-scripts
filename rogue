@@ -171,7 +171,9 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
-# Main Assassination rotation.
+###
+### Assassination
+###
 AddIcon help=main mastery=1
 {
 	unless InCombat()
@@ -246,7 +248,9 @@ AddIcon help=cd mastery=1
 	if TalentPoints(OVERKILLTALENT more 0) and TimeInCombat(more 30) and Mana(more 50) unless BuffPresent(OVERKILL) Spell(VANISH)
 }
 
-# Main Combat rotation.
+###
+### Combat
+###
 AddIcon help=main mastery=2
 {
 	unless InCombat()
@@ -310,7 +314,9 @@ AddIcon help=cd mastery=2
 	}
 }
 
-# Main Subtlety rotation.
+###
+### Subtlety
+###
 AddIcon help=main mastery=3
 {
 	unless InCombat()
