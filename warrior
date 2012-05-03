@@ -214,11 +214,37 @@ AddFunction UseRacialActions
 ### Arms
 ###
 
+AddIcon help=offgcd mastery=1 checkboxon=dancing
+{
+	if HasShield()
+		unless Stance(2) Spell(DEFENSIVESTANCE)
+	unless HasShield()
+	{
+		#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
+		unless Stance(3)
+		{
+			if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76)
+				unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
+		}
+		#/stance,choose=battle,use_off_gcd=1,if=!dot.rend.ticking
+		unless Stance(1)
+			unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
+		#/stance,choose=battle,use_off_gcd=1,if=(buff.taste_for_blood.up|buff.overpower.up)&rage<=75&\
+		#	cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
+		unless Stance(1)
+		{
+			if {BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER)} and Mana(less 76)
+				unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
+		}
+	}
+}
+
 AddIcon help=main mastery=1
 {
-	if HasShield() Spell(DEFENSIVESTANCE)
-	if CheckBoxOff(dancing) or TalentPoints(TACTICALMASTERYTALENT equal 0)
-		unless Stance(1) or HasShield() Spell(BATTLESTANCE)
+	if HasShield()
+		unless Stance(2) Spell(DEFENSIVESTANCE)
+	unless HasShield()
+		if Stance(2) Spell(BATTLESTANCE)
 
 	# Maintain raid buffs and debuffs.
 	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
@@ -227,24 +253,6 @@ AddIcon help=main mastery=1
 	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
-	if CheckBoxOn(dancing) and TalentPoints(TACTICALMASTERYTALENT more 0)
-	{
-		unless HasShield()
-		{
-			#/stance,choose=berserker,if=buff.taste_for_blood.down&dot.rend.remains>0&rage<=75,use_off_gcd=1
-			unless Stance(3)
-				if TargetDebuffPresent(RENDDEBUFF mine=1) and Mana(less 76)
-					unless BuffPresent(TASTEFORBLOOD) Spell(BERSERKERSTANCE)
-			#/stance,choose=battle,use_off_gcd=1,if=!dot.rend.ticking
-			unless Stance(1)
-				unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(BATTLESTANCE)
-			#/stance,choose=battle,use_off_gcd=1,if=(buff.taste_for_blood.up|buff.overpower.up)&rage<=75&\
-			#	cooldown.mortal_strike.remains>=1.5,use_off_gcd=1
-			unless Stance(1)
-				if {BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER)} and Mana(less 76)
-					unless 1.5s before Spell(MORTALSTRIKE) Spell(BATTLESTANCE)
-		}
-	}
 	#/rend,if=!ticking
 	unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
 	#/mortal_strike,if=target.health_pct>20
@@ -304,14 +312,30 @@ AddIcon help=offgcd mastery=1
 	}
 }
 
+# Arms AoE rotation from Icy Veins:
+# http://www.icy-veins.com/arms-warrior-pve-rotation-cooldowns-abilities#sec-2
+#
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
-	#/sweeping_strikes,if=target.adds>0,use_off_gcd=1
-	Spell(SWEEPINGSTRIKES)
-	#/cleave,if=target.adds>0,use_off_gcd=1
-	Spell(CLEAVE)
-	#/bladestorm,if=target.adds>0&!buff.deadly_calm.up&!buff.sweeping_strikes.up
+	# Apply Rend and spread to the rest of the mobs.
+	if TalentPoints(BLOODANDTHUNDERTALENT more 0)
+	{
+		unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
+		unless BuffPresent(SWEEPINGSTRIKES) Spell(THUNDERCLAP)
+	}
+
+	# Bladestorm followed by Sweeping Strikes.
 	unless BuffPresent(DEADLYCALM) or BuffPresent(SWEEPINGSTRIKES) Spell(BLADESTORM)
+	unless BuffPresent(BLADESTORM) Spell(SWEEPINGSTRIKES)
+
+	# Execute single-target rotation on one mob, but replace Colossus Smash with Whirlwind.
+	if TargetDebuffPresent(RENDDEBUFF mine=1)
+		unless Spell(MORTALSTRIKE) Spell(WHIRLWIND)
+
+	# Use Cleave in place of Heroic Strike.
+	if BuffPresent(DEADLYCALM) Spell(CLEAVE)
+	if Mana(more 85) Spell(CLEAVE)
+	if BuffPresent(INNERRAGE) and {Mana(more 59) or BuffPresent(BATTLETRANCE)} Spell(CLEAVE)
 }
 
 AddIcon help=cd mastery=1
@@ -354,7 +378,8 @@ AddIcon help=main mastery=2
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
 	#/stance,choose=berserker
-	if HasShield() Spell(DEFENSIVESTANCE)
+	if HasShield()
+		unless Stance(2) Spell(DEFENSIVESTANCE)
 	unless Stance(3) or HasShield() Spell(BERSERKERSTANCE)
 	if TalentPoints(TITANSGRIPTALENT more 0)
 	{
