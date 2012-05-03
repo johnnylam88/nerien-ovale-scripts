@@ -214,32 +214,6 @@ AddFunction UseRacialActions
 ### Arms
 ###
 
-AddIcon help=offgcd size=small mastery=1
-{
-
-	#/heroic_leap,use_off_gcd=1,if=buff.colossus_smash.up
-	#if TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(HEROICLEAP)
-	#if ( glyphs.berserker_rage -> ok() ) { /berserker_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>1.5&rage<=95,use_off_gcd=1 }
-	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96)
-		unless BuffPresent(DEADLYCALM) or 1.5s before Spell(DEADLYCALM)
-			Spell(BERSERKERRAGE)
-	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
-	unless BuffPresent(DEADLYCALM) Spell(INNERRAGE)
-	#/heroic_strike,use_off_gcd=1,if=buff.deadly_calm.up
-	if BuffPresent(DEADLYCALM) Spell(HEROICSTRIKE)
-	#/heroic_strike,use_off_gcd=1,if=rage>85
-	if Mana(more 85) Spell(HEROICSTRIKE)
-	#/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct>20&(rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))
-	#/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct<=20&((rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))|buff.battle_trance.up)
-	if BuffPresent(INNERRAGE)
-	{
-		if Mana(more 59) Spell(HEROICSTRIKE)
-		if ArmorSetParts(T13 more 1) and Mana(more 49) Spell(HEROICSTRIKE)
-		unless TargetLifePercent(more 20)
-			if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
-	}
-}
-
 AddIcon help=main mastery=1
 {
 	if HasShield() Spell(DEFENSIVESTANCE)
@@ -304,6 +278,32 @@ AddIcon help=main mastery=1
 	}
 }
 
+AddIcon help=offgcd mastery=1
+{
+
+	#/heroic_leap,use_off_gcd=1,if=buff.colossus_smash.up
+	#if TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(HEROICLEAP)
+	#if ( glyphs.berserker_rage -> ok() ) { /berserker_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>1.5&rage<=95,use_off_gcd=1 }
+	if Glyph(GLYPHOFBERSERKERRAGE) and Mana(less 96)
+		unless BuffPresent(DEADLYCALM) or 1.5s before Spell(DEADLYCALM)
+			Spell(BERSERKERRAGE)
+	#/inner_rage,if=buff.deadly_calm.down&cooldown.deadly_calm.remains>15,use_off_gcd=1
+	unless BuffPresent(DEADLYCALM) Spell(INNERRAGE)
+	#/heroic_strike,use_off_gcd=1,if=buff.deadly_calm.up
+	if BuffPresent(DEADLYCALM) Spell(HEROICSTRIKE)
+	#/heroic_strike,use_off_gcd=1,if=rage>85
+	if Mana(more 85) Spell(HEROICSTRIKE)
+	#/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct>20&(rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))
+	#/heroic_strike,use_off_gcd=1,if=buff.inner_rage.up&target.health_pct<=20&((rage>=60|(set_bonus.tier13_2pc_melee&rage>=50))|buff.battle_trance.up)
+	if BuffPresent(INNERRAGE)
+	{
+		if Mana(more 59) Spell(HEROICSTRIKE)
+		if ArmorSetParts(T13 more 1) and Mana(more 49) Spell(HEROICSTRIKE)
+		unless TargetLifePercent(more 20)
+			if BuffPresent(BATTLETRANCE) Spell(HEROICSTRIKE)
+	}
+}
+
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/sweeping_strikes,if=target.adds>0,use_off_gcd=1
@@ -316,15 +316,15 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 
 AddIcon help=cd mastery=1
 {
+	#/golemblood_potion,if=!in_combat
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
 	if Stance(2)
 	{
 		Spell(SHIELDBLOCK usable=1)
 		Spell(STONEFORM)
 		Spell(SHIELDWALL usable=1)
 	}
-
-	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	if IsFeared() or IsIncapacitated() Spell(BERSERKERRAGE)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.recklessness.up|target.time_to_die<26
 	if CheckBoxOn(potions) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
@@ -344,7 +344,73 @@ AddIcon help=cd mastery=1
 ### Fury
 ###
 
-AddIcon help=offgcd size=small mastery=2
+AddIcon help=main mastery=2
+{
+	# Maintain raid buffs and debuffs.
+	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
+	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
+	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMORALIZINGSHOUT nored=1)
+	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
+		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
+
+	#/stance,choose=berserker
+	if HasShield() Spell(DEFENSIVESTANCE)
+	unless Stance(3) or HasShield() Spell(BERSERKERSTANCE)
+	if TalentPoints(TITANSGRIPTALENT more 0)
+	{
+		#/execute,if=buff.executioner_talent.remains<1.5
+		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+		#/colossus_smash
+		Spell(COLOSSUSSMASH)
+		#/execute,if=buff.executioner_talent.stack<5
+		if TalentPoints(EXECUTIONERTALENT more 0) unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
+		#/bloodthirst
+		Spell(BLOODTHIRST)
+		#/raging_blow
+		Spell(RAGINGBLOW usable=1)
+		#/slam,if=buff.bloodsurge.react
+		if BuffPresent(BLOODSURGE) Spell(SLAM)
+		#/execute,if=rage>=50
+		if Mana(more 49) Spell(EXECUTE usable=1)
+		#/battle_shout,if=rage<70
+		if Mana(less 70)
+		{
+			if List(shout command) Spell(COMMANDINGSHOUT)
+			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+		}
+	}
+	unless TalentPoints(TITANSGRIPTALENT more 0)
+	{
+		#/execute,if=buff.executioner_talent.remains<1.5
+		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+		#/execute,if=buff.executioner_talent.stack<5&rage>=30&cooldown.bloodthirst.remains>0.2
+		if TalentPoints(EXECUTIONERTALENT more 0)
+			unless BuffPresent(EXECUTIONER stacks=5) or 0.2s before Spell(BLOODTHIRST) if Mana(more 29) Spell(EXECUTE usable=1)
+		#/bloodthirst
+		Spell(BLOODTHIRST)
+		#/colossus_smash,if=buff.colossus_smash.down
+		unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(COLOSSUSSMASH)
+		#/slam,if=buff.bloodsurge.react
+		if BuffPresent(BLOODSURGE) Spell(SLAM)
+		#/execute,if=rage>=50&cooldown.bloodthirst.remains>0.2
+		unless 0.2s before Spell(BLOODTHIRST) if Mana(more 49) Spell(EXECUTE usable=1)
+		#/raging_blow,if=rage>60&cooldown.inner_rage.remains>2&buff.inner_rage.down
+		unless BuffPresent(INNERRAGE) or 2s before Spell(INNERRAGE)
+			if Mana(more 60) Spell(RAGINGBLOW usable=1)
+		#/raging_blow,if=rage>90&buff.inner_rage.up&cooldown.bloodthirst.remains>0.2
+		unless 0.2s before Spell(BLOODTHIRST) if BuffPresent(INNERRAGE) and Mana(more 90) Spell(RAGINGBLOW usable=1)
+		#/raging_blow,if=buff.colossus_smash.up&rage>50
+		if TargetDebuffPresent(COLOSSUSSMASH mine=1) and Mana(more 50) Spell(RAGINGBLOW)
+		#/battle_shout,if=rage<70&cooldown.bloodthirst.remains>0.2
+		unless 0.2s before Spell(BLOODTHIRST) or Mana(more 69)
+		{
+			if List(shout command) Spell(COMMANDINGSHOUT)
+			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+		}
+	}
+}
+
+AddIcon help=offgcd mastery=2
 {
 	#/heroic_leap,use_off_gcd=1,if=buff.colossus_smash.up
 	#if TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(HEROICLEAP)
@@ -431,72 +497,6 @@ AddIcon help=offgcd size=small mastery=2
 	}
 }
 
-AddIcon help=main mastery=2
-{
-	# Maintain raid buffs and debuffs.
-	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
-	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
-	if TargetClassification(worldboss) and CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(DEMORALIZINGSHOUT nored=1)
-	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
-		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
-
-	#/stance,choose=berserker
-	if HasShield() Spell(DEFENSIVESTANCE)
-	unless Stance(3) or HasShield() Spell(BERSERKERSTANCE)
-	if TalentPoints(TITANSGRIPTALENT more 0)
-	{
-		#/execute,if=buff.executioner_talent.remains<1.5
-		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
-		#/colossus_smash
-		Spell(COLOSSUSSMASH)
-		#/execute,if=buff.executioner_talent.stack<5
-		if TalentPoints(EXECUTIONERTALENT more 0) unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
-		#/bloodthirst
-		Spell(BLOODTHIRST)
-		#/raging_blow
-		Spell(RAGINGBLOW usable=1)
-		#/slam,if=buff.bloodsurge.react
-		if BuffPresent(BLOODSURGE) Spell(SLAM)
-		#/execute,if=rage>=50
-		if Mana(more 49) Spell(EXECUTE usable=1)
-		#/battle_shout,if=rage<70
-		if Mana(less 70)
-		{
-			if List(shout command) Spell(COMMANDINGSHOUT)
-			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
-		}
-	}
-	unless TalentPoints(TITANSGRIPTALENT more 0)
-	{
-		#/execute,if=buff.executioner_talent.remains<1.5
-		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
-		#/execute,if=buff.executioner_talent.stack<5&rage>=30&cooldown.bloodthirst.remains>0.2
-		if TalentPoints(EXECUTIONERTALENT more 0)
-			unless BuffPresent(EXECUTIONER stacks=5) or 0.2s before Spell(BLOODTHIRST) if Mana(more 29) Spell(EXECUTE usable=1)
-		#/bloodthirst
-		Spell(BLOODTHIRST)
-		#/colossus_smash,if=buff.colossus_smash.down
-		unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(COLOSSUSSMASH)
-		#/slam,if=buff.bloodsurge.react
-		if BuffPresent(BLOODSURGE) Spell(SLAM)
-		#/execute,if=rage>=50&cooldown.bloodthirst.remains>0.2
-		unless 0.2s before Spell(BLOODTHIRST) if Mana(more 49) Spell(EXECUTE usable=1)
-		#/raging_blow,if=rage>60&cooldown.inner_rage.remains>2&buff.inner_rage.down
-		unless BuffPresent(INNERRAGE) or 2s before Spell(INNERRAGE)
-			if Mana(more 60) Spell(RAGINGBLOW usable=1)
-		#/raging_blow,if=rage>90&buff.inner_rage.up&cooldown.bloodthirst.remains>0.2
-		unless 0.2s before Spell(BLOODTHIRST) if BuffPresent(INNERRAGE) and Mana(more 90) Spell(RAGINGBLOW usable=1)
-		#/raging_blow,if=buff.colossus_smash.up&rage>50
-		if TargetDebuffPresent(COLOSSUSSMASH mine=1) and Mana(more 50) Spell(RAGINGBLOW)
-		#/battle_shout,if=rage<70&cooldown.bloodthirst.remains>0.2
-		unless 0.2s before Spell(BLOODTHIRST) or Mana(more 69)
-		{
-			if List(shout command) Spell(COMMANDINGSHOUT)
-			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
-		}
-	}
-}
-
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/cleave,if=target.adds>0,use_off_gcd=1
@@ -507,15 +507,15 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 
 AddIcon help=cd mastery=2
 {
+	#/golemblood_potion,if=!in_combat
+	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
 	if Stance(2)
 	{
 		Spell(SHIELDBLOCK usable=1)
 		Spell(STONEFORM)
 		Spell(SHIELDWALL usable=1)
 	}
-
-	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	if IsFeared() or IsIncapacitated() Spell(BERSERKERRAGE)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.bloodlust.react
 	if CheckBoxOn(potions) and BuffPresent(heroism) Item(GOLEMBLOODPOTION)
@@ -546,18 +546,6 @@ AddIcon help=cd mastery=2
 ###
 ### Protection
 ###
-
-AddIcon help=offgcd size=small mastery=3
-{
-	if Stance(2)
-	{
-		if Mana(more 84) Spell(INNERRAGE)
-		if Mana(more 50) Spell(HEROICSTRIKE)
-	}
-	unless Stance(2)
-		if Mana(more 96) Spell(HEROICSTRIKE)
-	if Glyph(GLYPHOFBERSERKERRAGE no) or Mana(less 96) Spell(BERSERKERRAGE)
-}
 
 # Cataclysm protection warrior rotation from Tengenstein at TankSpot:
 # http://www.tankspot.com/showthread.php?78294-Warrior-Tanking-Questions-(Problems-)&p=535355#post535355
@@ -636,6 +624,18 @@ AddIcon help=main mastery=3
 		if List(shout command) Spell(COMMANDINGSHOUT)
 		if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
 	}
+}
+
+AddIcon help=offgcd mastery=3
+{
+	if Stance(2)
+	{
+		if Mana(more 84) Spell(INNERRAGE)
+		if Mana(more 50) Spell(HEROICSTRIKE)
+	}
+	unless Stance(2)
+		if Mana(more 96) Spell(HEROICSTRIKE)
+	if Glyph(GLYPHOFBERSERKERRAGE no) or Mana(less 96) Spell(BERSERKERRAGE)
 }
 
 AddIcon help=aoe mastery=3 checkboxon=aoe
