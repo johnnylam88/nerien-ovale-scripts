@@ -214,7 +214,7 @@ AddFunction UseRacialActions
 ### Arms
 ###
 
-AddIcon help=offgcd mastery=1 checkboxon=dancing
+AddIcon help=offgcd size=small mastery=1 checkboxon=dancing
 {
 	if HasShield()
 		unless Stance(2) Spell(DEFENSIVESTANCE)
