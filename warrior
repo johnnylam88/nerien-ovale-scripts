@@ -551,8 +551,8 @@ AddIcon help=offgcd size=small mastery=3
 {
 	if Stance(2)
 	{
-		if Mana(more 50) Spell(HEROICSTRIKE)
 		if Mana(more 84) Spell(INNERRAGE)
+		if Mana(more 50) Spell(HEROICSTRIKE)
 	}
 	unless Stance(2)
 		if Mana(more 96) Spell(HEROICSTRIKE)
