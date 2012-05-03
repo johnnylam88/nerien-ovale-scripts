@@ -243,8 +243,8 @@ AddIcon help=main mastery=1
 {
 	if HasShield()
 		unless Stance(2) Spell(DEFENSIVESTANCE)
-	unless HasShield()
-		if Stance(2) Spell(BATTLESTANCE)
+	unless HasShield() or Stance(2)
+		if CheckBoxOff(dancing) Spell(BATTLESTANCE)
 
 	# Maintain raid buffs and debuffs.
 	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
@@ -329,7 +329,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	unless BuffPresent(BLADESTORM) Spell(SWEEPINGSTRIKES)
 
 	# Execute single-target rotation on one mob, but replace Colossus Smash with Whirlwind.
-	if TargetDebuffPresent(RENDDEBUFF mine=1)
+	if CheckBoxOn(dancing) and TargetDebuffPresent(RENDDEBUFF mine=1)
 		unless Spell(MORTALSTRIKE) Spell(WHIRLWIND)
 
 	# Use Cleave in place of Heroic Strike.
