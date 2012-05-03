@@ -35,6 +35,7 @@ Define(GLYPHOFSPELLREFLECTION 63328)
 
 # Talents
 Define(BLOODANDTHUNDERTALENT 10480)
+Define(DEEPWOUNDSTALENT 8176)
 Define(EXECUTIONERTALENT 9644)
 Define(IMPROVEDREVENGETALENT 10470)
 Define(IMPROVEDSLAMTALENT 2233)
@@ -566,66 +567,74 @@ AddIcon help=offgcd size=small mastery=3
 #   a truck) right before Shield Slam is off cooldown. Revenge is only worthwhile in low-rage situations or
 #   with 2pT13, otherwise it's both lower threat and damage than Devastate.
 #
+# Elitist Jerks advice on when to Rend:
+# http://elitistjerks.com/f81/t110315-cataclysm_protection_warrior/#post1813079
+#
+#   A single Rend application is only worth using on a 30%-bleed debuffed single target if it ticks at least
+#   four times. Unbuffed, it must tick all six times.
+#
 # Off-tank protection warrior DPS rotation from Tengenstein at TankSpot:
 # http://www.tankspot.com/showthread.php?71824-The-Cataclystic-Protection-Warrior-Spreadsheet&p=535809#post535809
 #
 AddIcon help=main mastery=3
 {
-	if Stance(1) Spell(DEFENSIVESTANCE priority=4)
-	unless Stance(2) if TargetTargetIsPlayer() Spell(DEFENSIVESTANCE priority=4)
+	if Stance(1) Spell(DEFENSIVESTANCE)
+	unless Stance(2) if TargetTargetIsPlayer() Spell(DEFENSIVESTANCE)
+
+	# Maintain raid buffs.
 	if List(shout command) and BuffExpires(stamina 3) Spell(COMMANDINGSHOUT nored=1)
 	if List(shout battle) and BuffExpires(strengthagility 3) Spell(BATTLESHOUT nored=1)
 
 	if LifePercent(less 75) and BuffPresent(VICTORIOUS) Spell(VICTORYRUSH usable=1)
 
-	# Shield Slam; we will wait up to half a GCD for Shield Slam to come off CD.
-	if HasShield() and spell(SHIELDSLAM) < timeWithHaste(0.75) Spell(SHIELDSLAM priority=4)
-
-	# Maintain raid buffs and debuffs.
-	if CheckBoxOn(sunder) and TargetDebuffExpires(lowerarmor 0 mine=0)
-		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(DEVASTATE)
+	# Maintain tanking debuffs.
 	if CheckBoxOn(demo) and TargetDebuffExpires(lowerphysicaldamage 4) Spell(DEMORALIZINGSHOUT)
 	unless Stance(3) if TargetDebuffExpires(meleeslow 2) Spell(THUNDERCLAP)
 
-	# GCD before SS; "truck"
-	if TalentPoints(SWORDANDBOARDTALENT equal 0) or spell(SHIELDSLAM) < timeWithHaste(2.25)
-	{
-		unless Stance(3)
-		{
-			if TalentPoints(BLOODANDTHUNDERTALENT more 0)
-				if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 6 mine=1) Spell(THUNDERCLAP)
-			unless TargetDebuffPresent(RENDDEBUFF mine=1)
-				if {TargetDebuffPresent(bleed) and TargetDeadIn(more 9)} or TargetDeadIn(more 15) Spell(REND)
-		}
-		unless Stance(2) Spell(COLOSSUSSMASH)
-		Spell(SHOCKWAVE)
-		Spell(CONCUSSIONBLOW)
-		if Stance(2) and {Mana(less 20) or CheckBoxOn(revenge)} Spell(REVENGE usable=1)
-		Spell(DEVASTATE)
+	# Keep Shield Slam on CD.
+	if HasShield() Spell(SHIELDSLAM)
 
-		if Mana(less 20)
+	# Maintain Rend.
+	unless Stance(3)
+	{
+		if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 3 mine=1)
 		{
-			if List(shout command) Spell(COMMANDINGSHOUT)
-			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
+			if {TargetDebuffPresent(bleed) and TargetDeadIn(more 9)} or TargetDeadIn(more 15)
+			{
+				if TalentPoints(BLOODANDTHUNDERTALENT more 0) Spell(THUNDERCLAP)
+				unless TalentPoints(BLOODANDTHUNDERTALENT more 0) Spell(REND)
+			}
 		}
 	}
 
-	# "fish" for SnB proc
-	unless TalentPoints(SWORDANDBOARDTALENT equal 0) or spell(SHIELDSLAM) < timeWithHaste(2.25)
+	# Shorten the CD of Shield Slam via SnB proc; "fish".
+	unless TalentPoints(SWORDANDBOARDTALENT equal 0) or spell(SHIELDSLAM) < timeWithHaste(2)
 	{
-		unless Stance(3)
+		# Revenge has lower DPE than Devastate because prot warriors have glyphs and talents that tie into
+		# crit chance of Devastate, e.g., Deep Wounds, Glyph of Devastate, etc. Only use Revenge in low-rage
+		# situations or if Deep Wounds hasn't been taken.
+		#
+		if Stance(2)
 		{
-			if TalentPoints(BLOODANDTHUNDERTALENT more 0)
-				if TargetDebuffPresent(RENDDEBUFF mine=1) and TargetDebuffExpires(RENDDEBUFF 3 mine=1) Spell(THUNDERCLAP)
+			if Mana(less 20) or CheckBoxOn(revenge) or TalentPoints(DEEPWOUNDSTALENT equal 0) Spell(REVENGE usable=1)
 		}
-		if Stance(2) and {Mana(less 20) or CheckBoxOn(revenge)} Spell(REVENGE usable=1)
 		Spell(DEVASTATE)
+	}
 
-		if Mana(less 20)
-		{
-			if List(shout command) Spell(COMMANDINGSHOUT)
-			if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
-		}
+	# Put up Rend.
+	unless Stance(3) or TargetDebuffPresent(RENDDEBUFF mine=1)
+		if {TargetDebuffPresent(bleed) and TargetDeadIn(more 9)} or TargetDeadIn(more 15) Spell(REND)
+
+	# "Truck".
+	unless Stance(2) Spell(COLOSSUSSMASH)
+	if Stance(2) Spell(CONCUSSIONBLOW)
+	if Stance(3) and Mana(more 90) Spell(EXECUTE usable=1)
+	Spell(SHOCKWAVE)
+
+	if Mana(less 20)
+	{
+		if List(shout command) Spell(COMMANDINGSHOUT)
+		if List(shout battle) or List(shout none) Spell(BATTLESHOUT)
 	}
 }
 
@@ -641,6 +650,7 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 AddIcon help=cd size=small mastery=3
 {
 	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
+	if IsFeared() or IsIncapacitated() Spell(BERSERKERRAGE)
 	if CheckBoxOn(reflect) and HasShield() and TargetIsInterruptible() and TargetTargetIsPlayer() Spell(SPELLREFLECTION)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	if Stance(2)
