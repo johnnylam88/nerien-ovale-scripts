@@ -18,7 +18,7 @@
 
 # Buffs
 Define(CHRONOHUNTER 105919) # 4pT13 buff; 105s ICD(?)
-Define(FIRE 82926)
+Define(FIRE 82926) # proc from Master Marksman talent
 Define(FRENZYEFFECT 19615)
 Define(IMPROVEDSTEADYSHOT 53244) # Improved Steady Shot (Rank 3)
 Define(LOCKANDLOAD 56453)
