@@ -304,7 +304,7 @@ AddIcon help=cd mastery=2
 	if Mana(less 35) and BuffPresent(SLICEANDDICE 4)
 	{
 		unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME)
-			if BuffPresent(DEEPSIGHT) or CheckBoxOff(ejcombat) Spell(KILLINGSPREE)
+			if BuffPresent(DEEPINSIGHT) or CheckBoxOff(ejcombat) Spell(KILLINGSPREE)
 	}
 	#/adrenaline_rush,if=energy<35
 	if Mana(less 35)
