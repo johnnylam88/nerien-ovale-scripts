@@ -271,7 +271,7 @@ AddIcon help=main mastery=1
 	#/execute,if=rage>90
 	if Mana(more 90) Spell(EXECUTE usable=1)
 	#/overpower,if=buff.taste_for_blood.up|buff.overpower.up
-	Spell(OVERPOWER usable=1)
+	if BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER) Spell(OVERPOWER)
 	#/execute
 	Spell(EXECUTE usable=1)
 	#/colossus_smash,if=buff.colossus_smash.remains<=1.5
