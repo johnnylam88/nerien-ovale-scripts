@@ -254,7 +254,8 @@ AddIcon help=main mastery=1
 		unless TargetDebuffPresent(SUNDERARMORDEBUFF 3 mine=1 stacks=3) Spell(SUNDERARMOR nored=1)
 
 	#/rend,if=!ticking
-	unless TargetDebuffPresent(RENDDEBUFF mine=1) Spell(REND)
+	unless TargetDebuffPresent(RENDDEBUFF mine=1)
+		if TargetDeadIn(more 10) Spell(REND)
 	#/mortal_strike,if=target.health_pct>20
 	if TargetLifePercent(more 20) Spell(MORTALSTRIKE)
 	#/colossus_smash,if=buff.colossus_smash.down
@@ -271,7 +272,19 @@ AddIcon help=main mastery=1
 	#/execute,if=rage>90
 	if Mana(more 90) Spell(EXECUTE usable=1)
 	#/overpower,if=buff.taste_for_blood.up|buff.overpower.up
-	if BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER) Spell(OVERPOWER)
+	if BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER)
+	{
+		if Stance(1) Spell(OVERPOWER)
+		#
+		# If not in Battle Stance, then only Overpower if conditions to switch to Battle Stance are met,
+		# i.e., won't waste rage and Mortal Strike not about to come off cooldown.
+		#
+		unless Stance(1)
+		{
+			unless Mana(more 75) or 1.5s before Spell(MORTALSTRIKE)
+				Spell(OVERPOWER)
+		}
+	}
 	#/execute
 	Spell(EXECUTE usable=1)
 	#/colossus_smash,if=buff.colossus_smash.remains<=1.5
