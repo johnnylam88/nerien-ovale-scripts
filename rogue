@@ -300,17 +300,17 @@ AddIcon help=cd mastery=2
 		if ArmorSetParts(T13 more 1)
 			unless BuffPresent(ADRENALINERUSH) or BuffPresent(KILLINGSPREE) Spell(TRICKSOFTHETRADE)
 	}
-	#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down
+	#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down (EJ recommends waiting for Deep Insight)
 	if Mana(less 35) and BuffPresent(SLICEANDDICE 4)
 	{
 		unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME)
-			if BuffPresent(DEEPINSIGHT) or CheckBoxOff(ejcombat) Spell(KILLINGSPREE)
+			if CheckBoxOff(ejcombat) or BuffPresent(DEEPINSIGHT) Spell(KILLINGSPREE)
 	}
-	#/adrenaline_rush,if=energy<35
+	#/adrenaline_rush,if=energy<35 (EJ recommends waiting for Moderate or Deep Insight)
 	if Mana(less 35)
 	{
 		unless BuffPresent(KILLINGSPREE) or BuffPresent(TRICKSOFTIME)
-			if BuffPresent(MODERATEINSIGHT) or CheckBoxOff(ejcombat) Spell(ADRENALINERUSH)
+			if CheckBoxOff(ejcombat) or BuffPresent(MODERATEINSIGHT) or BuffPresent(DEEPINSIGHT) Spell(ADRENALINERUSH)
 	}
 }
 
