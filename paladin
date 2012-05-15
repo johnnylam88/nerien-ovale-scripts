@@ -11,12 +11,15 @@
 # Buffs
 Define(DIVINEPURPOSE 90174)
 Define(GRANDCRUSADER 85416)
-Define(JUDGEMENTSOFTHEPURE 53655)
+SpellList(JUDGEMENTSOFTHEPURE 53655 53656 53657) # 3 ranks of the talent give different buffs
 Define(SACREDDUTY 85433)
 Define(THEARTOFWAR 59578)
 
-# Talents
+# Glyphs
 Define(GLYPHOFCONSECRATION 54928)
+
+# Talents
+Define(JUDGEMENTSOFTHEPURETALENT 10127)
 
 # Abilities
 Define(AVENGERSSHIELD 31935)
@@ -64,6 +67,8 @@ Define(INQUISITION 84963)
 	SpellAddBuff(INQUISITION INQUISITION=12 DIVINEPURPOSE=0)
 Define(JUDGEMENT 20271)
 	SpellInfo(JUDGEMENT cd=8)
+	SpellInfo(JUDGEMENT holy=1 itemset=T13 itemcount=2)
+	SpellAddBuff(JUDGEMENT 53657 talent=JUDGEMENTSOFTHEPURETALENT)
 Define(LIGHTOFDAWN 85222)
 	SpellInfo(LIGHTOFDAWN holy=-3)
 Define(REBUKE 96231)
@@ -282,11 +287,11 @@ AddIcon help=main mastery=3
 		if ArmorSetParts(T13 less 2) Spell(JUDGEMENT)
 	}
 	#/inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|buff.divine_purpose.react)
-	if BuffExpires(INQUISITION 2) and {HolyPower(equal 3) or BuffPresent(DIVINEPURPOSE)} Spell(INQUISITION)
+	if BuffExpires(INQUISITION 2) and {HolyPower(more 2) or BuffPresent(DIVINEPURPOSE)} Spell(INQUISITION)
 	#/templars_verdict,if=buff.divine_purpose.react
 	if BuffPresent(DIVINEPURPOSE) Spell(TEMPLARSVERDICT)
 	#/templars_verdict,if=holy_power=3
-	if HolyPower(equal 3) Spell(TEMPLARSVERDICT)
+	if HolyPower(more 2) Spell(TEMPLARSVERDICT)
 	#/exorcism,if=buff.the_art_of_war.react
 	if BuffPresent(THEARTOFWAR) Spell(EXORCISM)
 	#/hammer_of_wrath
@@ -333,7 +338,7 @@ AddIcon help=cd mastery=3
 	#/guardian_of_ancient_kings,if=cooldown.zealotry.remains<10
 	if 10s before Spell(ZEALOTRY) Spell(GUARDIANOFANCIENTKINGS)
 	#/zealotry,if=cooldown.guardian_of_ancient_kings.remains>0&cooldown.guardian_of_ancient_kings.remains<292
-	if HolyPower(equal 3)
+	if HolyPower(more 2)
 	{
 		unless Spell(GUARDIANOFANCIENTKINGS) if 292s before Spell(GUARDIANOFANCIENTKINGS) Spell(ZEALOTRY)
 		if Level(less 85) Spell(ZEALOTRY)
