@@ -267,14 +267,15 @@ AddIcon help=main mastery=2
 	if BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0) Spell(SLICEANDDICE)
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
-	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(equal 5) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
+	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(more 4) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
 	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
 	unless TargetDebuffPresent(RUPTURE mine=1) or BuffPresent(BLADEFLURRY)
-		if TargetDebuffPresent(bleed) and ComboPoints(equal 5) and TargetDeadIn(more 10) Spell(RUPTURE)
+		if TargetDebuffPresent(bleed) and ComboPoints(more 4) and TargetDeadIn(more 10) Spell(RUPTURE)
 	#/eviscerate,if=combo_points=5
-	if ComboPoints(equal 5) Spell(EVISCERATE)
+	if ComboPoints(more 4) Spell(EVISCERATE)
 	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
-	unless TargetBuffPresent(REVEALINGSTRIKE mine=1) if ComboPoints(equal 4) Spell(REVEALINGSTRIKE)
+	unless TargetBuffPresent(REVEALINGSTRIKE mine=1)
+		if ComboPoints(more 3) and ComboPoints(less 5) Spell(REVEALINGSTRIKE)
 	#/sinister_strike,if=combo_points<5
 	if ComboPoints(less 5) Spell(SINISTERSTRIKE)
 }
@@ -339,13 +340,13 @@ AddIcon help=main mastery=3
 	#/ambush,if=combo_points<=4
 	if ComboPoints(less 5) Spell(AMBUSH usable=1)
 	#/slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
-	if BuffExpires(SLICEANDDICE 3) and ComboPoints(equal 5) Spell(SLICEANDDICE)
+	if BuffExpires(SLICEANDDICE 3) and ComboPoints(more 4) Spell(SLICEANDDICE)
 	#/rupture,if=combo_points=5&!ticking
-	if ComboPoints(equal 5) and TargetDeadIn(more 20) unless TargetDebuffPresent(RUPTURE mine=1) Spell(RUPTURE)
+	if ComboPoints(more 4) and TargetDeadIn(more 20) unless TargetDebuffPresent(RUPTURE mine=1) Spell(RUPTURE)
 	#/recuperate,if=combo_points=5&remains<3
-	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(equal 5) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
+	if TalentPoints(ENERGETICRECOVERYTALENT more 0) and ComboPoints(more 4) and BuffExpires(RECUPERATE 3) Spell(RECUPERATE)
 	#/eviscerate,if=combo_points=5&dot.rupture.remains>1
-	if ComboPoints(equal 5)
+	if ComboPoints(more 4)
 	{
 		if TargetDeadIn(less 20) Spell(EVICERATE)
 		if TargetDebuffPresent(RUPTURE 1 mine=1) Spell(EVICERATE)

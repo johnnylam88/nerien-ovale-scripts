@@ -176,7 +176,7 @@ AddFunction MainRotationCat
 	if TalentPoints(BLOODINTHEWATERTALENT more 0) and TargetDebuffPresent(RIP mine=1)
 	{
 		if ComboPoints(more 0) and TargetDebuffExpires(RIP 2.1 mine=1) and BiTWRange() Spell(FEROCIOUSBITE)
-		if ComboPoints(equal 5) and BiTWRange() Spell(FEROCIOUSBITE)
+		if ComboPoints(more 4) and BiTWRange() Spell(FEROCIOUSBITE)
 	}
 	#/shred,extend_rip=1,if=position_back&dot.rip.ticking&dot.rip.remains<=4&target.health_pct>( bitw_hp )
 	if Counter(ripshreds less 3)
@@ -187,13 +187,13 @@ AddFunction MainRotationCat
 	}
 	#/rip,if=buff.combo_points.stack>=5&target.time_to_die>=6&dot.rip.remains<2.0&\
 	#	(buff.berserk.up|dot.rip.remains<=cooldown.tigers_fury.remains)
-	if ComboPoints(equal 5) and TargetDeadIn(more 6) and TargetDebuffExpires(RIP 2 mine=1)
+	if ComboPoints(more 4) and TargetDeadIn(more 6) and TargetDebuffExpires(RIP 2 mine=1)
 	{
 		if BuffPresent(BERSERK) Spell(RIP)
 		if target.debuffExpires(RIP mine=1) < spell(TIGERSFURY) Spell(RIP)
 	}
 	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>5.0&buff.savage_roar.remains>=3.0&buff.berserk.up
-	if ComboPoints(equal 5) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) and BuffPresent(BERSERK) Spell(FEROCIOUSBITE)
+	if ComboPoints(more 4) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) and BuffPresent(BERSERK) Spell(FEROCIOUSBITE)
 	#/rake,if=target.time_to_die>=8.5&buff.tigers_fury.up&dot.rake.remains<9.0&(!dot.rake.ticking|dot.rake.multiplier<multiplier)
 	if TargetDeadIn(more 8.5) and BuffPresent(TIGERSFURY) and TargetDebuffExpires(RAKE 9 mine=1) Spell(RAKE)
 	#/rake,if=target.time_to_die>=dot.rake.remains&dot.rake.remains<3.0&\
@@ -210,9 +210,9 @@ AddFunction MainRotationCat
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&cooldown.tigers_fury.remains=0
 	if BuffPresent(STAMPEDE) and Spell(TIGERSFURY) Spell(RAVAGEBANG)
 	#/ferocious_bite,if=(target.time_to_die<=4&buff.combo_points.stack>=5)|target.time_to_die<=1
-	if {ComboPoints(equal 5) and TargetDeadIn(less 4)} or TargetDeadIn(less 1) Spell(FEROCIOUSBITE)
+	if {ComboPoints(more 4) and TargetDeadIn(less 4)} or TargetDeadIn(less 1) Spell(FEROCIOUSBITE)
 	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>=14.0&buff.savage_roar.remains>=10.0
-	if ComboPoints(equal 5) and TargetDebuffPresent(RIP 14 mine=1) or BuffPresent(SAVAGEROAR 10) Spell(FEROCIOUSBITE)
+	if ComboPoints(more 4) and TargetDebuffPresent(RIP 14 mine=1) or BuffPresent(SAVAGEROAR 10) Spell(FEROCIOUSBITE)
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&!buff.omen_of_clarity.react&buff.tigers_fury.up&time_to_max_energy>1.0
 	if BuffPresent(STAMPEDE) and BuffPresent(TIGERSFURY)
 		unless BuffPresent(CLEARCASTING) or 1s before Mana(more 99) Spell(RAVAGEBANG)
@@ -252,7 +252,7 @@ AddIcon help=main mastery=2
 		if BuffPresent(BERSERK) or BuffPresent(TIGERSFURY) AddCombo()
 		#/shred,if=position_back&((buff.combo_points.stack<5&dot.rip.remains<3.0)|(buff.combo_points.stack=0&buff.savage_roar.remains<2))
 		if ComboPoints(less 5) and TargetDebuffExpires(RIP 3 mine=1) AddCombo()
-		if ComboPoints(equal 0) and BuffExpires(SAVAGEROAR 2) AddCombo()
+		if ComboPoints(less 1) and BuffExpires(SAVAGEROAR 2) AddCombo()
 		#/shred,if=position_back&cooldown.tigers_fury.remains<=3.0
 		if 3s before Spell(TIGERSFURY) AddCombo()
 		#/shred,if=position_back&target.time_to_die<=8.5

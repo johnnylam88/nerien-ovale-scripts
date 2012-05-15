@@ -428,9 +428,10 @@ AddIcon help=main mastery=2
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
 	if TalentPoints(IMPROVEDSTEADYSHOTTALENT more 0) and BuffExpires(IMPROVEDSTEADYSHOT 3)
 	{
-		if Counter(iss equal 1) Spell(STEADYSHOT)
-		if Counter(iss equal 3) Spell(STEADYSHOT)
-		unless ArmorSetParts(T13 more 1) if Counter(iss equal 5) Spell(STEADYSHOT)
+		if Counter(iss more 0) and Counter(iss less 2) Spell(STEADYSHOT)
+		if Counter(iss more 2) and Counter(iss less 4) Spell(STEADYSHOT)
+		unless ArmorSetParts(T13 more 1)
+			if Counter(iss more 4) and Counter(iss less 6) Spell(STEADYSHOT)
 		# if you're shooting more than 5 Steady Shots in a row, you're capping your focus and doing it wrong
 	}
 	#/kill_shot
