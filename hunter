@@ -352,7 +352,7 @@ AddIcon help=main mastery=1
 	unless TargetDebuffPresent(SERPENTSTING mine=1)
 		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/kill_shot
-	Spell(KILLSHOT usable=1)
+	if TargetLifePercent(less 20) Spell(KILLSHOT)
 	#/kill_command
 	if TargetInRange(GROWL) and PetPresent(yes) Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
@@ -435,7 +435,7 @@ AddIcon help=main mastery=2
 		# if you're shooting more than 5 Steady Shots in a row, you're capping your focus and doing it wrong
 	}
 	#/kill_shot
-	Spell(KILLSHOT usable=1)
+	if TargetLifePercent(less 20) Spell(KILLSHOT)
 	#/aimed_shot,if=buff.master_marksman_fire.react
 	if BuffPresent(FIRE) Spell(AIMEDSHOTBANG)
 	if ArmorSetParts(T13 more 3)
@@ -548,7 +548,7 @@ AddIcon help=main mastery=3
 		}
 	}
 	#/kill_shot
-	Spell(KILLSHOT usable=1)
+	if TargetLifePercent(less 20) Spell(KILLSHOT)
 	#/black_arrow,if=target.time_to_die>=8
 	if CheckBoxOn(blackarrow) and TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
 	#/arcane_shot,if=focus>=67

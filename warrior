@@ -260,8 +260,9 @@ AddIcon help=main mastery=1
 	if TargetLifePercent(more 20) Spell(MORTALSTRIKE)
 	#/colossus_smash,if=buff.colossus_smash.down
 	unless TargetDebuffPresent(COLOSSUSSMASH mine=1) Spell(COLOSSUSSMASH)
-	#if ( talents.executioner -> ok() ) { /execute,if=buff.executioner_talent.remains<1.5 }
-	if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+	#/execute,if=buff.executioner_talent.remains<1.5
+	if TalentPoints(EXECUTIONERTALENT more 0)
+		if BuffExpires(EXECUTIONER 1.5) and TargetLifePercent(less 20) Spell(EXECUTE)
 	#/mortal_strike,if=target.health_pct<=20&(dot.rend.remains<3|buff.wrecking_crew.down|rage<=25|rage>=35)
 	unless TargetLifePercent(more 20)
 	{
@@ -270,7 +271,7 @@ AddIcon help=main mastery=1
 		if Mana(less 26) or Mana(more 34) Spell(MORTALSTRIKE)
 	}
 	#/execute,if=rage>90
-	if Mana(more 90) Spell(EXECUTE usable=1)
+	if Mana(more 90) and TargetLifePercent(less 20) Spell(EXECUTE)
 	#/overpower,if=buff.taste_for_blood.up|buff.overpower.up
 	if BuffPresent(TASTEFORBLOOD) or Spell(OVERPOWER)
 	{
@@ -286,7 +287,7 @@ AddIcon help=main mastery=1
 		}
 	}
 	#/execute
-	Spell(EXECUTE usable=1)
+	if TargetLifePercent(less 20) Spell(EXECUTE)
 	#/colossus_smash,if=buff.colossus_smash.remains<=1.5
 	if TargetDebuffExpires(COLOSSUSSMASH 1.5 mine=1) Spell(COLOSSUSSMASH)
 	#/slam,if=(rage>=35|buff.battle_trance.up|buff.deadly_calm.up)
@@ -372,7 +373,7 @@ AddIcon help=cd mastery=1
     #init_use_racial_actions()
 	UseRacialActions()
 	#/deadly_calm,use_off_gcd=1
-	Spell(DEADLYCLAM usable=1)
+	Spell(DEADLYCLAM)
 	#/recklessness,if=target.health_pct>90|target.health_pct<=20,use_off_gcd=1
 	if TargetLifePercent(more 90) or TargetLifePercent(less 20) Spell(RECKLESSNESS)
 }
@@ -397,19 +398,24 @@ AddIcon help=main mastery=2
 	if TalentPoints(TITANSGRIPTALENT more 0)
 	{
 		#/execute,if=buff.executioner_talent.remains<1.5
-		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+		if TalentPoints(EXECUTIONERTALENT more 0)
+			if BuffExpires(EXECUTIONER 1.5) and TargetLifePercent(less 20) Spell(EXECUTE)
 		#/colossus_smash
 		Spell(COLOSSUSSMASH)
 		#/execute,if=buff.executioner_talent.stack<5
-		if TalentPoints(EXECUTIONERTALENT more 0) unless BuffPresent(EXECUTIONER stacks=5) Spell(EXECUTE usable=1)
+		if TalentPoints(EXECUTIONERTALENT more 0)
+		{
+			unless BuffPresent(EXECUTIONER stacks=5)
+				if TargetLifePercent(less 20) Spell(EXECUTE)
+		}
 		#/bloodthirst
 		Spell(BLOODTHIRST)
 		#/raging_blow
-		Spell(RAGINGBLOW usable=1)
+		if BuffPresent(enrage) Spell(RAGINGBLOW)
 		#/slam,if=buff.bloodsurge.react
 		if BuffPresent(BLOODSURGE) Spell(SLAM)
 		#/execute,if=rage>=50
-		if Mana(more 49) Spell(EXECUTE usable=1)
+		if Mana(more 49) and TargetLifePercent(less 20) Spell(EXECUTE)
 		#/battle_shout,if=rage<70
 		if Mana(less 70)
 		{
@@ -420,10 +426,14 @@ AddIcon help=main mastery=2
 	unless TalentPoints(TITANSGRIPTALENT more 0)
 	{
 		#/execute,if=buff.executioner_talent.remains<1.5
-		if TalentPoints(EXECUTIONERTALENT more 0) and BuffExpires(EXECUTIONER 1.5) Spell(EXECUTE usable=1)
+		if TalentPoints(EXECUTIONERTALENT more 0)
+			if BuffExpires(EXECUTIONER 1.5) and TargetLifePercent(less 20) Spell(EXECUTE)
 		#/execute,if=buff.executioner_talent.stack<5&rage>=30&cooldown.bloodthirst.remains>0.2
 		if TalentPoints(EXECUTIONERTALENT more 0)
-			unless BuffPresent(EXECUTIONER stacks=5) or 0.2s before Spell(BLOODTHIRST) if Mana(more 29) Spell(EXECUTE usable=1)
+		{
+			unless BuffPresent(EXECUTIONER stacks=5) or 0.2s before Spell(BLOODTHIRST)
+				if Mana(more 29) and TargetLifePercent(less 20) Spell(EXECUTE)
+		}
 		#/bloodthirst
 		Spell(BLOODTHIRST)
 		#/colossus_smash,if=buff.colossus_smash.down
@@ -431,12 +441,14 @@ AddIcon help=main mastery=2
 		#/slam,if=buff.bloodsurge.react
 		if BuffPresent(BLOODSURGE) Spell(SLAM)
 		#/execute,if=rage>=50&cooldown.bloodthirst.remains>0.2
-		unless 0.2s before Spell(BLOODTHIRST) if Mana(more 49) Spell(EXECUTE usable=1)
+		unless 0.2s before Spell(BLOODTHIRST)
+			if Mana(more 49) and TargetLifePercent(less 20) Spell(EXECUTE)
 		#/raging_blow,if=rage>60&cooldown.inner_rage.remains>2&buff.inner_rage.down
 		unless BuffPresent(INNERRAGE) or 2s before Spell(INNERRAGE)
-			if Mana(more 60) Spell(RAGINGBLOW usable=1)
+			if Mana(more 60) and BuffPresent(enrage) Spell(RAGINGBLOW)
 		#/raging_blow,if=rage>90&buff.inner_rage.up&cooldown.bloodthirst.remains>0.2
-		unless 0.2s before Spell(BLOODTHIRST) if BuffPresent(INNERRAGE) and Mana(more 90) Spell(RAGINGBLOW usable=1)
+		unless 0.2s before Spell(BLOODTHIRST)
+			if Mana(more 90) and BuffPresent(enrage) and BuffPresent(INNERRAGE) Spell(RAGINGBLOW)
 		#/raging_blow,if=buff.colossus_smash.up&rage>50
 		if TargetDebuffPresent(COLOSSUSSMASH mine=1) and Mana(more 50) Spell(RAGINGBLOW)
 		#/battle_shout,if=rage<70&cooldown.bloodthirst.remains>0.2
@@ -654,7 +666,7 @@ AddIcon help=main mastery=3
 	# "Truck".
 	unless Stance(2) Spell(COLOSSUSSMASH)
 	if Stance(2) Spell(CONCUSSIONBLOW)
-	if Stance(3) and Mana(more 90) Spell(EXECUTE usable=1)
+	if Stance(3) and Mana(more 90) and TargetLifePercent(less 20) Spell(EXECUTE)
 	Spell(SHOCKWAVE)
 
 	if Mana(less 20)

@@ -21,6 +21,7 @@ Define(GLYPHOFCONSECRATION 54928)
 
 # Talents
 Define(JUDGEMENTSOFTHEPURETALENT 10127)
+Define(SANCTIFIEDWRATHTALENT ???)
 
 # Abilities
 Define(AVENGERSSHIELD 31935)
@@ -216,7 +217,7 @@ AddIcon help=main mastery=2
 	if BuffPresent(GRANDCRUSADER) Spell(AVENGERSSHIELD)
 	Spell(JUDGEMENT)
 	Spell(AVENGERSSHIELD)
-	Spell(HAMMEROFWRATH usable=1)
+	if TargetLifePercent(less 20) Spell(HAMMEROFWRATH)
 	if CheckBoxOn(consecration) Spell(CONSECRATION)
 	Spell(HOLYWRATH)
 	Spell(DIVINEPLEA priority=2)
@@ -296,7 +297,7 @@ AddIcon help=main mastery=3
 	#/exorcism,if=buff.the_art_of_war.react
 	if BuffPresent(THEARTOFWAR) Spell(EXORCISM)
 	#/hammer_of_wrath
-	Spell(HAMMEROFWRATH usable=1)
+	if TargetLifePercent(less 20) or {TalentPoints(SANCTIFIEDWRATHTALENT more 0) and BuffPresent(AVENGINGWRATH)} Spell(HAMMEROFWRATH)
 	#/judgement,if=set_bonus.tier13_2pc_melee&buff.zealotry.up&holy_power<3
 	if BuffPresent(ZEALOTRY)
 	{

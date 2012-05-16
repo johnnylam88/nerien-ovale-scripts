@@ -117,7 +117,7 @@ AddIcon size=small talent=SHADOWYAPPARITIONTALENT mastery=3
 
 AddIcon help=main mastery=3
 {
-	unless BuffPresent(SHADOWFORM) Spell(SHADOWFORM usable=1)
+	unless BuffPresent(SHADOWFORM) Spell(SHADOWFORM)
 	unless InCombat()
 	{
 		if BuffExpires(INNERFIRE 300) unless BuffPresent(INNERWILL) Spell(INNERFIRE)
