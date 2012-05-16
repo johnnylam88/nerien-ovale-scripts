@@ -1,6 +1,6 @@
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.13
+### Version: 4.3.14
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
@@ -11,6 +11,7 @@
 # Buffs
 Define(DIVINEPURPOSE 90174)
 Define(GRANDCRUSADER 85416)
+SpellList(INFUSIONOFLIGHT 53672 54149) # 2 ranks of the talent give different buffs
 SpellList(JUDGEMENTSOFTHEPURE 53655 53656 53657) # 3 ranks of the talent give different buffs
 Define(SACREDDUTY 85433)
 Define(THEARTOFWAR 59578)
