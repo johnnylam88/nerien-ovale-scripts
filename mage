@@ -402,11 +402,17 @@ AddIcon help=cd mastery=1
 AddIcon help=main mastery=2
 {
 	#/scorch,debuff=1
-	if TalentPoints(CRITICALMASSTALENT more 0) and TargetDebuffExpires(magicalcrittaken 6) Spell(SCORCH)
+	if TalentPoints(CRITICALMASSTALENT more 0) and TargetDebuffExpires(magicalcrittaken 6)
+	{
+		if BuffPresent(HOTSTREAK) Spell(PYROBLASTBANG)
+		if TalentPoints(FIRESTARTERTALENT more 0) Spell(SCORCH)
+		unless InCombat() Spell(PYROBLAST)
+		Spell(SCORCH)
+	}
 	#/living_bomb,if=!ticking
 	if TargetDebuffExpires(LIVINGBOMB 0 mine=1) and TargetDeadIn(more 12) Spell(LIVINGBOMB)
 	#/pyroblast_hs,if=buff.hot_streak.react
-	if BuffPresent(HOTSTREAK) Spell(PYROBLAST)
+	if BuffPresent(HOTSTREAK) Spell(PYROBLASTBANG)
 	if TalentPoints(FIRESTARTERTALENT more 0) and Speed(more 0) Spell(SCORCH)
 	#if ( glyphs.frostfire -> ok() ) { /frostfire_bolt }
 	if Glyph(GLYPHOFFROSTFIRE) Spell(FROSTFIREBOLT usable=1)
@@ -499,7 +505,7 @@ AddIcon help=main mastery=3
 		Spell(FIREBLAST)
 	}
 	#/frostbolt
-	if castTime(FROSTFIREBOLT) < 1.251 Spell(FROSTFIREBOLT)
+	if CastTime(FROSTFIREBOLT less 1.251) Spell(FROSTFIREBOLT)
 	Spell(FROSTBOLT)
 }
 
