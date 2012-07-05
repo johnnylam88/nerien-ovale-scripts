@@ -37,6 +37,7 @@ Define(CRUSADERSTRIKE 35395)
 Define(DIVINEFAVOR 31842)
 	SpellInfo(DIVINEFAVOR cd=180)
 	SpellAddBuff(DIVINEFAVOR DIVINEFAVOR=20)
+Define(DIVINELIGHT 82326)
 Define(DIVINEPLEA 54428)
 	SpellInfo(DIVINEPLEA cd=120)
 	SpellAddBuff(DIVINEPLEA DIVINEPLEA=9)
@@ -147,15 +148,18 @@ AddFunction UseRacialActions
 AddIcon help=main mastery=1
 {
 	unless InCombat() if BuffExpires(SEALOFINSIGHT 400) Spell(SEALOFINSIGHT)
-
+	unless BuffPresent(SEALOFINSIGHT) Spell(SEALOFINSIGHT)
+	if BuffExpires(JUDGEMENTSOFTHEPURE 10) Spell(JUDGEMENT)
 	if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHOCK)
-	if BuffPresent(INFUSIONOFLIGHT) Spell(FLASHOFLIGHT)
-	Spell(HOLYLIGHT priority=2)
+	if BuffPresent(INFUSIONOFLIGHT) Spell(DIVINELIGHT)
 }
 
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
+	unless InCombat() if BuffExpires(SEALOFINSIGHT 400) Spell(SEALOFINSIGHT)
+	unless BuffPresent(SEALOFINSIGHT) Spell(SEALOFINSIGHT)
+	if BuffExpires(JUDGEMENTSOFTHEPURE 10) Spell(JUDGEMENT)
     if HolyPower(more 2) Spell(LIGHTOFDAWN)
     Spell(HOLYRADIANCE)
 }
@@ -172,7 +176,6 @@ AddIcon help=cd mastery=1
 
 AddIcon help=mana size=small mastery=1
 {
-	unless BuffPresent(JUDGEMENTSOFTHEPURE) Spell(JUDGEMENT)
 	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
 	if ManaPercent(less 88) Spell(DIVINEPLEA)
 }
