@@ -192,7 +192,7 @@ AddFunction ArcaneDPS
 	#	/mana_gem,if=buff.arcane_blast.stack=4
 	if ArmorSetParts(T13 more 3) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
 		if BuffPresent(STOLENTIME stacks=7) and Spell(ARCANEPOWER) and TargetDeadIn(less 50)
-			Spell(MANAGEMITEM)
+			Item(MANAGEMITEM)
 	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
 	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > item(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
