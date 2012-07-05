@@ -1,10 +1,14 @@
 ### Warlock Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/warlock/script
-### Version: 4.3.1
+### Version: 4.3.1pre
 #
 # Affliction:
 #	talents=http://www.wowhead.com/talent#warlock-22322200301332132103000000000000000003300000000000000000
 #	glyphs=haunt/corruption/unstable_affliction/life_tap/shadow_bolt
+#
+#	- If using Succubus, then macro Demon Soul into Shadow Bolt.
+#	- If Bane talent is maxed, then macro Soulburn into Soul Fire.
+# 	- If Bane talent isn't maxed, then macro Soulburn into Drain Life.
 #
 # Demonology:
 #	talents=http://www.wowhead.com/talent#warlock-00300000000000000033212223003102122110320200000000000000
@@ -13,6 +17,11 @@
 # Destruction:
 #	talents=http://www.wowhead.com/talent#warlock-00300000000000000003202000000000000003320202312201312211
 #	glyphs=immolate/imp/conflagrate/life_tap
+#
+#	- Soulburn should be macroed into Soul Fire.
+#
+# All specs:
+#	- Potions, Demon Soul, and on-use trinkets should be macroed into Summon Doomguard/Infernal.
 
 ## defines ##
 
@@ -31,20 +40,26 @@ Define(DEMONSOULFELHUNTER 79460)
 Define(DEMONSOULIMP 79459)
 Define(DEMONSOULSUCCUBUS 79463)
 Define(DEMONSOULVOIDWALKER 79464)
-Define(DEMONSOULBUFF 79459 79460 79462 79463 79464)
 Define(EMPOWEREDIMP 47283)
-Define(FELSPARK 89937) #4pT11 proc
+Define(FELSPARK 89937) # 4pT11 proc
 Define(IMPROVEDSOULFIREBUFF 85383)
-Define(LIGHTWEAVE 75170) # +580 int tailoring proc
 Define(MOLTENCORE 71165)
-Define(POWERTORRENT 74241) # +500 int weapon enchant proc
 Define(SHADOWTRANCE 17941)
 Define(SHADOWANDFLAMEDEBUFF 17800)
+
+# Buff Procs
+SpellList(COMBATMIND 107970 109793 109795) # Will of Unbinding stacking int buff
+Define(FOULGIFT 102662) # Foul Gift of the Demon Lord +1149 mastery proc
+Define(LIGHTWEAVE 75170) # +580 int tailoring proc
+Define(POWERTORRENT 74241) # +500 int weapon enchant proc
+SpellList(VELOCITY 107982 109787 109789) # Insignia of the Corrupted Mind haste proc
+Define(VOLCANICDESTRUCTION 89091) # DMC: Volcano +1600 int proc
 
 # Talents
 Define(BANETALENT 10938)
 Define(EMBERSTORMTALENT 11181)
 Define(IMPROVEDSOULFIRETALENT 11197)
+Define(METAMORPHOSISTALENT ???)
 Define(SHADOWANDFLAMETALENT 10936)
 Define(SOULSIPHONTALENT 11112)
 
@@ -114,9 +129,9 @@ Define(INCINERATE 29722)
 Define(LIFETAP 1454)
 	SpellInfo(LIFETAP cd=10) #fake
 Define(METAMORPHOSIS 47241)
-Define(NETHERWARD 91711)
 	SpellInfo(METAMORPHOSIS cd=180)
 	SpellAddBuff(METAMORPHOSIS METAMORPHOSIS=30)
+Define(NETHERWARD 91711)
 Define(RITUALOFSOULS 29893)
 	SpellInfo(RITUALOFSOULS cd=360)
 Define(SEARINGPAIN 5676)
@@ -184,27 +199,20 @@ Define(STONEFORM 20594) # dwarf
 # Items
 Define(BOTTLEDWISHES 77114)
 	Define(ULTIMATEPOWER 107948) # +2290 sp
-Define(DMCVOLCANO 62047)
-	Define(VOLCANICDESTRUCTION 89091) # +1600 int proc
-Define(FIERYQUINTESSENCE 69000)
-	Define(FIERYQUINTESSENCEBUFF 97008) # +1149 int
 Define(HEALTHSTONE 5512)
+Define(MOONWELLCHALICE 70142)
+	Define(BLESSINGOFTHEMOONWELL 100403) # +1700 mastery
+Define(SOULCASKET 58183)
+	Define(SOULPOWER 91019) # +1926 sp
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
 	Define(VOLCANICPOWER 79476) # +1200 int
-Define(WILLOFUNBINDINGLFR 77975) # LFR
-	Define(COMBATMINDLFR 109793) # +78 int (stacks to 10)
-Define(WILLOFUNBINDING 77198) # normal
-	Define(COMBATMIND 107970) # +88 int (stacks to 10)
-Define(WILLOFUNBINDINGHEROIC 77995) # heroic
-	Define(COMBATMINDHEROIC 109795) # +99 int (stacks to 10)
 
 ## end defines ##
 
 ScoreSpells(CURSEOFELEMENTS SHADOWBOLT HAUNT UNSTABLEAFFLICTION IMMOLATE CONFLAGRATE CURSEOFWEAKNESS
 			BANEOFAGONY CORRUPTION SOULFIRE DRAINSOUL INCINERATE SHADOWBOLT CHAOSBOLT)
 
-AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL))
 AddListItem(curse none L(None))
 AddListItem(curse elements SpellName(CURSEOFELEMENTS) default)
 AddListItem(curse tongues SpellName(CURSEOFTONGUES))
@@ -213,6 +221,19 @@ AddListItem(bane none L(None))
 AddListItem(bane agony SpellName(BANEOFAGONY))
 AddListItem(bane doom SpellName(BANEOFDOOM) default)
 AddListItem(bane havoc SpellName(BANEOFHAVOC) mastery=3)
+
+AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) default)
+AddCheckBox(lightweave SpellName(LIGHTWEAVE))
+AddCheckBox(powertorrent SpellName(POWERTORRENT))
+
+# Trinkets from T13 raids or Twilight heroics or purchased with Valor or Justice Points.
+AddCheckBox(trinket_bottle "Bottled Wishes")
+AddCheckBox(trinket_dmcv "DMC: Volcano")
+AddCheckBox(trinket_foul "Foul Gift of the Demon Lord")
+AddCheckBox(trinket_iotcm "Insignia of the Corrupted Mind")
+AddCheckBox(trinket_mwc "Moonwell Chalice")
+AddCheckBox(trinket_soul "Soul Casket")
+AddCheckBox(trinket_wou "Will of Unbinding")
 
 AddFunction UseItemActions
 {
@@ -233,13 +254,36 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
+AddFunction EnoughBuffsForDoomguard
+{
+	# "enough buffs" means:
+	#	- Metamorphosis (for demo locks)
+	#	- potion
+	#	- at least two proc effects
+	#	- at least one on-use trinket effect
+	#	- at least 8 stacks from Will of Unbinding
+	#
+	{TalentPoints(METAMORPHOSISTALENT more 0) and BuffPresent(METAMORPHOSIS)}
+	and {CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
+	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}}
+	and {{CheckBoxOn(trinket_bottle) and {Item(BOTTLEDWISHES) or BuffPresent(ULTIMATEPOWER)}}
+		or {CheckBoxOn(trinket_mwc) and {Item(MOONWELLCHALICE) or BuffPresent(BLESSINGOFTHEMOONWELL)}}
+		or {CheckBoxOn(trinket_soul) and {Item(SOULCASKET) or BuffPresent(SOULPOWER)}}}
+	and	{CheckBoxOn(trinket_wou) and BuffPresent(COMBATMIND stacks=8)}
+}
+
 ###
 ### Affliction
 ###
-
-# If using Succubus, then macro Demon Soul into Shadow Bolt.
-# If Bane talent is maxed, then macro Soulburn into Soul Fire.
-# If Bane talent isn't maxed, then macro Soulburn into Drain Life.
 
 # Pet
 AddIcon size=small mastery=1
@@ -419,13 +463,6 @@ AddIcon help=cd mastery=1
 	}
 }
 
-AddIcon help=cd size=small mastery=1
-{
-	#/summon_doomguard,if=time>10
-	# Only Summon Doomguard if there are enough spellpower and damage boosts.
-	if TimeInCombat(more 10) Spell(SUMMONDOOMGUARD)
-}
-
 ###
 ### Destruction
 ###
@@ -553,9 +590,11 @@ AddIcon help=main mastery=3
 	}
 }
 
-AddIcon help=cd size=small mastery=3
+###
+### Summon Doomguard.
+###
+AddIcon help=cd size=small
 {
 	#/summon_doomguard,if=time>10
-	# Only Summon Doomguard if there are enough spellpower and damage boosts.
-	if TimeInCombat(more 10) Spell(SUMMONDOOMGUARD)
+	if TimeInCombat(more 10) and EnoughBuffsForDoomguard() Spell(SUMMONDOOMGUARD)
 }
