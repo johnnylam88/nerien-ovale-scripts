@@ -257,14 +257,12 @@ AddFunction UseRacialActions
 AddFunction EnoughBuffsForDoomguard
 {
 	# "enough buffs" means:
-	#	- Metamorphosis (for demo locks)
 	#	- potion
 	#	- at least two proc effects
 	#	- at least one on-use trinket effect
 	#	- at least 8 stacks from Will of Unbinding
 	#
-	{TalentPoints(METAMORPHOSISTALENT more 0) and BuffPresent(METAMORPHOSIS)}
-	and {CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
+	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
@@ -306,7 +304,11 @@ AddIcon size=small mastery=1
 # Main rotation.
 AddIcon help=main mastery=1
 {
-	if InCombat(no) and {BuffExpires(DEMONARMOR 400) or BuffExpires(FELARMOR 400)} Spell(FELARMOR)
+	if InCombat(no) and {BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)}
+	{
+		Spell(FELARMOR)
+		Spell(DEMONARMOR)
+	}
 
 	# Maintain raid buffs and debuffs.
 	if List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDeadIn(more 8) Spell(CURSEOFELEMENTS)
@@ -314,7 +316,11 @@ AddIcon help=main mastery=1
 	if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) and TargetDeadIn(more 8) Spell(CURSEOFWEAKNESS)
 
 	#/fel_armor
-	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR) Spell(FELARMOR)
+	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
+	{
+		Spell(FELARMOR)
+		Spell(DEMONARMOR)
+	}
 	#/dark_intent
 	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	#/corruption,if=(!ticking|remains<tick_time)&miss_react
@@ -374,7 +380,7 @@ AddIcon help=main mastery=1
 }
 
 # Soulburn.
-AddIcon help=cd mastery=1
+AddIcon help=offgcd mastery=1
 {
 	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
@@ -464,6 +470,203 @@ AddIcon help=cd mastery=1
 }
 
 ###
+### Demonology
+###
+
+# Demonology tries to line up trinket usage with Metamorphosis.
+AddFunction UseItemActionsDemonology
+{
+	if Spell(METAMORPHOSIS)
+	{
+		Item(HandsSlot usable=1)
+		Item(Trinket0Slot usable=1)
+		Item(Trinket1Slot usable=1)
+	}
+	unless 60s before Spell(METAMORPHOSIS) Item(HandsSlot usable=1)
+	unless 90s before Spell(METAMORPHOSIS)
+		if CheckBoxOn(trinket_bottle) Item(BOTTLEDWISHES usable=1)
+	unless 120s before Spell(METAMORPHOSIS)
+	{
+		if CheckBoxOn(trinket_mwc) Item(MOONWELLCHALICE usable=1)
+		if CheckBoxOn(trinket_soul) Item(SOULCASKET usable=1)
+	}
+}
+
+# Pet
+AddIcon size=small mastery=1
+{
+	if InCombat(no)
+	{
+		unless pet.CreatureFamily(PETFELGUARD) Spell(SUMMONFELGUARD)
+		if SoulShards(less 3) Spell(SOULHARVEST)
+		if ItemCount(HEALTHSTONE less 1) Spell(RITUALOFSOULS)
+	}
+
+	if CheckBoxOn(trinket_mwc)
+	{
+		#/summon_felguard,if=cooldown.demon_soul.remains<5&cooldown.metamorphosis.remains<5&!pet.felguard.active
+		unless pet.CreatureFamily(PETFELGUARD)
+			if 5s before Spell(DEMONSOUL) and 5s before Spell(METAMORPHOSIS) Spell(SUMMONFELGUARD)
+	}
+	#/felguard:felstorm
+	if pet.CreatureFamily(PETFELGUARD) and TargetInRange(PETLEGIONSTRIKE yes) Spell(PETFELSTORM)
+	#/summon_felhunter,if=!pet.felguard.dot.felstorm.ticking&pet.felguard.active
+	if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM)
+		if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SUMMONFELHUNTER)
+}
+
+# Main rotation.
+AddIcon help=main mastery=2
+{
+	#/fel_armor
+	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
+	{
+		Spell(FELARMOR)
+		Spell(DEMONARMOR)
+	}
+	#/dark_intent
+	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
+	if CheckBoxOn(trinket_mwc)
+	{
+		#/metamorphosis,if=buff.moonwell_chalice.up&pet.felguard.active
+		if BuffPresent(BLESSINGOFTHEMOONWELL) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
+		#/demon_soul,if=buff.metamorphosis.up
+		if BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
+	}
+	if CheckBoxOff(trinket_mwc)
+	{
+		#/metamorphosis
+		Spell(METAMORPHOSIS)
+		#/demon_soul
+		Spell(DEMONSOUL)
+	}
+	#/bane_of_doom,if=!ticking&time<10
+	if TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+	{
+		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
+	}
+	if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
+	{
+		if CheckBoxOn(trinket_mwc)
+		{
+			unless 60s before Spell(METAMORPHOSIS)
+			{
+				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up&cooldown.metamorphosis.remains>60
+				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			}
+		}
+		if CheckBoxOff(trinket_mwc)
+		{
+			#/soul_fire,if=pet.felhunter.active&buff.soulburn.up
+			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+		}
+	}
+	#/immolate,if=!ticking&target.time_to_die>=4&miss_react
+	if TargetDebuffExpires(IMMOLATE mine=1) and TargetDeadIn(more 5) Spell(IMMOLATE)
+	#/bane_of_doom,if=(!ticking|(buff.metamorphosis.up&remains<45))&target.time_to_die>=15&miss_react
+	if TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+	{
+		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
+	}
+	if TargetDebuffExpires(BANEOFDOOM 44 mine=1) and BuffPresent(METAMORPHOSIS)
+	{
+		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+	}
+	#/corruption,if=(remains<tick_time|!ticking)&target.time_to_die>=6&miss_react
+	if TargetDebuffExpires(CORRUPTION 2 mine=1 haste=spell) and TargetDeadIn(more 6) Spell(CORRUPTION)
+	#/fel_flame,if=buff.tier11_4pc_caster.react
+	if BuffPresent(FELSPARK) Spell(FELFLAME)
+	#/shadowflame
+	if TargetDistance(less 8) Spell(SHADOWFLAME)
+	#/hand_of_guldan
+	Spell(HANDOFGULDAN)
+	#/immolation_aura,if=buff.metamorphosis.remains>10
+    if TargetDistance(less 8) and BuffPresent(METAMORPHOSIS 10) Spell(IMMOLATIONAURA)
+	#/shadow_bolt,if=buff.shadow_trance.react
+	if BuffPresent(SHADOWTRANCE) Spell(SHADOWBOLT)
+	#/incinerate,if=buff.molten_core.react
+	if BuffPresent(MOLTENCORE) Spell(INCINERATE)
+	#/soul_fire,if=buff.decimation.up
+	if BuffPresent(DECIMATION) Spell(SOULFIRE)
+	#/life_tap,if=mana_pct<=30&buff.bloodlust.down&buff.metamorphosis.down&buff.demon_soul_felguard.down
+	if ManaPercent(less 30) and BuffExpires(heroism) and BuffExpires(METAMORPHOSIS) and BuffExpires(DEMONSOULFELGUARD) Spell(LIFETAP)
+	if TalentPoints(BANETALENT more 0)
+	{
+		#/shadow_bolt
+		Spell(SHADOWBOLT)
+	}
+	if TalentPoints(BANETALENT less 1)
+	{
+		#/incinerate
+		Spell(INCINERATE)
+	}
+	#/life_tap,if=mana_pct_nonproc<100
+	if ManaPercent(less 95) Spell(LIFETAP)
+}
+
+# Soulburn.
+AddIcon help=main mastery=2
+{
+	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
+		or {TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
+	{
+		#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
+		if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM)
+			if SoulShards(more 0) Spell(SOULBURN)
+		if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
+		{
+			if CheckBoxOn(trinket_mwc)
+			{
+				#/soulburn,if=pet.felhunter.active&cooldown.metamorphosis.remains>60
+				unless 60s before Spell(METAMORPHOSIS)
+					if SoulShards(more 0) Spell(SOULBURN)
+			}
+			if CheckBoxOff(trinket_mwc)
+			{
+				#/soulburn,if=pet.felhunter.active
+				if SoulShards(more 0) Spell(SOULBURN)
+			}
+		}
+}
+
+# Long CDs.
+AddIcon help=cd mastery=2
+{
+	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
+	{
+		#/volcanic_potion,if=!in_combat
+		if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(VOLCANICPOTION)
+		#/use_item
+		UseItemActionsDemonology()
+		#init_use_profession_actions()
+		UseProfessionActions()
+		#init_use_racial_actions()
+		UseRacialActions()
+		#/volcanic_potion,if=buff.metamorphosis.up
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and BuffPresent(METAMORPHOSIS) Spell(VOLCANICPOTION)
+		if CheckBoxOn(trinket_mwc)
+		{
+			#/metamorphosis,if=buff.moonwell_chalice.up&pet.felguard.active
+			if BuffPresent(BLESSINGOFTHEMOONWELL) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
+			#/demon_soul,if=buff.metamorphosis.up
+			if BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
+		}
+		if CheckBoxOff(trinket_mwc)
+		{
+			#/metamorphosis
+			Spell(METAMORPHOSIS)
+			#/demon_soul
+			Spell(DEMONSOUL)
+		}		
+	}
+}
+
+###
 ### Destruction
 ###
 
@@ -483,7 +686,11 @@ AddIcon size=small mastery=3
 # Main rotation.
 AddIcon help=main mastery=3
 {
-	if InCombat(no) and {BuffExpires(DEMONARMOR 400) or BuffExpires(FELARMOR 400)} Spell(FELARMOR)
+	if InCombat(no) and {BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)}
+	{
+		Spell(FELARMOR)
+		Spell(DEMONARMOR)
+	}
 
 	# Maintain raid buffs and debuffs.
 	if List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDeadIn(more 8) Spell(CURSEOFELEMENTS)
@@ -491,7 +698,11 @@ AddIcon help=main mastery=3
 	if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) and TargetDeadIn(more 8) Spell(CURSEOFWEAKNESS)
 
 	#/fel_armor
-	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR) Spell(FELARMOR)
+	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
+	{
+		Spell(FELARMOR)
+		Spell(DEMONARMOR)
+	}
 	#/dark_intent
 	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	if InCombat(no)
@@ -550,7 +761,7 @@ AddIcon help=main mastery=3
 }
 
 # Soulburn.
-AddIcon help=main mastery=3
+AddIcon help=offgcd mastery=3
 {
 	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
