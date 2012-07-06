@@ -662,7 +662,7 @@ AddIcon help=cd mastery=2
 			Spell(METAMORPHOSIS)
 			#/demon_soul
 			Spell(DEMONSOUL)
-		}		
+		}
 	}
 }
 
