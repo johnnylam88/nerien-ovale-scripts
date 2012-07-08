@@ -84,6 +84,7 @@ Define(CONFLAGRATE 17962)
 Define(CORRUPTION 172)
 	SpellAddTargetDebuff(CORRUPTION CORRUPTION=18)
 Define(CREATEHEALTHSTONE 6201)
+Define(CREATESOULSTONE 693)
 Define(CURSEOFELEMENTS 1490)
 	SpellAddTargetDebuff(CURSEOFELEMENTS CURSEOFELEMENTS=300)
 Define(CURSEOFTONGUES 1714)
@@ -204,6 +205,7 @@ Define(MOONWELLCHALICE 70142)
 	Define(BLESSINGOFTHEMOONWELL 100403) # +1700 mastery
 Define(SOULCASKET 58183)
 	Define(SOULPOWER 91019) # +1926 sp
+Define(SOULSTONE 5232)
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
 	Define(VOLCANICPOWER 79476) # +1200 int
@@ -296,8 +298,13 @@ AddIcon size=small mastery=1
 	}
 	if InCombat(no)
 	{
+		if ItemCount(HEALTHSTONE less 1)
+		{
+			Spell(RITUALOFSOULS)
+			Spell(CREATEHEALTHSTONE)
+		}
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
-		if ItemCount(HEALTHSTONE less 1) Spell(RITUALOFSOULS)
 	}
 }
 
@@ -493,13 +500,18 @@ AddFunction UseItemActionsDemonology
 }
 
 # Pet
-AddIcon size=small mastery=1
+AddIcon size=small mastery=2
 {
 	if InCombat(no)
 	{
 		unless pet.CreatureFamily(PETFELGUARD) Spell(SUMMONFELGUARD)
+		if ItemCount(HEALTHSTONE less 1)
+		{
+			Spell(RITUALOFSOULS)
+			Spell(CREATEHEALTHSTONE)
+		}
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
-		if ItemCount(HEALTHSTONE less 1) Spell(RITUALOFSOULS)
 	}
 
 	if CheckBoxOn(trinket_mwc)
@@ -678,8 +690,13 @@ AddIcon size=small mastery=3
 
 	if InCombat(no)
 	{
+		if ItemCount(HEALTHSTONE less 1)
+		{
+			Spell(RITUALOFSOULS)
+			Spell(CREATEHEALTHSTONE)
+		}
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
-		if ItemCount(HEALTHSTONE less 1) Spell(RITUALOFSOULS)
 	}
 }
 
