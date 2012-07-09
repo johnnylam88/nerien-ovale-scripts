@@ -538,20 +538,6 @@ AddIcon help=main mastery=2
 	}
 	#/dark_intent
 	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
-	if CheckBoxOn(trinket_mwc)
-	{
-		#/metamorphosis,if=buff.moonwell_chalice.up&pet.felguard.active
-		if BuffPresent(BLESSINGOFTHEMOONWELL) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
-		#/demon_soul,if=buff.metamorphosis.up
-		if BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
-	}
-	if CheckBoxOff(trinket_mwc)
-	{
-		#/metamorphosis
-		Spell(METAMORPHOSIS)
-		#/demon_soul
-		Spell(DEMONSOUL)
-	}
 	#/bane_of_doom,if=!ticking&time<10
 	if TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 	{
