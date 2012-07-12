@@ -165,8 +165,8 @@ AddCheckBox(deathstrike SpellName(DEATHSTRIKE) mastery=3)
 AddCheckBox(masterfrost "Masterfrost" mastery=2)
 AddCheckBox(mindfreeze SpellName(MINDFREEZE))
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=1)
-AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=2)
-AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=2 default)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3 default)
 
 AddFunction UseItemActions
 {

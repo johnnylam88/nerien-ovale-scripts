@@ -164,8 +164,8 @@ Define(WILLOFUNBINDINGHEROIC 77995) # heroic
 ScoreSpells(LIGHTNINGSHIELD CHAINLIGHTNING FLAMESHOCK LAVABURST EARTHSHOCK LIGHTNINGBOLT
 			STORMSTRIKE LAVALASH UNLEASHELEMENTS)
 
-AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) mastery=1)
-AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) mastery=2)
+AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) mastery=1 default)
+AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) mastery=2 default)
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) mastery=3)
 AddCheckBox(aoe L(AOE))
 AddListItem(shock none L(None) default talent=FOCUSEDINSIGHTTALENT)

@@ -122,7 +122,7 @@ AddListItem(hpability inquisition SpellName(INQUISITION) mastery=2 default)
 AddListItem(hpability shieldoftherighteous SpellName(SHIELDOFTHERIGHTEOUS) mastery=2)
 AddListItem(hpability wordofglory SpellName(WORDOFGLORY) mastery=2)
 AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
-AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3)
+AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3 default)
 AddCheckBox(consecration SpellName(CONSECRATION) default)
 
 AddFunction UseItemActions

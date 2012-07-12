@@ -222,7 +222,7 @@ ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CH
 			BLACKARROW EXPLOSIVESHOT)
 
 AddCheckBox(aoe L(AOE))
-AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL))
+AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) default)
 AddCheckBox(petbuff "Pet raid buffs & debuffs")
 AddCheckBox(petattack "Show pet attacks")
 AddCheckBox(blackarrow SpellName(BLACKARROW) default mastery=3)
