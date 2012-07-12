@@ -58,8 +58,8 @@ Define(VOLCANICDESTRUCTION 89091) # DMC: Volcano +1600 int proc
 # Talents
 Define(BANETALENT 10938)
 Define(EMBERSTORMTALENT 11181)
-Define(IMPROVEDSOULFIRETALENT 11197)
-Define(METAMORPHOSISTALENT ???)
+Define(IMPROVEDSOULFIRETALENT 10940)
+Define(METAMORPHOSISTALENT 11044)
 Define(SHADOWANDFLAMETALENT 10936)
 Define(SOULSIPHONTALENT 11112)
 
@@ -261,7 +261,7 @@ AddFunction EnoughBuffsForDoomguard
 	# "enough buffs" means:
 	#	- potion
 	#	- at least two proc effects
-	#	- at least one on-use trinket effect
+	#	- at least one on-use trinket effect (either ready to use, or buff already present)
 	#	- at least 8 stacks from Will of Unbinding
 	#
 	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
@@ -298,12 +298,12 @@ AddIcon size=small mastery=1
 	}
 	if InCombat(no)
 	{
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1)
 		{
 			Spell(RITUALOFSOULS)
 			Spell(CREATEHEALTHSTONE)
 		}
-		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 }
@@ -389,7 +389,11 @@ AddIcon help=main mastery=1
 # Soulburn.
 AddIcon help=offgcd mastery=1
 {
-	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+	unless {TargetDeadIn(more 8)
+		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2)}
+			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
+			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
+		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		#/soulburn
@@ -483,19 +487,22 @@ AddIcon help=cd mastery=1
 # Demonology tries to line up trinket usage with Metamorphosis.
 AddFunction UseItemActionsDemonology
 {
-	if Spell(METAMORPHOSIS)
+	if TalentPoints(METAMORPHOSISTALENT less 1) or Spell(METAMORPHOSIS)
 	{
 		Item(HandsSlot usable=1)
 		Item(Trinket0Slot usable=1)
 		Item(Trinket1Slot usable=1)
 	}
-	unless 60s before Spell(METAMORPHOSIS) Item(HandsSlot usable=1)
-	unless 90s before Spell(METAMORPHOSIS)
-		if CheckBoxOn(trinket_bottle) Item(BOTTLEDWISHES usable=1)
-	unless 120s before Spell(METAMORPHOSIS)
+	if TalentPoints(METAMORPHOSISTALENT more 0)
 	{
-		if CheckBoxOn(trinket_mwc) Item(MOONWELLCHALICE usable=1)
-		if CheckBoxOn(trinket_soul) Item(SOULCASKET usable=1)
+		unless 60s before Spell(METAMORPHOSIS) Item(HandsSlot usable=1)
+		unless 90s before Spell(METAMORPHOSIS)
+			if CheckBoxOn(trinket_bottle) Item(BOTTLEDWISHES usable=1)
+		unless 120s before Spell(METAMORPHOSIS)
+		{
+			if CheckBoxOn(trinket_mwc) Item(MOONWELLCHALICE usable=1)
+			if CheckBoxOn(trinket_soul) Item(SOULCASKET usable=1)
+		}
 	}
 }
 
@@ -505,12 +512,12 @@ AddIcon size=small mastery=2
 	if InCombat(no)
 	{
 		unless pet.CreatureFamily(PETFELGUARD) Spell(SUMMONFELGUARD)
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1)
 		{
 			Spell(RITUALOFSOULS)
 			Spell(CREATEHEALTHSTONE)
 		}
-		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 
@@ -518,7 +525,13 @@ AddIcon size=small mastery=2
 	{
 		#/summon_felguard,if=cooldown.demon_soul.remains<5&cooldown.metamorphosis.remains<5&!pet.felguard.active
 		unless pet.CreatureFamily(PETFELGUARD)
-			if 5s before Spell(DEMONSOUL) and 5s before Spell(METAMORPHOSIS) Spell(SUMMONFELGUARD)
+		{
+			if 5s before Spell(DEMONSOUL)
+				and {TalentPoints(METAMORPHOSISTALENT less 1) or 5s before Spell(METAMORPHOSIS)}
+			{
+				Spell(SUMMONFELGUARD)
+			}
+		}
 	}
 	#/felguard:felstorm
 	if pet.CreatureFamily(PETFELGUARD) and TargetInRange(PETLEGIONSTRIKE yes) Spell(PETFELSTORM)
@@ -530,6 +543,17 @@ AddIcon size=small mastery=2
 # Main rotation.
 AddIcon help=main mastery=2
 {
+	if InCombat(no) and {BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)}
+	{
+		Spell(FELARMOR)
+		Spell(DEMONARMOR)
+	}
+
+	# Maintain raid buffs and debuffs.
+	if List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDeadIn(more 8) Spell(CURSEOFELEMENTS)
+	if List(curse tongues) and TargetDebuffExpires(castslow 2) and TargetDeadIn(more 8) Spell(CURSEOFTONGUES)
+	if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) and TargetDeadIn(more 8) Spell(CURSEOFWEAKNESS)
+
 	#/fel_armor
 	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
 	{
@@ -548,7 +572,7 @@ AddIcon help=main mastery=2
 	{
 		if CheckBoxOn(trinket_mwc)
 		{
-			unless 60s before Spell(METAMORPHOSIS)
+			unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
 			{
 				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up&cooldown.metamorphosis.remains>60
 				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
@@ -607,7 +631,11 @@ AddIcon help=main mastery=2
 # Soulburn.
 AddIcon help=main mastery=2
 {
-	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+	unless {TargetDeadIn(more 8)
+		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2)}
+			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
+			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
+		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 		or {TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
@@ -620,7 +648,7 @@ AddIcon help=main mastery=2
 			if CheckBoxOn(trinket_mwc)
 			{
 				#/soulburn,if=pet.felhunter.active&cooldown.metamorphosis.remains>60
-				unless 60s before Spell(METAMORPHOSIS)
+				unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
 					if SoulShards(more 0) Spell(SOULBURN)
 			}
 			if CheckBoxOff(trinket_mwc)
@@ -676,12 +704,12 @@ AddIcon size=small mastery=3
 
 	if InCombat(no)
 	{
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1)
 		{
 			Spell(RITUALOFSOULS)
 			Spell(CREATEHEALTHSTONE)
 		}
-		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 }
@@ -689,10 +717,28 @@ AddIcon size=small mastery=3
 # Main rotation.
 AddIcon help=main mastery=3
 {
-	if InCombat(no) and {BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)}
+	if InCombat(no)
 	{
-		Spell(FELARMOR)
-		Spell(DEMONARMOR)
+		if BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)
+		{
+			Spell(FELARMOR)
+			Spell(DEMONARMOR)
+		}
+		if ArmorSetParts(T13 more 3)
+		{
+			#/soul_fire,if=buff.soulburn.up&!in_combat
+			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+		}
+		unless ArmorSetParts(T13 more 3)
+		{
+			if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
+			{
+				#/soul_fire,if=buff.soulburn.up&!in_combat
+				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			}
+		}
+		# Queue highest damage spell to land when OOC.
+		Spell(SOULFIRE)
 	}
 
 	# Maintain raid buffs and debuffs.
@@ -708,20 +754,12 @@ AddIcon help=main mastery=3
 	}
 	#/dark_intent
 	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
-	if InCombat(no)
-	{
-		if ArmorSetParts(T13 more 3) or TalentPoints(IMPROVEDSOULFIRETALENT more 0)
-		{
-			#/soul_fire,if=buff.soulburn.up&!in_combat
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
-		}
-	}
 	#/fel_flame,if=buff.tier11_4pc_caster.react&dot.immolate.remains<8
 	if BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1) Spell(FELFLAME)
 	#/immolate,if=(remains<cast_time+gcd|!ticking)&target.time_to_die>=4&miss_react
     if TargetDebuffExpires(IMMOLATE 3 mine=1 haste=spell) and TargetDeadIn(more 4) Spell(IMMOLATE)
 	#/conflagrate
-	Spell(CONFLAGRATE)
+	if TargetDebuffPresent(IMMOLATE mine=1) Spell(CONFLAGRATE)
 	#/immolate,if=buff.bloodlust.react&buff.bloodlust.remains>32&cooldown.conflagrate.remains<=3&remains<12
 	if BuffPresent(heroism 32) and 3s before Spell(CONFLAGRATE) and TargetDebuffExpires(IMMOLATE 12 mine=1) Spell(IMMOLATE)
 	#/bane_of_doom,if=!ticking&target.time_to_die>=15&miss_react
@@ -766,7 +804,11 @@ AddIcon help=main mastery=3
 # Soulburn.
 AddIcon help=offgcd mastery=3
 {
-	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+	unless {TargetDeadIn(more 8)
+		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2)}
+			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
+			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
+		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		if ArmorSetParts(T13 more 3)
@@ -776,8 +818,11 @@ AddIcon help=offgcd mastery=3
 		}
 		unless ArmorSetParts(T13 more 3)
 		{
-			#/soulburn,if=buff.bloodlust.down
-			unless BuffPresent(heroism) if SoulShards(more 0) Spell(SOULBURN)
+			if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
+			{
+				#/soulburn,if=buff.bloodlust.down
+				unless BuffPresent(heroism) if SoulShards(more 0) Spell(SOULBURN)
+			}
 		}
 	}
 }
