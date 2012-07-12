@@ -213,7 +213,8 @@ AddFunction MainRotationCat
 	{
 		if TalentPoints(BLOODINTHEWATERTALENT less 2) or ExecuteRange() AddComboPoint()
 	}
-	#/rip,if=buff.combo_points.stack>=5&target.time_to_die>=6&dot.rip.remains<2.0&(buff.berserk.up|dot.rip.remains<=cooldown.tigers_fury.remains)
+	#/rip,if=buff.combo_points.stack>=5&target.time_to_die>=6&dot.rip.remains<2.0&\
+	#	(buff.berserk.up|dot.rip.remains<=cooldown.tigers_fury.remains)
 	if ComboPoints(more 4) and TargetDeadIn(more 6) and TargetDebuffExpires(RIP 2 mine=1)
 	{
 		if BuffPresent(BERSERK) Spell(RIP)
@@ -223,7 +224,8 @@ AddFunction MainRotationCat
 	if ComboPoints(more 4) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) and BuffPresent(BERSERK) Spell(FEROCIOUSBITE)
 	#/rake,if=target.time_to_die>=8.5&buff.tigers_fury.up&dot.rake.remains<9.0&(!dot.rake.ticking|dot.rake.multiplier<multiplier)
 	if TargetDeadIn(more 8.5) and BuffPresent(TIGERSFURY) and TargetDebuffExpires(RAKE 9 mine=1) Spell(RAKE)
-	#/rake,if=target.time_to_die>=dot.rake.remains&dot.rake.remains<3.0&(buff.berserk.up|energy>=71|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains)
+	#/rake,if=target.time_to_die>=dot.rake.remains&dot.rake.remains<3.0&\
+	#	(buff.berserk.up|energy>=71|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains)
 	if target.deadIn() > target.debuffExpires(RAKE mine=1) and TargetDebuffExpires(RAKE 3 mine=1)
 	{
 		if BuffPresent(BERSERK) or Mana(more 70) Spell(RAKE)
