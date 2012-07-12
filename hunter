@@ -27,6 +27,9 @@ Define(THEBEASTWITHIN 34692)
 
 # Debuffs
 Define(MARKEDFORDEATH 88691)
+Define(SERPENTSTINGSPREADRANKONE 88453)
+Define(SERPENTSTINGSPREADRANKTWO 88466)
+SpellList(SERPENTSTINGDEBUFF 1978 88453 88466)
 Define(PETDUSTCLOUDDEBUFF 54404)
 Define(PETTAILSPINDEBUFF 90315)
 
@@ -63,11 +66,11 @@ Define(CALLPETFOUR 83244)
 Define(CALLPETFIVE 83245)
 Define(CHIMERASHOT 53209)
 	SpellInfo(CHIMERASHOT cd=10 mana=44 resetcounter=iss) # assume Efficiency (Rank 3) (normally 50)
-	SpellAddTargetDebuff(CHIMERASHOT SERPENTSTING=refresh)
+	SpellAddTargetDebuff(CHIMERASHOT SERPENTSTING=refresh SERPENTSTINGSPREADRANKONE=refresh SERPENTSTINGSPREADRANKTWO=refresh)
 Define(COBRASHOT 77767)
 	SpellInfo(COBRASHOT mana=-9 resetcounter=iss)
 	SpellInfo(COBRASHOT mana=-18 itemset=T13 itemcount=2)
-	SpellAddTargetDebuff(COBRASHOT SERPENTSTING=refresh)
+	SpellAddTargetDebuff(COBRASHOT SERPENTSTING=refresh SERPENTSTINGSPREADRANKONE=refresh SERPENTSTINGSPREADRANKTWO=refresh)
 Define(EXPLOSIVESHOT 53301)
 	SpellInfo(EXPLOSIVESHOT cd=6 mana=44 resetcounter=iss buffnocd=LOCKANDLOAD) # assume Efficiency (Rank 3) (normally 50)
 	SpellAddTargetDebuff(EXPLOSIVESHOT EXPLOSIVESHOT=2)
@@ -349,7 +352,7 @@ AddIcon help=offgcd size=small
 AddIcon help=main mastery=1
 {
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1)
+	unless TargetDebuffPresent(SERPENTSTINGDEBUFF mine=1)
 		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/kill_shot
 	if TargetLifePercent(less 20) Spell(KILLSHOT)
@@ -372,7 +375,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
 	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTING mine=1)
+	unless TargetDebuffPresent(SERPENTSTINGDEBUFF mine=1)
 		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) or {BuffPresent(THEBEASTWITHIN) and Mana(more 19)} Spell(MULTISHOT)
@@ -422,7 +425,7 @@ AddIcon help=cd mastery=1
 AddIcon help=main mastery=2
 {
 	#/serpent_sting,if=!ticking&target.health_pct<=90
-	unless TargetDebuffPresent(SERPENTSTING) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTINGDEBUFF) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
 	#/chimera_shot,if=target.health_pct<=90
 	if TargetLifePercent(less 90) and Mana(more 43) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
@@ -534,7 +537,7 @@ AddIcon help=cd mastery=2
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking&target.time_to_die>=10
-	unless TargetDebuffPresent(SERPENTSTING mine=1) if TargetDeadIn(more 10) and Mana(more 24) Spell(SERPENTSTING)
+	unless TargetDebuffPresent(SERPENTSTINGDEBUFF mine=1) if TargetDeadIn(more 10) and Mana(more 24) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1)
 		if Mana(more 43) or BuffPresent(LOCKANDLOAD) Spell(EXPLOSIVESHOT)
