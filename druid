@@ -9,9 +9,8 @@
 ## defines ##
 
 # Buffs
-Define(BLESSINGOFKINGS 79063)
 Define(CLEARCASTING 16870)
-Define(MARKOFTHEWILD 79061)
+SpellList(PRIMARYSTATBUFF 79061 79063) # Blessing of Kings/Mark of the Wild
 Define(STAMPEDE 81022)
 Define(STRENGTHOFTHEPANTHER 90166) # feral 4pT11 bonus
 
@@ -141,8 +140,10 @@ AddFunction UseRacialActions
 
 AddFunction MainRotationBear
 {
+	if InCombat(no) and BuffExpires(PRIMARYSTATBUFF 400) Spell(MARKOFTHEWILD)
+
 	#/mark_of_the_wild
-	unless BuffPresent(MARKOFTHEWILD) or BuffPresent(BLESSINGOFKINGS) Spell(MARKOFTHEWILD)
+	unless BuffPresent(PRIMARYSTATBUFF) Spell(MARKOFTHEWILD)
 	#/faerie_fire_feral,if=!debuff.faerie_fire.up
 	if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
@@ -182,8 +183,10 @@ AddFunction ExecuteRange
 
 AddFunction MainRotationCat
 {
+	if InCombat(no) and BuffExpires(PRIMARYSTATBUFF 400) Spell(MARKOFTHEWILD)
+
 	#/mark_of_the_wild
-	unless BuffPresent(MARKOFTHEWILD) or BuffPresent(BLESSINGOFKINGS) Spell(MARKOFTHEWILD)
+	unless BuffPresent(PRIMARYSTATBUFF) Spell(MARKOFTHEWILD)
 	#/feral_charge_cat,if=!in_combat
 	if TargetInRange(FERALCHARGECAT) Spell(FERALCHARGECAT)
 	#/tigers_fury,if=energy<=45&(!buff.omen_of_clarity.react)
@@ -257,7 +260,7 @@ AddFunction MainRotationCat
 
 AddFunction CooldownsCat
 {
-	unless BuffExpires(MARKOFTHEWILD) and BuffExpires(BLESSINGOFKINGS)
+	unless BuffExpires(PRIMARYSTATBUFF)
 	{
 		if InCombat(no)
 		{
