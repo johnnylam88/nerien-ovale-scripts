@@ -23,8 +23,9 @@ Define(BRAINFREEZE 57761)
 Define(CLEARCASTING 12536)
 Define(FINGERSOFFROST 44544)
 	SpellInfo(FINGERSOFFROST duration=14)
-Define(IMPROVEDMANAGEM 83098)
 Define(HOTSTREAK 48108)
+Define(IMPROVEDMANAGEM 83098)
+SpellList(MAGEBUFF 79057 79039) # Arcane/Dalaran Brilliance
 Define(PRESENCEOFMIND 12043)
 Define(STOLENTIME 105785) # 2pT13 buff stacks up to 10 times
 
@@ -54,6 +55,7 @@ Define(ARCANEBARRAGE 44425)
 	SpellAddDebuff(ARCANEBARRAGE ARCANEBLASTDEBUFF=0)
 Define(ARCANEBLAST 30451)
 	SpellAddDebuff(ARCANEBLAST ARCANEBLASTDEBUFF=10)
+Define(ARCANEBRILLIANCE 1459)
 Define(ARCANEMISSILES 5143)
 	SpellAddDebuff(ARCANEMISSILES ARCANEBLASTDEBUFF=0 ARCANEMISSILEBUFF=0)
 Define(ARCANEPOWER 12042)
@@ -170,8 +172,14 @@ AddFunction UseProfessionActions
 # Arcane DPS rotation for maximum burst damage.
 AddFunction ArcaneDPS
 {
-	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
+	unless InCombat()
+	{
+		if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
+		if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
+	}
 
+	#/arcane_brilliance
+	unless BuffPresent(MAGEBUFF) Spell(ARCANEBRILLIANCE)
 	#/mage_armor
 	unless BuffPresent(MAGEARMOR) or BuffPresent(FROSTARMOR) Spell(MAGEARMOR)
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
@@ -215,8 +223,14 @@ AddFunction ArcaneDPS
 # to make use of mastery.
 AddFunction ArcaneDPM
 {
-	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
+	unless InCombat()
+	{
+		if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
+		if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
+	}
 
+	#/arcane_brilliance
+	unless BuffPresent(MAGEBUFF) Spell(ARCANEBRILLIANCE)
 	#/mage_armor
 	unless BuffPresent(MAGEARMOR) or BuffPresent(FROSTARMOR) Spell(MAGEARMOR)
 	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
@@ -401,6 +415,10 @@ AddIcon help=cd mastery=1
 ###
 AddIcon help=main mastery=2
 {
+	unless InCombat() if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
+
+	#/arcane_brilliance
+	unless BuffPresent(MAGEBUFF) Spell(ARCANEBRILLIANCE)
 	#/scorch,debuff=1
 	if TalentPoints(CRITICALMASSTALENT more 0) and TargetDebuffExpires(magicalcrittaken 6)
 	{
@@ -480,6 +498,11 @@ AddIcon help=mana mastery=2
 ###
 AddIcon help=main mastery=3
 {
+	unless InCombat() if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
+
+	#/arcane_brilliance
+	unless BuffPresent(MAGEBUFF) Spell(ARCANEBRILLIANCE)
+	#/water_elemental
 	if PetPresent(no) Spell(SUMMONWATERELEMENTAL)
 	if TalentPoints(DEEPFREEZETALENT more 0) and 1s before Spell(DEEPFREEZE)
 		unless BuffPresent(FINGERSOFFROST) Spell(PETFREEZE)
