@@ -500,8 +500,8 @@ AddFunction UseItemActionsDemonology
 	if TalentPoints(METAMORPHOSISTALENT less 1) or Spell(METAMORPHOSIS)
 	{
 		Item(HandsSlot usable=1)
-		Item(Trinket0Slot usable=1)
-		Item(Trinket1Slot usable=1)
+		unless List(trinket_cd0 000) Item(Trinket0Slot usable=1)
+		unless List(trinket_cd1 000) Item(Trinket1Slot usable=1)
 	}
 	if TalentPoints(METAMORPHOSISTALENT more 0)
 	{
