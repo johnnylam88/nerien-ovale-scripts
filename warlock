@@ -55,6 +55,9 @@ Define(POWERTORRENT 74241) # +500 int weapon enchant proc
 SpellList(VELOCITY 107982 109787 109789) # Insignia of the Corrupted Mind haste proc
 Define(VOLCANICDESTRUCTION 89091) # DMC: Volcano +1600 int proc
 
+# On-use trinket buffs for some commonly available 359+ trinkets.
+SpellList(ONUSETRINKETBUFF 73551 91019 97007 97008 100403 100612 102437 105134 107948)
+
 # Talents
 Define(BANETALENT 10938)
 Define(EMBERSTORMTALENT 11181)
@@ -198,13 +201,7 @@ Define(STONEFORM 20594) # dwarf
 	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
-Define(BOTTLEDWISHES 77114)
-	Define(ULTIMATEPOWER 107948) # +2290 sp
 Define(HEALTHSTONE 5512)
-Define(MOONWELLCHALICE 70142)
-	Define(BLESSINGOFTHEMOONWELL 100403) # +1700 mastery
-Define(SOULCASKET 58183)
-	Define(SOULPOWER 91019) # +1926 sp
 Define(SOULSTONE 5232)
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
@@ -228,14 +225,24 @@ AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) default)
 AddCheckBox(lightweave SpellName(LIGHTWEAVE))
 AddCheckBox(powertorrent SpellName(POWERTORRENT))
 
-# Trinkets from T13 raids or Twilight heroics or purchased with Valor or Justice Points.
-AddCheckBox(trinket_bottle "Bottled Wishes")
+# Commonly available trinkets with proc effects.
 AddCheckBox(trinket_dmcv "DMC: Volcano")
 AddCheckBox(trinket_foul "Foul Gift of the Demon Lord")
 AddCheckBox(trinket_iotcm "Insignia of the Corrupted Mind")
-AddCheckBox(trinket_mwc "Moonwell Chalice")
-AddCheckBox(trinket_soul "Soul Casket")
 AddCheckBox(trinket_wou "Will of Unbinding")
+
+# Special mastery trinket for Demonology.
+AddCheckBox(trinket_mwc "Moonwell Chalice")
+
+# Trinket CDs
+AddListItem(trinket_cd0 000 "Trinket 0 CD - none")
+AddListItem(trinket_cd0 060 "Trinket 0 CD - 1 min")
+AddListItem(trinket_cd0 090 "Trinket 0 CD - 1 min 30s")
+AddListItem(trinket_cd0 120 "Trinket 0 CD - 2 min")
+AddListItem(trinket_cd1 000 "Trinket 1 CD - none")
+AddListItem(trinket_cd1 060 "Trinket 1 CD - 1 min")
+AddListItem(trinket_cd1 090 "Trinket 1 CD - 1 min 30s")
+AddListItem(trinket_cd1 120 "Trinket 1 CD - 2 min")
 
 AddFunction UseItemActions
 {
@@ -262,7 +269,7 @@ AddFunction EnoughBuffsForDoomguard
 	#	- potion
 	#	- at least two proc effects
 	#	- at least one on-use trinket effect (either ready to use, or buff already present)
-	#	- at least 8 stacks from Will of Unbinding
+	#	- at least 2 stacks from Will of Unbinding at the start of the fight, or 8 stacks later.
 	#
 	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
@@ -275,10 +282,9 @@ AddFunction EnoughBuffsForDoomguard
 		or {{CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
 		or {{CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
 		or {{CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}}
-	and {{CheckBoxOn(trinket_bottle) and {Item(BOTTLEDWISHES) or BuffPresent(ULTIMATEPOWER)}}
-		or {CheckBoxOn(trinket_mwc) and {Item(MOONWELLCHALICE) or BuffPresent(BLESSINGOFTHEMOONWELL)}}
-		or {CheckBoxOn(trinket_soul) and {Item(SOULCASKET) or BuffPresent(SOULPOWER)}}}
-	and	{CheckBoxOn(trinket_wou) and BuffPresent(COMBATMIND stacks=8)}
+	and {{{List(trinket_cd0 060) or List(trinket_cd0 090) or List(trinket_cd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
+		or {{List(trinket_cd1 060) or List(trinket_cd1 090) or List(trinket_cd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
+	and	{CheckBoxOn(trinket_wou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
 }
 
 ###
@@ -499,13 +505,21 @@ AddFunction UseItemActionsDemonology
 	}
 	if TalentPoints(METAMORPHOSISTALENT more 0)
 	{
-		unless 60s before Spell(METAMORPHOSIS) Item(HandsSlot usable=1)
+		unless 60s before Spell(METAMORPHOSIS)
+		{
+			Item(HandsSlot usable=1)
+			if List(trinket_cd0 060) Item(Trinket0Slot usable=1)
+			if List(trinket_cd1 060) Item(Trinket1Slot usable=1)
+		}
 		unless 90s before Spell(METAMORPHOSIS)
-			if CheckBoxOn(trinket_bottle) Item(BOTTLEDWISHES usable=1)
+		{
+			if List(trinket_cd0 090) Item(Trinket0Slot usable=1)
+			if List(trinket_cd1 090) Item(Trinket1Slot usable=1)
+		}
 		unless 120s before Spell(METAMORPHOSIS)
 		{
-			if CheckBoxOn(trinket_mwc) Item(MOONWELLCHALICE usable=1)
-			if CheckBoxOn(trinket_soul) Item(SOULCASKET usable=1)
+			if List(trinket_cd0 120) Item(Trinket0Slot usable=1)
+			if List(trinket_cd1 120) Item(Trinket1Slot usable=1)
 		}
 	}
 }
