@@ -311,10 +311,14 @@ AddIcon size=small mastery=1
 # Main rotation.
 AddIcon help=main mastery=1
 {
-	if InCombat(no) and {BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)}
+	if InCombat(no)
 	{
-		Spell(FELARMOR)
-		Spell(DEMONARMOR)
+		if BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)
+		{
+			Spell(FELARMOR)
+			Spell(DEMONARMOR)
+		}
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
 
 	# Maintain raid buffs and debuffs.
@@ -543,10 +547,14 @@ AddIcon size=small mastery=2
 # Main rotation.
 AddIcon help=main mastery=2
 {
-	if InCombat(no) and {BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)}
+	if InCombat(no)
 	{
-		Spell(FELARMOR)
-		Spell(DEMONARMOR)
+		if BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)
+		{
+			Spell(FELARMOR)
+			Spell(DEMONARMOR)
+		}
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
 
 	# Maintain raid buffs and debuffs.
@@ -724,6 +732,7 @@ AddIcon help=main mastery=3
 			Spell(FELARMOR)
 			Spell(DEMONARMOR)
 		}
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 		if ArmorSetParts(T13 more 3)
 		{
 			#/soul_fire,if=buff.soulburn.up&!in_combat
