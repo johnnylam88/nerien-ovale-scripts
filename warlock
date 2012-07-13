@@ -247,8 +247,8 @@ AddListItem(trinket_cd1 120 "Trinket 1 CD - 2 min")
 AddFunction UseItemActions
 {
 	Item(HandsSlot usable=1)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
+	unless List(trinket_cd0 000) Item(Trinket0Slot usable=1)
+	unless List(trinket_cd1 000) Item(Trinket1Slot usable=1)
 }
 
 AddFunction UseProfessionActions
