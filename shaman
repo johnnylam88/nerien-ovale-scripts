@@ -380,11 +380,8 @@ AddIcon help=cd mastery=1
 
 AddIcon help=cd mastery=1
 {
-	if Spell(FIREELEMENTALTOTEM) and EnoughSpellpower()
-	{
-		#/fire_elemental_totem,if=!ticking
-		if ArmorSetParts(T12 more 1) and TotemExpires(fire 25) or TotemExpires(fire) Spell(FIREELEMENTALTOTEM)
-	}
+	#/fire_elemental_totem,if=!ticking
+	if EnoughSpellpower() Spell(FIREELEMENTALTOTEM)
 	#/earth_elemental_totem,if=!ticking
 	Spell(EARTHELEMENTALTOTEM)
 }
