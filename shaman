@@ -1,6 +1,6 @@
 ### Shaman Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/shaman/script
-### Version: 4.3.12
+### Version: 4.3.13
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000
@@ -226,7 +226,7 @@ AddFunction EnoughSpellpower
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
 		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
 		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}}
+		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)}
 			and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}
@@ -237,6 +237,7 @@ AddFunction EnoughSpellpower
 			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketiotcm)}
 		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
 			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
+		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
 	and {{{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
 		or {{List(trinketcd1 060) or List(trinketcd1 090) or List(trinketcd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
 	and	{CheckBoxOn(trinketwou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
