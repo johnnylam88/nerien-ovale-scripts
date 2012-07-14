@@ -226,29 +226,29 @@ AddCheckBox(lightweave SpellName(LIGHTWEAVE))
 AddCheckBox(powertorrent SpellName(POWERTORRENT))
 
 # Commonly available trinkets with proc effects.
-AddCheckBox(trinket_dmcv "DMC: Volcano")
-AddCheckBox(trinket_foul "Foul Gift of the Demon Lord")
-AddCheckBox(trinket_iotcm "Insignia of the Corrupted Mind")
-AddCheckBox(trinket_wou "Will of Unbinding")
+AddCheckBox(trinketdmcv "DMC: Volcano")
+AddCheckBox(trinketfoul "Foul Gift of the Demon Lord")
+AddCheckBox(trinketiotcm "Insignia of the Corrupted Mind")
+AddCheckBox(trinketwou "Will of Unbinding")
 
 # Special mastery trinket for Demonology.
-AddCheckBox(trinket_mwc "Moonwell Chalice")
+AddCheckBox(trinketmwc "Moonwell Chalice")
 
 # Trinket CDs
-AddListItem(trinket_cd0 000 "Trinket 0 CD - none")
-AddListItem(trinket_cd0 060 "Trinket 0 CD - 1 min")
-AddListItem(trinket_cd0 090 "Trinket 0 CD - 1 min 30s")
-AddListItem(trinket_cd0 120 "Trinket 0 CD - 2 min")
-AddListItem(trinket_cd1 000 "Trinket 1 CD - none")
-AddListItem(trinket_cd1 060 "Trinket 1 CD - 1 min")
-AddListItem(trinket_cd1 090 "Trinket 1 CD - 1 min 30s")
-AddListItem(trinket_cd1 120 "Trinket 1 CD - 2 min")
+AddListItem(trinketcd0 000 "Trinket 0 CD - none")
+AddListItem(trinketcd0 060 "Trinket 0 CD - 1 min")
+AddListItem(trinketcd0 090 "Trinket 0 CD - 1 min 30s")
+AddListItem(trinketcd0 120 "Trinket 0 CD - 2 min")
+AddListItem(trinketcd1 000 "Trinket 1 CD - none")
+AddListItem(trinketcd1 060 "Trinket 1 CD - 1 min")
+AddListItem(trinketcd1 090 "Trinket 1 CD - 1 min 30s")
+AddListItem(trinketcd1 120 "Trinket 1 CD - 2 min")
 
 AddFunction UseItemActions
 {
 	Item(HandsSlot usable=1)
-	unless List(trinket_cd0 000) Item(Trinket0Slot usable=1)
-	unless List(trinket_cd1 000) Item(Trinket1Slot usable=1)
+	unless List(trinketcd0 000) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000) Item(Trinket1Slot usable=1)
 }
 
 AddFunction UseProfessionActions
@@ -273,18 +273,29 @@ AddFunction EnoughBuffsForDoomguard
 	#
 	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)}}
-		or {{CheckBoxOn(trinket_dmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinket_foul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinket_iotcm) and BuffPresent(VELOCITY)}}}
-	and {{{List(trinket_cd0 060) or List(trinket_cd0 090) or List(trinket_cd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
-		or {{List(trinket_cd1 060) or List(trinket_cd1 090) or List(trinket_cd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
-	and	{CheckBoxOn(trinket_wou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)}
+			and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
+		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
+	and {{{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
+		or {{List(trinketcd1 060) or List(trinketcd1 090) or List(trinketcd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
+	and	{CheckBoxOn(trinketwou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
 }
 
 ###
@@ -500,26 +511,26 @@ AddFunction UseItemActionsDemonology
 	if TalentPoints(METAMORPHOSISTALENT less 1) or Spell(METAMORPHOSIS)
 	{
 		Item(HandsSlot usable=1)
-		unless List(trinket_cd0 000) Item(Trinket0Slot usable=1)
-		unless List(trinket_cd1 000) Item(Trinket1Slot usable=1)
+		unless List(trinketcd0 000) Item(Trinket0Slot usable=1)
+		unless List(trinketcd1 000) Item(Trinket1Slot usable=1)
 	}
 	if TalentPoints(METAMORPHOSISTALENT more 0)
 	{
 		unless 60s before Spell(METAMORPHOSIS)
 		{
 			Item(HandsSlot usable=1)
-			if List(trinket_cd0 060) Item(Trinket0Slot usable=1)
-			if List(trinket_cd1 060) Item(Trinket1Slot usable=1)
+			if List(trinketcd0 060) Item(Trinket0Slot usable=1)
+			if List(trinketcd1 060) Item(Trinket1Slot usable=1)
 		}
 		unless 90s before Spell(METAMORPHOSIS)
 		{
-			if List(trinket_cd0 090) Item(Trinket0Slot usable=1)
-			if List(trinket_cd1 090) Item(Trinket1Slot usable=1)
+			if List(trinketcd0 090) Item(Trinket0Slot usable=1)
+			if List(trinketcd1 090) Item(Trinket1Slot usable=1)
 		}
 		unless 120s before Spell(METAMORPHOSIS)
 		{
-			if List(trinket_cd0 120) Item(Trinket0Slot usable=1)
-			if List(trinket_cd1 120) Item(Trinket1Slot usable=1)
+			if List(trinketcd0 120) Item(Trinket0Slot usable=1)
+			if List(trinketcd1 120) Item(Trinket1Slot usable=1)
 		}
 	}
 }
@@ -539,7 +550,7 @@ AddIcon size=small mastery=2
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 
-	if CheckBoxOn(trinket_mwc)
+	if CheckBoxOn(trinketmwc)
 	{
 		#/summon_felguard,if=cooldown.demon_soul.remains<5&cooldown.metamorphosis.remains<5&!pet.felguard.active
 		unless pet.CreatureFamily(PETFELGUARD)
@@ -592,7 +603,7 @@ AddIcon help=main mastery=2
 	}
 	if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
 	{
-		if CheckBoxOn(trinket_mwc)
+		if CheckBoxOn(trinketmwc)
 		{
 			unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
 			{
@@ -600,7 +611,7 @@ AddIcon help=main mastery=2
 				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
-		if CheckBoxOff(trinket_mwc)
+		if CheckBoxOff(trinketmwc)
 		{
 			#/soul_fire,if=pet.felhunter.active&buff.soulburn.up
 			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
@@ -667,13 +678,13 @@ AddIcon help=main mastery=2
 			if SoulShards(more 0) Spell(SOULBURN)
 		if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
 		{
-			if CheckBoxOn(trinket_mwc)
+			if CheckBoxOn(trinketmwc)
 			{
 				#/soulburn,if=pet.felhunter.active&cooldown.metamorphosis.remains>60
 				unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
 					if SoulShards(more 0) Spell(SOULBURN)
 			}
-			if CheckBoxOff(trinket_mwc)
+			if CheckBoxOff(trinketmwc)
 			{
 				#/soulburn,if=pet.felhunter.active
 				if SoulShards(more 0) Spell(SOULBURN)
@@ -697,14 +708,14 @@ AddIcon help=cd mastery=2
 		UseRacialActions()
 		#/volcanic_potion,if=buff.metamorphosis.up
 		if CheckBoxOn(potions) and TargetClassification(worldboss) and BuffPresent(METAMORPHOSIS) Spell(VOLCANICPOTION)
-		if CheckBoxOn(trinket_mwc)
+		if CheckBoxOn(trinketmwc)
 		{
 			#/metamorphosis,if=buff.moonwell_chalice.up&pet.felguard.active
 			if BuffPresent(BLESSINGOFTHEMOONWELL) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
 			#/demon_soul,if=buff.metamorphosis.up
 			if BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
 		}
-		if CheckBoxOff(trinket_mwc)
+		if CheckBoxOff(trinketmwc)
 		{
 			#/metamorphosis
 			Spell(METAMORPHOSIS)
