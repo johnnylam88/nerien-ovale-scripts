@@ -28,6 +28,8 @@ Define(BLOODINTHEWATERTALENT 8341)
 Define(BARKSKIN 22812)
 	SpellInfo(BARKSKIN cd=60)
 	SpellAddBuff(BARKSKIN BARKSKIN=12)
+Define(BASH 5211)
+	SpellAddTargetDebuff(BASH BASH=4)
 Define(BERSERK 50334)
 	SpellInfo(BERSERK cd=180)
 Define(CLAW 16827)
@@ -148,6 +150,7 @@ AddFunction UseRacialActions
 ### Feral
 ###
 
+### Feral Bear
 AddFunction MainRotationBear
 {
 	if InCombat(no) and BuffExpires(PRIMARYSTATBUFF 400) Spell(MARKOFTHEWILD)
@@ -173,11 +176,16 @@ AddFunction MainRotationBear
 
 AddFunction CooldownsBear
 {
-	if TargetIsInterruptible() and TargetInRange(SKULLBASHBEAR) Spell(SKULLBASHBEAR)
+	if TargetIsInterruptible() and TargetInRange(SKULLBASHBEAR)
+	{
+		Spell(SKULLBASHBEAR)
+		unless TargetClassification(worldboss) Spell(BASH)
+	}
 	#/berserk
 	Spell(BERSERK)
 }
 
+### Feral Cat
 AddFunction AddComboPoint
 {
 	if CheckBoxOn(shred) Spell(SHRED)
@@ -323,6 +331,7 @@ AddIcon help=main mastery=2
 	{
 		MainRotationCat()
 
+		# Filler Shred/Mangle to generate combo points for finishers.
 		#/shred,if=position_back&(buff.tigers_fury.up|buff.berserk.up)
 		#/mangle_cat,if=position_front&(buff.tigers_fury.up|buff.berserk.up)
 		if BuffPresent(TIGERSFURY) and BuffPresent(BERSERK) AddComboPoint()
