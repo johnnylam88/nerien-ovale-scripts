@@ -201,34 +201,41 @@ AddFunction MainRotationCat
 		if ArmorSetParts(T13 more 3) and Mana(less 46) Spell(TIGERSFURY)
 		if ArmorSetParts(T13 less 4) and Mana(less 36) Spell(TIGERSFURY)
 	}
-	#/faerie_fire_feral,if=debuff.faerie_fire.stack<3|!(debuff.sunder_armor.up|debuff.expose_armor.up)
-	if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor mine=0)
-		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
 	unless TargetInRange(MANGLECAT) Texture(ability_druid_catformattack)
+	#/mangle_cat,if=set_bonus.tier11_4pc_melee&buff.t11_4pc_melee.remains<4
+	if ArmorSetParts(T11 more 3) and BuffExpires(STRENGTHOFTHEPANTHER 4) Spell(MANGLECAT)
+	#/faerie_fire_feral,if=debuff.faerie_fire.stack<3|!(debuff.sunder_armor.up|debuff.expose_armor.up)
+	if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor mine=0) and TargetDeadIn(more 15)
+		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
 	#/mangle_cat,if=debuff.mangle.remains<=2&(!debuff.mangle.up|debuff.mangle.remains>=0.0)
 	unless TargetDebuffPresent(bleed) Spell(MANGLECAT)
 	if CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1) Spell(MANGLECAT)
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&(buff.stampede_cat.remains<=1|buff.t13_4pc_melee.remains<=1)
-	if BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 1) Spell(RAVAGEBANG)
-	if TalentPoints(BLOODINTHEWATERTALENT more 0) and ExecuteRange() and TargetDebuffPresent(RIP mine=1)
+	#	Be slightly more generous with the window for consuming the Stampede buff with Ravage.
+	if BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 2) Spell(RAVAGEBANG)
+	if TalentPoints(BLOODINTHEWATERTALENT more 1) and ExecuteRange()
 	{
-		#/ferocious_bite,if=buff.combo_points.stack>=1&dot.rip.ticking&dot.rip.remains<=2.1&target.health_pct<=60
-		if ComboPoints(more 0) and TargetDebuffExpires(RIP 2.1 mine=1) Spell(FEROCIOUSBITE)
-		#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.ticking&target.health_pct<=60
-		if ComboPoints(more 4) Spell(FEROCIOUSBITE)
+		if TargetDebuffPresent(RIP mine=1)
+		{
+			#/ferocious_bite,if=buff.combo_points.stack>=1&dot.rip.ticking&dot.rip.remains<=2.1&target.health_pct<=60
+			if ComboPoints(more 0) and TargetDebuffExpires(RIP 2.1 mine=1) Spell(FEROCIOUSBITE)
+			#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.ticking&target.health_pct<=60
+			if ComboPoints(more 4) Spell(FEROCIOUSBITE)
+		}
 	}
 	#/shred,extend_rip=1,if=position_back&dot.rip.ticking&dot.rip.remains<=4
 	#/mangle_cat,extend_rip=1,if=position_front&dot.rip.ticking&dot.rip.remains<=4&target.health_pct>60
-	if Glyph(GLYPHOFBLOODLETTING) and Counter(ripshreds less 3) and TargetDebuffPresent(RIP mine=1) and TargetDebuffExpires(RIP 4 mine=1)
+	unless TalentPoints(BLOODINTHEWATERTALENT more 1) and ExecuteRange()
 	{
-		if TalentPoints(BLOODINTHEWATERTALENT less 2) or ExecuteRange() AddComboPoint()
+		if Glyph(GLYPHOFBLOODLETTING) and Counter(ripshreds less 3) and TargetDebuffPresent(RIP mine=1) and TargetDebuffExpires(RIP 4 mine=1)
+			AddComboPoint()
 	}
 	#/rip,if=buff.combo_points.stack>=5&target.time_to_die>=6&dot.rip.remains<2.0&\
 	#	(buff.berserk.up|dot.rip.remains<=cooldown.tigers_fury.remains)
 	if ComboPoints(more 4) and TargetDeadIn(more 6) and TargetDebuffExpires(RIP 2 mine=1)
 	{
 		if BuffPresent(BERSERK) Spell(RIP)
-		if target.debuffExpires(RIP mine=1) < spell(TIGERSFURY) Spell(RIP)
+		if {target.debuffExpires(RIP mine=1) < spell(TIGERSFURY)} Spell(RIP)
 	}
 	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>5.0&buff.savage_roar.remains>=3.0&buff.berserk.up
 	if ComboPoints(more 4) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) and BuffPresent(BERSERK) Spell(FEROCIOUSBITE)
@@ -245,17 +252,24 @@ AddFunction MainRotationCat
 	#/mangle_cat,if=position_front&buff.omen_of_clarity.react
 	if BuffPresent(CLEARCASTING) AddComboPoint()
 	#/savage_roar,if=buff.combo_points.stack>=1&buff.savage_roar.remains<=1
-	if ComboPoints(more 0) and BuffExpires(SAVAGEROAR 1) Spell(SAVAGEROAR)
+	#	Be slightly more generous with the window for refreshing Savage Roar.
+	if ComboPoints(more 0) and BuffExpires(SAVAGEROAR 2) Spell(SAVAGEROAR)
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&cooldown.tigers_fury.remains=0
 	if BuffPresent(STAMPEDE) and Spell(TIGERSFURY) Spell(RAVAGEBANG)
 	#/ferocious_bite,if=(target.time_to_die<=4&buff.combo_points.stack>=5)|target.time_to_die<=1
 	if {TargetDeadIn(less 4) and ComboPoints(more 4)} or TargetDeadIn(less 1) Spell(FEROCIOUSBITE)
 	if ComboPoints(more 4)
 	{
-		#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>=8.0&buff.savage_roar.remains>=4.0
-		if Level(less 81) and TargetDebuffPresent(RIP 8 mine=1) and BuffPresent(SAVAGEROAR 4) Spell(FEROCIOUSBITE)
-		#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>=14.0&buff.savage_roar.remains>=10.0
-		if Level(more 80) and TargetDebuffPresent(RIP 14 mine=1) and BuffPresent(SAVAGEROAR 10) Spell(FEROCIOUSBITE)
+		unless Level(more 80)
+		{
+			#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>=8.0&buff.savage_roar.remains>=4.0
+			if TargetDebuffPresent(RIP 8 mine=1) and BuffPresent(SAVAGEROAR 4) Spell(FEROCIOUSBITE)
+		}
+		if Level(more 80)
+		{
+			#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>=14.0&buff.savage_roar.remains>=10.0
+			if TargetDebuffPresent(RIP 14 mine=1) and BuffPresent(SAVAGEROAR 10) Spell(FEROCIOUSBITE)
+		}
 	}
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&!buff.omen_of_clarity.react&buff.tigers_fury.up&time_to_max_energy>1.0
 	if BuffPresent(STAMPEDE) and BuffExpires(CLEARCASTING) and BuffPresent(TIGERSFURY)
