@@ -1,6 +1,6 @@
 ### Shaman Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/shaman/script
-### Version: 4.3.13
+### Version: 4.3.14
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000
@@ -19,6 +19,8 @@ Define(MAELSTROMWEAPON 53817)
 SpellList(MANAREGENBUFF 5677 54424 79101) # Mana Spring Totem, Fel Intelligence, Blessing of Kings
 Define(POWERTORRENT 74241) # +500 int proc
 Define(RIPTIDEHOT 61295)
+SpellList(SPELLPOWERBUFF 52109 53646 77747 79057 79039) # Flametongue Totem, Demonic Pact, Totemic Wrath, Arcane Brilliance, Dalaran Brilliance
+
 Define(UNLEASHWIND 73681)
 
 # On-use trinket buffs for some commonly available 359+ trinkets.
@@ -172,8 +174,6 @@ AddCheckBox(powertorrent SpellName(POWERTORRENT) mastery=1)
 
 # Commonly available trinkets with proc effects for Elemental shamans.
 AddCheckBox(trinketdmcv "DMC: Volcano" mastery=1)
-AddCheckBox(trinketfoul "Foul Gift of the Demon Lord" mastery=1)
-AddCheckBox(trinketiotcm "Insignia of the Corrupted Mind" mastery=1)
 AddCheckBox(trinketwou "Will of Unbinding" mastery=1)
 
 # Trinket CDs
@@ -219,25 +219,11 @@ AddFunction EnoughSpellpower
 	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
-		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)}
-			and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}
-			and CheckBoxOff(lightweave) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
-		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}
-			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
-		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}
-			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketiotcm)}
-		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
-			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
-		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv)}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and CheckBoxOff(lightweave) and CheckBoxOff(trinketdmcv)}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent)}
+		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv)}}
 	and {{{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
 		or {{List(trinketcd1 060) or List(trinketcd1 090) or List(trinketcd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
 	and	{CheckBoxOn(trinketwou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
@@ -509,6 +495,10 @@ AddIcon help=cd mastery=2
 
 AddIcon help=buff size=small mastery=3
 {
+	if TotemExpires(fire)
+	{
+		unless BuffPresent(SPELLPOWERBUFF) Spell(FLAMETONGUETOTEM)
+	}
 	if TotemExpires(earth)
 	{
 		unless BuffPresent(ARMORBUFF) Spell(STONESKINTOTEM)
