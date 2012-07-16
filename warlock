@@ -426,6 +426,7 @@ AddIcon help=offgcd mastery=1
 			or 1.5s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
 			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
+			or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
 		{
 			#/soul_fire,if=buff.soulburn.up
 			if ArmorSetParts(T13 more 3) and SoulShards(more 0) Spell(SOULBURN)
