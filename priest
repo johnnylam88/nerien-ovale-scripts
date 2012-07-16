@@ -83,11 +83,21 @@ ScoreSpells(MINDBLAST SHADOWWORDPAIN VAMPIRICTOUCH DEVOURINGPLAGUE MINDFLAY SHAD
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) default)
 
+# Trinket CDs
+AddListItem(trinketcd0 000 "Trinket 0 CD - none" default)
+AddListItem(trinketcd0 060 "Trinket 0 CD - 1 min")
+AddListItem(trinketcd0 090 "Trinket 0 CD - 1 min 30s")
+AddListItem(trinketcd0 120 "Trinket 0 CD - 2 min")
+AddListItem(trinketcd1 000 "Trinket 1 CD - none" default)
+AddListItem(trinketcd1 060 "Trinket 1 CD - 1 min")
+AddListItem(trinketcd1 090 "Trinket 1 CD - 1 min 30s")
+AddListItem(trinketcd1 120 "Trinket 1 CD - 2 min")
+
 AddFunction UseItemActions
 {
 	Item(HandsSlot usable=1)
-	Item(Trinket0Slot usable=1)
-	Item(Trinket1Slot usable=1)
+	unless List(trinketcd0 000) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000) Item(Trinket1Slot usable=1)
 }
 
 AddFunction UseProfessionActions
