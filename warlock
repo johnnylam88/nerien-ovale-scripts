@@ -7,8 +7,6 @@
 #	glyphs=haunt/corruption/unstable_affliction/life_tap/shadow_bolt
 #
 #	- If using Succubus, then macro Demon Soul into Shadow Bolt.
-#	- If Bane talent is maxed, then macro Soulburn into Soul Fire.
-# 	- If Bane talent isn't maxed, then macro Soulburn into Drain Life.
 #
 # Demonology:
 #	talents=http://www.wowhead.com/talent#warlock-00300000000000000033212223003102122110320200000000000000
@@ -17,8 +15,6 @@
 # Destruction:
 #	talents=http://www.wowhead.com/talent#warlock-00300000000000000003202000000000000003320202312201312211
 #	glyphs=immolate/imp/conflagrate/life_tap
-#
-#	- Soulburn should be macroed into Soul Fire.
 #
 # All specs:
 #	- Potions, Demon Soul, and on-use trinkets should be macroed into Summon Doomguard/Infernal.
@@ -398,7 +394,7 @@ AddIcon help=main mastery=1
 	if ManaPercent(less 95) Spell(LIFETAP)
 }
 
-# Soulburn & Soul Fire.
+# Soulburn Actions.
 AddIcon help=offgcd mastery=1
 {
 	unless {TargetDeadIn(more 8)
@@ -473,13 +469,10 @@ AddIcon help=cd mastery=1
 			or 1.5s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
 			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
-			or {ArmorSetParts(T13 more 3) and SoulShards(more 0)}
 		{
 			if TalentPoints(BANETALENT more 2)
 			{
 				unless ManaPercent(less 35)
-					or {ArmorSetParts(T13 less 4) and SoulShards(more 0)
-						and BuffExpires(DEMONSOULSUCCUBUS) and BuffExpires(DEMONSOULFELHUNTER)}
 				{
 					#/demon_soul
 					if pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
@@ -648,7 +641,7 @@ AddIcon help=main mastery=2
 	if ManaPercent(less 95) Spell(LIFETAP)
 }
 
-# Soulburn & Soul Fire.
+# Soulburn Actions.
 AddIcon help=main mastery=2
 {
 	unless {TargetDeadIn(more 8)
@@ -822,7 +815,7 @@ AddIcon help=main mastery=3
 	if ManaPercent(less 95) Spell(LIFETAP)
 }
 
-# Soulburn & Soul Fire.
+# Soulburn Actions.
 AddIcon help=offgcd mastery=3
 {
 	unless {TargetDeadIn(more 8)
