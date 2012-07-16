@@ -237,11 +237,11 @@ AddIcon help=cd mastery=1
 	#if ( talents.overkill -> rank() ) { /stealth }
 	if TalentPoints(OVERKILLTALENT more 0) unless InCombat() or Stealthed() Spell(STEALTH)
 	#/tolvir_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 	#/kick
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#init_use_item_actions()
 	UseItemActions()
 	#init_use_profession_actions()
@@ -293,11 +293,11 @@ AddIcon help=main mastery=2
 AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 	#/kick
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#init_use_item_actions()
 	UseItemActions()
 	#init_use_profession_actions()
@@ -413,11 +413,11 @@ AddIcon help=cd mastery=3
 AddIcon help=cd mastery=3
 {
 	#/tolvir_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 	#/kick
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
 	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)

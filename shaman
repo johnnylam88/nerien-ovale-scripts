@@ -356,12 +356,12 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 AddIcon help=cd mastery=1
 {
 	#/volcanic_potion,if=!in_combat
-	if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(VOLCANICPOTION)
 	if IsFeared() Spell(TREMORTOTEM)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
 	#/use_item
 	UseItemActionsElemental()
 	#init_use_profession_actions()
@@ -468,12 +468,12 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
-	if CheckBoxOn(potions) unless InCombat() Item(POTIONOFTHETOLVIR)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 	if IsFeared() Spell(TREMORTOTEM)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(POTIONOFTHETOLVIR)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
 	#/use_item
 	UseItemActions()
 	#init_use_profession_actions()
@@ -542,13 +542,9 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 
 AddIcon help=cd mastery=3
 {
-	#/tolvir_potion,if=!in_combat
-	if CheckBoxOn(potions) unless InCombat() Item(POTIONOFTHETOLVIR)
 	if IsFeared() Spell(TREMORTOTEM)
 	#/wind_shear
 	if TargetIsInterruptible(yes) Spell(WINDSHEAR)
-	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(POTIONOFTHETOLVIR)
 	if Speed(more 0) Spell(SPIRITWALKERSGRACE)
 	#/spiritwalkers_grace,moving=1
 	Spell(SPIRITLINKTOTEM)

@@ -107,8 +107,6 @@ Define(STONEFORM 20594) # dwarf
 	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
-Define(EARTHENPOTION 58090)
-	Define(EARTHENPOTIONSPELL 80478)
 Define(GOLEMBLOODPOTION 58146)
 	Define(GOLEMBLOODPOTIONSPELL 80496)
 
@@ -121,7 +119,6 @@ AddCheckBox(aoe L(AOE) default)
 AddListItem(hpability inquisition SpellName(INQUISITION) mastery=2 default)
 AddListItem(hpability shieldoftherighteous SpellName(SHIELDOFTHERIGHTEOUS) mastery=2)
 AddListItem(hpability wordofglory SpellName(WORDOFGLORY) mastery=2)
-AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=2)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=3 default)
 AddCheckBox(consecration SpellName(CONSECRATION) default)
 
@@ -262,7 +259,6 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 
 AddIcon help=cd size=small mastery=2
 {
-	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	unless List(hpability wordofglory) if HolyPower(more 2) Spell(WORDOFGLORY)
 	Spell(HOLYSHIELD)
@@ -340,10 +336,10 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 AddIcon help=cd mastery=3
 {
 	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(GOLEMBLOODPOTION)
 	if TargetIsInterruptible() and TargetInRange(REBUKE) Spell(REBUKE)
 	#/golemblood_potion,if=buff.bloodlust.react
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(GOLEMBLOODPOTION)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(GOLEMBLOODPOTION)
 	#/use_item
 	UseItemActions()
 	#init_use_profession_actions()

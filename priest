@@ -179,14 +179,14 @@ AddIcon help=main mastery=3
 AddIcon help=cd mastery=3
 {
 	#/volcanic_potion,if=!in_combat
-	if CheckBoxOn(potions) unless InCombat() Item(VOLCANICPOTION)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(VOLCANICPOTION)
 	if TargetIsInterruptible(yes) Spell(SILENCE)
 	#init_use_item_actions()
 	UseItemActions()
 	#init_use_profession_actions()
 	UseProfessionActions()
 	#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
-	if CheckBoxOn(potions) and {BuffPresent(heroism) or TargetDeadIn(less 41)} Item(VOLCANICPOTION)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
 	#init_use_racial_actions()
 	UseRacialActions()
 	#/archangel,if=buff.dark_evangelism.stack>=5&dot.vampiric_touch.remains>5&dot.devouring_plague.remains>5

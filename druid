@@ -294,7 +294,7 @@ AddFunction CooldownsCat
 		if InCombat(no)
 		{
 			#/tolvir_potion,if=!in_combat
-			if CheckBoxOn(potions) Item(POTIONOFTHETOLVIR)
+			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 		}
 		#/skull_bash_cat
 		if TargetIsInterruptible() and TargetInRange(SKULLBASHCAT) Spell(SKULLBASHCAT)
@@ -311,7 +311,7 @@ AddFunction CooldownsCat
 				}
 			}
 			#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
-			if BuffPresent(heroism) or TargetDeadIn(less 40) Item(POTIONOFTHETOLVIR)
+			if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
 			#/berserking
 			UseRacialActions()
 			UseItemActions()

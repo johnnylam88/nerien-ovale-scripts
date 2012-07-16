@@ -168,8 +168,6 @@ Define(STONEFORM 20594) # dwarf
 	SpellAddBuff(STONEFORM STONEFORM=8)
 
 # Items
-Define(EARTHENPOTION 58090)
-	Define(EARTHENPOTIONSPELL 80478)
 Define(GOLEMBLOODPOTION 58146)
 	Define(GOLEMBLOODPOTIONSPELL 80496)
 
@@ -184,7 +182,6 @@ AddCheckBox(sunder SpellName(SUNDERARMOR) default)
 AddCheckBox(dancing SpellName(BERSERKERSTANCE) default mastery=1)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=1 default)
 AddCheckBox(potions SpellName(GOLEMBLOODPOTIONSPELL) mastery=2 default)
-AddCheckBox(potions SpellName(EARTHENPOTIONSPELL) mastery=3)
 AddCheckBox(revenge SpellName(REVENGE) mastery=3)
 AddCheckBox(reflect SpellName(SPELLREFLECTION) mastery=3)
 AddListItem(shout none L(None))
@@ -365,7 +362,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 AddIcon help=cd mastery=1
 {
 	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(GOLEMBLOODPOTION)
 	if Stance(2)
 	{
 		Spell(SHIELDBLOCK usable=1)
@@ -375,7 +372,7 @@ AddIcon help=cd mastery=1
 	if IsFeared() or IsIncapacitated() Spell(BERSERKERRAGE)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.recklessness.up|target.time_to_die<26
-	if CheckBoxOn(potions) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(RECKLESSNESS) or TargetDeadIn(less 26)} Item(GOLEMBLOODPOTION)
 	#/use_item
 	UseItemActions()
 	#init_use_profession_actions()
@@ -568,7 +565,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 AddIcon help=cd mastery=2
 {
 	#/golemblood_potion,if=!in_combat
-	unless InCombat() if CheckBoxOn(potions) Item(GOLEMBLOODPOTION)
+	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(GOLEMBLOODPOTION)
 	if Stance(2)
 	{
 		Spell(SHIELDBLOCK usable=1)
@@ -578,7 +575,7 @@ AddIcon help=cd mastery=2
 	if IsFeared() or IsIncapacitated() Spell(BERSERKERRAGE)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
 	#/golemblood_potion,if=buff.bloodlust.react
-	if CheckBoxOn(potions) and BuffPresent(heroism) Item(GOLEMBLOODPOTION)
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and BuffPresent(heroism) Item(GOLEMBLOODPOTION)
 	#/use_item
 	UseItemActions()
 	#init_use_profession_actions()
@@ -709,7 +706,6 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 
 AddIcon help=cd size=small mastery=3
 {
-	unless InCombat() if CheckBoxOn(potions) Item(EARTHENPOTION)
 	if IsFeared() or IsIncapacitated() Spell(BERSERKERRAGE)
 	if CheckBoxOn(reflect) and HasShield() and TargetIsInterruptible() and TargetTargetIsPlayer() Spell(SPELLREFLECTION)
 	if TargetIsInterruptible() and TargetInRange(PUMMEL) Spell(PUMMEL)
