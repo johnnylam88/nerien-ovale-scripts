@@ -152,8 +152,6 @@ AddFunction MainRotationBear
 {
 	if InCombat(no) and BuffExpires(PRIMARYSTATBUFF 400) Spell(MARKOFTHEWILD)
 
-	#/mark_of_the_wild
-	unless BuffPresent(PRIMARYSTATBUFF) Spell(MARKOFTHEWILD)
 	#/faerie_fire_feral,if=!debuff.faerie_fire.up
 	if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor 0 mine=0)
 		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
@@ -195,8 +193,6 @@ AddFunction MainRotationCat
 {
 	if InCombat(no) and BuffExpires(PRIMARYSTATBUFF 400) Spell(MARKOFTHEWILD)
 
-	#/mark_of_the_wild
-	unless BuffPresent(PRIMARYSTATBUFF) Spell(MARKOFTHEWILD)
 	#/feral_charge_cat,if=!in_combat
 	if TargetInRange(FERALCHARGECAT) Spell(FERALCHARGECAT)
 	#/tigers_fury,if=energy<=45&(!buff.omen_of_clarity.react)
