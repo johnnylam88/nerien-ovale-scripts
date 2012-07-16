@@ -26,7 +26,7 @@
 ## defines ##
 
 # Localization: replace the following definitions with the corresponding localized name for warlock pet families.
-# English
+## English (enUS)
 Define(PETFELGUARD Felguard)
 Define(PETFELHUNTER Felhunter)
 Define(PETIMP Imp)
@@ -316,11 +316,7 @@ AddIcon size=small mastery=1
 	if InCombat(no)
 	{
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
-		if ItemCount(HEALTHSTONE less 1)
-		{
-			Spell(RITUALOFSOULS)
-			Spell(CREATEHEALTHSTONE)
-		}
+		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 }
@@ -376,19 +372,14 @@ AddIcon help=main mastery=1
 	#/shadowflame
 	if TargetDistance(less 8) Spell(SHADOWFLAME)
 	#/soul_fire,if=buff.soulburn.up
-	if ArmorSetParts(T13 more 3)
-		if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+	if ArmorSetParts(T13 more 3) and BuffPresent(SOULBURN) Spell(SOULFIRE)
 	if TalentPoints(BANETALENT more 2)
 	{
 		#/life_tap,mana_percentage<=35
 		if ManaPercent(less 35) Spell(LIFETAP)
 		if ArmorSetParts(T13 less 4)
 		{
-			#/soulburn,if=buff.demon_soul_succubus.down
-			#/soulburn,if=buff.demon_soul_felhunter.down
 			#/soul_fire,if=buff.soulburn.up
-			unless BuffPresent(DEMONSOULSUCCUBUS) or BuffPresent(DEMONSOULFELHUNTER)
-				if SoulShards(more 0) and Spell(SOULBURN) Spell(SOULFIRE)
 			if BuffPresent(SOULBURN) Spell(SOULFIRE)
 		}
 		#/shadow_bolt
@@ -407,7 +398,7 @@ AddIcon help=main mastery=1
 	if ManaPercent(less 95) Spell(LIFETAP)
 }
 
-# Soulburn.
+# Soulburn & Soul Fire.
 AddIcon help=offgcd mastery=1
 {
 	unless {TargetDeadIn(more 8)
@@ -429,7 +420,7 @@ AddIcon help=offgcd mastery=1
 			or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
 		{
 			#/soul_fire,if=buff.soulburn.up
-			if ArmorSetParts(T13 more 3) and SoulShards(more 0) Spell(SOULBURN)
+			if ArmorSetParts(T13 more 3) and SoulShards(more 0) and Spell(SOULBURN) Spell(SOULFIRE)
 			if TalentPoints(BANETALENT more 2)
 			{
 				unless ManaPercent(less 35)
@@ -438,8 +429,9 @@ AddIcon help=offgcd mastery=1
 					{
 						#/soulburn,if=buff.demon_soul_succubus.down
 						#/soulburn,if=buff.demon_soul_felhunter.down
+						#/soul_fire,if=buff.soulburn.up
 						unless BuffPresent(DEMONSOULSUCCUBUS) or BuffPresent(DEMONSOULFELHUNTER)
-							if SoulShards(more 0) Spell(SOULBURN)
+							if SoulShards(more 0) and Spell(SOULBURN) Spell(SOULFIRE)
 					}
 				}
 			}
@@ -543,11 +535,7 @@ AddIcon size=small mastery=2
 	{
 		unless pet.CreatureFamily(PETFELGUARD) Spell(SUMMONFELGUARD)
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
-		if ItemCount(HEALTHSTONE less 1)
-		{
-			Spell(RITUALOFSOULS)
-			Spell(CREATEHEALTHSTONE)
-		}
+		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 
@@ -565,9 +553,9 @@ AddIcon size=small mastery=2
 	}
 	#/felguard:felstorm
 	if pet.CreatureFamily(PETFELGUARD) and TargetInRange(PETLEGIONSTRIKE yes) Spell(PETFELSTORM)
+	#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
 	#/summon_felhunter,if=!pet.felguard.dot.felstorm.ticking&pet.felguard.active
-	if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM)
-		if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SUMMONFELHUNTER)
+	if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM) Spell(SUMMONFELHUNTER)
 }
 
 # Main rotation.
@@ -606,16 +594,14 @@ AddIcon help=main mastery=2
 	{
 		if CheckBoxOn(trinketmwc)
 		{
+			#/soul_fire,if=pet.felhunter.active&buff.soulburn.up&cooldown.metamorphosis.remains>60
 			unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
-			{
-				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up&cooldown.metamorphosis.remains>60
-				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
-			}
+				if BuffPresent(SOULBURN) Spell(SOULFIRE)
 		}
 		if CheckBoxOff(trinketmwc)
 		{
 			#/soul_fire,if=pet.felhunter.active&buff.soulburn.up
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			if BuffPresent(SOULBURN) Spell(SOULFIRE)
 		}
 	}
 	#/immolate,if=!ticking&target.time_to_die>=4&miss_react
@@ -662,7 +648,7 @@ AddIcon help=main mastery=2
 	if ManaPercent(less 95) Spell(LIFETAP)
 }
 
-# Soulburn.
+# Soulburn & Soul Fire.
 AddIcon help=main mastery=2
 {
 	unless {TargetDeadIn(more 8)
@@ -675,22 +661,26 @@ AddIcon help=main mastery=2
 			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
 	{
 		#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
+		#/summon_felhunter,if=!pet.felguard.dot.felstorm.ticking&pet.felguard.active
 		if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM)
-			if SoulShards(more 0) Spell(SOULBURN)
+			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SUMMONFELHUNTER)
 		if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
 		{
 			if CheckBoxOn(trinketmwc)
 			{
 				#/soulburn,if=pet.felhunter.active&cooldown.metamorphosis.remains>60
+				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up&cooldown.metamorphosis.remains>60
 				unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
-					if SoulShards(more 0) Spell(SOULBURN)
+					if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 			if CheckBoxOff(trinketmwc)
 			{
 				#/soulburn,if=pet.felhunter.active
-				if SoulShards(more 0) Spell(SOULBURN)
+				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up
+				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
+	}
 }
 
 # Long CDs.
@@ -739,11 +729,7 @@ AddIcon size=small mastery=3
 	if InCombat(no)
 	{
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
-		if ItemCount(HEALTHSTONE less 1)
-		{
-			Spell(RITUALOFSOULS)
-			Spell(CREATEHEALTHSTONE)
-		}
+		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 }
@@ -762,14 +748,14 @@ AddIcon help=main mastery=3
 		if ArmorSetParts(T13 more 3)
 		{
 			#/soul_fire,if=buff.soulburn.up&!in_combat
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			if BuffPresent(SOULBURN) Spell(SOULFIRE)
 		}
 		unless ArmorSetParts(T13 more 3)
 		{
 			if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
 			{
 				#/soul_fire,if=buff.soulburn.up&!in_combat
-				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+				if BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
 		# Queue highest damage spell to land when OOC.
@@ -813,7 +799,7 @@ AddIcon help=main mastery=3
 	if ArmorSetParts(T13 more 3)
 	{
 		#/soul_fire,if=buff.soulburn.up
-		if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+		if BuffPresent(SOULBURN) Spell(SOULFIRE)
 	}
 	if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
 	{
@@ -836,7 +822,7 @@ AddIcon help=main mastery=3
 	if ManaPercent(less 95) Spell(LIFETAP)
 }
 
-# Soulburn.
+# Soulburn & Soul Fire.
 AddIcon help=offgcd mastery=3
 {
 	unless {TargetDeadIn(more 8)
@@ -849,14 +835,17 @@ AddIcon help=offgcd mastery=3
 		if ArmorSetParts(T13 more 3)
 		{
 			#/soulburn
-			if SoulShards(more 0) Spell(SOULBURN)
+			#/soul_fire,if=buff.soulburn.up&!in_combat
+			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 		}
 		unless ArmorSetParts(T13 more 3)
 		{
 			if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
 			{
 				#/soulburn,if=buff.bloodlust.down
-				unless BuffPresent(heroism) if SoulShards(more 0) Spell(SOULBURN)
+				#/soul_fire,if=buff.soulburn.up&!in_combat
+				unless BuffPresent(heroism)
+					if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
 	}
@@ -887,8 +876,8 @@ AddIcon help=main mastery=3
 ###
 ### Summon Doomguard.
 ###
-AddIcon help=cd size=small
+AddIcon help=cd
 {
 	#/summon_doomguard,if=time>10
-	if TimeInCombat(more 10) and EnoughBuffsForDoomguard() Spell(SUMMONDOOMGUARD)
+	if EnoughBuffsForDoomguard() Spell(SUMMONDOOMGUARD)
 }
