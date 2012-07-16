@@ -204,6 +204,7 @@ AddFunction MainRotationCat
 	#/faerie_fire_feral,if=debuff.faerie_fire.stack<3|!(debuff.sunder_armor.up|debuff.expose_armor.up)
 	if CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor mine=0)
 		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
+	unless TargetInRange(MANGLECAT) Texture(ability_druid_catformattack)
 	#/mangle_cat,if=debuff.mangle.remains<=2&(!debuff.mangle.up|debuff.mangle.remains>=0.0)
 	unless TargetDebuffPresent(bleed) Spell(MANGLECAT)
 	if CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1) Spell(MANGLECAT)
