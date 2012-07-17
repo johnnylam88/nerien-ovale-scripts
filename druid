@@ -407,9 +407,14 @@ AddIcon help=main mastery=2
 {
 	if Stance(1) # bear
 	{
-		#/maul,if=rage>=75
-		#	In practice, rage>45 is sufficient to avoid rage starvation with typical damage intake.
-		if Mana(more 45) Spell(MAUL)
+		# Use Maul when rage>45 unless Frenzied Regeneration is active and we're relying
+		# on the self-healing, in which case use Maul when rage>75 so we don't rage-starve.
+		#
+		if {BuffPresent(FRENZIEDREGENERATION) and Glyph(GLYPHOFFRENZIEDREGENERATION no)}
+			and Mana(more 75) or Mana(more 45)
+		{
+			Spell(MAUL)
+		}
 	}
 	if Stance(3) # cat
 	{
