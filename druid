@@ -5,6 +5,8 @@
 # Feral:
 #	talents=http://www.wowhead.com/talent#druid-000000000000000000002320322312011021222301020301000000000000000
 #	glyphs=rip/bloodletting/berserk
+#
+#	- Berserk should be macroed into Tiger's Fury.
 
 ## defines ##
 
@@ -340,7 +342,7 @@ AddFunction CooldownsCat
 			and {{ArmorSetParts(T13 more 3) and Mana(less 46)} or {ArmorSetParts(T13 less 4) and Mana(less 36)}}}
 		{
 			#/berserk,if=buff.tigers_fury.up|(target.time_to_die<25&cooldown.tigers_fury.remains>6)
-			if BuffPresent(TIGERSFURY) Spell(BERSERK)
+			if BuffPresent(TIGERSFURY) or 1s before Spell(TIGERSFURY) Spell(BERSERK)
 			unless 6s before Spell(TIGERSFURY)
 				if {Glyph(GLYPHOFBERSERK) and TargetDeadIn(less 25)} or TargetDeadIn(less 15) Spell(BERSERK)
 			#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
