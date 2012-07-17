@@ -305,7 +305,7 @@ AddIcon size=small mastery=1
 		if Glyph(GLYPHOFLASHOFPAIN) Spell(SUMMONSUCCUBUS)
 		if Glyph(GLYPHOFIMP) Spell(SUMMONIMP)
 		Spell(SUMMONFELHUNTER)
-		Spell(SUMMONIMP)
+		if Level(less 30) Spell(SUMMONIMP)
 	}
 	if InCombat(no)
 	{
