@@ -1,6 +1,6 @@
 ### Shaman Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/shaman/script
-### Version: 4.3.14
+### Version: 4.3.15
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000
@@ -16,7 +16,7 @@
 SpellList(ARMORBUFF 465 8072) # Devotion Aura, Stoneskin Totem
 Define(LIGHTWEAVE 75170) # +580 int proc
 Define(MAELSTROMWEAPON 53817)
-SpellList(MANAREGENBUFF 5677 54424 79101) # Mana Spring Totem, Fel Intelligence, Blessing of Kings
+SpellList(MANAREGENBUFF 5677 54424 79102) # Mana Spring Totem, Fel Intelligence, Blessing of Might
 Define(POWERTORRENT 74241) # +500 int proc
 Define(RIPTIDEHOT 61295)
 SpellList(SPELLPOWERBUFF 52109 53646 77747 79057 79039) # Flametongue Totem, Demonic Pact, Totemic Wrath, Arcane Brilliance, Dalaran Brilliance
