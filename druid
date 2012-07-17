@@ -237,14 +237,14 @@ AddFunction MainRotationCat
 	unless TargetDebuffPresent(bleed) Spell(MANGLECAT)
 	if CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1) Spell(MANGLECAT)
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&(buff.stampede_cat.remains<=1|buff.t13_4pc_melee.remains<=1)
-	#	Leafkiller: increase window for consuming Stampede buff with Ravage! to 3s
+	#	[Leafkiller] increase window for consuming Stampede buff with Ravage! by 2s
 	if BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 3) Spell(RAVAGEBANG)
 	if TalentPoints(BLOODINTHEWATERTALENT more 1) and ExecuteRange()
 	{
 		if TargetDebuffPresent(RIP mine=1)
 		{
 			#/ferocious_bite,if=buff.combo_points.stack>=1&dot.rip.ticking&dot.rip.remains<=2.1&target.health_pct<=60
-			#	Leafkiller: use 2.9s window to refresh Rip with FB (BiTW) due to game lag.
+			#	[Leafkiller] use 2.9s window to refresh Rip with FB (BiTW) due to game lag.
 			if ComboPoints(more 0) and TargetDebuffExpires(RIP 2.9 mine=1) Spell(FEROCIOUSBITE)
 			#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.ticking&target.health_pct<=60
 			if ComboPoints(more 4) Spell(FEROCIOUSBITE)
@@ -262,7 +262,7 @@ AddFunction MainRotationCat
 	if ComboPoints(more 4) and TargetDeadIn(more 6) and TargetDebuffExpires(RIP 2 mine=1)
 	{
 		if BuffPresent(BERSERK) Spell(RIP)
-		# Leafkiller: increase window for waiting on Tiger's Fury to reapply Rip by 1.9s
+		# [Leafkiller] increase window for waiting on Tiger's Fury to reapply Rip by 1.9s
 		if {target.debuffExpires(RIP mine=1) + 1.9 < spell(TIGERSFURY)} Spell(RIP)
 	}
 	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>5.0&buff.savage_roar.remains>=3.0&buff.berserk.up
@@ -271,8 +271,8 @@ AddFunction MainRotationCat
 	if TargetDeadIn(more 8.5) and BuffPresent(TIGERSFURY) and TargetDebuffExpires(RAKE 9 mine=1) Spell(RAKE)
 	#/rake,if=target.time_to_die>=dot.rake.remains&dot.rake.remains<3.0&\
 	#	(buff.berserk.up|energy>=71|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains)
-	# Leafkiller: Only refresh Rake if the target will live long enough for almost all ticks to complete,
-	#	and don't delay Rake to wait on Tiger's Fury to come off of cooldown.
+	#	[Leafkiller] only refresh Rake if the target will live long enough for almost all ticks to complete,
+	#		and don't delay Rake to wait on Tiger's Fury to come off of cooldown
 	if TargetDeadIn(more 8.4) and TargetDebuffExpires(RAKE 2.9 mine=1)
 	{
 		if BuffPresent(BERSERK) or Mana(more 70) Spell(RAKE)
@@ -282,7 +282,7 @@ AddFunction MainRotationCat
 	#/mangle_cat,if=position_front&buff.omen_of_clarity.react
 	if BuffPresent(CLEARCASTING) AddComboPoint()
 	#/savage_roar,if=buff.combo_points.stack>=1&buff.savage_roar.remains<=1
-	#	Be slightly more generous with the window for refreshing Savage Roar.
+	#	[Leafkiller] increase window for refreshing Savage Roar by 1s
 	if ComboPoints(more 0) and BuffExpires(SAVAGEROAR 2) Spell(SAVAGEROAR)
 	if CheckBoxOn(leafkiller)
 	{
