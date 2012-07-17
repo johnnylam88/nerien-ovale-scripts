@@ -199,8 +199,6 @@ AddFunction CooldownsBear
 		if TargetInRange(SKULLBASHBEAR) Spell(SKULLBASHBEAR)
 		unless TargetClassification(worldboss) if TargetInRange(BASH) Spell(BASH)
 	}
-	#/berserk
-	Spell(BERSERK)
 }
 
 ### Feral Cat
@@ -359,6 +357,7 @@ AddIcon size=small mastery=2
 	if Stance(1) # bear
 	{
 		Spell(ENRAGE)
+		Spell(BERSERK)
 	}
 	if Stance(3) # cat
 	{
