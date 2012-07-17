@@ -200,44 +200,47 @@ AddIcon help=main mastery=1
 	if Stealthed() Spell(GARROTE)
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	unless BuffPresent(SLICEANDDICE) if ComboPoints(more 0) Spell(SLICEANDDICE)
-	#if ( ! talents.cut_to_the_chase -> rank() )
-	unless TalentPoints(CUTTOTHECHASETALENT more 0)
+	#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
+	unless TalentPoints(CUTTOTHECHASETALENT more 0) or Mana(more 59) or BuffPresent(SLICEANDDICE 5)
 	{
-		#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
-		if Mana(less 60) and BuffExpires(SLICEANDDICE 5) and ComboPoints(more 0) Spell(SLICEANDDICE nored=1)
-		#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
-		if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
-	}
-	#if ( talents.vendetta -> rank() ) { /rupture,if=(!ticking|ticks_remain<2)&time<6 }
-	if TalentPoints(VENDETTATALENT more 0)
-	{
-		if TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) and ComboPoints(more 0) Spell(RUPTURE)
-	}
-	#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
-	if TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) and ComboPoints(more 0) Spell(RUPTURE)
-	#/envenom,if=combo_points>=4&buff.envenom.down
-	if ComboPoints(more 3) and BuffExpires(ENVENOM 0) Spell(ENVENOM)
-	#/envenom,if=combo_points>=4&energy>90
-	if ComboPoints(more 3) and Mana(more 90) Spell(ENVENOM)
-	#/envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
-	if ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3) Spell(ENVENOM)
-	if TalentPoints(MURDEROUSINTENTTALENT more 0)
-	{
-		#/backstab,if=combo_points<5&target.health_pct<35
-		if ComboPoints(less 5) and TargetLifePercent(less 35) Spell(BACKSTAB)
+		unless TalentPoints(CUTTOTHECHASETALENT more 0)
+		{
+			#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
+			if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
+		}
+		if TalentPoints(VENDETTATALENT more 0)
+		{
+			#/rupture,if=(!ticking|ticks_remain<2)&time<6
+			if TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) and ComboPoints(more 0) Spell(RUPTURE)
+		}
+		#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
+		if TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) and ComboPoints(more 0) Spell(RUPTURE)
+		#/envenom,if=combo_points>=4&buff.envenom.down
+		if ComboPoints(more 3) and BuffExpires(ENVENOM 0) Spell(ENVENOM)
+		#/envenom,if=combo_points>=4&energy>90
+		if ComboPoints(more 3) and Mana(more 90) Spell(ENVENOM)
+		#/envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
+		if ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3) Spell(ENVENOM)
+		if TalentPoints(MURDEROUSINTENTTALENT more 0)
+		{
+			#/backstab,if=combo_points<5&target.health_pct<35
+			#/mutilate,if=position_front&combo_points<5&target.health_pct<35
+			if ComboPoints(less 5) and TargetLifePercent(less 35) Spell(BACKSTAB)
+		}
 		#/mutilate,if=combo_points<4&target.health_pct>=35
-		if ComboPoints(less 4) and TargetLifePercent(more 35) Spell(MUTILATE)
-	}
-	unless TalentPoints(MURDEROUSINTENTTALENT more 0)
 		if ComboPoints(less 4) Spell(MUTILATE)
+	}
 }
 
 AddIcon help=cd mastery=1
 {
-	#if ( talents.overkill -> rank() ) { /stealth }
-	if TalentPoints(OVERKILLTALENT more 0) unless InCombat() or Stealthed() Spell(STEALTH)
-	#/tolvir_potion,if=!in_combat
-	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
+	if InCombat(no)
+	{
+		#/stealth
+		if TalentPoints(OVERKILLTALENT more 0) and Stealthed(no) Spell(STEALTH)
+		#/tolvir_potion,if=!in_combat
+		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
+	}
 	#/kick
 	if TargetIsInterruptible() and TargetInRange(KICK) Spell(KICK)
 	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<30
@@ -250,12 +253,41 @@ AddIcon help=cd mastery=1
 	UseRacialActions()
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
-	#/vendetta (after opening SnD is up)
-	unless TargetDebuffPresent(VENDETTA) if BuffPresent(SLICEANDDICE) Spell(VENDETTA)
-	#/cold_blood,sync=envenom
-	if ComboPoints(more 0) and Spell(ENVENOM) Spell(COLDBLOOD)
-	#if ( talents.overkill -> rank() ) { /vanish,if=time>30&energy>50 }
-	if TalentPoints(OVERKILLTALENT more 0) and TimeInCombat(more 30) and Mana(more 50) unless BuffPresent(OVERKILL) Spell(VANISH)
+	unless TalentPoints(CUTTOTHECHASETALENT less 1) and Mana(less 59) and BuffExpires(SLICEANDDICE 5)
+	{
+		unless {TalentPoints(CUTTOTHECHASETALENT less 1) and ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2)}
+			or {TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) and ComboPoints(more 0)}
+		{
+			#/vendetta
+			unless TargetDebuffPresent(VENDETTA) Spell(VENDETTA)
+		}
+		#/rupture,if=(!ticking|ticks_remain<2)&buff.slice_and_dice.remains>6
+		unless TargetDebuffExpires(RUPTURE 2 mine=1) and BuffPresent(SLICEANDDICE 6) and ComboPoints(more 0)
+		{
+			#/cold_blood,sync=envenom
+			if {ComboPoints(more 3) and BuffExpires(ENVENOM 0)}
+				or {ComboPoints(more 3) and Mana(more 90)}
+				or {ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3)}
+			{
+				if 1s before Spell(ENVENOM)
+				{
+					Spell(COLDBLOOD)
+				}
+			}
+			if TalentPoints(OVERKILLTALENT more 0) and BuffExpires(OVERKILL)
+			{
+				unless {ComboPoints(more 3) and BuffExpires(ENVENOM 0)}
+					or {ComboPoints(more 3) and Mana(more 90)}
+					or {ComboPoints(more 1) and BuffExpires(SLICEANDDICE 3)}
+					or {TalentPoints(MURDEROUSINTENTTALENT more 0) and {ComboPoints(less 5) and TargetLifePercent(less 35)}}
+					or ComboPoints(less 4)
+				{
+					#/vanish,if=time>30&energy>50
+					if TimeInCombat(more 30) and Mana(more 50) Spell(VANISH)
+				}
+			}
+		}
+	}
 }
 
 ###
@@ -278,9 +310,12 @@ AddIcon help=main mastery=2
 	unless TargetInRange(SHIV) Texture(ability_dualwield)
 	#/eviscerate,if=combo_points=5&buff.bandits_guile.stack>=12
 	if TalentPoints(BANDITSGUILETALENT more 0) and ComboPoints(more 4) and BuffPresent(DEEPINSIGHT) Spell(EVISCERATE)
-	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10 (EJ says Rupture is only worth using if target is bleeding)
+	#/rupture,if=!ticking&combo_points=5&target.time_to_die>10
 	unless TargetDebuffPresent(RUPTURE mine=1) or BuffPresent(BLADEFLURRY)
+	{
+		# ElitistJerks says Rupture is only worth using if target is has a debuff that increases bleed damage taken.
 		if TargetDebuffPresent(bleed) and ComboPoints(more 4) and TargetDeadIn(more 10) Spell(RUPTURE)
+	}
 	#/eviscerate,if=combo_points=5
 	if ComboPoints(more 4) Spell(EVISCERATE)
 	#/revealing_strike,if=combo_points=4&buff.revealing_strike.down
@@ -311,17 +346,26 @@ AddIcon help=cd mastery=2
 		if ArmorSetParts(T13 more 1)
 			unless BuffPresent(ADRENALINERUSH) or BuffPresent(KILLINGSPREE) Spell(TRICKSOFTHETRADE)
 	}
-	#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down (EJ recommends waiting for Deep Insight)
-	if Mana(less 35) and BuffPresent(SLICEANDDICE 4)
+	unless BuffExpires(SLICEANDDICE 2) and ComboPoints(more 0)
 	{
-		unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME)
-			if CheckBoxOff(ejcombat) or BuffPresent(DEEPINSIGHT) Spell(KILLINGSPREE)
-	}
-	#/adrenaline_rush,if=energy<35 (EJ recommends waiting for Moderate or Deep Insight)
-	if Mana(less 35)
-	{
-		unless BuffPresent(KILLINGSPREE) or BuffPresent(TRICKSOFTIME)
-			if CheckBoxOff(ejcombat) or BuffPresent(MODERATEINSIGHT) or BuffPresent(DEEPINSIGHT) Spell(ADRENALINERUSH)
+		#/killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down
+		if Mana(less 35) and BuffPresent(SLICEANDDICE 4)
+		{
+			unless BuffPresent(ADRENALINERUSH) or BuffPresent(TRICKSOFTIME)
+			{
+				# ElitistJerks recommends waiting for Deep Insight.
+				if CheckBoxOff(ejcombat) or BuffPresent(DEEPINSIGHT) Spell(KILLINGSPREE)
+			}
+		}
+		#/adrenaline_rush,if=energy<35
+		if Mana(less 35)
+		{
+			unless BuffPresent(KILLINGSPREE) or BuffPresent(TRICKSOFTIME)
+			{
+				# ElitistJerks recommends waiting for Moderate or Deep Insight.
+				if CheckBoxOff(ejcombat) or BuffPresent(MODERATEINSIGHT) or BuffPresent(DEEPINSIGHT) Spell(ADRENALINERUSH)
+			}
+		}
 	}
 }
 
@@ -377,11 +421,9 @@ AddIcon help=main mastery=3
 	{
 		#/backstab,if=combo_points<5&energy>80
 		if ComboPoints(less 5) and Mana(more 80) Spell(BACKSTAB)
-		# Fallback Backstab to prevent energy capping
-		if 1.5s before Mana(more 99) Spell(BACKSTAB)
 	}
-	# We only get here if we're at 4CP or about to cap on energy.
-	if CheckBoxOn(honoramongthieves) and 1.5s before Mana(more 99) Spell(BACKSTAB)
+	# Fallback Backstab to prevent energy capping
+	if 1s before Mana(more 99) Spell(BACKSTAB)
 }
 
 AddIcon help=cd mastery=3
@@ -401,8 +443,9 @@ AddIcon help=cd mastery=3
 		{
 			Spell(VANISH)
 		}
-		unless TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
-			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
+		unless {TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
+				and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)}
+			or {ComboPoints(less 5) and {Stealthed() or BuffPresent(SHADOWDANCE)}}
 		{
 			#/preparation,if=cooldown.vanish.remains>60
 			unless 60s before Spell(VANISH) Spell(PREPARATION)
