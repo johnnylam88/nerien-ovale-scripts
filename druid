@@ -42,6 +42,7 @@ Define(FAERIEFIRE 770)
 	SpellAddTargetDebuff(FAERIEFIRE FAERIEFIREDEBUFF=300)
 Define(FAERIEFIREFERAL 16857)
 	SpellAddTargetDebuff(FAERIEFIREFERAL FAERIEFIREDEBUFF=300)
+Define(FERALCHARGECAT 49376)
 Define(FEROCIOUSBITE 22568)
 	SpellInfo(FEROCIOUSBITE combo=-5 mana=70)
 Define(FRENZIEDREGENERATION 22842)
@@ -353,12 +354,10 @@ AddFunction CooldownsCat
 					or {ArmorSetParts(T13 less 4) and Mana(less 36)}}}
 		{
 			#/berserk,if=buff.tigers_fury.up|(target.time_to_die<25&cooldown.tigers_fury.remains>6)
-			if BuffPresent(TIGERSFURY)
+			if BuffPresent(TIGERSFURY) Spell(BERSERK)
+			unless 6s before Spell(TIGERSFURY)
 			{
-				unless 6s before Spell(TIGERSFURY)
-				{
-					if {Glyph(GLYPHOFBERSERK) and TargetDeadIn(less 25)} or TargetDeadIn(less 15) Spell(BERSERK)
-				}
+				if {Glyph(GLYPHOFBERSERK) and TargetDeadIn(less 25)} or TargetDeadIn(less 15) Spell(BERSERK)
 			}
 			#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
 			if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
