@@ -313,11 +313,9 @@ AddFunction MainRotationCat
 		}
 	}
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&!buff.omen_of_clarity.react&buff.tigers_fury.up&time_to_max_energy>1.0
-	if BuffPresent(STAMPEDE)
-	{
-		if CheckBoxOn(leafkiller) or {BuffExpires(CLEARCASTING) and BuffPresent(TIGERSFURY)}
-			unless 1s before Mana(more 99) Spell(RAVAGEBANG)
-	}
+	#	[Leafkiller] these Stampede procs are from using Tiger's Fury, so we don't need to check that TF is up.
+	if BuffPresent(STAMPEDE) and BuffExpires(CLEARCASTING)
+		unless 1s before Mana(more 99) Spell(RAVAGEBANG)
 	#/mangle_cat,if=set_bonus.tier11_4pc_melee&buff.t11_4pc_melee.stack<3
 	if ArmorSetParts(T11 more 3)
 		unless BuffPresent(STRENGTHOFTHEPANTHER stacks=3) Spell(MANGLECAT)
