@@ -6,8 +6,6 @@
 #	talents=http://www.wowhead.com/talent#warlock-22322200301332132103000000000000000003300000000000000000
 #	glyphs=haunt/corruption/unstable_affliction/life_tap/shadow_bolt
 #
-#	- If using Succubus, then macro Demon Soul into Shadow Bolt.
-#
 # Demonology:
 #	talents=http://www.wowhead.com/talent#warlock-00300000000000000033212223003102122110320200000000000000
 #	glyphs=metamorphosis/immolate/incinerate/life_tap/shadow_bolt
@@ -354,10 +352,17 @@ AddIcon help=main mastery=1
 		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
 		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
 	}
-	#/haunt
-	Spell(HAUNT)
-	#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
-	if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
+	# This condition is from interrupt_if in Drain Soul action below and interrupts Drain Soul
+	# to maintain stacks of Combat Mind from Will of Unbinding.
+	if {TalentPoints(SOULSIPHONTALENT more 0)
+			and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)}}
+		or player.IsCasting(no DRAINSOUL)
+	{
+		#/haunt
+		Spell(HAUNT)
+		#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
+		if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
+	}
 	if TalentPoints(SOULSIPHONTALENT more 0)
 	{
 		#/drain_soul,interrupt=1,if=target.health_pct<=25,\
@@ -410,8 +415,11 @@ AddIcon help=offgcd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or 1.5s before Spell(HAUNT)
-			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
+			or {{{TalentPoints(SOULSIPHONTALENT more 0)
+					and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)}}
+					or player.IsCasting(no DRAINSOUL)}
+				and {1.5s before Spell(HAUNT)
+					or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}}}
 			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
 			or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
 		{
