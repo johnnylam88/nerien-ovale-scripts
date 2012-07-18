@@ -19,7 +19,7 @@ Define(MAELSTROMWEAPON 53817)
 SpellList(MANAREGENBUFF 5677 54424 79102) # Mana Spring Totem, Fel Intelligence, Blessing of Might
 Define(POWERTORRENT 74241) # +500 int proc
 Define(RIPTIDEHOT 61295)
-SpellList(SPELLPOWERBUFF 52109 53646 77747 79057 79039) # Flametongue Totem, Demonic Pact, Totemic Wrath, Arcane Brilliance, Dalaran Brilliance
+SpellList(SPELLPOWERBUFF 52109 53646 77747 79038 79058) # Flametongue Totem, Demonic Pact, Totemic Wrath, Arcane Brilliance, Dalaran Brilliance
 Define(UNLEASHWIND 73681)
 
 # On-use trinket buffs for some commonly available 359+ trinkets.
