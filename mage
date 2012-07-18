@@ -25,7 +25,7 @@ Define(FINGERSOFFROST 44544)
 	SpellInfo(FINGERSOFFROST duration=14)
 Define(HOTSTREAK 48108)
 Define(IMPROVEDMANAGEM 83098)
-SpellList(MAGEBUFF 79057 79039) # Arcane/Dalaran Brilliance
+SpellList(MAGEBUFF 79038 79058) # Dalaran Brilliance, Arcane Brilliance
 Define(PRESENCEOFMIND 12043)
 Define(STOLENTIME 105785) # 2pT13 buff stacks up to 10 times
 
@@ -156,13 +156,6 @@ AddListItem(trinketcd1 060 "Trinket 1 CD - 1 min")
 AddListItem(trinketcd1 090 "Trinket 1 CD - 1 min 30s")
 AddListItem(trinketcd1 120 "Trinket 1 CD - 2 min")
 
-# Separate out the full Arcane rotation into "burn" (DPS) rotation and "hover" (DPM)
-# rotation to allow the player to choose when to enter each part of the rotation.
-# Show a +/- icon between the two rotations to show which rotation is optimal, with
-# "+" meaning use the burn (left) rotation, and "-" meaning to use the hover (right)
-# rotation.
-AddCheckBox(separate "Separate DPS/DPM rotations" mastery=1)
-
 AddFunction UseItemActions
 {
 	Item(HandsSlot usable=1)
@@ -179,8 +172,10 @@ AddFunction UseProfessionActions
 ### Arcane
 ###
 
-# Arcane DPS rotation for maximum burst damage.
-AddFunction ArcaneDPS
+# Preliminary actions shared by both DPS and DPM rotations that manage mana buffs,
+# Evocation, and Mana Gems.
+#
+AddFunction ArcaneManaActions
 {
 	unless InCombat()
 	{
@@ -196,24 +191,34 @@ AddFunction ArcaneDPS
 	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 
 	#/evocation,if=((max_mana>max_mana_nonproc&mana_pct_nonproc<=40)|(max_mana=max_mana_nonproc&mana_pct<=35))&target.time_to_die>10
-	if ManaPercent(less 35) and TargetDeadIn(more 10) Spell(EVOCATION)
-	#if ( ! talents.presence_of_mind -> rank() )
-	#	{ /conjure_mana_gem,if=cooldown.evocation.remains<20&target.time_to_die>105&mana_gem_charges=0 }
+	if ManaPercent(less 36) and TargetDeadIn(more 10) Spell(EVOCATION)
 	if TalentPoints(PRESENCEOFMINDTALENT equal 0)
-		if 20s before Spell(EVOCATION) and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM equal 0 charges=1)
-			Spell(CONJUREMANAGEM)
+	{
+		#/conjure_mana_gem,if=cooldown.evocation.remains<20&target.time_to_die>105&mana_gem_charges=0
+		if 20s before Spell(EVOCATION) and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
+	}
 	#/arcane_torrent,if=mana_pct<91&(buff.arcane_power.up|target.time_to_die<120)
 	if ManaPercent(less 91) and {BuffPresent(ARCANEPOWER) or TargetDeadIn(less 120)} Spell(ARCANETORRENTMANA)
-	#if ( set_bonus.tier13_4pc_caster() )
-	#	/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
-	#else
-	#	/mana_gem,if=buff.arcane_blast.stack=4
-	if ArmorSetParts(T13 more 3) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
-		if BuffPresent(STOLENTIME stacks=7) and Spell(ARCANEPOWER) and TargetDeadIn(less 50)
-			Item(MANAGEMITEM)
-	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
+	if ArmorSetParts(T13 more 3)
+	{
+		#/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
+		if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) and BuffPresent(STOLENTIME stacks=7)
+			if Spell(ARCANEPOWER) or TargetDeadIn(less 50) Item(MANAGEMITEM)
+	}
+	unless ArmorSetParts(T13 more 3)
+	{
+		#/mana_gem,if=buff.arcane_blast.stack=4
+		if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
+	}
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
 	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > item(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
+}
+
+# Arcane DPS rotation for maximum burst damage.
+AddFunction ArcaneDPS
+{
+	ArcaneManaActions()
+
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
@@ -229,43 +234,11 @@ AddFunction ArcaneDPS
 	Spell(ARCANEBLAST)
 }
 
-# Arcane DPM rotation for mana-efficient damage by keeping mana level high
-# to make use of mastery.
+# Arcane DPM rotation for mana-efficient damage by keeping mana level high to make use of mastery.
 AddFunction ArcaneDPM
 {
-	unless InCombat()
-	{
-		if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
-		if BuffExpires(MAGEARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MAGEARMOR)
-	}
+	ArcaneManaActions()
 
-	#/arcane_brilliance
-	unless BuffPresent(MAGEBUFF) Spell(ARCANEBRILLIANCE)
-	#/mage_armor
-	unless BuffPresent(MAGEARMOR) or BuffPresent(FROSTARMOR) Spell(MAGEARMOR)
-	#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
-	unless InCombat() if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
-
-	#/evocation,if=((max_mana>max_mana_nonproc&mana_pct_nonproc<=40)|(max_mana=max_mana_nonproc&mana_pct<=35))&target.time_to_die>10
-	if ManaPercent(less 35) and TargetDeadIn(more 10) Spell(EVOCATION)
-	#if ( ! talents.presence_of_mind -> rank() )
-	#	{ /conjure_mana_gem,if=cooldown.evocation.remains<20&target.time_to_die>105&mana_gem_charges=0 }
-	if TalentPoints(PRESENCEOFMINDTALENT equal 0)
-		if 20s before Spell(EVOCATION) and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM equal 0 charges=1)
-			Spell(CONJUREMANAGEM)
-	#/arcane_torrent,if=mana_pct<91&(buff.arcane_power.up|target.time_to_die<120)
-	if ManaPercent(less 91) and {BuffPresent(ARCANEPOWER) or TargetDeadIn(less 120)} Spell(ARCANETORRENTMANA)
-	#if ( set_bonus.tier13_4pc_caster() )
-	#	/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
-	#else
-	#	/mana_gem,if=buff.arcane_blast.stack=4
-	if ArmorSetParts(T13 more 3) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
-		if BuffPresent(STOLENTIME stacks=7) and Spell(ARCANEPOWER) and TargetDeadIn(less 50)
-			Spell(MANAGEMITEM)
-	unless ArmorSetParts(T13 more 3) if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
-	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
-	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > item(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1)
-		Spell(CONJUREMANAGEM)
 	if Speed(more 0)
 	{
 		#/arcane_barrage,moving=1
@@ -277,41 +250,64 @@ AddFunction ArcaneDPM
 	}
 	#/arcane_blast,if=buff.presence_of_mind.up
 	if BuffPresent(PRESENCEOFMIND) Spell(ARCANEBLAST)
-	#if ( set_bonus.tier13_4pc_caster() )
-	#	/arcane_blast,if=target.time_to_die<20|\
-	#		((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)|\
-	#		(buff.arcane_power.up&mana_pct_nonproc>88)
-	#else
-	#	/arcane_blast,if=target.time_to_die<20|\
-	#		((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
-	if TargetDeadIn(less 20) Spell(ARCANEBLAST)
-	if {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)} and ManaPercent(more 22)
+	if ArmorSetParts(T13 more 3)
 	{
-		if ArmorSetParts(T13 more 3) and BuffPresent(ARCANEPOWER) and ManaPercent(more 88) Spell(ARCANEBLAST)
-		unless ArmorSetParts(T13 more 3) Spell(ARCANEBLAST)
+		#/arcane_blast,if=target.time_to_die<20|\
+		#	((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)|\
+		#	(buff.arcane_power.up&mana_pct_nonproc>88)
+		if TargetDeadIn(less 20) Spell(ARCANEBLAST)
+		if {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)} and ManaPercent(more 21) Spell(ARCANEBLAST)
+		if BuffPresent(ARCANEPOWER) and ManaPercent(more 88) Spell(ARCANEBLAST)
+	}
+	unless ArmorSetParts(T13 more 3)
+	{
+		#/arcane_blast,if=target.time_to_die<20|\
+		#	((cooldown.evocation.remains<=20|buff.improved_mana_gem.up|cooldown.mana_gem.remains<5)&mana_pct>=22)
+		if TargetDeadIn(less 20) Spell(ARCANEBLAST)
+		if {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)} and ManaPercent(more 21) Spell(ARCANEBLAST)
 	}
 	#/arcane_blast,if=buff.arcane_blast.remains<0.8&buff.arcane_blast.stack=4
-	unless Speed(more 0) if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
+	if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4)
+		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=5) Spell(ARCANEBLAST)
 	#/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
 	#/arcane_missiles,if=mana_pct_nonproc<93&buff.arcane_missiles.react&mage_armor_timer>2
 	if ManaPercent(less 93) and BuffPresent(ARCANEMISSILEBUFF) Spell(ARCANEMISSILES)
 	#/arcane_barrage,if=mana_pct_nonproc<87&buff.arcane_blast.stack=2
-	if ManaPercent(less 87) and DebuffPresent(ARCANEBLASTDEBUFF stacks=2) unless DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
+	if ManaPercent(less 87) and DebuffPresent(ARCANEBLASTDEBUFF stacks=2)
+		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
 	#/arcane_barrage,if=mana_pct_nonproc<90&buff.arcane_blast.stack=3
-	if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3) unless DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
+	if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3)
+		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
 	#/arcane_barrage,if=mana_pct_nonproc<92&buff.arcane_blast.stack=4
-	if ManaPercent(less 92) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
+	if ManaPercent(less 92) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
+		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=5) Spell(ARCANEBARRAGE)
 	#/arcane_blast
 	Spell(ARCANEBLAST)
 }
 
-# Complete Arcane spell rotation.
-AddIcon help=main mastery=1 checkboxoff=separate
+# Separate out the full Arcane rotation into "hover" (DPM) rotation and "burn" (DPS)
+# rotation to allow the player to choose when to enter each part of the rotation.
+# Show a left/right icon between the two rotations to show which rotation is optimal,
+# with the hover rotation to the left and burn rotation to the right.
+#
+Define(ARCANEDPM misc_arrowleft)
+Define(ARCANEDPS misc_arrowright)
+
+# DPM "hover" rotation icon
+AddIcon help=main mastery=1
+{
+	ArcaneDPM()
+}
+
+# Left/right arrow icon to show which rotation icon to follow.
+AddIcon mastery=1
 {
 	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
 	#    cooldown.evocation.remains+15<target.time_to_die
 	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		ArcaneDPS()
+	{
+		Texture(ARCANEDPS)
+	}
 
 	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
 	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
@@ -319,50 +315,23 @@ AddIcon help=main mastery=1 checkboxoff=separate
 	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
 		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
-		ArcaneDPM()
+	{
+		Texture(ARCANEDPM)
+	}
 
 	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
 	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
-		ArcaneDPS()
+	{
+		Texture(ARCANEDPS)
+	}
 
-	ArcaneDPM()
+	Texture(ARCANEDPM)
 }
 
-# Separate DPS "burn" rotation
-AddIcon help=main mastery=1 checkboxon=separate
+# DPS "burn" rotation icon.
+AddIcon help=main mastery=1
 {
 	ArcaneDPS()
-}
-
-# Copy of the complete Arcane spell rotation but with textures instead of functions.
-# "+" is for DPS rotation: Texture(Spell_chargepositive)
-# "-" is for DPM rotation: Texture(Spell_chargenegative)
-AddIcon mastery=1 checkboxon=separate
-{
-	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
-	#    cooldown.evocation.remains+15<target.time_to_die
-	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Spell_chargepositive)
-
-	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
-	#    (target.time_to_die>60|burn_mps*((target.time_to_die-5)-cooldown.evocation.remains)>max_mana_nonproc)&\
-	#    cooldown.evocation.remains+15<target.time_to_die
-	if 20s before Spell(EVOCATION) and ManaPercent(less 22)
-		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
-		and {spell(EVOCATION) + 15 < target.timeToDie()}
-		Texture(Spell_chargenegative)
-
-	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
-	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
-		Texture(Spell_chargepositive)
-
-	Texture(Spell_chargenegative)
-}
-
-# Separate DPM "hover" rotation
-AddIcon help=main mastery=1 checkboxon=separate
-{
-	ArcaneDPM()
 }
 
 AddIcon help=cd mastery=1
@@ -380,34 +349,32 @@ AddIcon help=cd mastery=1
 	#/volcanic_potion,if=buff.improved_mana_gem.up|target.time_to_die<=50
 	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 50)} Item(VOLCANICPOTION)
 	#/use_item,name=shard_of_woe,if=buff.improved_mana_gem.up|cooldown.evocation.remains>90|target.time_to_die<=50
-	#if BuffPresent(IMPROVEDMANAGEM) or {spell(EVOCATION) > 90} or TargetDeadIn(less 51) Item(SHARDOFWOE)
+	#if BuffPresent(IMPROVEDMANAGEM) or {spell(EVOCATION) > 90} or TargetDeadIn(less 50) Item(SHARDOFWOE)
 	#/flame_orb,if=target.time_to_die>=10
-	if TargetDeadIn(more 9) Spell(FLAMEORB)
+	if TargetDeadIn(more 10) Spell(FLAMEORB)
 	#/blood_fury,if=buff.improved_mana_gem.up|target.time_to_die<=50
 	if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 50) Spell(BLOODFURY)
 	#/berserking,if=buff.arcane_power.up|cooldown.arcane_power.remains>20
 	if BuffPresent(ARCANEPOWER) Spell(BERSERKING)
 	unless 20s before Spell(ARCANEPOWER) Spell(BERSERKING)
-	#if ( talents.arcane_power -> rank() )
-	#	if ( set_bonus.tier13_4pc_caster() )
-	#		/arcane_power,if=(buff.improved_mana_gem.up&buff.tier13_2pc.stack>=9)|\
-	#			(buff.tier13_2pc.stack>=10&cooldown.mana_gem.remains>30&cooldown.evocation.remains>10)|\
-	#			target.time_to_die<=50
-	#	else
-	#		/arcane_power,if=buff.improved_mana_gem.up|target.time_to_die<=50
-	#	/mirror_image,if=buff.arcane_power.up|(cooldown.arcane_power.remains>20&target.time_to_die>15)
-	#else
-	#	/mirror_image
 	if TalentPoints(ARCANEPOWERTALENT more 0)
 	{
-		if TargetDeadIn(less 51) Spell(ARCANEPOWER)
-		if TalentPoints(ARCANEPOWERTALENT more 0)
+		if ArmorSetParts(T13 more 3)
 		{
+			#/arcane_power,if=(buff.improved_mana_gem.up&buff.tier13_2pc.stack>=9)|\
+			#	(buff.tier13_2pc.stack>=10&cooldown.mana_gem.remains>30&cooldown.evocation.remains>10)|\
+			#	target.time_to_die<=50
 			if BuffPresent(IMPROVEDMANAGEM) and BuffPresent(STOLENTIME stacks=9) Spell(ARCANEPOWER)
 			if BuffPresent(STOLENTIME stacks=10)
 				unless 30s before Item(MANAGEMITEM) or 10s before Spell(EVOCATION) Spell(ARCANEPOWER)
+			if TargetDeadIn(less 50) Spell(ARCANEPOWER)
 		}
-		unless TalentPoints(ARCANEPOWERTALENT more 0) if BuffPresent(IMPROVEDMANAGEM) Spell(ARCANEPOWER)
+		unless ArmorSetParts(T13 more 3)
+		{
+			#/arcane_power,if=buff.improved_mana_gem.up|target.time_to_die<=50
+			if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 50) Spell(ARCANEPOWER)
+		}
+		#/mirror_image,if=buff.arcane_power.up|(cooldown.arcane_power.remains>20&target.time_to_die>15)
 		if CheckBoxOn(mirrorimage)
 		{
 			if BuffPresent(ARCANEPOWER) Spell(MIRRORIMAGE)
@@ -415,7 +382,10 @@ AddIcon help=cd mastery=1
 		}
 	}
 	unless TalentPoints(ARCANEPOWERTALENT more 0)
+	{
+		#/mirror_image
 		if CheckBoxOn(mirrorimage) Spell(MIRRORIMAGE)
+	}
 	#/presence_of_mind
 	Spell(PRESENCEOFMIND)
 }
@@ -441,8 +411,11 @@ AddIcon help=main mastery=2
 	#/pyroblast_hs,if=buff.hot_streak.react
 	if BuffPresent(HOTSTREAK) Spell(PYROBLAST)
 	if TalentPoints(FIRESTARTERTALENT more 0) and Speed(more 0) Spell(SCORCH)
-	#if ( glyphs.frostfire -> ok() ) { /frostfire_bolt }
-	if Glyph(GLYPHOFFROSTFIRE) Spell(FROSTFIREBOLT usable=1)
+	if Glyph(GLYPHOFFROSTFIRE)
+	{
+		#/frostfire_bolt
+		Spell(FROSTFIREBOLT usable=1)
+	}
 	#/fireball
 	Spell(FIREBALL usable=1)
 	#/scorch
@@ -475,9 +448,9 @@ AddIcon help=cd mastery=2
 		if CheckBoxOn(stolentime) and ArmorSetParts(T13 more 3) and BuffPresent(STOLENTIME stacks=8) Spell(COMBUSTION)
 	}
 	#/mirror_image,if=target.time_to_die>=25
-	if CheckBoxOn(mirrorimage) and TargetDeadIn(more 24) Spell(MIRRORIMAGE)
+	if CheckBoxOn(mirrorimage) and TargetDeadIn(more 25) Spell(MIRRORIMAGE)
 	#/flame_orb,if=target.time_to_die>=12
-	if TargetDeadIn(more 11) Spell(FLAMEORB)
+	if TargetDeadIn(more 12) Spell(FLAMEORB)
 }
 
 AddIcon help=mana mastery=2
@@ -498,7 +471,7 @@ AddIcon help=mana mastery=2
 	#/arcane_torrent,if=mana_pct<91
 	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
 	#/mana_gem,if=mana_deficit>12500
-	if player.maxMana() - player.mana() > 12500 Item(MANAGEMITEM)
+	if {player.maxMana() - player.mana() > 12500} Item(MANAGEMITEM)
 	#/mage_armor,if=mana_pct<5&buff.mage_armor.down
 	if BuffExpires(MAGEARMOR 0) and ManaPercent(less 5) Spell(MAGEARMOR)
 }
@@ -560,7 +533,9 @@ AddIcon help=cd mastery=3
 	#/cold_snap,if=cooldown.deep_freeze.remains>15&cooldown.frostfire_orb.remains>30&cooldown.icy_veins.remains>30
 	unless {TalentPoints(DEEPFREEZETALENT more 0) and 15s before Spell(DEEPFREEZE)} or 30s before Spell(FLAMEORB)
 		or {TalentPoints(ICYVEINSTALENT more 0) and 30s before Spell(ICYVEINS)}
+	{
 		Spell(COLDSNAP)
+	}
 	#/frostfire_orb,if=target.time_to_die>=12&!ticking
 	if TargetDeadIn(more 12)
 	{
@@ -579,10 +554,16 @@ AddIcon help=cd mastery=3
 	{
 		#/berserking,if=buff.icy_veins.down&buff.bloodlust.down
 		Spell(BERSERKING)
-		#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down
-		unless ArmorSetParts(T13 more 3) Spell(ICYVEINS)
-		#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down&(buff.tier13_2pc.stack>7|cooldown.cold_snap.remains<22)
-		if ArmorSetParts(T13 more 3) and {BuffPresent(STOLENTIME stacks=8) or 22s before Spell(COLDSNAP)} Spell(ICYVEINS)
+		unless ArmorSetParts(T13 more 3)
+		{
+			#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down
+			Spell(ICYVEINS)
+		}
+		if ArmorSetParts(T13 more 3)
+		{
+			#/icy_veins,if=buff.icy_veins.down&buff.bloodlust.down&(buff.tier13_2pc.stack>7|cooldown.cold_snap.remains<22)
+			if BuffPresent(STOLENTIME stacks=8) or 22s before Spell(COLDSNAP) Spell(ICYVEINS)
+		}
 	}
 }
 
@@ -597,8 +578,11 @@ AddIcon help=mana mastery=3
 	#/arcane_torrent,if=mana_pct<91
 	if ManaPercent(less 91) Spell(ARCANETORRENTMANA)
 	#/evocation,if=mana_pct<40&(buff.icy_veins.react|buff.bloodlust.react)
-	if ItemCount(MANAGEMITEM equal 0 charges=1) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)} Spell(CONJUREMANAGEM)
-	if ManaPercent(less 40) and {BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)} Spell(EVOCATION)
+	if BuffExpires(heroism 1.5) or BuffExpires(ICYVEINS 1.5)
+	{
+		if ManaPercent(less 40) Spell(EVOCATION)
+		unless ItemCount(MANAGEMITEM more 0 charges=1) Spell(CONJUREMANAGEM)
+	}
 	#/mana_gem,if=mana_deficit>12500
-	if player.maxMana() - player.mana() > 12500 Item(MANAGEMITEM)
+	if {player.maxMana() - player.mana() > 12500} Item(MANAGEMITEM)
 }
