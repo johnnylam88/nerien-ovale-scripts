@@ -264,7 +264,7 @@ AddFunction MainRotationCat
 	{
 		if BuffPresent(BERSERK) Spell(RIP)
 		# [Leafkiller] increase window for waiting on Tiger's Fury to reapply Rip by 1.9s
-		if {target.debuffExpires(RIP mine=1) + 1.9 < spell(TIGERSFURY)} Spell(RIP)
+		if at most 1.9s from TargetDebuffExpires(RIP mine=1) until Spell(TIGERSFURY) Spell(RIP)
 	}
 	#/ferocious_bite,if=buff.combo_points.stack>=5&dot.rip.remains>5.0&buff.savage_roar.remains>=3.0&buff.berserk.up
 	if ComboPoints(more 4) and TargetDebuffPresent(RIP 5 mine=1) and BuffPresent(SAVAGEROAR 3) and BuffPresent(BERSERK) Spell(FEROCIOUSBITE)
