@@ -352,24 +352,27 @@ AddIcon help=main mastery=1
 		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
 		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
 	}
-	# This condition is from interrupt_if in Drain Soul action below and interrupts Drain Soul
-	# to maintain stacks of Combat Mind from Will of Unbinding.
-	if {TalentPoints(SOULSIPHONTALENT more 0)
-			and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)}}
-		or player.IsCasting(no DRAINSOUL)
-	{
-		#/haunt
-		Spell(HAUNT)
-		#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
-		if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
-	}
 	if TalentPoints(SOULSIPHONTALENT more 0)
 	{
+		#/haunt
+		#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
 		#/drain_soul,interrupt=1,if=target.health_pct<=25,\
 		#	interrupt_if=buff.will_of_unbinding.up&cooldown.haunt.remains<tick_time&\
 		#		buff.will_of_unbinding.remains<action.haunt.cast_time+tick_time+0.5
-		if TargetLifePercent(less 25) Spell(DRAINSOUL)
+		if TargetLifePercent(less 25)
+		{
+			if Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)
+			{
+				Spell(HAUNT)
+				if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
+			}
+			Spell(DRAINSOUL)
+		}
 	}
+	#/haunt
+	Spell(HAUNT)
+	#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
+	if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
 	#/shadowflame
 	if TargetDistance(less 8) Spell(SHADOWFLAME)
 	#/soul_fire,if=buff.soulburn.up
