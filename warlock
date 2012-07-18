@@ -418,12 +418,13 @@ AddIcon help=offgcd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or {{{TalentPoints(SOULSIPHONTALENT more 0)
-					and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)}}
-					or player.IsCasting(no DRAINSOUL)}
-				and {1.5s before Spell(HAUNT)
-					or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}}}
-			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
+			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
+				and {{Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)
+					and {1.5s before Spell(HAUNT)
+						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}}}
+					or 1.5s before Spell(DRAINSOUL)}}
+			or 1.5s before Spell(HAUNT)
+			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
 			or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
 		{
 			#/soul_fire,if=buff.soulburn.up
@@ -477,9 +478,13 @@ AddIcon help=cd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
+			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
+				and {{Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)
+					and {1.5s before Spell(HAUNT)
+						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}}}
+					or 1.5s before Spell(DRAINSOUL)}}
 			or 1.5s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
-			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
 		{
 			if TalentPoints(BANETALENT more 2)
 			{
@@ -812,7 +817,8 @@ AddIcon help=main mastery=3
 		# Assume the travel time of Soul Fire is 1s.
 		if 1s after Spell(SOULFIRE)
 		{
-			if BuffPresent(EMPOWEREDIMP) and {buffExpires(EMPOWEREDIMP) < buffExpires(IMPROVEDSOULFIREBUFF) + 1} Spell(SOULFIRE)
+			if BuffPresent(EMPOWEREDIMP)
+				if more than 1s from BuffExpires(IMPROVEDSOULFIREBUFF) until BuffExpires(EMPOWEREDIMP) Spell(SOULFIRE)
 			if BuffExpires(IMPROVEDSOULFIREBUFF 7.5 haste=spell) Spell(SOULFIRE) 
 		}
 	}
