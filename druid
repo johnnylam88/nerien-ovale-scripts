@@ -277,7 +277,7 @@ AddFunction MainRotationCat
 	if TargetDeadIn(more 8.4) and TargetDebuffExpires(RAKE 2.9 mine=1)
 	{
 		if BuffPresent(BERSERK) or Mana(more 70) Spell(RAKE)
-		if spell(TIGERSFURY) + 0.1 > target.debuffExpires(RAKE mine=1) Spell(RAKE)
+		if more than 0.1s from Spell(TIGERSFURY) until TargetDebuffExpires(RAKE mine=1) Spell(RAKE)
 	}
 	#/shred,if=position_back&buff.omen_of_clarity.react
 	#/mangle_cat,if=position_front&buff.omen_of_clarity.react
