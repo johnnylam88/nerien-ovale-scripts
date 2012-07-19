@@ -265,7 +265,7 @@ AddFunction EnoughBuffsForDoomguard
 	#	- at least one on-use trinket effect (either ready to use, or buff already present)
 	#	- at least 2 stacks from Will of Unbinding at the start of the fight, or 8 stacks later.
 	#
-	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
+	{CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
@@ -287,9 +287,10 @@ AddFunction EnoughBuffsForDoomguard
 		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
 			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
 		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
-	and {{{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
+	and {{List(trinketcd0 000) and List(trinketcd1 000)}
+		or {{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
 		or {{List(trinketcd1 060) or List(trinketcd1 090) or List(trinketcd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
-	and	{CheckBoxOn(trinketwou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
+	and	{CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
 }
 
 ###

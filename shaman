@@ -126,6 +126,7 @@ Define(SPIRITLINKTOTEM 98008)
 Define(WINDFURYTOTEM 8512)
 Define(WRATHOFAIRTOTEM 3738)
 # Earth totems
+Define(EARTHELEMENTALTOTEM 2062)
 Define(STONECLAWTOTEM 5730)
 	SpellInfo(STONECLAWTOTEM cd=20)
 Define(STONESKINTOTEM 8071)
@@ -215,7 +216,7 @@ AddFunction EnoughSpellpower
 	#	- at least one on-use trinket effect (either ready to use, or buff already present)
 	#	- at least 2 stacks from Will of Unbinding at the start of the fight, or 8 stacks later.
 	#
-	{CheckBoxOn(potions) and {{ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}}
+	{CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
@@ -223,9 +224,10 @@ AddFunction EnoughSpellpower
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and CheckBoxOff(lightweave) and CheckBoxOff(trinketdmcv)}
 		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent)}
 		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv)}}
-	and {{{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
+	and {{List(trinketcd0 000) and List(trinketcd1 000)}
+		or {{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
 		or {{List(trinketcd1 060) or List(trinketcd1 090) or List(trinketcd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
-	and	{CheckBoxOn(trinketwou) and {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2) or BuffPresent(COMBATMIND stacks=8)}}
+	and	{CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
 }
 
 AddFunction UseItemActionsElemental
@@ -233,7 +235,7 @@ AddFunction UseItemActionsElemental
 	# If FE is ready and there is enough spellpower, then pop trinkets.
 	# Otherwise, if the trinket will be ready again before FE comes off CD, then use it.
 	#
-	if Spell(FIREELEMENTALTOTEM) and EnoughSpellpower()
+	if 1.5s before Spell(FIREELEMENTALTOTEM) and EnoughSpellpower()
 	{
 		Item(HandsSlot usable=1)
 		unless List(trinketcd0 000) Item(Trinket0Slot usable=1)
@@ -259,6 +261,13 @@ AddFunction UseItemActionsElemental
 
 AddIcon help=buff size=small mastery=1
 {
+	if EnoughSpellpower()
+	{
+		#/fire_elemental_totem,if=!ticking
+		Spell(FIREELEMENTALTOTEM)
+		#/earth_elemental_totem,if=!ticking
+		Spell(EARTHELEMENTALTOTEM)
+	}
 	if TotemExpires(earth)
 	{
 		unless BuffPresent(strengthagility) Spell(STRENGTHOFEARTHTOTEM)
@@ -372,14 +381,6 @@ AddIcon help=cd mastery=1
 	Spell(ELEMENTALMASTERY)
 	#/spiritwalkers_grace,moving=1,if=cooldown.lava_burst.remains=0&set_bonus.tier12_4pc_caster=0
 	if Speed(more 0) and Spell(LAVABURST) and ArmorSetParts(T12 less 4) Spell(SPIRITWALKERSGRACE)
-}
-
-AddIcon help=cd mastery=1
-{
-	#/fire_elemental_totem,if=!ticking
-	if EnoughSpellpower() Spell(FIREELEMENTALTOTEM)
-	#/earth_elemental_totem,if=!ticking
-	Spell(EARTHELEMENTALTOTEM)
 }
 
 ###
