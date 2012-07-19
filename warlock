@@ -229,20 +229,20 @@ AddCheckBox(trinketwou "Will of Unbinding")
 AddCheckBox(trinketmwc "Moonwell Chalice")
 
 # Trinket CDs
-AddListItem(trinketcd0 000 "Trinket 0 CD - none" default)
-AddListItem(trinketcd0 060 "Trinket 0 CD - 1 min")
-AddListItem(trinketcd0 090 "Trinket 0 CD - 1 min 30s")
-AddListItem(trinketcd0 120 "Trinket 0 CD - 2 min")
-AddListItem(trinketcd1 000 "Trinket 1 CD - none" default)
-AddListItem(trinketcd1 060 "Trinket 1 CD - 1 min")
-AddListItem(trinketcd1 090 "Trinket 1 CD - 1 min 30s")
-AddListItem(trinketcd1 120 "Trinket 1 CD - 2 min")
+AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
+AddListItem(trinketcd0 060s "Trinket 0 CD - 1 min")
+AddListItem(trinketcd0 090s "Trinket 0 CD - 1 min 30s")
+AddListItem(trinketcd0 120s "Trinket 0 CD - 2 min")
+AddListItem(trinketcd1 000s "Trinket 1 CD - none" default)
+AddListItem(trinketcd1 060s "Trinket 1 CD - 1 min")
+AddListItem(trinketcd1 090s "Trinket 1 CD - 1 min 30s")
+AddListItem(trinketcd1 120s "Trinket 1 CD - 2 min")
 
 AddFunction UseItemActions
 {
 	Item(HandsSlot usable=1)
-	unless List(trinketcd0 000) Item(Trinket0Slot usable=1)
-	unless List(trinketcd1 000) Item(Trinket1Slot usable=1)
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
 AddFunction UseProfessionActions
@@ -287,9 +287,9 @@ AddFunction EnoughBuffsForDoomguard
 		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
 			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
 		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
-	and {{List(trinketcd0 000) and List(trinketcd1 000)}
-		or {{List(trinketcd0 060) or List(trinketcd0 090) or List(trinketcd0 120)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
-		or {{List(trinketcd1 060) or List(trinketcd1 090) or List(trinketcd1 120)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
+	and {{List(trinketcd0 000s) and List(trinketcd1 000s)}
+		or {{List(trinketcd0 060s) or List(trinketcd0 090s) or List(trinketcd0 120s)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
+		or {{List(trinketcd1 060s) or List(trinketcd1 090s) or List(trinketcd1 120s)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
 	and	{CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
 }
 
@@ -514,26 +514,26 @@ AddFunction UseItemActionsDemonology
 	if TalentPoints(METAMORPHOSISTALENT less 1) or Spell(METAMORPHOSIS)
 	{
 		Item(HandsSlot usable=1)
-		unless List(trinketcd0 000) Item(Trinket0Slot usable=1)
-		unless List(trinketcd1 000) Item(Trinket1Slot usable=1)
+		unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+		unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 	}
 	if TalentPoints(METAMORPHOSISTALENT more 0)
 	{
 		unless 60s before Spell(METAMORPHOSIS)
 		{
 			Item(HandsSlot usable=1)
-			if List(trinketcd0 060) Item(Trinket0Slot usable=1)
-			if List(trinketcd1 060) Item(Trinket1Slot usable=1)
+			if List(trinketcd0 060s) Item(Trinket0Slot usable=1)
+			if List(trinketcd1 060s) Item(Trinket1Slot usable=1)
 		}
 		unless 90s before Spell(METAMORPHOSIS)
 		{
-			if List(trinketcd0 090) Item(Trinket0Slot usable=1)
-			if List(trinketcd1 090) Item(Trinket1Slot usable=1)
+			if List(trinketcd0 090s) Item(Trinket0Slot usable=1)
+			if List(trinketcd1 090s) Item(Trinket1Slot usable=1)
 		}
 		unless 120s before Spell(METAMORPHOSIS)
 		{
-			if List(trinketcd0 120) Item(Trinket0Slot usable=1)
-			if List(trinketcd1 120) Item(Trinket1Slot usable=1)
+			if List(trinketcd0 120s) Item(Trinket0Slot usable=1)
+			if List(trinketcd1 120s) Item(Trinket1Slot usable=1)
 		}
 	}
 }
