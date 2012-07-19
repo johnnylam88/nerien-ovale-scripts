@@ -380,7 +380,7 @@ AddIcon help=cd mastery=1
 	if Speed(more 0) and Spell(LAVABURST) and ArmorSetParts(T12 less 4) Spell(SPIRITWALKERSGRACE)
 }
 
-AddIcon help=cd size=small mastery=1
+AddIcon help=cd mastery=1
 {
 	if EnoughSpellpower()
 	{
