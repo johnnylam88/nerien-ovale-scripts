@@ -408,11 +408,10 @@ AddIcon help=main mastery=2
 		# Use Maul when rage>45 unless Frenzied Regeneration is active and we're relying
 		# on the self-healing, in which case use Maul when rage>75 so we don't rage-starve.
 		#
-		if {BuffPresent(FRENZIEDREGENERATION) and Glyph(GLYPHOFFRENZIEDREGENERATION no)}
-			and Mana(more 75) or Mana(more 45)
-		{
-			Spell(MAUL)
-		}
+		if BuffPresent(FRENZIEDREGENERATION) and Glyph(GLYPHOFFRENZIEDREGENERATION no)
+			if Mana(more 75) Spell(MAUL)
+		unless BuffPresent(FRENZIEDREGENERATION) and Glyph(GLYPHOFFRENZIEDREGENERATION no)
+			if Mana(more 45) Spell(MAUL)
 	}
 	if Stance(3) # cat
 	{
@@ -430,8 +429,8 @@ AddIcon help=cd mastery=2
 AddIcon help=cd size=small
 {
 	Spell(BARKSKIN)
-	Spell(SURVIVALINSTINCTS)
-	Spell(FRENZIEDREGENERATION)
+	if Stance(1) or Stance(3) Spell(SURVIVALINSTINCTS)
+	if Stance(1) Spell(FRENZIEDREGENERATION)
 }
 
 AddIcon help=cd size=small mastery=2
