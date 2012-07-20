@@ -637,7 +637,7 @@ AddIcon help=main mastery=2
 		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
 	}
 	#/corruption,if=(remains<tick_time|!ticking)&target.time_to_die>=6&miss_react
-	if TargetDebuffExpires(CORRUPTIONDEBUFF 2 mine=1 haste=spell) and TargetDeadIn(more 6)
+	if TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDeadIn(more 6)
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
 	#/fel_flame,if=buff.tier11_4pc_caster.react
 	if BuffPresent(FELSPARK) Spell(FELFLAME)
