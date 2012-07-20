@@ -323,45 +323,45 @@ AddFunction MainRotationCat
 
 AddFunction CooldownsCat
 {
-	unless BuffExpires(PRIMARYSTATBUFF)
+	if InCombat(no)
 	{
-		if InCombat(no)
+		#/tolvir_potion,if=!in_combat
+		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
+	}
+	#/skull_bash_cat
+	if TargetIsInterruptible()
+	{
+		if TargetInRange(SKULLBASHCAT) Spell(SKULLBASHCAT)
+		unless TargetClassification(worldboss) if ComboPoints(more 0) and TargetInRange(MAIM) Spell(MAIM)
+	}
+	#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
+	unless BuffPresent(CLEARCASTING)
+	{
+		#/berserk,if=buff.tigers_fury.up|(target.time_to_die<25&cooldown.tigers_fury.remains>6)
+		if BuffPresent(TIGERSFURY) or 1s before Spell(TIGERSFURY)
 		{
-			#/tolvir_potion,if=!in_combat
-			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
+			if ArmorSetParts(T13 more 3) and Mana(less 46) Spell(BERSERK)
+			if ArmorSetParts(T13 less 4) and Mana(less 36) Spell(BERSERK)
 		}
-		#/skull_bash_cat
-		if TargetIsInterruptible()
+		unless 6s before Spell(TIGERSFURY)
 		{
-			if TargetInRange(SKULLBASHCAT) Spell(SKULLBASHCAT)
-			unless TargetClassification(worldboss) if ComboPoints(more 0) and TargetInRange(MAIM) Spell(MAIM)
-		}
-		#/tolvir_potion,if=buff.bloodlust.react|target.time_to_die<=40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(POTIONOFTHETOLVIR)
-		unless BuffPresent(CLEARCASTING)
-		{
-			#/berserk,if=buff.tigers_fury.up|(target.time_to_die<25&cooldown.tigers_fury.remains>6)
-			if BuffPresent(TIGERSFURY) or 1s before Spell(TIGERSFURY)
-			{
-				if ArmorSetParts(T13 more 3) and Mana(less 46) Spell(BERSERK)
-				if ArmorSetParts(T13 less 4) and Mana(less 36) Spell(BERSERK)
-			}
-			unless 6s before Spell(TIGERSFURY)
+			if TargetClassification(worldboss)
 				if {Glyph(GLYPHOFBERSERK) and TargetDeadIn(less 25)} or TargetDeadIn(less 15) Spell(BERSERK)
 		}
-		unless {ArmorSetParts(T11 more 3) and BuffExpires(STRENGTHOFTHEPANTHER 4)}
-			or {CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor mine=0) and TargetDeadIn(more 15)
-				and TargetDebuffExpires(FAERIEFIREDEBUFF 3 mine=1 stacks=3) and 1s before Spell(FAERIEFIREFERAL)}
-			or TargetDebuffExpires(bleed)
-			or {CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1)}
-			or {BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 3)}
-			or {{TalentPoints(BLOODINTHEWATERTALENT more 1) and ExecuteRange() and TargetDebuffPresent(RIP mine=1)}
-				and {{ComboPoints(more 0) and TargetDebuffExpires(RIP 2.9 mine=1)} or ComboPoints(more 4)}}
-		{
-			UseRacialActions()
-			UseItemActions()
-			UseProfessionActions()
-		}
+	}
+	unless {ArmorSetParts(T11 more 3) and BuffExpires(STRENGTHOFTHEPANTHER 4)}
+		or {CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor mine=0) and TargetDeadIn(more 15)
+			and TargetDebuffExpires(FAERIEFIREDEBUFF 3 mine=1 stacks=3) and 1s before Spell(FAERIEFIREFERAL)}
+		or TargetDebuffExpires(bleed)
+		or {CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1)}
+		or {BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 3)}
+		or {{TalentPoints(BLOODINTHEWATERTALENT more 1) and ExecuteRange() and TargetDebuffPresent(RIP mine=1)}
+			and {{ComboPoints(more 0) and TargetDebuffExpires(RIP 2.9 mine=1)} or ComboPoints(more 4)}}
+	{
+		UseRacialActions()
+		UseItemActions()
+		UseProfessionActions()
 	}
 }
 
