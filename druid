@@ -298,7 +298,8 @@ AddFunction MainRotationCat
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&cooldown.tigers_fury.remains=0
 	if BuffPresent(STAMPEDE) and 1s before Spell(TIGERSFURY) Spell(RAVAGEBANG)
 	#/ferocious_bite,if=(target.time_to_die<=4&buff.combo_points.stack>=5)|target.time_to_die<=1
-	if {TargetDeadIn(less 4) and ComboPoints(more 4)} or TargetDeadIn(less 1) Spell(FEROCIOUSBITE)
+	if TargetDeadIn(less 4) and ComboPoints(more 4) Spell(FEROCIOUSBITE)
+	if TargetDeadIn(less 1) and ComboPoints(more 0) and TargetClassification(worldboss) Spell(FEROCIOUSBITE)
 	if CheckBoxOn(fb) and ComboPoints(more 4)
 	{
 		unless Level(more 80)
