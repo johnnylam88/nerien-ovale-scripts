@@ -52,6 +52,10 @@ Define(VOLCANICDESTRUCTION 89091) # DMC: Volcano +1600 int proc
 # On-use trinket buffs for some commonly available 359+ trinkets.
 SpellList(ONUSETRINKETBUFF 73551 91019 97007 97008 100403 100612 102437 105134 107948)
 
+# Debuffs
+SpellList(CORRUPTIONDEBUFF 172 87389) # Corruption, Soulburn: Seed of Corruption
+Define(JINXELEMENTSDEBUFF 86105) # Curse of Elements totem debuff spread by Jinx talent
+
 # Talents
 Define(BANETALENT 10938)
 Define(EMBERSTORMTALENT 11181)
@@ -82,8 +86,8 @@ Define(CORRUPTION 172)
 	SpellAddTargetDebuff(CORRUPTION CORRUPTION=18)
 Define(CREATEHEALTHSTONE 6201)
 Define(CREATESOULSTONE 693)
-Define(CURSEOFELEMENTS 1490)
-	SpellAddTargetDebuff(CURSEOFELEMENTS CURSEOFELEMENTS=300)
+Define(CURSEOFTHEELEMENTS 1490)
+	SpellAddTargetDebuff(CURSEOFTHEELEMENTS CURSEOFTHEELEMENTS=300)
 Define(CURSEOFTONGUES 1714)
 	SpellAddTargetDebuff(CURSEOFTONGUES CURSEOFTONGUES=30)
 Define(CURSEOFWEAKNESS 702)
@@ -203,11 +207,11 @@ Define(VOLCANICPOTION 58091)
 
 ## end defines ##
 
-ScoreSpells(CURSEOFELEMENTS SHADOWBOLT HAUNT UNSTABLEAFFLICTION IMMOLATE CONFLAGRATE CURSEOFWEAKNESS
+ScoreSpells(CURSEOFTHEELEMENTS SHADOWBOLT HAUNT UNSTABLEAFFLICTION IMMOLATE CONFLAGRATE CURSEOFWEAKNESS
 			BANEOFAGONY CORRUPTION SOULFIRE DRAINSOUL INCINERATE SHADOWBOLT CHAOSBOLT)
 
 AddListItem(curse none L(None))
-AddListItem(curse elements SpellName(CURSEOFELEMENTS) default)
+AddListItem(curse elements SpellName(CURSEOFTHEELEMENTS) default)
 AddListItem(curse tongues SpellName(CURSEOFTONGUES))
 AddListItem(curse weakness SpellName(CURSEOFWEAKNESS))
 AddListItem(bane none L(None))
@@ -330,9 +334,12 @@ AddIcon help=main mastery=1
 	}
 
 	# Maintain raid buffs and debuffs.
-	if List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDeadIn(more 8) Spell(CURSEOFELEMENTS)
-	if List(curse tongues) and TargetDebuffExpires(castslow 2) and TargetDeadIn(more 8) Spell(CURSEOFTONGUES)
-	if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) and TargetDeadIn(more 8) Spell(CURSEOFWEAKNESS)
+	if TargetDeadIn(more 8)
+	{
+		if List(curse elements)	and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)} Spell(CURSEOFTHEELEMENTS)
+		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
+		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
+	}
 
 	#/fel_armor
 	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
@@ -343,7 +350,7 @@ AddIcon help=main mastery=1
 	#/dark_intent
 	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	#/corruption,if=(!ticking|remains<tick_time)&miss_react
-	if TargetDebuffExpires(CORRUPTION 3 mine=1 haste=spell)
+	if TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell)
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
 	#/unstable_affliction,if=(!ticking|remains<(cast_time+tick_time))&target.time_to_die>=5&miss_react
 	if TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5) Spell(UNSTABLEAFFLICTION)
@@ -407,7 +414,7 @@ AddIcon help=main mastery=1
 AddIcon help=offgcd mastery=1
 {
 	unless {TargetDeadIn(more 8)
-		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2)}
+		and {{List(curse elements) and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)}}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
@@ -415,7 +422,7 @@ AddIcon help=offgcd mastery=1
 	{
 		#/soulburn
 		if ArmorSetParts(T13 more 3) and SoulShards(more 0) Spell(SOULBURN)
-		unless {TargetDebuffExpires(CORRUPTION 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
+		unless {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
@@ -475,7 +482,7 @@ AddIcon help=cd mastery=1
 			if BuffPresent(heroism) or TargetLifePercent(less 20) Item(VOLCANICPOTION)
 		#/demon_soul
 		unless pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
-		unless {TargetDebuffExpires(CORRUPTION 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
+		unless {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
@@ -582,9 +589,12 @@ AddIcon help=main mastery=2
 	}
 
 	# Maintain raid buffs and debuffs.
-	if List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDeadIn(more 8) Spell(CURSEOFELEMENTS)
-	if List(curse tongues) and TargetDebuffExpires(castslow 2) and TargetDeadIn(more 8) Spell(CURSEOFTONGUES)
-	if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) and TargetDeadIn(more 8) Spell(CURSEOFWEAKNESS)
+	if TargetDeadIn(more 8)
+	{
+		if List(curse elements)	and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)} Spell(CURSEOFTHEELEMENTS)
+		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
+		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
+	}
 
 	#/fel_armor
 	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
@@ -627,7 +637,8 @@ AddIcon help=main mastery=2
 		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
 	}
 	#/corruption,if=(remains<tick_time|!ticking)&target.time_to_die>=6&miss_react
-	if TargetDebuffExpires(CORRUPTION 2 mine=1 haste=spell) and TargetDeadIn(more 6) Spell(CORRUPTION)
+	if TargetDebuffExpires(CORRUPTIONDEBUFF 2 mine=1 haste=spell) and TargetDeadIn(more 6)
+		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
 	#/fel_flame,if=buff.tier11_4pc_caster.react
 	if BuffPresent(FELSPARK) Spell(FELFLAME)
 	#/shadowflame
@@ -662,7 +673,7 @@ AddIcon help=main mastery=2
 AddIcon help=main mastery=2
 {
 	unless {TargetDeadIn(more 8)
-		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2)}
+		and {{List(curse elements) and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)}}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
@@ -773,9 +784,12 @@ AddIcon help=main mastery=3
 	}
 
 	# Maintain raid buffs and debuffs.
-	if List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDeadIn(more 8) Spell(CURSEOFELEMENTS)
-	if List(curse tongues) and TargetDebuffExpires(castslow 2) and TargetDeadIn(more 8) Spell(CURSEOFTONGUES)
-	if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) and TargetDeadIn(more 8) Spell(CURSEOFWEAKNESS)
+	if TargetDeadIn(more 8)
+	{
+		if List(curse elements)	and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)} Spell(CURSEOFTHEELEMENTS)
+		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
+		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
+	}
 
 	#/fel_armor
 	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
@@ -800,7 +814,7 @@ AddIcon help=main mastery=3
 		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
 	}
 	#/corruption,if=(!ticking|dot.corruption.remains<tick_time)&miss_react
-	if TargetDebuffExpires(CORRUPTION 3 mine=1 haste=spell)
+	if TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell)
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
 	#/shadowflame
 	if TargetDistance(less 8) Spell(SHADOWFLAME)
@@ -837,7 +851,7 @@ AddIcon help=main mastery=3
 AddIcon help=offgcd mastery=3
 {
 	unless {TargetDeadIn(more 8)
-		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2)}
+		and {{List(curse elements) and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)}}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
