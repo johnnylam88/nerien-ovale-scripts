@@ -369,7 +369,7 @@ AddIcon help=main mastery=1
 		#		buff.will_of_unbinding.remains<action.haunt.cast_time+tick_time+0.5
 		if TargetLifePercent(less 25)
 		{
-			if Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)
+			if Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
 			{
 				Spell(HAUNT)
 				if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
