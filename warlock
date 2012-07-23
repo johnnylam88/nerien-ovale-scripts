@@ -375,8 +375,24 @@ AddIcon help=main mastery=1
 		{
 			if Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
 			{
+				#/haunt
 				Spell(HAUNT)
+				#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
 				if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
+				#/shadowflame
+				if TargetDistance(less 8) Spell(SHADOWFLAME)
+				if TalentPoints(BANETALENT more 2)
+				{
+					#/shadow_bolt
+					Spell(SHADOWBOLT)
+				}
+				if TalentPoints(BANETALENT less 3)
+				{
+					#/shadow_bolt,if=buff.shadow_trance.react
+					if BuffPresent(SHADOWTRANCE) Spell(SHADOWBOLT)
+					#/drain_life
+					Spell(DRAINLIFE)
+				}
 			}
 			Spell(DRAINSOUL)
 		}
@@ -426,13 +442,16 @@ AddIcon help=offgcd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
-				and {{Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)
-					and {1.5s before Spell(HAUNT)
-						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}}}
-					or 1.5s before Spell(DRAINSOUL)}}
 			or 1.5s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
+			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
+				and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
+					and {1.5s before Spell(HAUNT)
+						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
+						or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
+						or {TalentPoints(BANETALENT more 2) and 1.5s before Spell(SHADOWBOLT)}
+						or {TalentPoints(BANETALENT less 3)	and {BuffPresent(SHADOWTRANCE) or 1.5s before Spell(DRAINLIFE)}}}}
+				or 1.5s before Spell(DRAINSOUL)}
 			or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
 		{
 			#/soul_fire,if=buff.soulburn.up
@@ -485,13 +504,16 @@ AddIcon help=cd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
-				and {{Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5.5 haste=spell)
-					and {1.5s before Spell(HAUNT)
-						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}}}
-					or 1.5s before Spell(DRAINSOUL)}}
 			or 1.5s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
+			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
+				and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
+					and {1.5s before Spell(HAUNT)
+						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
+						or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
+						or {TalentPoints(BANETALENT more 2) and 1.5s before Spell(SHADOWBOLT)}
+						or {TalentPoints(BANETALENT less 3)	and {BuffPresent(SHADOWTRANCE) or 1.5s before Spell(DRAINLIFE)}}}}
+				or 1.5s before Spell(DRAINSOUL)}
 		{
 			if TalentPoints(BANETALENT more 2)
 			{
