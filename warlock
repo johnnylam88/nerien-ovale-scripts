@@ -301,7 +301,7 @@ AddFunction EnoughBuffsForDoomguard
 ### Affliction
 ###
 
-# Pet
+# Pet & buffs.
 AddIcon size=small mastery=1
 {
 	if PetPresent(no)
@@ -317,7 +317,10 @@ AddIcon size=small mastery=1
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
+	#/dark_intent
+	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 }
 
 # Main rotation.
@@ -330,13 +333,12 @@ AddIcon help=main mastery=1
 			Spell(FELARMOR)
 			Spell(DEMONARMOR)
 		}
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
 
 	# Maintain raid buffs and debuffs.
 	if TargetDeadIn(more 8)
 	{
-		if List(curse elements)	and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)} Spell(CURSEOFTHEELEMENTS)
+		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
 		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
 		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
 	}
@@ -347,13 +349,11 @@ AddIcon help=main mastery=1
 		Spell(FELARMOR)
 		Spell(DEMONARMOR)
 	}
-	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	#/corruption,if=(!ticking|remains<tick_time)&miss_react
 	if TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell)
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
 	#/unstable_affliction,if=(!ticking|remains<(cast_time+tick_time))&target.time_to_die>=5&miss_react
-	if TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5) Spell(UNSTABLEAFFLICTION)
+	if TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5) Spell(UNSTABLEAFFLICTION)
 	#/bane_of_doom,if=target.time_to_die>15&!ticking&miss_react
 	unless TargetDebuffPresent(BANEOFDOOM mine=1) or TargetDebuffPresent(BANEOFAGONY mine=1)
 	{
@@ -418,7 +418,6 @@ AddIcon help=offgcd mastery=1
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		#/soulburn
 		if ArmorSetParts(T13 more 3) and SoulShards(more 0) Spell(SOULBURN)
@@ -467,7 +466,6 @@ AddIcon help=offgcd mastery=1
 AddIcon help=cd mastery=1
 {
 	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		#/volcanic_potion,if=!in_combat
 		if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(VOLCANICPOTION)
@@ -545,7 +543,7 @@ AddFunction UseItemActionsDemonology
 	}
 }
 
-# Pet
+# Pet & buffs.
 AddIcon size=small mastery=2
 {
 	if InCombat(no)
@@ -554,6 +552,7 @@ AddIcon size=small mastery=2
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
 
 	if CheckBoxOn(trinketmwc)
@@ -568,6 +567,8 @@ AddIcon size=small mastery=2
 			}
 		}
 	}
+	#/dark_intent
+	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	#/felguard:felstorm
 	if pet.CreatureFamily(PETFELGUARD) and TargetInRange(PETLEGIONSTRIKE yes) Spell(PETFELSTORM)
 	#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
@@ -585,13 +586,12 @@ AddIcon help=main mastery=2
 			Spell(FELARMOR)
 			Spell(DEMONARMOR)
 		}
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
 
 	# Maintain raid buffs and debuffs.
 	if TargetDeadIn(more 8)
 	{
-		if List(curse elements)	and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)} Spell(CURSEOFTHEELEMENTS)
+		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
 		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
 		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
 	}
@@ -602,8 +602,6 @@ AddIcon help=main mastery=2
 		Spell(FELARMOR)
 		Spell(DEMONARMOR)
 	}
-	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	#/bane_of_doom,if=!ticking&time<10
 	if TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 	{
@@ -677,7 +675,6 @@ AddIcon help=main mastery=2
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 		or {TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
 	{
@@ -708,7 +705,6 @@ AddIcon help=main mastery=2
 AddIcon help=cd mastery=2
 {
 	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		#/volcanic_potion,if=!in_combat
 		if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(VOLCANICPOTION)
@@ -741,7 +737,7 @@ AddIcon help=cd mastery=2
 ### Destruction
 ###
 
-# Pet
+# Pet & buffs.
 AddIcon size=small mastery=3
 {
 	#/summon_imp
@@ -752,7 +748,10 @@ AddIcon size=small mastery=3
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
 		if SoulShards(less 3) Spell(SOULHARVEST)
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 	}
+	#/dark_intent
+	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 }
 
 # Main rotation.
@@ -765,7 +764,6 @@ AddIcon help=main mastery=3
 			Spell(FELARMOR)
 			Spell(DEMONARMOR)
 		}
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
 		if ArmorSetParts(T13 more 3)
 		{
 			#/soul_fire,if=buff.soulburn.up&!in_combat
@@ -786,7 +784,7 @@ AddIcon help=main mastery=3
 	# Maintain raid buffs and debuffs.
 	if TargetDeadIn(more 8)
 	{
-		if List(curse elements)	and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)} Spell(CURSEOFTHEELEMENTS)
+		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
 		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
 		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
 	}
@@ -797,8 +795,6 @@ AddIcon help=main mastery=3
 		Spell(FELARMOR)
 		Spell(DEMONARMOR)
 	}
-	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
 	#/fel_flame,if=buff.tier11_4pc_caster.react&dot.immolate.remains<8
 	if BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1) Spell(FELFLAME)
 	#/immolate,if=(remains<cast_time+gcd|!ticking)&target.time_to_die>=4&miss_react
@@ -855,7 +851,6 @@ AddIcon help=offgcd mastery=3
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		if ArmorSetParts(T13 more 3)
 		{
@@ -880,7 +875,6 @@ AddIcon help=offgcd mastery=3
 AddIcon help=main mastery=3
 {
 	unless {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffExpires(DARKINTENTBUFF) and Spell(DARKINTENT)}
 	{
 		#/volcanic_potion,if=!in_combat
 		if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(VOLCANICPOTION)
