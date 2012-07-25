@@ -49,8 +49,10 @@ Define(POWERTORRENT 74241) # +500 int weapon enchant proc
 SpellList(VELOCITY 107982 109787 109789) # Insignia of the Corrupted Mind haste proc
 Define(VOLCANICDESTRUCTION 89091) # DMC: Volcano +1600 int proc
 
-# On-use trinket buffs for some commonly available 359+ trinkets.
-SpellList(ONUSETRINKETBUFF 73551 91019 97007 97008 100403 100612 102437 105134 107948)
+# On-use trinket buffs for some commonly available 300+ trinkets.
+SpellList(SPELLPOWERTRINKETBUFF 73551 84968 90889 91019 91135 91136 92225 95875 97007 97008 99712 99741 102437 105134 107948)
+SpellList(HASTETRINKETBUFF 91041 92328)
+SpellList(MASTERYTRINKETBUFF 92188 100403)
 
 # Debuffs
 SpellList(CORRUPTIONDEBUFF 172 87389) # Corruption, Soulburn: Seed of Corruption
@@ -263,16 +265,13 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
-AddFunction EnoughBuffsForDoomguard
+AddFunction EnoughBuffProcs
 {
-	# "enough buffs" means:
-	#	- potion
+	# "enough buff procs" means:
 	#	- at least two proc effects
-	#	- at least one on-use trinket effect (either ready to use, or buff already present)
 	#	- at least 2 stacks from Will of Unbinding at the start of the fight, or 8 stacks later.
 	#
-	{CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
-	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
+	{{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
@@ -293,10 +292,23 @@ AddFunction EnoughBuffsForDoomguard
 		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
 			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
 		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
+	and {CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
+}
+
+AddFunction EnoughBuffsForDoomguard
+{
+	# "enough buffs" means:
+	#	- enough buff procs
+	#	- potion
+	#	- at least one on-use trinket effect (either ready to use, or buff already present)
+	#
+	EnoughBuffProcs()
+	and {CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
 	and {{List(trinketcd0 000s) and List(trinketcd1 000s)}
-		or {{List(trinketcd0 060s) or List(trinketcd0 090s) or List(trinketcd0 120s)} and {Item(Trinket0Slot) or BuffPresent(ONUSETRINKETBUFF)}}
-		or {{List(trinketcd1 060s) or List(trinketcd1 090s) or List(trinketcd1 120s)} and {Item(Trinket1Slot) or BuffPresent(ONUSETRINKETBUFF)}}}
-	and	{CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
+		or {{List(trinketcd0 060s) or List(trinketcd0 090s) or List(trinketcd0 120s)}
+			and {Item(Trinket0Slot)	or {BuffPresent(SPELLPOWERTRINKETBUFF) or BuffPresent(HASTETRINKETBUFF)}}}
+		or {{List(trinketcd1 060s) or List(trinketcd1 090s) or List(trinketcd1 120s)}
+			and {Item(Trinket1Slot)	or {BuffPresent(SPELLPOWERTRINKETBUFF) or BuffPresent(HASTETRINKETBUFF)}}}}
 }
 
 ###
@@ -504,6 +516,13 @@ AddIcon help=cd mastery=1
 	}
 }
 
+# Summon Doomguard.
+AddIcon help=cd mastery=1
+{
+	#/summon_doomguard,if=time>10
+	if EnoughBuffsForDoomguard() Spell(SUMMONDOOMGUARD)
+}
+
 ###
 ### Demonology
 ###
@@ -536,6 +555,22 @@ AddFunction UseItemActionsDemonology
 			if List(trinketcd1 120s) Item(Trinket1Slot usable=1)
 		}
 	}
+}
+
+AddFunction EnoughBuffsForDoomguardDemonology
+{
+	# "enough buffs" means:
+	#	- enough buff procs
+	#	- potion
+	#	- at least one on-use trinket effect (either ready to use, or buff already present)
+	#
+	EnoughBuffProcs()
+	and {CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
+	and {{List(trinketcd0 000s) and List(trinketcd1 000s)}
+		or {{List(trinketcd0 060s) or List(trinketcd0 090s) or List(trinketcd0 120s)}
+			and {Item(Trinket0Slot)	or {BuffPresent(SPELLPOWERTRINKETBUFF) or BuffPresent(HASTETRINKETBUFF) or BuffPresent(MASTERYTRINKETBUFF)}}}
+		or {{List(trinketcd1 060s) or List(trinketcd1 090s) or List(trinketcd1 120s)}
+			and {Item(Trinket1Slot)	or {BuffPresent(SPELLPOWERTRINKETBUFF) or BuffPresent(HASTETRINKETBUFF) or BuffPresent(MASTERYTRINKETBUFF)}}}}
 }
 
 # Pet & buffs.
@@ -734,6 +769,13 @@ AddIcon help=cd mastery=2
 	}
 }
 
+# Summon Doomguard.
+AddIcon help=cd mastery=2
+{
+	#/summon_doomguard,if=time>10
+	if EnoughBuffsForDoomguardDemonology() Spell(SUMMONDOOMGUARD)
+}
+
 ###
 ### Destruction
 ###
@@ -765,20 +807,15 @@ AddIcon help=main mastery=3
 			Spell(FELARMOR)
 			Spell(DEMONARMOR)
 		}
-		if ArmorSetParts(T13 more 3)
+		if TalentPoints(IMPROVEDSOULFIRETALENT more 0) and BuffExpires(IMPROVEDSOULFIREBUFF 4 haste=spell)
 		{
-			#/soul_fire,if=buff.soulburn.up&!in_combat
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
-		}
-		unless ArmorSetParts(T13 more 3)
-		{
-			if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
+			if ArmorSetParts(T13 more 3)
 			{
 				#/soul_fire,if=buff.soulburn.up&!in_combat
-				if BuffPresent(SOULBURN) Spell(SOULFIRE)
+				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
+			Spell(SOULFIRE)
 		}
-		if TalentPoints(IMPROVEDSOULFIRETALENT more 0) Spell(SOULFIRE)
 	}
 
 	# Maintain raid buffs and debuffs.
@@ -796,6 +833,8 @@ AddIcon help=main mastery=3
 		Spell(FELARMOR)
 		Spell(DEMONARMOR)
 	}
+	# If combat started without us pre-casting Soul Fire to gain the Improved Soul Fire buff, then cast it now.
+	if TalentPoints(IMPROVEDSOULFIRETALENT more 0) and BuffExpires(IMPROVEDSOULFIREBUFF) Spell(SOULFIRE)
 	#/fel_flame,if=buff.tier11_4pc_caster.react&dot.immolate.remains<8
 	if BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1) Spell(FELFLAME)
 	#/immolate,if=(remains<cast_time+gcd|!ticking)&target.time_to_die>=4&miss_react
@@ -838,26 +877,55 @@ AddIcon help=main mastery=3
 # Soulburn Actions.
 AddIcon help=offgcd mastery=3
 {
+	if InCombat(no)
+	{
+		unless BuffExpires(DEMONARMOR 400) and BuffExpires(FELARMOR 400)
+		{
+			if ArmorSetParts(T13 more 3)
+			{
+				#/soulburn
+				#/soul_fire,if=buff.soulburn.up&!in_combat
+				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			}
+			unless ArmorSetParts(T13 more 3)
+			{
+				#/soulburn,if=buff.bloodlust.down
+				#/soul_fire,if=buff.soulburn.up&!in_combat
+				unless BuffPresent(heroism)
+					if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			}
+		}
+	}
 	unless {TargetDeadIn(more 8)
 		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF)}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}
 			or {CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
-		or {BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1)}
-		or {TargetDebuffExpires(IMMOLATE 3 mine=1 haste=spell) and TargetDeadIn(more 4)}
-		or {TargetDebuffPresent(IMMOLATE mine=1) and Spell(CONFLAGRATE)}
-		or {BuffPresent(heroism 32) and 3s before Spell(CONFLAGRATE) and TargetDebuffExpires(IMMOLATE 12 mine=1)}
-		or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
-			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-		or {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
-		or {TargetDistance(less 8) and Spell(SHADOWFLAME)}
-		or {CastTime(CHAOSBOLT more 0.9) and Spell(CHAOSBOLT)}
 	{
+		# If combat started without us pre-casting Soul Fire to gain the Improved Soul Fire buff, then cast it now.
+		if TalentPoints(IMPROVEDSOULFIRETALENT more 0) and BuffExpires(IMPROVEDSOULFIREBUFF)
+			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 		if ArmorSetParts(T13 more 3)
 		{
-			#/soul_fire,if=buff.soulburn.up
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			#/soulburn
+			if SoulShards(more 0) Spell(SOULBURN)
+		}
+		unless {BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1)}
+			or {TargetDebuffExpires(IMMOLATE 3 mine=1 haste=spell) and TargetDeadIn(more 4)}
+			or {TargetDebuffPresent(IMMOLATE mine=1) and Spell(CONFLAGRATE)}
+			or {BuffPresent(heroism 32) and 3s before Spell(CONFLAGRATE) and TargetDebuffExpires(IMMOLATE 12 mine=1)}
+			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
+			or {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
+			or {TargetDistance(less 8) and Spell(SHADOWFLAME)}
+			or {CastTime(CHAOSBOLT more 0.9) and Spell(CHAOSBOLT)}
+		{
+			if ArmorSetParts(T13 more 3)
+			{
+				#/soul_fire,if=buff.soulburn.up
+				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			}
 		}
 	}
 }
@@ -879,14 +947,12 @@ AddIcon help=main mastery=3
 		if CheckBoxOn(potions) and TargetClassification(worldboss)
 			if BuffPresent(heroism) or TargetLifePercent(less 20) Item(VOLCANICPOTION)
 		#/demon_soul
-		if PetPresent() Spell(DEMONSOUL)
+		unless PetPresent(no) or pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
 	}
 }
 
-###
-### Summon Doomguard.
-###
-AddIcon help=cd
+# Summon Doomguard.
+AddIcon help=cd mastery=3
 {
 	#/summon_doomguard,if=time>10
 	if EnoughBuffsForDoomguard() Spell(SUMMONDOOMGUARD)
