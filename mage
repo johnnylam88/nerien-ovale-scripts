@@ -510,7 +510,7 @@ AddIcon help=main mastery=3
 		Spell(FIREBLAST)
 	}
 	#/frostbolt
-	if CastTime(FROSTFIREBOLT less 1.251) Spell(FROSTFIREBOLT)
+	unless CastTime(FROSTFIREBOLT more 1.25) Spell(FROSTFIREBOLT)
 	Spell(FROSTBOLT)
 }
 
