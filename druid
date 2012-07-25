@@ -237,7 +237,7 @@ AddFunction MainRotationCat
 		unless TargetDebuffPresent(FAERIEFIREDEBUFF 3 mine=1 stacks=3) Spell(FAERIEFIREFERAL)
 	#/mangle_cat,if=debuff.mangle.remains<=2&(!debuff.mangle.up|debuff.mangle.remains>=0.0)
 	unless TargetDebuffPresent(bleed) Spell(MANGLECAT)
-	if CheckBoxOn(mangle) and TargetDebuffExpires(bleed mine=1) Spell(MANGLECAT)
+	if CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2) Spell(MANGLECAT)
 	#/ravage,if=(buff.stampede_cat.up|buff.t13_4pc_melee.up)&(buff.stampede_cat.remains<=1|buff.t13_4pc_melee.remains<=1)
 	#	[Leafkiller] increase window for consuming Stampede buff with Ravage! by 2s
 	if BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 3) Spell(RAVAGEBANG)
