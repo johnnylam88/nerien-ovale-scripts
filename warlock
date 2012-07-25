@@ -768,7 +768,7 @@ AddIcon help=main mastery=3
 		if ArmorSetParts(T13 more 3)
 		{
 			#/soul_fire,if=buff.soulburn.up&!in_combat
-			if BuffPresent(SOULBURN) Spell(SOULFIRE)
+			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 		}
 		unless ArmorSetParts(T13 more 3)
 		{
