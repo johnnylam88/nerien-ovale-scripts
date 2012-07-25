@@ -242,7 +242,7 @@ AddFunction UseItemActionsElemental
 	# If FE is ready and there is enough spellpower, then pop trinkets.
 	# Otherwise, if the trinket will be ready again before FE comes off CD, then use it.
 	#
-	if 1.5s before Spell(FIREELEMENTALTOTEM) and EnoughSpellpower()
+	if 0s before Spell(FIREELEMENTALTOTEM) and EnoughSpellpower()
 	{
 		Item(HandsSlot usable=1)
 		unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
