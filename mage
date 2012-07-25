@@ -203,12 +203,12 @@ AddFunction ArcaneManaActions
 	{
 		#/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
 		if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) and BuffPresent(STOLENTIME stacks=7)
-			if Spell(ARCANEPOWER) or TargetDeadIn(less 50) Item(MANAGEMITEM)
+			if Spell(ARCANEPOWER) or TargetDeadIn(less 50) Texture(inv_misc_gem_emerald_01)
 	}
 	unless ArmorSetParts(T13 more 3)
 	{
 		#/mana_gem,if=buff.arcane_blast.stack=4
-		if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Item(MANAGEMITEM)
+		if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Texture(inv_misc_gem_emerald_01)
 	}
 	#/conjure_mana_gem,if=buff.presence_of_mind.up&target.time_to_die>cooldown.mana_gem.remains&mana_gem_charges=0
 	if BuffPresent(PRESENCEOFMIND) and {target.timeToDie() > item(MANAGEMITEM)} and ItemCount(MANAGEMITEM equal 0 charges=1) Spell(CONJUREMANAGEM)
@@ -267,8 +267,7 @@ AddFunction ArcaneDPM
 		if {20s before Spell(EVOCATION) or BuffPresent(IMPROVEDMANAGEM) or 5s before Item(MANAGEMITEM)} and ManaPercent(more 21) Spell(ARCANEBLAST)
 	}
 	#/arcane_blast,if=buff.arcane_blast.remains<0.8&buff.arcane_blast.stack=4
-	if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4)
-		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=5) Spell(ARCANEBLAST)
+	if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
 	#/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
 	#/arcane_missiles,if=mana_pct_nonproc<93&buff.arcane_missiles.react&mage_armor_timer>2
 	if ManaPercent(less 93) and BuffPresent(ARCANEMISSILEBUFF) Spell(ARCANEMISSILES)
@@ -287,11 +286,14 @@ AddFunction ArcaneDPM
 
 # Separate out the full Arcane rotation into "hover" (DPM) rotation and "burn" (DPS)
 # rotation to allow the player to choose when to enter each part of the rotation.
-# Show a left/right icon between the two rotations to show which rotation is optimal,
-# with the hover rotation to the left and burn rotation to the right.
-#
-Define(ARCANEDPM misc_arrowleft)
-Define(ARCANEDPS misc_arrowright)
+# Show a -/+ icon between the two rotations to show which rotation is optimal, with
+# the hover rotation to the left (-) and burn rotation to the right (+).
+
+AddIcon size=small mastery=1
+{
+	#/flame_orb,if=target.time_to_die>=10
+	if TargetDeadIn(more 10) Spell(FLAMEORB)
+}
 
 # DPM "hover" rotation icon
 AddIcon help=main mastery=1
@@ -299,14 +301,14 @@ AddIcon help=main mastery=1
 	ArcaneDPM()
 }
 
-# Left/right arrow icon to show which rotation icon to follow.
+# -/+ icon to show which rotation icon to follow.
 AddIcon mastery=1
 {
 	#/choose_rotation,cooldown=1,force_dps=1,if=buff.improved_mana_gem.up&dpm=1&\
 	#    cooldown.evocation.remains+15<target.time_to_die
 	if BuffPresent(IMPROVEDMANAGEM) and {spell(EVOCATION) + 15 < target.timeToDie()}
 	{
-		Texture(ARCANEDPS)
+		Texture(Spell_chargepositive)
 	}
 
 	#/choose_rotation,cooldown=1,force_dpm=1,if=cooldown.evocation.remains<=20&dps=1&mana_pct<22&\
@@ -316,16 +318,16 @@ AddIcon mastery=1
 		and {TargetDeadIn(more 60) or {spell(EVOCATION) > player.manaPercent()}}
 		and {spell(EVOCATION) + 15 < target.timeToDie()}
 	{
-		Texture(ARCANEDPM)
+		Texture(Spell_chargenegative)
 	}
 
 	#/choose_rotation,cooldown=1,evocation_pct=35,if=cooldown.evocation.remains+15>target.time_to_die,final_burn_offset=15
 	if 20s before Spell(EVOCATION) and ManaPercent(more 35)
 	{
-		Texture(ARCANEDPS)
+		Texture(Spell_chargepositive)
 	}
 
-	Texture(ARCANEDPM)
+	Texture(Spell_chargenegative)
 }
 
 # DPS "burn" rotation icon.
@@ -350,8 +352,6 @@ AddIcon help=cd mastery=1
 	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 50)} Item(VOLCANICPOTION)
 	#/use_item,name=shard_of_woe,if=buff.improved_mana_gem.up|cooldown.evocation.remains>90|target.time_to_die<=50
 	#if BuffPresent(IMPROVEDMANAGEM) or {spell(EVOCATION) > 90} or TargetDeadIn(less 50) Item(SHARDOFWOE)
-	#/flame_orb,if=target.time_to_die>=10
-	if TargetDeadIn(more 10) Spell(FLAMEORB)
 	#/blood_fury,if=buff.improved_mana_gem.up|target.time_to_die<=50
 	if BuffPresent(IMPROVEDMANAGEM) or TargetDeadIn(less 50) Spell(BLOODFURY)
 	#/berserking,if=buff.arcane_power.up|cooldown.arcane_power.remains>20
