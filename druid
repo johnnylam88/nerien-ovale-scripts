@@ -355,7 +355,7 @@ AddFunction CooldownsCat
 		or {CheckBoxOn(faeriefire) and TargetDebuffExpires(lowerarmor mine=0) and TargetDeadIn(more 15)
 			and TargetDebuffExpires(FAERIEFIREDEBUFF 3 mine=1 stacks=3) and 1s before Spell(FAERIEFIREFERAL)}
 		or TargetDebuffExpires(bleed)
-		or {CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2 mine=1)}
+		or {CheckBoxOn(mangle) and TargetDebuffExpires(bleed 2)}
 		or {BuffPresent(STAMPEDE) and BuffExpires(STAMPEDE 3)}
 		or {{TalentPoints(BLOODINTHEWATERTALENT more 1) and ExecuteRange() and TargetDebuffPresent(RIP mine=1)}
 			and {{ComboPoints(more 0) and TargetDebuffExpires(RIP 2.9 mine=1)} or ComboPoints(more 4)}}
