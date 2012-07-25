@@ -62,6 +62,7 @@ Define(EMBERSTORMTALENT 11181)
 Define(IMPROVEDSOULFIRETALENT 10940)
 Define(METAMORPHOSISTALENT 11044)
 Define(SHADOWANDFLAMETALENT 10936)
+	Define(SHADOWANDFLAMESPELL 17801)
 Define(SOULSIPHONTALENT 11112)
 
 # Glyphs
@@ -127,7 +128,7 @@ Define(IMMOLATIONAURA 50589)
 	SpellInfo(IMMOLATIONAURA cd=30)
 	SpellAddBuff(IMMOLATIONAURA IMMOLATIONAURA=15)
 Define(INCINERATE 29722)
-	SpellAddBuff(INCINERATE MOLTENCORE=-1)
+	SpellAddBuff(INCINERATE SHADOWANDFLAMEDEBUFF=30 MOLTENCORE=-1)
 Define(LIFETAP 1454)
 	SpellInfo(LIFETAP cd=10) #fake
 Define(METAMORPHOSIS 47241)
@@ -210,7 +211,7 @@ Define(VOLCANICPOTION 58091)
 ScoreSpells(CURSEOFTHEELEMENTS SHADOWBOLT HAUNT UNSTABLEAFFLICTION IMMOLATE CONFLAGRATE CURSEOFWEAKNESS
 			BANEOFAGONY CORRUPTION SOULFIRE DRAINSOUL INCINERATE SHADOWBOLT CHAOSBOLT)
 
-AddCheckBox(shadowbolt SpellName(SHADOWBOLT) default)
+AddCheckBox(shadowandflame SpellName(SHADOWANDFLAMESPELL) default)
 AddListItem(curse none L(None))
 AddListItem(curse elements SpellName(CURSEOFTHEELEMENTS) default)
 AddListItem(curse tongues SpellName(CURSEOFTONGUES))
@@ -342,7 +343,7 @@ AddIcon help=main mastery=1
 		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
 		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
 		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
-		if CheckBoxOn(shadowbolt) and TargetDebuffExpires(magicalcrittaken 5) Spell(SHADOWBOLT)
+		if CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5) Spell(SHADOWBOLT)
 	}
 
 	#/fel_armor
@@ -375,24 +376,9 @@ AddIcon help=main mastery=1
 		{
 			if Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
 			{
-				#/haunt
-				Spell(HAUNT)
-				#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
-				if BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1) Spell(FELFLAME)
-				#/shadowflame
-				if TargetDistance(less 8) Spell(SHADOWFLAME)
-				if TalentPoints(BANETALENT more 2)
-				{
-					#/shadow_bolt
-					Spell(SHADOWBOLT)
-				}
-				if TalentPoints(BANETALENT less 3)
-				{
-					#/shadow_bolt,if=buff.shadow_trance.react
-					if BuffPresent(SHADOWTRANCE) Spell(SHADOWBOLT)
-					#/drain_life
-					Spell(DRAINLIFE)
-				}
+				# Display a stopwatch texture to indicate we should stop channeling Drain Soul
+				# so that stacks of the Will of Unbinding buff don't fall off.
+				Texture(Spell_nature_timestop)
 			}
 			Spell(DRAINSOUL)
 		}
@@ -430,29 +416,22 @@ AddIcon help=main mastery=1
 AddIcon help=offgcd mastery=1
 {
 	unless {TargetDeadIn(more 8)
-		and {{List(curse elements) and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)}}
+		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF)}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}
-			or {CheckBoxOn(shadowbolt) and TargetDebuffExpires(magicalcrittaken 5)}}}
+			or {CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 	{
 		#/soulburn
 		if ArmorSetParts(T13 more 3) and SoulShards(more 0) Spell(SOULBURN)
 		unless {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
-			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
+			or {TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or 1.5s before Spell(HAUNT)
+			or Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
-			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
-				and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
-					and {1.5s before Spell(HAUNT)
-						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
-						or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
-						or {TalentPoints(BANETALENT more 2) and 1.5s before Spell(SHADOWBOLT)}
-						or {TalentPoints(BANETALENT less 3)	and {BuffPresent(SHADOWTRANCE) or 1.5s before Spell(DRAINLIFE)}}}}
-				or 1.5s before Spell(DRAINSOUL)}
-			or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
+			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
+			or {TargetDistance(less 8) and Spell(SHADOWFLAME)}
 		{
 			#/soul_fire,if=buff.soulburn.up
 			if ArmorSetParts(T13 more 3) and SoulShards(more 0) and Spell(SOULBURN) Spell(SOULFIRE)
@@ -499,34 +478,27 @@ AddIcon help=cd mastery=1
 		if CheckBoxOn(potions) and TargetClassification(worldboss)
 			if BuffPresent(heroism) or TargetLifePercent(less 20) Item(VOLCANICPOTION)
 		#/demon_soul
-		unless pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
+		unless PetPresent(no) or pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
 		unless {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
-			or {TargetDebuffExpires(UNSTABLEAFFLICTION 5.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
+			or {TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
 			or 1.5s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
-			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)
-				and {Casting(DRAINSOUL) and BuffPresent(COMBATMIND) and BuffExpires(COMBATMIND 5 haste=spell)
-					and {1.5s before Spell(HAUNT)
-						or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
-						or {TargetDistance(less 8) and 1.5s before Spell(SHADOWFLAME)}
-						or {TalentPoints(BANETALENT more 2) and 1.5s before Spell(SHADOWBOLT)}
-						or {TalentPoints(BANETALENT less 3)	and {BuffPresent(SHADOWTRANCE) or 1.5s before Spell(DRAINLIFE)}}}}
-				or 1.5s before Spell(DRAINSOUL)}
+			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
 		{
 			if TalentPoints(BANETALENT more 2)
 			{
 				unless ManaPercent(less 35)
 				{
 					#/demon_soul
-					if pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
+					if PetPresent() and pet.CreatureFamily(PETSUCCUBUS) Spell(DEMONSOUL)
 				}
 			}
 			if TalentPoints(BANETALENT less 3)
 			{
 				#/demon_soul,if=buff.shadow_trance.react
-				if pet.CreatureFamily(PETSUCCUBUS) and BuffPresent(SHADOWTRANCE) Spell(DEMONSOUL)
+				if PetPresent() and pet.CreatureFamily(PETSUCCUBUS) and BuffPresent(SHADOWTRANCE) Spell(DEMONSOUL)
 			}
 		}
 	}
@@ -617,7 +589,11 @@ AddIcon help=main mastery=2
 		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
 		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
 		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
-		if CheckBoxOn(shadowbolt) and TargetDebuffExpires(magicalcrittaken 5) Spell(SHADOWBOLT)
+		if CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)
+		{
+			if TalentPoints(BANETALENT more 0) Spell(SHADOWBOLT)
+			if TalentPoints(BANETALENT less 1) Spell(INCINERATE)
+		}
 	}
 
 	#/fel_armor
@@ -695,10 +671,10 @@ AddIcon help=main mastery=2
 AddIcon help=main mastery=2
 {
 	unless {TargetDeadIn(more 8)
-		and {{List(curse elements) and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)}}
+		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF)}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}
-			or {CheckBoxOn(shadowbolt) and TargetDebuffExpires(magicalcrittaken 5)}}}
+			or {CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
 		or {TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
@@ -746,14 +722,14 @@ AddIcon help=cd mastery=2
 			#/metamorphosis,if=buff.moonwell_chalice.up&pet.felguard.active
 			if BuffPresent(BLESSINGOFTHEMOONWELL) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
 			#/demon_soul,if=buff.metamorphosis.up
-			if BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
+			if PetPresent() and BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
 		}
 		if CheckBoxOff(trinketmwc)
 		{
 			#/metamorphosis
 			Spell(METAMORPHOSIS)
 			#/demon_soul
-			Spell(DEMONSOUL)
+			if PetPresent() Spell(DEMONSOUL)
 		}
 	}
 }
@@ -802,8 +778,7 @@ AddIcon help=main mastery=3
 				if BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
-		# Queue highest damage spell to land when OOC.
-		Spell(SOULFIRE)
+		if TalentPoints(IMPROVEDSOULFIRETALENT more 0) Spell(SOULFIRE)
 	}
 
 	# Maintain raid buffs and debuffs.
@@ -812,7 +787,7 @@ AddIcon help=main mastery=3
 		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
 		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
 		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
-		if CheckBoxOn(shadowbolt) and TargetDebuffExpires(magicalcrittaken 5) Spell(SHADOWBOLT)
+		if CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5) Spell(INCINERATE)
 	}
 
 	#/fel_armor
@@ -841,23 +816,14 @@ AddIcon help=main mastery=3
 	#/shadowflame
 	if TargetDistance(less 8) Spell(SHADOWFLAME)
 	#/chaos_bolt,if=cast_time>0.9
-	if Spell(CHAOSBOLT) and CastTime(CHAOSBOLT more 0.9) Spell(CHAOSBOLT)
-	if ArmorSetParts(T13 more 3)
-	{
-		#/soul_fire,if=buff.soulburn.up
-		if BuffPresent(SOULBURN) Spell(SOULFIRE)
-	}
+	if CastTime(CHAOSBOLT more 0.9) Spell(CHAOSBOLT)
 	if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
 	{
 		#/soul_fire,if=((buff.empowered_imp.react&buff.empowered_imp.remains<(buff.improved_soul_fire.remains+action.soul_fire.travel_time))|\
 		#	buff.improved_soul_fire.remains<(cast_time+travel_time+action.incinerate.cast_time+gcd))&!in_flight
 		# Assume the travel time of Soul Fire is 1s.
-		if 1s after Spell(SOULFIRE)
-		{
-			if BuffPresent(EMPOWEREDIMP)
-				if more than 1s from BuffExpires(IMPROVEDSOULFIREBUFF) until BuffExpires(EMPOWEREDIMP) Spell(SOULFIRE)
-			if BuffExpires(IMPROVEDSOULFIREBUFF 7.5 haste=spell) Spell(SOULFIRE) 
-		}
+		if BuffPresent(EMPOWEREDIMP) and {buffExpires(EMPOWEREDIMP) < buffExpires(IMPROVEDSOULFIREBUFF) + 1} Spell(SOULFIRE)
+		if BuffExpires(IMPROVEDSOULFIREBUFF 7.5 haste=spell) Spell(SOULFIRE) 
 	}
 	#/shadowburn
 	if TargetLifePercent(less 20) Spell(SHADOWBURN)
@@ -873,27 +839,25 @@ AddIcon help=main mastery=3
 AddIcon help=offgcd mastery=3
 {
 	unless {TargetDeadIn(more 8)
-		and {{List(curse elements) and {TargetDebuffExpires(magicaldamagetaken 2) or TargetDebuffExpires(JINXELEMENTSDEBUFF)}}
+		and {{List(curse elements) and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF)}
 			or {List(curse tongues) and TargetDebuffExpires(castslow 2)}
 			or {List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2)}
-			or {CheckBoxOn(shadowbolt) and TargetDebuffExpires(magicalcrittaken 5)}}}
+			or {CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}}}
 		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+		or {BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1)}
+		or {TargetDebuffExpires(IMMOLATE 3 mine=1 haste=spell) and TargetDeadIn(more 4)}
+		or {TargetDebuffPresent(IMMOLATE mine=1) and Spell(CONFLAGRATE)}
+		or {BuffPresent(heroism 32) and 3s before Spell(CONFLAGRATE) and TargetDebuffExpires(IMMOLATE 12 mine=1)}
+		or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+			and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
+		or {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
+		or {TargetDistance(less 8) and Spell(SHADOWFLAME)}
+		or {CastTime(CHAOSBOLT more 0.9) and Spell(CHAOSBOLT)}
 	{
 		if ArmorSetParts(T13 more 3)
 		{
-			#/soulburn
-			#/soul_fire,if=buff.soulburn.up&!in_combat
+			#/soul_fire,if=buff.soulburn.up
 			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
-		}
-		unless ArmorSetParts(T13 more 3)
-		{
-			if TalentPoints(IMPROVEDSOULFIRETALENT more 0)
-			{
-				#/soulburn,if=buff.bloodlust.down
-				#/soul_fire,if=buff.soulburn.up&!in_combat
-				unless BuffPresent(heroism)
-					if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
-			}
 		}
 	}
 }
@@ -915,7 +879,7 @@ AddIcon help=main mastery=3
 		if CheckBoxOn(potions) and TargetClassification(worldboss)
 			if BuffPresent(heroism) or TargetLifePercent(less 20) Item(VOLCANICPOTION)
 		#/demon_soul
-		Spell(DEMONSOUL)
+		if PetPresent() Spell(DEMONSOUL)
 	}
 }
 
