@@ -823,7 +823,7 @@ AddIcon help=main mastery=3
 		#	buff.improved_soul_fire.remains<(cast_time+travel_time+action.incinerate.cast_time+gcd))&!in_flight
 		# Assume the travel time of Soul Fire is 1s.
 		if BuffPresent(EMPOWEREDIMP) and {buffExpires(EMPOWEREDIMP) < buffExpires(IMPROVEDSOULFIREBUFF) + 1} Spell(SOULFIRE)
-		if BuffExpires(IMPROVEDSOULFIREBUFF 7.5 haste=spell) Spell(SOULFIRE) 
+		if BuffExpires(IMPROVEDSOULFIREBUFF 7.5 haste=spell) Spell(SOULFIRE)
 	}
 	#/shadowburn
 	if TargetLifePercent(less 20) Spell(SHADOWBURN)
