@@ -52,7 +52,7 @@ Define(VOLCANICDESTRUCTION 89091) # DMC: Volcano +1600 int proc
 # On-use trinket buffs for some commonly available 300+ trinkets.
 SpellList(SPELLPOWERTRINKETBUFF 73551 84968 90889 91019 91135 91136 92225 95875 97007 97008 99712 99741 102437 105134 107948)
 SpellList(HASTETRINKETBUFF 91041 92328)
-SpellList(MASTERYTRINKETBUFF 92188 100403)
+SpellList(MASTERYTRINKETBUFF 100403)
 
 # Debuffs
 SpellList(CORRUPTIONDEBUFF 172 87389) # Corruption, Soulburn: Seed of Corruption
@@ -440,13 +440,13 @@ AddIcon help=offgcd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or Spell(HAUNT)
+			or 0s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
 			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
 			or {TargetDistance(less 8) and Spell(SHADOWFLAME)}
 		{
 			#/soul_fire,if=buff.soulburn.up
-			if ArmorSetParts(T13 more 3) and SoulShards(more 0) and Spell(SOULBURN) Spell(SOULFIRE)
+			if ArmorSetParts(T13 more 3) and SoulShards(more 0) and 0s before Spell(SOULBURN) Spell(SOULFIRE)
 			if TalentPoints(BANETALENT more 2)
 			{
 				unless ManaPercent(less 35)
@@ -457,7 +457,7 @@ AddIcon help=offgcd mastery=1
 						#/soulburn,if=buff.demon_soul_felhunter.down
 						#/soul_fire,if=buff.soulburn.up
 						unless BuffPresent(DEMONSOULSUCCUBUS) or BuffPresent(DEMONSOULFELHUNTER)
-							if SoulShards(more 0) and Spell(SOULBURN) Spell(SOULFIRE)
+							if SoulShards(more 0) and 0s before Spell(SOULBURN) Spell(SOULFIRE)
 					}
 				}
 			}
@@ -495,7 +495,7 @@ AddIcon help=cd mastery=1
 			or {TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
 			or {TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
 				and {{List(bane doom) and TargetDeadIn(more 15)} or {List(bane agony) and TargetDeadIn(more 10)}}}
-			or 1.5s before Spell(HAUNT)
+			or 0s before Spell(HAUNT)
 			or {BuffPresent(FELSPARK) and TargetDebuffExpires(UNSTABLEAFFLICTION 8 mine=1)}
 			or {TalentPoints(SOULSIPHONTALENT more 0) and TargetLifePercent(less 25)}
 		{
@@ -717,7 +717,7 @@ AddIcon help=main mastery=2
 		#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
 		#/summon_felhunter,if=!pet.felguard.dot.felstorm.ticking&pet.felguard.active
 		if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM)
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SUMMONFELHUNTER)
+			if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SUMMONFELHUNTER)
 		if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
 		{
 			if CheckBoxOn(trinketmwc)
@@ -725,13 +725,13 @@ AddIcon help=main mastery=2
 				#/soulburn,if=pet.felhunter.active&cooldown.metamorphosis.remains>60
 				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up&cooldown.metamorphosis.remains>60
 				unless TalentPoints(METAMORPHOSISTALENT more 0) and 60s before Spell(METAMORPHOSIS)
-					if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+					if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 			if CheckBoxOff(trinketmwc)
 			{
 				#/soulburn,if=pet.felhunter.active
 				#/soul_fire,if=pet.felhunter.active&buff.soulburn.up
-				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+				if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
 	}
@@ -812,7 +812,7 @@ AddIcon help=main mastery=3
 			if ArmorSetParts(T13 more 3)
 			{
 				#/soul_fire,if=buff.soulburn.up&!in_combat
-				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+				if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 			Spell(SOULFIRE)
 		}
@@ -885,14 +885,14 @@ AddIcon help=offgcd mastery=3
 			{
 				#/soulburn
 				#/soul_fire,if=buff.soulburn.up&!in_combat
-				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+				if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 			unless ArmorSetParts(T13 more 3)
 			{
 				#/soulburn,if=buff.bloodlust.down
 				#/soul_fire,if=buff.soulburn.up&!in_combat
 				unless BuffPresent(heroism)
-					if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+					if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
 	}
@@ -905,7 +905,7 @@ AddIcon help=offgcd mastery=3
 	{
 		# If combat started without us pre-casting Soul Fire to gain the Improved Soul Fire buff, then cast it now.
 		if TalentPoints(IMPROVEDSOULFIRETALENT more 0) and BuffExpires(IMPROVEDSOULFIREBUFF)
-			if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+			if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 		if ArmorSetParts(T13 more 3)
 		{
 			#/soulburn
@@ -924,7 +924,7 @@ AddIcon help=offgcd mastery=3
 			if ArmorSetParts(T13 more 3)
 			{
 				#/soul_fire,if=buff.soulburn.up
-				if {SoulShards(more 0) and Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
+				if {SoulShards(more 0) and 0s before Spell(SOULBURN)} or BuffPresent(SOULBURN) Spell(SOULFIRE)
 			}
 		}
 	}
