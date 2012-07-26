@@ -206,7 +206,7 @@ AddFunction CooldownsBear
 AddFunction AddComboPoint
 {
 	if CheckBoxOn(shred) Spell(SHRED)
-	if CheckBoxOff(shred) Spell(MANGLE)
+	if CheckBoxOff(shred) Spell(MANGLECAT)
 }
 
 AddFunction ExecuteRange
