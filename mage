@@ -302,7 +302,7 @@ AddIcon help=main mastery=1
 				unless spell(EVOCATION) < target.timeToDie()
 				{
 					# We're going until OOM, stop when we can no longer cast full stack AB (approximately, 4 stack with AP can be 6177)
-					Spell(ARCANEBLAST)
+					if Mana(more 6200) Spell(ARCANEBLAST)
 				}
 			}
 			unless ArcaneBurnPeriodBeforeEvocation()
