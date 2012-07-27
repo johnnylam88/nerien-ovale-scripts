@@ -29,6 +29,9 @@ SpellList(MAGEBUFF 79038 79058) # Dalaran Brilliance, Arcane Brilliance
 Define(PRESENCEOFMIND 12043)
 Define(STOLENTIME 105785) # 2pT13 buff stacks up to 10 times
 
+# Intellect buffs (short-term)
+SpellList(INTELLECTBUFF 74241 75170 89091 95875 97007)
+
 # Debuffs
 Define(COMBUSTIONDEBUFF 83853)
 Define(CRITICALMASS 22959)
@@ -229,29 +232,51 @@ AddIcon help=main mastery=1
 	if DebuffExpires(ARCANEBLASTDEBUFF 0.8 stacks=4) Spell(ARCANEBLAST)
 	#/arcane_missiles,if=mana_pct_nonproc<92&buff.arcane_missiles.react&mage_armor_timer<=2
 	#/arcane_missiles,if=mana_pct_nonproc<93&buff.arcane_missiles.react&mage_armor_timer>2
-	if ManaPercent(less 93) and BuffPresent(ARCANEMISSILEBUFF) Spell(ARCANEMISSILES)
+	if {BuffPresent(INTELLECTBUFF) and ManaPercent(less 88)} or ManaPercent(less 93)
+		if BuffPresent(ARCANEMISSILEBUFF) Spell(ARCANEMISSILES)
 	#/arcane_barrage,if=mana_pct_nonproc<87&buff.arcane_blast.stack=2
-	if ManaPercent(less 87) and DebuffPresent(ARCANEBLASTDEBUFF stacks=2)
-		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
+	if {BuffPresent(INTELLECTBUFF) and ManaPercent(less 82)} or ManaPercent(less 87)
+	{
+		if DebuffPresent(ARCANEBLASTDEBUFF stacks=2)
+			unless DebuffPresent(ARCANEBLASTDEBUFF stacks=3) Spell(ARCANEBARRAGE)
+	}
 	#/arcane_barrage,if=mana_pct_nonproc<90&buff.arcane_blast.stack=3
-	if ManaPercent(less 90) and DebuffPresent(ARCANEBLASTDEBUFF stacks=3)
-		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
+	if {BuffPresent(INTELLECTBUFF) and ManaPercent(less 85)} or ManaPercent(less 90)
+	{
+		if DebuffPresent(ARCANEBLASTDEBUFF stacks=3)
+			unless DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
+	}
 	#/arcane_barrage,if=mana_pct_nonproc<92&buff.arcane_blast.stack=4
-	if ManaPercent(less 92) and DebuffPresent(ARCANEBLASTDEBUFF stacks=4)
-		unless DebuffPresent(ARCANEBLASTDEBUFF stacks=5) Spell(ARCANEBARRAGE)
+	if {BuffPresent(INTELLECTBUFF) and ManaPercent(less 87)} or ManaPercent(less 92)
+		if DebuffPresent(ARCANEBLASTDEBUFF stacks=4) Spell(ARCANEBARRAGE)
 	#/arcane_blast
 	Spell(ARCANEBLAST)
 }
 
 AddFunction arcaneBurnMPS
 {
-	# burn_mps is the rate at which mana is consumed during a burn phase.
-	if List(arcaneburntime 15s)	{ 65 / timeWithHaste(15) }
-	if List(arcaneburntime 20s)	{ 65 / timeWithHaste(20) }
+	# Implements "burn_mps" from the SimulationCraft profile, which is
+	# the rate at which mana is consumed during a burn phase.
+	#
+	if List(arcaneburntime 15s) { 65 / timeWithHaste(15) }
+	if List(arcaneburntime 20s) { 65 / timeWithHaste(20) }
 	if List(arcaneburntime 25s) { 65 / timeWithHaste(25) }
 	if List(arcaneburntime 30s) { 65 / timeWithHaste(30) }
 	if List(arcaneburntime 35s) { 65 / timeWithHaste(35) }
 	if List(arcaneburntime 40s) { 65 / timeWithHaste(40) }
+}
+
+AddFunction ArcaneBurnPeriodBeforeEvocation
+{
+	# Returns true if we are "Arcane Burn Time" seconds away before
+	# Evocation comes off of cooldown.
+	#
+	   {List(arcaneburntime 15s) and 15s before Spell(EVOCATION)}
+	or {List(arcaneburntime 20s) and 20s before Spell(EVOCATION)}
+	or {List(arcaneburntime 25s) and 25s before Spell(EVOCATION)}
+	or {List(arcaneburntime 30s) and 30s before Spell(EVOCATION)}
+	or {List(arcaneburntime 35s) and 35s before Spell(EVOCATION)}
+	or {List(arcaneburntime 40s) and 40s before Spell(EVOCATION)}
 }
 
 # Arcane DPS rotation for maximum burst damage.
@@ -267,12 +292,12 @@ AddIcon help=main mastery=1
 		#
 		if spell(EVOCATION) + 15 > target.timeToDie()
 		{
-			if 20s before Spell(EVOCATION)
+			if ArcaneBurnPeriodBeforeEvocation()
 			{
 				if spell(EVOCATION) < target.timeToDie()
 				{
 					# We're going until target percentage.
-					if ManaPercent(more 35) Spell(ARCANEBLAST)
+					if {BuffPresent(INTELLECTBUFF) and ManaPercent(more 40)} or ManaPercent(more 35) Spell(ARCANEBLAST)
 				}
 				unless spell(EVOCATION) < target.timeToDie()
 				{
@@ -280,7 +305,7 @@ AddIcon help=main mastery=1
 					Spell(ARCANEBLAST)
 				}
 			}
-			unless 20s before Spell(EVOCATION)
+			unless ArcaneBurnPeriodBeforeEvocation()
 			{
 				# We wish to burn if the target will die before we go OOM.
 				if {manaPercent() / arcaneBurnMPS() > target.timeToDie()} Spell(ARCANEBLAST)
@@ -299,7 +324,7 @@ AddIcon help=main mastery=1
 		#
 		unless spell(EVOCATION) + 15 > target.timeToDie()
 		{
-			unless 20s before Spell(EVOCATION) and ManaPercent(less 22)
+			unless ArcaneBurnPeriodBeforeEvocation() and ManaPercent(less 22)
 				and {TargetDeadIn(more 60) or {arcaneBurnMPS() * {target.timeToDie() - 5 - spell(EVOCATION)} > manaPercent()}}
 			{
 				if BuffPresent(IMPROVEDMANAGEM) or ManaGemReady() Spell(ARCANEBLAST)
@@ -312,14 +337,15 @@ AddIcon help=main mastery=1
 		if TargetDeadIn(less 20) Spell(ARCANEBLAST)
 		if ManaPercent(more 22)
 		{
-			if 20s before Spell(EVOCATION)
-				or BuffPresent(IMPROVEDMANAGEM) or ManaGemReady()
-				or 5s before Item(MANAGEMITEM)
+			if ArcaneBurnPeriodBeforeEvocation() or BuffPresent(IMPROVEDMANAGEM) or ManaGemReady() or 5s before Item(MANAGEMITEM)
 			{
 				Spell(ARCANEBLAST)
 			}
 		}
-		if BuffPresent(ARCANEPOWER) and ManaPercent(more 88) Spell(ARCANEBLAST)
+		if BuffPresent(ARCANEPOWER) and {{BuffPresent(INTELLECTBUFF) and ManaPercent(more 83)} or ManaPercent(more 88)}
+		{
+			Spell(ARCANEBLAST)
+		}
 	}
 }
 
@@ -351,7 +377,7 @@ AddIcon help=cd mastery=1
 		if BuffPresent(ARCANEPOWER) Spell(BERSERKING)
 		unless 20s before Spell(ARCANEPOWER) Spell(BERSERKING)
 		unless {TalentPoints(PRESENCEOFMINDTALENT less 1)
-			and {20s before Spell(EVOCATION) and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM less 1 charges=1)}}
+			and {ArcaneBurnPeriodBeforeEvocation() and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM less 1 charges=1)}}
 		{
 			#/arcane_torrent,if=mana_pct<91&(buff.arcane_power.up|target.time_to_die<120)
 			if ManaPercent(less 91) and {BuffPresent(ARCANEPOWER) or TargetDeadIn(less 120)} Spell(ARCANETORRENTMANA)
@@ -398,11 +424,12 @@ AddIcon help=mana mastery=1
 		#/conjure_mana_gem,invulnerable=1,if=mana_gem_charges<3
 		#if ItemCount(MANAGEMITEM less 3 charges=1) Spell(CONJUREMANAGEM)
 		#/evocation,if=((max_mana>max_mana_nonproc&mana_pct_nonproc<=40)|(max_mana=max_mana_nonproc&mana_pct<=35))&target.time_to_die>10
-		if ManaPercent(less 35) and TargetDeadIn(more 10) Spell(EVOCATION)
+		if {BuffPresent(INTELLECTBUFF) and ManaPercent(less 40)} or ManaPercent(less 35)
+			if TargetDeadIn(more 10) Spell(EVOCATION)
 		if TalentPoints(PRESENCEOFMINDTALENT less 1)
 		{
 			#/conjure_mana_gem,if=cooldown.evocation.remains<20&target.time_to_die>105&mana_gem_charges=0
-			if 20s before Spell(EVOCATION) and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM less 1 charges=1) Spell(CONJUREMANAGEM)
+			if ArcaneBurnPeriodBeforeEvocation() and TargetDeadIn(more 105) and ItemCount(MANAGEMITEM less 1 charges=1) Spell(CONJUREMANAGEM)
 		}
 		#/mana_gem,if=buff.arcane_blast.stack=4&buff.tier13_2pc.stack>=7&(cooldown.arcane_power.remains<=0|target.time_to_die<=50)
 		if ManaGemReady() Texture(inv_misc_gem_emerald_01)
