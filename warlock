@@ -229,7 +229,7 @@ AddCheckBox(powertorrent SpellName(POWERTORRENT))
 
 # Commonly available trinkets with proc effects.
 AddCheckBox(trinketdmcv "DMC: Volcano")
-AddCheckBox(trinketfoul "Foul Gift of the Demon Lord")
+AddCheckBox(trinketfoul "Foul Gift of the Demon Lord" mastery=2)
 AddCheckBox(trinketiotcm "Insignia of the Corrupted Mind")
 AddCheckBox(trinketwou "Will of Unbinding")
 
@@ -267,21 +267,23 @@ AddFunction UseRacialActions
 
 AddFunction EnoughBuffProcs
 {
-	# "enough buff procs" means:
-	#	- at least two proc effects
+}
+
+AddFunction EnoughBuffsForDoomguard
+{
+	# "enough buffs" means:
 	#	- at least 2 stacks from Will of Unbinding at the start of the fight, or 8 stacks later.
+	#	- at least two proc effects
+	#	- potion
+	#	- at least one on-use trinket effect (either ready to use, or buff already present)
 	#
 	{CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
 	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
-		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
-		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
 		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
-		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
 		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)}
 			and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
 		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}
@@ -293,16 +295,6 @@ AddFunction EnoughBuffProcs
 		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
 			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
 		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
-}
-
-AddFunction EnoughBuffsForDoomguard
-{
-	# "enough buffs" means:
-	#	- enough buff procs
-	#	- potion
-	#	- at least one on-use trinket effect (either ready to use, or buff already present)
-	#
-	EnoughBuffProcs()
 	and {CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
 	and {{List(trinketcd0 000s) and List(trinketcd1 000s)}
 		or {{List(trinketcd0 060s) or List(trinketcd0 090s) or List(trinketcd0 120s)}
@@ -560,11 +552,33 @@ AddFunction UseItemActionsDemonology
 AddFunction EnoughBuffsForDoomguardDemonology
 {
 	# "enough buffs" means:
-	#	- enough buff procs
+	#	- at least 2 stacks from Will of Unbinding at the start of the fight, or 8 stacks later.
+	#	- at least two proc effects
 	#	- potion
 	#	- at least one on-use trinket effect (either ready to use, or buff already present)
 	#
-	EnoughBuffProcs()
+	{CheckBoxOff(trinketwou) or {TimeInCombat(less 10) and BuffPresent(COMBATMIND stacks=2)} or BuffPresent(COMBATMIND stacks=8)}
+	and {{{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)} and {CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}}
+		or {{CheckBoxOn(lightweave) and BuffPresent(LIGHTWEAVE)}
+			and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(powertorrent) and BuffPresent(POWERTORRENT)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(trinketdmcv) and BuffPresent(VOLCANICDESTRUCTION)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(trinketfoul) and BuffPresent(FOULGIFT)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketiotcm)}
+		or {{CheckBoxOn(trinketiotcm) and BuffPresent(VELOCITY)}
+			and CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul)}
+		or {CheckBoxOff(lightweave) and CheckBoxOff(powertorrent) and CheckBoxOff(trinketdmcv) and CheckBoxOff(trinketfoul) and CheckBoxOff(trinketiotcm)}}
 	and {CheckBoxOff(potions) or {ItemCount(VOLCANICPOTION more 0) and Item(VOLCANICPOTION)} or BuffPresent(VOLCANICPOWER)}
 	and {{List(trinketcd0 000s) and List(trinketcd1 000s)}
 		or {{List(trinketcd0 060s) or List(trinketcd0 090s) or List(trinketcd0 120s)}
