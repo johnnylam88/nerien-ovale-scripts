@@ -769,7 +769,7 @@ AddIcon help=cd mastery=2
 		if CheckBoxOn(trinketmwc)
 		{
 			#/metamorphosis,if=buff.moonwell_chalice.up&pet.felguard.active
-			if BuffPresent(BLESSINGOFTHEMOONWELL) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
+			if BuffPresent(MASTERYTRINKETBUFF) and pet.CreatureFamily(PETFELGUARD) Spell(METAMORPHOSIS)
 			#/demon_soul,if=buff.metamorphosis.up
 			if PetPresent() and BuffPresent(METAMORPHOSIS) Spell(DEMONSOUL)
 		}
