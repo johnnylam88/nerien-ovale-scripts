@@ -265,10 +265,6 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
-AddFunction EnoughBuffProcs
-{
-}
-
 AddFunction EnoughBuffsForDoomguard
 {
 	# "enough buffs" means:
@@ -303,12 +299,28 @@ AddFunction EnoughBuffsForDoomguard
 			and {Item(Trinket1Slot)	or {BuffPresent(SPELLPOWERTRINKETBUFF) or BuffPresent(HASTETRINKETBUFF)}}}}
 }
 
+# Soulstones, Healthstones & Dark Intent.
+AddIcon help=buff size=small
+{
+	if InCombat(no)
+	{
+		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
+		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
+		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
+		if ManaPercent(less 90) Spell(LIFETAP)
+		if SoulShards(less 3) Spell(SOULHARVEST)
+	}
+
+	#/dark_intent
+	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
+}
+
 ###
 ### Affliction
 ###
 
-# Pet & buffs.
-AddIcon size=small mastery=1
+# Pet & one-target-only debuffs.
+AddIcon help=buff size=small mastery=1
 {
 	if PetPresent(no)
 	{
@@ -318,15 +330,29 @@ AddIcon size=small mastery=1
 		Spell(SUMMONFELHUNTER)
 		if Level(less 30) Spell(SUMMONIMP)
 	}
-	if InCombat(no)
+
+	# Maintain raid buffs and debuffs.
+	if TargetDeadIn(more 8)
 	{
-		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
-		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
-		if SoulShards(less 3) Spell(SOULHARVEST)
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
+		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
+		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
+		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
 	}
-	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
+
+	unless {TargetDeadIn(more 8) and CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}
+		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+	{
+		unless {TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDebuffExpires(SEEDOFCORRUPTION mine=1)}
+			or {TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5)}
+		{
+			#/bane_of_doom,if=target.time_to_die>15&!ticking&miss_react
+			unless TargetDebuffPresent(BANEOFDOOM mine=1) or TargetDebuffPresent(BANEOFAGONY mine=1)
+			{
+				if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+				if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
+			}
+		}
+	}
 }
 
 # Main rotation.
@@ -342,13 +368,7 @@ AddIcon help=main mastery=1
 	}
 
 	# Maintain raid buffs and debuffs.
-	if TargetDeadIn(more 8)
-	{
-		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
-		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
-		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
-		if CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5) Spell(SHADOWBOLT)
-	}
+	if TargetDeadIn(more 8) and CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5) Spell(SHADOWBOLT)
 
 	#/fel_armor
 	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
@@ -361,12 +381,6 @@ AddIcon help=main mastery=1
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
 	#/unstable_affliction,if=(!ticking|remains<(cast_time+tick_time))&target.time_to_die>=5&miss_react
 	if TargetDebuffExpires(UNSTABLEAFFLICTION 4.5 mine=1 haste=spell) and TargetDeadIn(more 5) Spell(UNSTABLEAFFLICTION)
-	#/bane_of_doom,if=target.time_to_die>15&!ticking&miss_react
-	unless TargetDebuffPresent(BANEOFDOOM mine=1) or TargetDebuffPresent(BANEOFAGONY mine=1)
-	{
-		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
-		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
-	}
 	#/haunt
 	Spell(HAUNT)
 	#/fel_flame,if=buff.tier11_4pc_caster.react&dot.unstable_affliction.remains<8
@@ -587,17 +601,11 @@ AddFunction EnoughBuffsForDoomguardDemonology
 			and {Item(Trinket1Slot)	or {BuffPresent(SPELLPOWERTRINKETBUFF) or BuffPresent(HASTETRINKETBUFF) or BuffPresent(MASTERYTRINKETBUFF)}}}}
 }
 
-# Pet & buffs.
-AddIcon size=small mastery=2
+# Pet & one-target-only debuffs.
+AddIcon help=buff size=small mastery=2
 {
 	if InCombat(no)
-	{
 		unless pet.CreatureFamily(PETFELGUARD) Spell(SUMMONFELGUARD)
-		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
-		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
-		if SoulShards(less 3) Spell(SOULHARVEST)
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
-	}
 
 	if CheckBoxOn(trinketmwc)
 	{
@@ -611,13 +619,40 @@ AddIcon size=small mastery=2
 			}
 		}
 	}
-	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
-	#/felguard:felstorm
-	if pet.CreatureFamily(PETFELGUARD) and TargetInRange(PETLEGIONSTRIKE yes) Spell(PETFELSTORM)
-	#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
-	#/summon_felhunter,if=!pet.felguard.dot.felstorm.ticking&pet.felguard.active
-	if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM) Spell(SUMMONFELHUNTER)
+
+	# Maintain raid buffs and debuffs.
+	if TargetDeadIn(more 8)
+	{
+		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
+		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
+		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
+	}
+
+	unless {TargetDeadIn(more 8) and CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}
+		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+	{
+		#/bane_of_doom,if=!ticking&time<10
+		if TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+		{
+			if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+			if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
+		}
+		#/felguard:felstorm
+		if pet.CreatureFamily(PETFELGUARD) and TargetInRange(PETLEGIONSTRIKE yes) Spell(PETFELSTORM)
+		#/soulburn,if=pet.felguard.active&!pet.felguard.dot.felstorm.ticking
+		#/summon_felhunter,if=!pet.felguard.dot.felstorm.ticking&pet.felguard.active
+		if pet.CreatureFamily(PETFELGUARD) and 39s before Spell(PETFELSTORM) Spell(SUMMONFELHUNTER)
+		#/bane_of_doom,if=(!ticking|(buff.metamorphosis.up&remains<45))&target.time_to_die>=15&miss_react
+		if TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
+		{
+			if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+			if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
+		}
+		if TargetDebuffExpires(BANEOFDOOM 44 mine=1) and BuffPresent(METAMORPHOSIS)
+		{
+			if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+		}
+	}
 }
 
 # Main rotation.
@@ -633,16 +668,10 @@ AddIcon help=main mastery=2
 	}
 
 	# Maintain raid buffs and debuffs.
-	if TargetDeadIn(more 8)
+	if TargetDeadIn(more 8) and CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)
 	{
-		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
-		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
-		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
-		if CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)
-		{
-			if TalentPoints(BANETALENT more 0) Spell(SHADOWBOLT)
-			if TalentPoints(BANETALENT less 1) Spell(INCINERATE)
-		}
+		if TalentPoints(BANETALENT more 0) Spell(SHADOWBOLT)
+		if TalentPoints(BANETALENT less 1) Spell(INCINERATE)
 	}
 
 	#/fel_armor
@@ -650,12 +679,6 @@ AddIcon help=main mastery=2
 	{
 		Spell(FELARMOR)
 		Spell(DEMONARMOR)
-	}
-	#/bane_of_doom,if=!ticking&time<10
-	if TimeInCombat(less 10) and TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
-	{
-		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
-		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
 	}
 	if ArmorSetParts(T13 more 3) and pet.CreatureFamily(PETFELHUNTER)
 	{
@@ -673,16 +696,6 @@ AddIcon help=main mastery=2
 	}
 	#/immolate,if=!ticking&target.time_to_die>=4&miss_react
 	if TargetDebuffExpires(IMMOLATE mine=1) and TargetDeadIn(more 5) Spell(IMMOLATE)
-	#/bane_of_doom,if=(!ticking|(buff.metamorphosis.up&remains<45))&target.time_to_die>=15&miss_react
-	if TargetDebuffExpires(BANEOFDOOM mine=1) and TargetDebuffExpires(BANEOFAGONY mine=1)
-	{
-		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
-		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
-	}
-	if TargetDebuffExpires(BANEOFDOOM 44 mine=1) and BuffPresent(METAMORPHOSIS)
-	{
-		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
-	}
 	#/corruption,if=(remains<tick_time|!ticking)&target.time_to_die>=6&miss_react
 	if TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell) and TargetDeadIn(more 6)
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
@@ -794,21 +807,36 @@ AddIcon help=cd mastery=2
 ### Destruction
 ###
 
-# Pet & buffs.
-AddIcon size=small mastery=3
+# Pet & one-target-only debuffs.
+AddIcon help=buff size=small mastery=3
 {
 	#/summon_imp
 	if PetPresent(no) Spell(SUMMONIMP)
 
-	if InCombat(no)
+	# Maintain raid buffs and debuffs.
+	if TargetDeadIn(more 8)
 	{
-		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
-		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
-		if SoulShards(less 3) Spell(SOULHARVEST)
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
+		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
+		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
+		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
 	}
-	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
+
+	unless {TargetDeadIn(more 8) and CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5)}
+		or {BuffExpires(DEMONARMOR) and BuffExpires(FELARMOR)}
+	{
+		unless {BuffPresent(FELSPARK) and TargetDebuffExpires(IMMOLATE 8 mine=1)}
+			or {TargetDebuffExpires(IMMOLATE 3 mine=1 haste=spell) and TargetDeadIn(more 4)}
+			or {TargetDebuffPresent(IMMOLATE mine=1) and Spell(CONFLAGRATE)}
+			or {BuffPresent(heroism 32) and 3s before Spell(CONFLAGRATE) and TargetDebuffExpires(IMMOLATE 12 mine=1)}
+		{
+			#/bane_of_doom,if=!ticking&target.time_to_die>=15&miss_react
+			unless TargetDebuffPresent(BANEOFDOOM mine=1) or TargetDebuffPresent(BANEOFAGONY mine=1)
+			{
+				if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
+				if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
+			}
+		}
+	}
 }
 
 # Main rotation.
@@ -833,13 +861,7 @@ AddIcon help=main mastery=3
 	}
 
 	# Maintain raid buffs and debuffs.
-	if TargetDeadIn(more 8)
-	{
-		if List(curse elements)	and TargetDebuffExpires(magicaldamagetaken 2) and TargetDebuffExpires(JINXELEMENTSDEBUFF) Spell(CURSEOFTHEELEMENTS)
-		if List(curse tongues) and TargetDebuffExpires(castslow 2) Spell(CURSEOFTONGUES)
-		if List(curse weakness) and TargetDebuffExpires(lowerphysicaldamage 2) Spell(CURSEOFWEAKNESS)
-		if CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5) Spell(INCINERATE)
-	}
+	if TargetDeadIn(more 8) and CheckBoxOn(shadowandflame) and TargetDebuffExpires(magicalcrittaken 5) Spell(INCINERATE)
 
 	#/fel_armor
 	unless BuffPresent(DEMONARMOR) or BuffPresent(FELARMOR)
@@ -857,12 +879,6 @@ AddIcon help=main mastery=3
 	if TargetDebuffPresent(IMMOLATE mine=1) Spell(CONFLAGRATE)
 	#/immolate,if=buff.bloodlust.react&buff.bloodlust.remains>32&cooldown.conflagrate.remains<=3&remains<12
 	if BuffPresent(heroism 32) and 3s before Spell(CONFLAGRATE) and TargetDebuffExpires(IMMOLATE 12 mine=1) Spell(IMMOLATE)
-	#/bane_of_doom,if=!ticking&target.time_to_die>=15&miss_react
-	unless TargetDebuffPresent(BANEOFDOOM mine=1) or TargetDebuffPresent(BANEOFAGONY mine=1)
-	{
-		if List(bane doom) and TargetDeadIn(more 15) Spell(BANEOFDOOM)
-		if List(bane agony) and TargetDeadIn(more 10) Spell(BANEOFAGONY)
-	}
 	#/corruption,if=(!ticking|dot.corruption.remains<tick_time)&miss_react
 	if TargetDebuffExpires(CORRUPTIONDEBUFF 3 mine=1 haste=spell)
 		unless TargetDebuffPresent(SEEDOFCORRUPTION mine=1) Spell(CORRUPTION)
