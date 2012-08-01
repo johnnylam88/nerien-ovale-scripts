@@ -1,6 +1,6 @@
 ### Shadow Priest Ovale script based on SimulationCraft profile
 ### https://sites.google.com/site/wownerien/ovale/priest/script
-### Version: 4.3.7
+### Version: 4.3.8
 #
 # Shadow:
 #	talents=http://www.wowhead.com/talent#priest-032212000000000000000000000000000000000000322032210201222100231
@@ -148,7 +148,7 @@ AddIcon help=buff size=small mastery=3
 		or BuffExpires(INNERFIRE) and BuffExpires(INNERWILL)
 		or {TalentPoints(SHADOWFORMTALENT more 0) and BuffExpires(SHADOWFORM)}
 		or {TalentPoints(VAMPIRICEMBRACETALENT more 0) and BuffExpires(VAMPIRICEMBRACE)}
-		or {Speed(equal 0) and Spell(MINDBLAST)}
+		or 0s before Spell(MINDBLAST)
 		or TargetDebuffExpires(SHADOWWORDPAIN 2.5 mine=1 haste=spell)
 	{
 		#/devouring_plague,if=(!ticking|dot.devouring_plague.remains<gcd+1.0)&miss_react
@@ -168,7 +168,7 @@ AddIcon help=main mastery=3
 	#/vampiric_embrace
 	if BuffExpires(VAMPIRICEMBRACE) Spell(VAMPIRICEMBRACE)
 	#/mind_blast
-	if Spell(MINDBLAST)
+	Spell(MINDBLAST)
 	#/shadow_word_pain,if=(!ticking|dot.shadow_word_pain.remains<gcd+0.5)&miss_react
 	if TargetDebuffExpires(SHADOWWORDPAIN 2.5 mine=1 haste=spell) Spell(SHADOWWORDPAIN)
 	#/vampiric_touch,if=(!ticking|dot.vampiric_touch.remains<cast_time+2.5)&miss_react
@@ -222,7 +222,7 @@ AddIcon help=cd mastery=3
 		UseProfessionActions()
 		#/volcanic_potion,if=buff.bloodlust.react|target.time_to_die<=40
 		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 40)} Item(VOLCANICPOTION)
-		unless Spell(MINDBLAST)
+		unless 0s before Spell(MINDBLAST)
 		{
 			#/berserking
 			UseRacialActions()
@@ -235,7 +235,7 @@ AddIcon help=cd mastery=3
 				{
 					Spell(ARCHANGEL)
 				}
-				unless TalentPoints(MINDMELTTALENT more 0) and TargetLifePercent(less 25) and Spell(SHADOWWORDDEATH)
+				unless TalentPoints(MINDMELTTALENT more 0) and TargetLifePercent(less 25) and 0s before Spell(SHADOWWORDDEATH)
 				{
 					#/shadow_fiend
 					Spell(SHADOWFIEND)
