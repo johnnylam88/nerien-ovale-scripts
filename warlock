@@ -28,6 +28,7 @@ Define(PETSUCCUBUS Succubus)
 
 # Buffs
 Define(DARKINTENTBUFF 85768)
+Define(DARKINTENTTARGETBUFF 85767)
 Define(DECIMATION 63167)
 Define(DEMONSOULFELGUARD 79462)
 Define(DEMONSOULFELHUNTER 79460)
@@ -306,13 +307,13 @@ AddIcon help=buff size=small
 	{
 		if ItemCount(SOULSTONE less 1) and SoulShards(more 0) Spell(CREATESOULSTONE)
 		if ItemCount(HEALTHSTONE less 1) Spell(CREATEHEALTHSTONE)
-		if BuffExpires(DARKINTENTBUFF 400) Spell(DARKINTENT)
+		if BuffExpires(DARKINTENTBUFF 400) and TargetBuffExpires(DARKINTENTTARGETBUFF) Spell(DARKINTENT)
 		if ManaPercent(less 90) Spell(LIFETAP)
 		if SoulShards(less 3) Spell(SOULHARVEST)
 	}
 
 	#/dark_intent
-	if BuffExpires(DARKINTENTBUFF) Spell(DARKINTENT)
+	if BuffExpires(DARKINTENTBUFF) and TargetBuffExpires(DARKINTENTTARGETBUFF) Spell(DARKINTENT)
 }
 
 ###
