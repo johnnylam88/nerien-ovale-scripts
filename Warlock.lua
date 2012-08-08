@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["WARLOCK"] =
+[[
 ### Warlock Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/warlock/script
 ### Version: 4.3.1
@@ -988,3 +990,4 @@ AddIcon help=cd mastery=3
 	#/summon_doomguard,if=time>10
 	if EnoughBuffsForDoomguard() Spell(SUMMONDOOMGUARD)
 }
+]]

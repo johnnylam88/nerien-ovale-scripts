@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["PALADIN"] =
+[[
 ### Paladin Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/paladin/script
 ### Version: 4.3.14
@@ -359,3 +361,4 @@ AddIcon help=cd mastery=3
 	#/divine_plea
 	Spell(DIVINEPLEA)
 }
+]]

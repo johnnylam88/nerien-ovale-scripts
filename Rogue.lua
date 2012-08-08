@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["ROGUE"] =
+[[
 ### Rogue Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/rogue/script
 ### Version: 4.3.22
@@ -488,3 +490,4 @@ AddIcon size=small
 	Spell(CLOAKOFSHADOWS)
 	Spell(STONEFORM)
 }
+]]

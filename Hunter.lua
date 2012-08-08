@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["HUNTER"] =
+[[
 ### Hunter Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/hunter/script
 ### Version: 4.3.10
@@ -629,3 +631,4 @@ AddIcon size=small
 {
 	Spell(MISDIRECTION)
 }
+]]

@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["WARRIOR"] =
+[[
 ### Warrior Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/warrior/script
 ### Version: 4.3.13
@@ -724,3 +726,4 @@ AddIcon help=cd size=small mastery=3
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
+]]

@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["SHAMAN"] =
+[[
 ### Shaman Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/shaman/script
 ### Version: 4.3.16
@@ -589,3 +591,4 @@ AddIcon help=cd size=small
 		}
 	}
 }
+]]

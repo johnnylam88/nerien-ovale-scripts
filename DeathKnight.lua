@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["DEATHKNIGHT"] =
+[[
 ### Death Knight Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/deathknight/script
 ### Version: 4.3.9
@@ -560,3 +562,4 @@ AddIcon help=cd mastery=3
 	#/unholy_frenzy,if=!buff.bloodlust.react|target.time_to_die<=45
 	unless BuffPresent(heroism) and TargetDeadIn(more 45) Spell(UNHOLYFRENZY)
 }
+]]

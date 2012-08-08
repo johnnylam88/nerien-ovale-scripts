@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["PRIEST"] =
+[[
 ### Shadow Priest Ovale script based on SimulationCraft profile
 ### https://sites.google.com/site/wownerien/ovale/priest/script
 ### Version: 4.3.8
@@ -522,3 +524,4 @@ AddIcon help=cd size=small mastery=3
 	#/dispersion
 	Spell(DISPERSION)
 }
+]]

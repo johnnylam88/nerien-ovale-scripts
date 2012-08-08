@@ -1,3 +1,5 @@
+NerienOvaleScripts.script["MAGE"] =
+[[
 ### Mage Ovale script based on SimulationCraft profiles
 ### https://sites.google.com/site/wownerien/ovale/mage/script
 ### Version: 4.3.25
@@ -647,3 +649,4 @@ AddIcon help=mana mastery=3
 	#/mana_gem,if=mana_deficit>12500
 	if {player.maxMana() - player.mana() > 12500} Item(MANAGEMITEM)
 }
+]]
