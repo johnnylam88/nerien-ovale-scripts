@@ -1,0 +1,22 @@
+## Title: |c333399ffNerien's |rOvale Scripts
+## Notes: Nerien's default Ovale scripts.
+##
+## Interface: 40300
+## Dependencies: Ovale
+##
+## Version: @project-version@
+## Author: Johnny C. Lam
+##
+
+Core.lua
+
+DeathKnight.lua
+Druid.lua
+Hunter.lua
+Mage.lua
+Paladin.lua
+Priest.lua
+Rogue.lua
+Shaman.lua
+Warlock.lua
+Warrior.lua
