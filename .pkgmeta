@@ -1,1 +1,4 @@
 package-as: Nerien_Ovale_Scripts
+
+required-dependencies:
+	- ovale
