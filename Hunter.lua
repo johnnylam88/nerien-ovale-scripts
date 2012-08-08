@@ -367,7 +367,7 @@ AddIcon help=main mastery=1
 	#/kill_shot
 	if TargetLifePercent(less 20) Spell(KILLSHOT)
 	#/kill_command
-	if TargetInRange(GROWL) and PetPresent(yes) Spell(KILLCOMMAND)
+	if TargetInRange(PETGROWL) and PetPresent(yes) Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
 	if Mana(more 58) or {BuffPresent(THEBEASTWITHIN) and Mana(more 10)} Spell(ARCANESHOT)
 	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
