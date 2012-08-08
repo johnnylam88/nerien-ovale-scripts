@@ -1,4 +1,5 @@
-NerienOvaleScripts = LibStub("AceAddon-3.0"):NewAddon("NerienOvaleScripts")
+NerienOvaleScripts = LibStub("AceAddon-3.0"):NewAddon("NerienOvaleScripts", "AceConsole-3.0")
+NerienOvaleScripts:RegisterChatCommand("ovale-restore", "RestoreDefaultScript")
 
 NerienOvaleScripts.script = { }
 
@@ -46,4 +47,15 @@ end
 
 function NerienOvaleScripts:OnEnable()
 	self:OvaleHook()
+end
+
+function NerienOvaleScripts:RestoreDefaultScript()
+	local Ovale = _G.Ovale
+	if not Ovale or type(Ovale) ~= "table" then return end
+	if not Ovale.firstInit then return end
+
+	Ovale.db.profile.code = Ovale.db.defaults.profile.code
+	if Ovale.db.profile.code then
+		Ovale.needCompile = true
+	end
 end
