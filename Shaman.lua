@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["SHAMAN"] =
 [[
-### Shaman Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/shaman/script
-### Version: 4.3.16
+# Nerien's Shaman Ovale script based on SimulationCraft.
 #
 # Elemental:
 #	talents=http://www.wowhead.com/talent#shaman-3232023212231101321203000200000000000000000000000000000000

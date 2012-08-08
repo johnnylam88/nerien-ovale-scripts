@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["DRUID"] =
 [[
-### Druid Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/druid/script
-### Version: 4.3.2
+# Nerien's Druid Ovale script based on SimulationCraft.
 #
 # Feral:
 #	talents=http://www.wowhead.com/talent#druid-000000000000000000002320322312011021222301020301000000000000000

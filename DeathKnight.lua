@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["DEATHKNIGHT"] =
 [[
-### Death Knight Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/deathknight/script
-### Version: 4.3.9
+# Nerien's Death Knight Ovale script based on SimulationCraft.
 #
 # Blood:
 #	talents=http://www.wowhead.com/talent#deathknight-133212031302223113210000000000000000000003200000000000000000

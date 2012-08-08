@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["WARLOCK"] =
 [[
-### Warlock Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/warlock/script
-### Version: 4.3.1
+# Nerien's Warlock Ovale script based on SimulationCraft.
 #
 # Affliction:
 #	talents=http://www.wowhead.com/talent#warlock-22322200301332132103000000000000000003300000000000000000

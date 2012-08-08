@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["ROGUE"] =
 [[
-### Rogue Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/rogue/script
-### Version: 4.3.22
+# Nerien's Rogue Ovale script based on SimulationCraft.
 #
 # Assassination:
 #	talents=http://www.wowhead.com/talent#rogue-033323011302211032100200000000000000002030030000000000000

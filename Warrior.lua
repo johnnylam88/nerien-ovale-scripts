@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["WARRIOR"] =
 [[
-### Warrior Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/warrior/script
-### Version: 4.3.13
+# Nerien's Warrior Ovale script based on SimulationCraft.
 #
 # Arms:
 #	talents=http://www.wowhead.com/talent#warrior-3212030312021231220103220000000000000000030000000000000000000

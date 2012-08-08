@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["PRIEST"] =
 [[
-### Shadow Priest Ovale script based on SimulationCraft profile
-### https://sites.google.com/site/wownerien/ovale/priest/script
-### Version: 4.3.8
+# Nerien's Priest Ovale script based on SimulationCraft.
 #
 # Shadow:
 #	talents=http://www.wowhead.com/talent#priest-032212000000000000000000000000000000000000322032210201222100231

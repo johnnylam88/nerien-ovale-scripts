@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["PALADIN"] =
 [[
-### Paladin Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/paladin/script
-### Version: 4.3.14
+# Nerien's Paladin Ovale script based on SimulationCraft.
 #
 # Retribution:
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301

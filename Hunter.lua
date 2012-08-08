@@ -1,8 +1,6 @@
 NerienOvaleScripts.script["HUNTER"] =
 [[
-### Hunter Ovale script based on SimulationCraft profiles
-### https://sites.google.com/site/wownerien/ovale/hunter/script
-### Version: 4.3.10
+# Nerien's Hunter Ovale script based on SimulationCraft.
 #
 # BM:
 #	talents=http://www.wowhead.com/talent#hunter-2330230311320112121230200000000000000003000000000000000000
