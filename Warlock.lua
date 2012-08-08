@@ -17,11 +17,7 @@ NerienOvaleScripts.script["WARLOCK"] =
 # All specs:
 #	- Potions, Demon Soul, and on-use trinkets should be macroed into Summon Doomguard/Infernal.
 
-# Localization
-#	Replace the following definitions with the corresponding localized name for warlock pet families.
-#	The names can be found by running the following in a chat window in-game with the pet summoned:
-#		/script print(UnitCreatureFamily("pet"))
-#
+# Warlock pet creature families from LibBabble-CreatureTypes-3.0.
 Define(PETFELGUARD Felguard)
 Define(PETFELHUNTER Felhunter)
 Define(PETIMP Imp)
