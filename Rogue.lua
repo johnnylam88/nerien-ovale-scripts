@@ -14,8 +14,6 @@ NerienOvaleScripts.script["ROGUE"] =
 #	talents=http://www.wowhead.com/talent#rogue-023003000000000000000200000000000000000332031321310012321
 #	glyphs=backstab/hemorrhage/slice_and_dice/feint/sprint/tricks_of_the_trade/blurred_speed/poisons/safe_fall
 
-## defines ##
-
 # Buffs
 Define(DEEPINSIGHT 84747)
 Define(FIERYDEVASTATION 99187) # 4pT12 critical strike bonus
@@ -140,10 +138,6 @@ Define(DEADLYPOISON 2892)
 Define(INSTANTPOISON 6947)
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
-
-## end defines ##
-
-ScoreSpells(SLICEANDDICE HUNGERFORBLOOD ENVENOM RUPTURE EVISCERATE MUTILATE SINISTERSTRIKE)
 
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) default)
 AddCheckBox(tricks SpellName(TRICKSOFTHETRADE) default)

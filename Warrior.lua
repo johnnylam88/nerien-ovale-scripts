@@ -14,8 +14,6 @@ NerienOvaleScripts.script["WARRIOR"] =
 #	talents=http://www.wowhead.com/talent#warrior-3200030000000000000003222203130111022321020000000000000000000
 #	glyphs=death_wish/cleaving/heroic_throw/bloody_healing/battle/berserker_rage/bloodthirst/raging_blow/slam
 
-## defines ##
-
 # Buffs
 Define(BATTLETRANCE 12964)
 Define(BLOODSURGE 46916)
@@ -170,11 +168,6 @@ Define(STONEFORM 20594) # dwarf
 # Items
 Define(GOLEMBLOODPOTION 58146)
 	Define(GOLEMBLOODPOTIONSPELL 80496)
-
-## end defines ##
-
-ScoreSpells(DEADLYCALM COLOSSUSSMASH RAGINGBLOW OVERPOWER VICTORYRUSH BLOODTHIRST SLAM REND MORTALSTRIKE EXECUTE SHIELDSLAM REVENGE
-			DEVASTATE)
 
 AddCheckBox(aoe L(AOE) default)
 AddCheckBox(demo SpellName(DEMORALIZINGSHOUT))

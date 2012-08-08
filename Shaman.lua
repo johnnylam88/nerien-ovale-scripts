@@ -10,8 +10,6 @@ NerienOvaleScripts.script["SHAMAN"] =
 #	talents=http://www.wowhead.com/talent#shaman-3022021000000000000232332001300301232100000000000000000000
 #	glyphs=ghost_wolf/lightning_shield/chain_lightning/astral_recall/renewed_life/water_walking/windfury_weapon/lava_lash/stormstrike
 
-## defines ##
-
 # Buffs
 SpellList(ARMORBUFF 465 8072) # Devotion Aura, Stoneskin Totem
 Define(MAELSTROMWEAPON 53817)
@@ -158,11 +156,6 @@ Define(POTIONOFTHETOLVIR 58145)
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
 	Define(VOLCANICPOWER 79476) # +1200 int
-
-## end defines ##
-
-ScoreSpells(LIGHTNINGSHIELD CHAINLIGHTNING FLAMESHOCK LAVABURST EARTHSHOCK LIGHTNINGBOLT
-			STORMSTRIKE LAVALASH UNLEASHELEMENTS)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) mastery=1 default)
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) mastery=2 default)

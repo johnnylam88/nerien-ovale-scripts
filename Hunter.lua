@@ -14,8 +14,6 @@ NerienOvaleScripts.script["HUNTER"] =
 #	talents=http://www.wowhead.com/talent#hunter-0300000000000000000230200000000000000023203003023022121311
 #	glyphs=arcane_shot/kill_shot/explosive_shot
 
-## defines ##
-
 # Buffs
 Define(CHRONOHUNTER 105919) # 4pT13 buff; 105s ICD(?)
 Define(FIRE 82926) # proc from Master Marksman talent
@@ -215,11 +213,6 @@ Define(STONEFORM 20594) # dwarf
 # Items
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
-
-## end defines ##
-
-ScoreSpells(FOCUSFIRE KILLCOMMAND ARCANESHOT KILLSHOT STEADYSHOT SERPENTSTING CHIMERASHOT AIMEDSHOT
-			BLACKARROW EXPLOSIVESHOT)
 
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) default)

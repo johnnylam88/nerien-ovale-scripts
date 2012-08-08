@@ -6,8 +6,6 @@ NerienOvaleScripts.script["PALADIN"] =
 #	talents=http://www.wowhead.com/talent#paladin-203002000000000000000200000000000000000023203213211113012301
 #	glyphs=the_ascetic_crusader/hammer_of_wrath/rebuke/templars_verdict/exorcism/seal_of_truth
 
-## defines ##
-
 # Buffs
 Define(DIVINEPURPOSE 90174)
 Define(GRANDCRUSADER 85416)
@@ -109,11 +107,6 @@ Define(STONEFORM 20594) # dwarf
 # Items
 Define(GOLEMBLOODPOTION 58146)
 	Define(GOLEMBLOODPOTIONSPELL 80496)
-
-## end defines ##
-
-ScoreSpells(SHIELDOFTHERIGHTEOUS JUDGEMENT AVENGERSSHIELD HAMMEROFTHERIGHTEOUS CONSECRATION HOLYWRATH
-			ZEALOTRY INQUISITION TEMPLARSVERDICT DIVINESTORM EXORCISM HAMMEROFWRATH JUDGEMENT CRUSADERSTRIKE)
 
 AddCheckBox(aoe L(AOE) default)
 AddListItem(hpability inquisition SpellName(INQUISITION) mastery=2 default)

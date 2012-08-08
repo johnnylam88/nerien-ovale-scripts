@@ -17,8 +17,6 @@ NerienOvaleScripts.script["WARLOCK"] =
 # All specs:
 #	- Potions, Demon Soul, and on-use trinkets should be macroed into Summon Doomguard/Infernal.
 
-## defines ##
-
 # Localization: replace the following definitions with the corresponding localized name for warlock pet families.
 ## English (enUS)
 Define(PETFELGUARD Felguard)
@@ -208,11 +206,6 @@ Define(SOULSTONE 5232)
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
 	Define(VOLCANICPOWER 79476) # +1200 int
-
-## end defines ##
-
-ScoreSpells(CURSEOFTHEELEMENTS SHADOWBOLT HAUNT UNSTABLEAFFLICTION IMMOLATE CONFLAGRATE CURSEOFWEAKNESS
-			BANEOFAGONY CORRUPTION SOULFIRE DRAINSOUL INCINERATE SHADOWBOLT CHAOSBOLT)
 
 AddCheckBox(shadowandflame SpellName(SHADOWANDFLAMESPELL) default)
 AddListItem(curse none L(None))

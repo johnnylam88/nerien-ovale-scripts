@@ -8,8 +8,6 @@ NerienOvaleScripts.script["DRUID"] =
 #
 #	- Berserk should be macroed into Tiger's Fury.
 
-## defines ##
-
 # Buffs
 Define(CLEARCASTING 16870)
 SpellList(PRIMARYSTATBUFF 79061 79063) # Blessing of Kings/Mark of the Wild
@@ -120,11 +118,6 @@ Define(LIFEBLOOD 55503) # herbalism
 # Items
 Define(POTIONOFTHETOLVIR 58145)
 	Define(POTIONOFTHETOLVIRSPELL 80495)
-
-## end defines ##
-ScoreSpells(CLAW DEMORALIZINGROAR FAERIEFIREFERAL FEROCIOUSBITE LACERATE
-			MANGLECAT MANGLEBEAR MAUL PULVERIZE RAKE RAVAGEBANG RIP SAVAGEROAR
-			SHRED THRASH)
 
 AddCheckBox(faeriefire SpellName(FAERIEFIRE) default)
 AddCheckBox(mangle SpellName(MANGLECAT) default mastery=2)

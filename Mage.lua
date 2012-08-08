@@ -14,8 +14,6 @@ NerienOvaleScripts.script["MAGE"] =
 #	talents=http://www.wowhead.com/talent#mage-0020000000000000000002303000000000000000002323021013331301021
 #	glyphs=frostbolt/frostfire/deep_freeze/evocation/ice_barrier/blink/arcane_brilliance/conjuring/slow_fall
 
-## defines ##
-
 # Buffs
 Define(ARCANEBLASTDEBUFF 36032)
 Define(ARCANEMISSILEBUFF 79683)
@@ -139,11 +137,6 @@ Define(STONEFORM 20594) # dwarf
 Define(MANAGEMITEM 36799)
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
-
-## end defines ##
-
-ScoreSpells(SCORCH PYROBLAST LIVINGBOMB FROSTFIREBOLT FIREBALL SUMMONWATERELEMENTAL PETFREEZE FROSTBOLT ARCANEBLAST ARCANEMISSILES ARCANEBARRAGE
-			DEEPFREEZE ICELANCE)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) default)
 AddCheckBox(mirrorimage SpellName(MIRRORIMAGE) default)

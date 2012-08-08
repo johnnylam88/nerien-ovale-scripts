@@ -18,8 +18,6 @@ NerienOvaleScripts.script["DEATHKNIGHT"] =
 #	talents=http://www.wowhead.com/talent#deathknight-203200000000000000002000000000000000000013300321230131021231
 #	glyphs=antimagic_shell/blood_boil/pestilence/blood_tap/deaths_embrace/horn_of_winter/death_coil/scourge_strike/raise_dead
 
-## defines ##
-
 # Buffs and debuffs
 Define(BLOODSHIELD 77535)
 Define(CRIMSONSCOURGE 81141)
@@ -148,11 +146,6 @@ Define(STONEFORM 20594) # dwarf
 # Items
 Define(GOLEMBLOODPOTION 58146)
 	Define(GOLEMBLOODPOTIONSPELL 80496)
-
-## end defines ##
-
-ScoreSpells(HOWLINGBLAST HEARTSTRIKE BLOODSTRIKE DEATHSTRIKE SCOURGESTRIKE OBLITERATE HEARTSTRIKE 
-			PESTILENCE ICYTOUCH PLAGUESTRIKE FROSTSTRIKE DEATHCOIL)
 
 AddCheckBox(aoe L(AOE) default)
 AddCheckBox(horn SpellName(HORNOFWINTER))

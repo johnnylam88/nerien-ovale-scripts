@@ -6,8 +6,6 @@ NerienOvaleScripts.script["PRIEST"] =
 #	talents=http://www.wowhead.com/talent#priest-032212000000000000000000000000000000000000322032210201222100231
 #	glyphs=mind_flay/shadow_word_pain/shadow_word_death/spirit_tap
 
-## defines ##
-
 # Buffs
 Define(BORROWEDTIME 59888)
 Define(CHAKRACHASTISE 81209)
@@ -174,10 +172,6 @@ Define(STONEFORM 20594) # dwarf
 Define(VOLCANICPOTION 58091)
 	Define(VOLCANICPOTIONSPELL 80481)
 Define(MYTHICALMANAPOTION 57192)
-
-### end defines ###
-
-ScoreSpells(MINDBLAST SHADOWWORDPAIN VAMPIRICTOUCH DEVOURINGPLAGUE MINDFLAY SHADOWWORDDEATH MINDSPIKE)
 
 AddCheckBox(potions SpellName(VOLCANICPOTIONSPELL) default mastery=3)
 AddCheckBox(pws SpellName(POWERWORDSHIELD) mastery=1)
