@@ -186,10 +186,11 @@ AddFunction ManaGemReady
 }
 
 # Flame Orb for use during DPM rotation.
-AddIcon size=small mastery=1
+AddIcon help=cd size=small mastery=1
 {
 	#/flame_orb,if=target.time_to_die>=10
 	if TargetDeadIn(more 10) Spell(FLAMEORB)
+	Spell(BLINK)
 }
 
 # Arcane DPM rotation for mana-efficient damage by keeping mana level high to make use of mastery.
@@ -440,9 +441,13 @@ AddIcon help=mana mastery=1
 ### Fire
 ###
 
-# Pad the left side to match the extra icons of the Arcane script.
-AddIcon mastery=2 { }
+# Blink.
+AddIcon help=cd size=small mastery=2
+{
+	Spell(BLINK)
+}
 
+# Main rotation.
 AddIcon help=main mastery=2
 {
 	unless InCombat() if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
@@ -472,6 +477,7 @@ AddIcon help=main mastery=2
 	Spell(SCORCH)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=2
 {
 	#/volcanic_potion,if=!in_combat
@@ -503,7 +509,8 @@ AddIcon help=cd mastery=2
 	if TargetDeadIn(more 12) Spell(FLAMEORB)
 }
 
-AddIcon help=mana mastery=2
+# Mana management.
+AddIcon help=mana size=small mastery=2
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MOLTENARMOR)
 
@@ -530,9 +537,13 @@ AddIcon help=mana mastery=2
 ### Frost
 ###
 
-# Pad the left side to match the extra icons of the Arcane script.
-AddIcon mastery=3 { }
+# Blink.
+AddIcon help=cd size=small mastery=3
+{
+	Spell(BLINK)
+}
 
+# Main rotation.
 AddIcon help=main mastery=3
 {
 	unless InCombat() if BuffExpires(MAGEBUFF 400) Spell(ARCANEBRILLIANCE)
@@ -568,6 +579,7 @@ AddIcon help=main mastery=3
 	Spell(FROSTBOLT)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=3
 {
 	#/volcanic_potion,if=!in_combat
@@ -621,6 +633,7 @@ AddIcon help=cd mastery=3
 	}
 }
 
+# Mana management.
 AddIcon help=mana mastery=3
 {
 	unless InCombat() if BuffExpires(MAGEARMOR 400) and BuffExpires(MOLTENARMOR 400) and BuffExpires(FROSTARMOR 400) Spell(MOLTENARMOR)
