@@ -259,6 +259,7 @@ AddFunction UseItemActionsElemental
 	}
 }
 
+# Totems buffs.
 AddIcon help=buff size=small mastery=1
 {
 	if TotemExpires(earth)
@@ -280,6 +281,7 @@ AddIcon help=buff size=small mastery=1
 	}
 }
 
+# Main rotation.
 AddIcon help=main mastery=1
 {
 	unless InCombat()
@@ -333,6 +335,7 @@ AddIcon help=main mastery=1
 	Spell(LIGHTNINGBOLT)
 }
 
+# AoE.
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	unless InCombat()
@@ -355,6 +358,7 @@ AddIcon help=aoe mastery=1 checkboxon=aoe
 	Spell(CHAINLIGHTNING)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=1
 {
 	#/volcanic_potion,if=!in_combat
@@ -376,6 +380,7 @@ AddIcon help=cd mastery=1
 	if Speed(more 0) and Spell(LAVABURST) and ArmorSetParts(T12 less 4) Spell(SPIRITWALKERSGRACE)
 }
 
+# Elemental totems.
 AddIcon help=cd mastery=1
 {
 	if EnoughSpellpower()
@@ -391,6 +396,7 @@ AddIcon help=cd mastery=1
 ### Enhancement
 ###
 
+# Totems.
 AddIcon help=buff size=small mastery=2
 {
 	if TotemExpires(earth)
@@ -413,6 +419,7 @@ AddIcon help=buff size=small mastery=2
 	}
 }
 
+# Main rotation.
 AddIcon help=main mastery=2
 {
 	unless InCombat()
@@ -447,6 +454,7 @@ AddIcon help=main mastery=2
 	if CheckBoxOn(mw2lb) and BuffPresent(MAELSTROMWEAPON stacks=2) and Speed(equal 0) Spell(LIGHTNINGBOLT)
 }
 
+# AoE.
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	unless InCombat()
@@ -470,6 +478,7 @@ AddIcon help=aoe mastery=2 checkboxon=aoe
 	if TargetDebuffPresent(FLAMESHOCK mine=1) or OtherDebuffPresent(FLAMESHOCK mine=1) Spell(FIRENOVA)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
@@ -497,6 +506,7 @@ AddIcon help=cd mastery=2
 ### Restoration
 ###
 
+# Totems.
 AddIcon help=buff size=small mastery=3
 {
 	if TotemExpires(fire)
@@ -520,6 +530,7 @@ AddIcon help=buff size=small mastery=3
 	}
 }
 
+# Main rotation.
 AddIcon help=main mastery=3
 {
 	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(EARTHLIVINGWEAPON)
@@ -529,6 +540,7 @@ AddIcon help=main mastery=3
 	Spell(RIPTIDE)
 }
 
+# AoE.
 AddIcon help=aoe mastery=3 checkboxon=aoe
 {
 	unless InCombat() if WeaponEnchantExpires(mainhand 400) Spell(EARTHLIVINGWEAPON)
@@ -545,6 +557,7 @@ AddIcon help=aoe mastery=3 checkboxon=aoe
 	Spell(CHAINHEAL)
 }
 
+# Cooldowns.
 AddIcon help=cd mastery=3
 {
 	if IsFeared() Spell(TREMORTOTEM)
@@ -559,6 +572,7 @@ AddIcon help=cd mastery=3
 	Spell(EARTHELEMENTALTOTEM)
 }
 
+# Mana management.
 AddIcon help=mana size=small
 {
 	if ManaPercent(less 80) Spell(MANATIDETOTEM)
@@ -566,6 +580,7 @@ AddIcon help=mana size=small
 	Spell(THUNDERSTORM)
 }
 
+# Survival cooldowns and Heroism.
 AddIcon help=cd size=small
 {
 	# survival CD
