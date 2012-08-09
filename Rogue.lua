@@ -178,6 +178,8 @@ AddFunction UseRacialActions
 ###
 ### Assassination
 ###
+
+# Main rotation.
 AddIcon help=main mastery=1
 {
 	unless InCombat()
@@ -195,9 +197,9 @@ AddIcon help=main mastery=1
 	#/slice_and_dice,if=buff.slice_and_dice.down
 	unless BuffPresent(SLICEANDDICE) if ComboPoints(more 0) Spell(SLICEANDDICE)
 	#/pool_energy,if=energy<60&buff.slice_and_dice.remains<5
-	unless TalentPoints(CUTTOTHECHASETALENT more 0) or Mana(more 59) or BuffPresent(SLICEANDDICE 5)
+	unless TalentPoints(CUTTOTHECHASETALENT less 1) and Mana(less 60) and BuffExpires(SLICEANDDICE 5)
 	{
-		unless TalentPoints(CUTTOTHECHASETALENT more 0)
+		if TalentPoints(CUTTOTHECHASETALENT less 1)
 		{
 			#/slice_and_dice,if=combo_points>=3&buff.slice_and_dice.remains<2
 			if ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2) Spell(SLICEANDICE)
@@ -226,6 +228,7 @@ AddIcon help=main mastery=1
 	}
 }
 
+# Long CDs.
 AddIcon help=cd mastery=1
 {
 	if InCombat(no)
@@ -247,7 +250,7 @@ AddIcon help=cd mastery=1
 	UseRacialActions()
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
-	unless TalentPoints(CUTTOTHECHASETALENT less 1) and Mana(less 59) and BuffExpires(SLICEANDDICE 5)
+	unless TalentPoints(CUTTOTHECHASETALENT less 1) and Mana(less 60) and BuffExpires(SLICEANDDICE 5)
 	{
 		unless {TalentPoints(CUTTOTHECHASETALENT less 1) and ComboPoints(more 2) and BuffExpires(SLICEANDDICE 2)}
 			or {TargetDebuffExpires(RUPTURE 2 mine=1) and TimeInCombat(less 6) and ComboPoints(more 0)}
@@ -287,6 +290,8 @@ AddIcon help=cd mastery=1
 ###
 ### Combat
 ###
+
+# Main rotation.
 AddIcon help=main mastery=2
 {
 	unless InCombat()
@@ -319,6 +324,7 @@ AddIcon help=main mastery=2
 	if ComboPoints(less 5) Spell(SINISTERSTRIKE)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=2
 {
 	#/tolvir_potion,if=!in_combat
@@ -366,6 +372,44 @@ AddIcon help=cd mastery=2
 ###
 ### Subtlety
 ###
+
+# Subtlety rogues try to line up their on-use trinkets with Shadow Dance.
+AddFunction UseItemActionsSubtlety
+{
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
+
+	if List(trinketcd0 000s)
+	{
+		if List(trinketcd1 000s)
+			if BuffPresent(SHADOWDANCE) Item(HandsSlot usable=1)
+		unless List(trinketcd1 000s)
+			if BuffPresent(SHADOWDANCE) Item(Trinket1Slot usable=1)
+	}
+	unless List(trinketcd0 000s)
+	{
+		if BuffPresent(SHADOWDANCE) Item(Trinket0Slot usable=1)
+		unless List(trinketcd1 000s)
+			unless 20s before Spell(SHADOWDANCE) Item(Trinket1Slot usable=1)
+	}
+	unless List(trinketcd0 000s) and List(trinketcd1 000s)
+		unless 20s before Spell(SHADOWDANCE) Item(HandsSlot usable=1)
+}
+
+AddFunction UseProfessionActionsSubtlety
+{
+	#init_use_profession_actions( ( found_item >= 0 ) ? "" : ",if=buff.shadow_dance.up|position_front" )
+	unless List(trinketcd0 000s) and List(trinketcd1 000s)
+	{
+		Spell(LIFEBLOOD)
+	}
+	if List(trinketcd0 000s) and List(trinketcd1 000s)
+	{
+		if BuffPresent(SHADOWDANCE) Spell(LIFEBLOOD)
+	}
+}
+
+# Main rotation.
 AddIcon help=main mastery=3
 {
 	unless InCombat()
@@ -420,26 +464,30 @@ AddIcon help=main mastery=3
 	if 1s before Mana(more 99) Spell(BACKSTAB)
 }
 
+# Shadow Dance, Vanish, Preparation.
 AddIcon help=cd mastery=3
 {
 	#/stealth
 	unless InCombat() or Stealthed() Spell(STEALTH)
 	#/pool_energy,for_next=1
 	#/shadow_dance,if=energy>85&combo_points<5&buff.stealthed.down
-	if TalentPoints(SHADOWDANCETALENT more 0) and Mana(more 85) and ComboPoints(less 5) and Stealthed(no) Spell(SHADOWDANCE)
-	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
+	if Mana(more 85) and ComboPoints(less 5) and Stealthed(no) Spell(SHADOWDANCE)
+	unless TalentPoints(SHADOWDANCETALENT more 0) and 0s before Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
 		#/pool_energy,for_next=1
 		#/vanish,if=time>10&energy>60&combo_points<=1&cooldown.shadowstep.remains<=0&\
 		#	!buff.shadow_dance.up&!buff.master_of_subtlety.up&!buff.find_weakness.up
-		if TimeInCombat(more 10) and Mana(more 60) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
-			and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)
+		if TimeInCombat(more 10) and Mana(more 60) and ComboPoints(less 2) and 0s before Spell(SHADOWSTEP) and Stealthed(no)
+			and BuffExpires(SHADOWDANCE) and BuffExpires(MASTEROFSUBTLETY) and TargetDebuffExpires(FINDWEAKNESS mine=1)
 		{
 			Spell(VANISH)
 		}
-		unless {TimeInCombat(more 10) and ComboPoints(less 2) and Spell(SHADOWSTEP) and Stealthed(no)
-				and BuffExpires(SHADOWDANCE 0) and BuffExpires(MASTEROFSUBTLETY 0) and TargetDebuffExpires(FINDWEAKNESS 0 mine=1)}
-			or {ComboPoints(less 5) and {Stealthed() or BuffPresent(SHADOWDANCE)}}
+		unless {0s before Spell(VANISH) and TimeInCombat(more 10) and ComboPoints(less 2) and 0s before Spell(SHADOWSTEP) and Stealthed(no)
+				and BuffExpires(SHADOWDANCE) and BuffExpires(MASTEROFSUBTLETY) and TargetDebuffExpires(FINDWEAKNESS mine=1)}
+			or {{Stealthed() or BuffPresent(SHADOWDANCE)}
+				and {{CheckBoxOn(shadowstep) and 0s before Spell(SHADOWSTEP)}
+					or {ComboPoints(less 3) and 0s before Spell(PREMEDITATION)}
+					or ComboPoints(less 5)}}
 		{
 			#/preparation,if=cooldown.vanish.remains>60
 			unless 60s before Spell(VANISH) Spell(PREPARATION)
@@ -447,6 +495,7 @@ AddIcon help=cd mastery=3
 	}
 }
 
+# Long CDs.
 AddIcon help=cd mastery=3
 {
 	#/tolvir_potion,if=!in_combat
@@ -457,25 +506,21 @@ AddIcon help=cd mastery=3
 	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(heroism) or TargetDeadIn(less 30)} Item(POTIONOFTHETOLVIR)
 	#/tricks_of_the_trade,if=set_bonus.tier12_4pc_melee|set_bonus.tier13_2pc_melee
 	if CheckBoxOn(tricks) and {ArmorSetParts(T12 more 3) or ArmorSetParts(T13 more 1)} Spell(TRICKSOFTHETRADE)
-	unless TalentPoints(SHADOWDANCETALENT more 0) and Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
+	unless TalentPoints(SHADOWDANCETALENT more 0) and 0s before Spell(SHADOWDANCE) and ComboPoints(less 5) and Stealthed(no)
 	{
-		if BuffPresent(SHADOWDANCE)
-		{
-			#use_item,if=buff.shadow_dance.up
-			UseItemActions()
-			#init_use_profession_actions( ( found_item >= 0 ) ? "" : ",if=buff.shadow_dance.up|position_front" )
-			UseProfessionActions()
-			#init_use_racial_actions( ",if=buff.shadow_dance.up" )
-			UseRacialActions()
-		}
+		UseItemActionsSubtlety()
+		UseProfessionActionsSubtlety()
+		if BuffPresent(SHADOWDANCE) UseRacialActions()
 	}
 }
 
+# Tricks of the Trade.
 AddIcon size=small
 {
 	Spell(TRICKSOFTHETRADE)
 }
 
+# Survival abilities.
 AddIcon size=small
 {
 	if TargetInRange(FEINT) Spell(FEINT)
