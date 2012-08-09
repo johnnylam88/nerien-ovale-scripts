@@ -434,6 +434,7 @@ AddIcon help=cd mastery=2
 	if Stance(3) CooldownsCat()
 }
 
+# Survival CDs.
 AddIcon help=cd size=small
 {
 	Spell(BARKSKIN)
@@ -441,6 +442,7 @@ AddIcon help=cd size=small
 	if Stance(1) Spell(FRENZIEDREGENERATION)
 }
 
+# Bear trinkets.
 AddIcon help=cd size=small mastery=2
 {
 	if Stance(1) # bear
