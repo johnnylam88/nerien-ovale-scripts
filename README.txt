@@ -3,6 +3,6 @@
 * **Main Rotation Icon**: shows how to maximize DPS without the use of any cooldown abilities
 * **Cooldown Icon**: suggests cooldowns or other situational abilities that can be applied at the current time
 
-Each class script may also have additional icons for other class-specific information, e.g., knowing when to rage dump using [Heroic Strike](http://www.wowhead.com/spell=78) as a warrior or [Maul](http://www.wowhead.com/spell=6807) as a bear druid.
+Each class script may also have additional icons for other class-specific information, e.g., to suggest dumping rage using [Heroic Strike](http://www.wowhead.com/spell=78) as a warrior or [Maul](http://www.wowhead.com/spell=6807) as a bear druid.
 
 This addon also adds a slash-command **/ovale-restore** which can be used to remove a previously-saved custom script from the current Ovale profile and fallback to using the default script instead.  In this case, the fallback would be to the default class script installed by this addon.
