@@ -1,8 +1,10 @@
-NerienOvaleScripts = LibStub("AceAddon-3.0"):NewAddon("NerienOvaleScripts", "AceConsole-3.0")
+local Ovale = LibStub("AceAddon-3.0"):GetAddon("Ovale")
+NerienOvaleScripts = Ovale:NewModule("NerienOvaleScripts", "AceConsole-3.0")
 NerienOvaleScripts:RegisterChatCommand("ovale-restore", "RestoreDefaultScript")
 
 -- Table of default class scripts, indexed by class tokens.
 NerienOvaleScripts.script = { }
+NerienOvaleScripts.defaut = NerienOvaleScripts.script
 
 -- Return a deep copy of a table, preserving metatables.
 local function deepCopy(t)
@@ -19,48 +21,53 @@ local function deepCopy(t)
 	return result
 end
 
--- GetOvaleAddon() returns the reference to the Ovale addon if it's present and already
--- initialized, or nil otherwise.
-local function GetOvaleAddon()
-	local Ovale = LibStub("AceAddon-3.0"):GetAddon("Ovale")
-	return Ovale.firstInit and Ovale or nil
-end
-
--- This function touches deeply into Ovale table internals to change the default
--- code used as well as forcing Ovale to recompile the code.
+-- This function sets the default script to the class script from the latest enabled
+-- module, falling back to using Ovale's default class script.
 --
-local ovaleHookRun = false
-function NerienOvaleScripts:OvaleHook()
-	-- Ensure this function only runs once.
-	if ovaleHookRun then return end
-
-	local Ovale = GetOvaleAddon()
-	if not Ovale then return end
-
+-- This function touches deeply into Ovale table internals to change the default
+-- code used as well as forcing Ovale to recompile the code and should really be
+-- part of Ovale itself.
+--
+function NerienOvaleScripts:SetDefaultScript()
+	local code = ""
 	local _, classToken = UnitClass("player")
-	if self.script[classToken] then
-		-- Make a copy of the old defaults table for Ovale.db, change the default code string,
-		-- then set that as the new defaults table for Ovale.db.
-		local defaultDB = deepCopy(Ovale.db.defaults.profile)
-		defaultDB.code = self.script[classToken]
-		Ovale.db:RegisterDefaults({ profile = defaultDB })
 
-		-- Force a recompile of the code with the new code string.
-		if Ovale.db.profile.code then
-			Ovale.needCompile = true
+	if Ovale.defaut and Ovale.defaut[classToken] then
+		code = Ovale.defaut[classToken]
+	end
+	for name, module in Ovale:IterateModules() do
+		-- Expect that each module has a "defaut" table indexed by class token containing
+		-- class scripts.
+		if module.IsEnabled() and module.defaut and module.defaut[classToken] then
+			code = module.defaut[classToken]
 		end
 	end
-	ovaleHookRun = true
+
+	-- Make a copy of the old defaults table for Ovale.db, change the default code string,
+	-- then set that as the new defaults table for Ovale.db.
+	local defaults = deepCopy(Ovale.db.defaults)
+	for _, tbl in defaults do
+		if type(tbl) == "table" and tbl.code then
+			tbl.code = code
+		end
+	end
+	Ovale.db:RegisterDefaults(defaults)
+
+	-- Force a recompile of the code with the new code string.
+	if Ovale.db.profile.code then
+		Ovale.needCompile = true
+	end
 end
 
 function NerienOvaleScripts:OnEnable()
-	self:OvaleHook()
+	self:SetDefaultScript()
+end
+
+function NerienOvaleScripts:OnDisable()
+	self:SetDefaultScript()
 end
 
 function NerienOvaleScripts:RestoreDefaultScript()
-	local Ovale = GetOvaleAddon()
-	if not Ovale then return end
-
 	if Ovale.db.defaults.profile.code then
 		Ovale.db.profile.code = Ovale.db.defaults.profile.code
 		Ovale.needCompile = true
