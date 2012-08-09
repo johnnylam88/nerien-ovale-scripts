@@ -21,7 +21,7 @@ Define(FRENZYEFFECT 19615)
 Define(IMPROVEDSTEADYSHOT 53220)
 Define(LOCKANDLOAD 56453)
 Define(RABIDPOWER 53403) # Rabid (pet talent)
-Define(THEBEASTWITHIN 34692)
+Define(THEBEASTWITHIN 34471)
 
 # Debuffs
 Define(MARKEDFORDEATH 88691)
@@ -79,7 +79,7 @@ Define(FERVOR 82726)
 	SpellInfo(FERVOR mana=-50 cd=120)
 Define(FOCUSFIRE 82692)
 	SpellInfo(FOCUSFIRE cd=15)
-	SpellAddBuff(FOCUSFIRE FOCUSFIRE=15)
+	SpellAddBuff(FOCUSFIRE FOCUSFIRE=20)
 Define(HUNTERSMARK 1130)
 	SpellAddTargetDebuff(HUNTERSMARK HUNTERSMARK=300)
 Define(KILLCOMMAND 34026)
@@ -216,7 +216,6 @@ Define(POTIONOFTHETOLVIR 58145)
 
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions SpellName(POTIONOFTHETOLVIRSPELL) default)
-AddCheckBox(petbuff "Pet raid buffs & debuffs")
 AddCheckBox(petattack "Show pet attacks")
 AddCheckBox(blackarrow SpellName(BLACKARROW) default mastery=3)
 
@@ -237,54 +236,6 @@ AddFunction SummonPet
 	{
 		Spell(PETHEARTOFTHEPHOENIX)
 		Spell(REVIVEPET)
-	}
-}
-
-AddFunction PetMaintainBuffDebuff
-{
-	# Maintain raid buffs and debuffs.
-	if BuffExpires(criticalstrike 2)
-	{
-		Spell(PETFURIOUSHOWL)
-		Spell(PETTERRIFYINGROAR)
-	}
-	if BuffExpires(stamina 3) Spell(PETQIRAJIFORTITUDE)
-	if BuffExpires(strengthagility 3) Spell(PETROAROFCOURAGE)
-	if TargetDebuffExpires(bleed 2)
-	{
-		Spell(PETGORE)
-		Spell(PETSTAMPEDE)
-		Spell(PETTENDONRIP)
-	}
-	if TargetDebuffExpires(castslow 2)
-	{
-		Spell(PETLAVABREATH)
-		Spell(PETSPORECLOUD)
-	}
-	if TargetDebuffExpires(lowerarmor 2)
-	{
-		Spell(PETTEARARMOR)
-		Spell(PETCORROSIVESPIT)
-	}
-	if TargetDebuffExpires(lowerphysicaldamage 0) or TargetDebuffExpires(PETDEMOSCREECH 0)
-	{
-		Spell(PETDEMOROAR)
-		Spell(PETDEMOSCREECH)
-	}
-	if TargetDebuffExpires(magicaldamagetaken 2)
-	{
-		Spell(PETFIREBREATH)
-		Spell(PETLIGHTNINGBREATH)
-	}
-	if TargetDebuffExpires(meleeslow 2) or TargetDebuffExpires(PETTAILSPIN 2)
-	{
-		Spell(PETDUSTCLOUD)
-		Spell(PETTAILSPIN)
-	}
-	if TargetDebuffExpires(physicaldamagetaken 2)
-	{
-		Spell(PETACIDSPIT)
-		Spell(PETRAVAGE)
 	}
 }
 
@@ -332,78 +283,73 @@ AddFunction UseRacialActions
 	Spell(BLOODFURY)
 }
 
-###
-### Common off-gcd hunter and pet actions.
-###
+# Off-GCD hunter and pet actions.
 AddIcon help=offgcd size=small
 {
-	unless InCombat() unless BuffPresent(ASPECTOFTHEHAWK) or BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEHAWK)
+	if InCombat(no) SummonPet()
+
 	#/aspect_of_the_hawk,moving=0
-	unless Speed(more 0) unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
+	unless Speed(more 0)
+		unless BuffPresent(ASPECTOFTHEHAWK) Spell(ASPECTOFTHEHAWK)
 	#/aspect_of_the_fox,moving=1
-	if Speed(more 0) unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
-	if PetPresent(yes)
-	{
-		if CheckBoxOn(petbuff) PetMaintainBuffDebuff()
-		PetActions()
-	}
+	if Speed(more 0)
+		unless BuffPresent(ASPECTOFTHEFOX) Spell(ASPECTOFTHEFOX)
+	if PetPresent() PetActions()
 }
 
 ###
 ### Beast Mastery
 ###
+
+# Main rotation.
 AddIcon help=main mastery=1
 {
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTINGDEBUFF mine=1)
+	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1)
 		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/kill_shot
 	if TargetLifePercent(less 20) Spell(KILLSHOT)
 	#/kill_command
-	if TargetInRange(PETGROWL) and PetPresent(yes) Spell(KILLCOMMAND)
+	if PetPresent() and TargetInRange(PETGROWL)
+		if Mana(more 39) or {BuffPresent(THEBEASTWITHIN) and Mana(more 19)} Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
 	if Mana(more 58) or {BuffPresent(THEBEASTWITHIN) and Mana(more 10)} Spell(ARCANESHOT)
-	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
-	{
-		#/cobra_shot
-		Spell(COBRASHOT)
-		#/steady_shot
-		Spell(STEADYSHOT)
-	}
+	#/cobra_shot
+	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
+# AoE.
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
+	if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+		if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 	#/serpent_sting,if=!ticking
-	unless TargetDebuffPresent(SERPENTSTINGDEBUFF mine=1)
+	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1)
 		if Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)} Spell(SERPENTSTING)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) or {BuffPresent(THEBEASTWITHIN) and Mana(more 19)} Spell(MULTISHOT)
-	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
-	{
-		#/cobra_shot,if=target.adds>5
-		Spell(COBRASHOT)
-		#/steady_shot
-		Spell(STEADYSHOT)
-	}
+	#/cobra_shot,if=target.adds>5
+	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=1
 {
-	unless InCombat() SummonPet()
-	if PetPresent(yes) and TargetIsInterruptible() PetInterrupt()
+	if PetPresent() and TargetIsInterruptible() PetInterrupt()
 
 	#/hunters_mark,if=target.time_to_die>=21
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK)
 	#/tolvir_potion,if=!in_combat
 	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
-	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and TargetClassification(worldboss)
 	{
 		if BuffPresent(heroism) or TargetDeadIn(less 60) Item(POTIONOFTHETOLVIR)
@@ -412,26 +358,40 @@ AddIcon help=cd mastery=1
 	#init_use_item_actions()
 	UseItemActions()
 	#init_use_profession_actions()
-	#/focus_fire,five_stacks=1
-	if pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
 	UseProfessionActions()
-	#init_use_racial_actions()
-	UseRacialActions()
-	#/bestial_wrath,if=focus>60
-	if Mana(more 60) Spell(BESTIALWRATH)
-	#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
-	unless BuffPresent(heroism) or BuffPresent(THEBEASTWITHIN) Spell(RAPIDFIRE)
-	#/fervor,if=focus<=37
-	if Mana(less 38) Spell(FERVOR)
+	#/focus_fire,five_stacks=1
+	if PetPresent() and pet.BuffPresent(FRENZYEFFECT stacks=5) Spell(FOCUSFIRE)
+	unless TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1)
+		and {Mana(more 24) or {BuffPresent(THEBEASTWITHIN) and Mana(more 12)}}
+	{
+		#init_use_racial_actions()
+		UseRacialActions()
+		#/bestial_wrath,if=focus>60
+		if PetPresent() and Mana(more 60) Spell(BESTIALWRATH)
+		unless TargetLifePercent(less 20) and 0s before Spell(KILLSHOT)
+		{
+			#/rapid_fire,if=!buff.bloodlust.up&!buff.beast_within.up
+			if BuffExpires(heroism) and BuffExpires(THEBEASTWITHIN) Spell(RAPIDFIRE)
+			unless PetPresent() and TargetInRange(PETGROWL)
+				and {Mana(more 39) or {BuffPresent(THEBEASTWITHIN) and Mana(more 19)}}
+				and 0s before Spell(KILLCOMMAND)
+			{
+				#/fervor,if=focus<=37
+				if Mana(less 38) Spell(FERVOR)
+			}
+		}
+	}
 }
 
 ###
 ### Marksmanship
 ###
+
+# Main rotation.
 AddIcon help=main mastery=2
 {
 	#/serpent_sting,if=!ticking&target.health_pct<=90
-	unless TargetDebuffPresent(SERPENTSTINGDEBUFF) if TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
+	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
 	#/chimera_shot,if=target.health_pct<=90
 	if TargetLifePercent(less 90) and Mana(more 43) Spell(CHIMERASHOT)
 	#/steady_shot,if=buff.pre_improved_steady_shot.up&buff.improved_steady_shot.remains<3
@@ -439,7 +399,7 @@ AddIcon help=main mastery=2
 	{
 		if Counter(iss more 0) and Counter(iss less 2) Spell(STEADYSHOT)
 		if Counter(iss more 2) and Counter(iss less 4) Spell(STEADYSHOT)
-		unless ArmorSetParts(T13 more 1)
+		if ArmorSetParts(T13 less 2)
 			if Counter(iss more 4) and Counter(iss less 6) Spell(STEADYSHOT)
 		# if you're shooting more than 5 Steady Shots in a row, you're capping your focus and doing it wrong
 	}
@@ -453,9 +413,13 @@ AddIcon help=main mastery=2
 		#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up&\
 		#		!buff.tier13_4pc.react&cooldown.buff_tier13_4pc.remains<=0)
 		unless Mana(less 66) and 4s before Spell(CHIMERASHOT)
-			if TargetLifePercent(less 90)
-				unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(BERSERKING) or BuffPresent(CHRONOHUNTER)
-					if BuffGain(CHRONOHUNTER 105) Spell(ARCANESHOT)
+		{
+			if TargetLifePercent(less 90) and BuffExpires(RAPIDFIRE) and BuffExpires(heroism) and BuffExpires(BERSERKING)
+				and BuffExpires(CHRONOHUNTER) and BuffGain(CHRONOHUNTER 105)
+			{
+				Spell(ARCANESHOT)
+			}
+		}
 		#/aimed_shot,if=(cooldown.chimera_shot.remains>5|focus>=80)&(buff.bloodlust.react|buff.tier13_4pc.react|cooldown.buff_tier13_4pc.remains>0)|\
 		#	buff.rapid_fire.up|target.health_pct>90
 		if Mana(more 49)
@@ -470,18 +434,15 @@ AddIcon help=main mastery=2
 	}
 	unless ArmorSetParts(T13 more 3)
 	{
-		#if ( ! glyphs.arcane_shot -> ok() )
-		unless Glyph(GLYPHOFARCANESHOT)
+		if Glyph(GLYPHOFARCANESHOT no)
 		{
 			if Mana(more 49)
 			{
 				#/aimed_shot,if=cooldown.chimera_shot.remains>5|focus>=80|buff.rapid_fire.up|buff.bloodlust.react|target.health_pct>90
-				unless 5s before Spell(CHIMERASHOT) Spell(AIMEDSHOT)
-				if Mana(more 79) Spell(AIMEDSHOT)
+				unless 5s before Spell(CHIMERASHOT) and Mana(less 80) Spell(AIMEDSHOT)
 				if BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or TargetLifePercent(more 90) Spell(AIMEDSHOT)
 			}
 		}
-		#else
 		if Glyph(GLYPHOFARCANESHOT)
 		{
 			#/aimed_shot,if=target.health_pct>90|buff.rapid_fire.up|buff.bloodlust.react|buff.berserking.up
@@ -489,40 +450,43 @@ AddIcon help=main mastery=2
 			#/arcane_shot,if=(focus>=66|cooldown.chimera_shot.remains>=5)&\
 			#	(target.health_pct<90&!buff.rapid_fire.up&!buff.bloodlust.react&!buff.berserking.up)
 			unless Mana(less 66) and 5s before Spell(CHIMERASHOT)
-				if TargetLifePercent(less 90)
-					unless BuffPresent(RAPIDFIRE) or BuffPresent(heroism) or BuffPresent(BERSERKING)
-						Spell(ARCANESHOT)
+			{
+				if TargetLifePercent(less 90) and BuffExpires(RAPIDFIRE) and BuffExpires(heroism) and BuffExpires(BERSERKING)
+				{
+					Spell(ARCANESHOT)
+				}
+			}
 		}
 	}
 	#/steady_shot
-	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX) Spell(STEADYSHOT)
+	Spell(STEADYSHOT)
 }
 
+# AoE.
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
+	if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+		if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
 	#/steady_shot,if=target.adds>5
-	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX) Spell(STEADYSHOT)
+	Spell(STEADYSHOT)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=2
 {
-	unless InCombat() SummonPet()
-	if PetPresent(yes) and TargetIsInterruptible() PetInterrupt()
+	if PetPresent() and TargetIsInterruptible() PetInterrupt()
 
 	#/hunters_mark,if=target.time_to_die>=21
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK)
 	#/tolvir_potion,if=!in_combat
 	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
-	if TargetIsInterruptible() and TargetInRange(SILENCINGSHOT) Spell(SILENCINGSHOT)
 	#/summon_pet
 	SummonPet()
-	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60|buff.rapid_fire.react
-	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
+	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
 	if CheckBoxOn(potions) and TargetClassification(worldboss)
 	{
 		if BuffPresent(heroism) or TargetDeadIn(less 60) Item(POTIONOFTHETOLVIR)
@@ -534,29 +498,37 @@ AddIcon help=cd mastery=2
 	UseProfessionActions()
 	#init_use_racial_actions()
 	UseRacialActions()
-	#/rapid_fire,if=!buff.bloodlust.up|target.time_to_die<=30
-	unless BuffPresent(heroism) and TargetDeadIn(more 30) Spell(RAPIDFIRE)
-	#/readiness,wait_for_rapid_fire=1
-	if BuffPresent(RAPIDFIRE) Spell(READINESS)
+
+	unless {TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetLifePercent(less 90) and Mana(more 24)}
+		or {TargetLifePercent(less 90) and Mana(more 43) and 0s before Spell(CHIMERASHOT)}
+	{
+		#/rapid_fire,if=!buff.bloodlust.up|target.time_to_die<=30
+		if BuffExpires(heroism) or TargetDeadIn(less 30) Spell(RAPIDFIRE)
+		#/readiness,wait_for_rapid_fire=1
+		if BuffPresent(RAPIDFIRE) Spell(READINESS)
+	}
 }
 
 ###
 ### Survival
 ###
+
+# Main rotation.
 AddIcon help=main mastery=3
 {
 	#/serpent_sting,if=!ticking&target.time_to_die>=10
-	unless TargetDebuffPresent(SERPENTSTINGDEBUFF mine=1) if TargetDeadIn(more 10) and Mana(more 24) Spell(SERPENTSTING)
+	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetDeadIn(more 10) and Mana(more 24) Spell(SERPENTSTING)
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1)
 		if Mana(more 43) or BuffPresent(LOCKANDLOAD) Spell(EXPLOSIVESHOT)
-	#if ( ! talents.black_arrow -> rank() ) { /explosive_trap,not_flying=1,if=target.time_to_die>=11 }
-	unless CheckBoxOn(blackarrow) and TalentPoints(BLACKARROWTALENT more 0)
+	if CheckBoxOff(blackarrow) or TalentPoints(BLACKARROWTALENT less 1)
 	{
+		#/explosive_trap,not_flying=1,if=target.time_to_die>=11
 		if TargetDeadIn(more 11)
 		{
 			if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-			if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
+			if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+				if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 		}
 	}
 	#/kill_shot
@@ -565,44 +537,39 @@ AddIcon help=main mastery=3
 	if CheckBoxOn(blackarrow) and TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
 	#/arcane_shot,if=focus>=67
 	if Mana(more 66) Spell(ARCANESHOT)
-	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
-	{
-		#/cobra_shot
-		Spell(COBRASHOT)
-		#/steady_shot
-		Spell(STEADYSHOT)
-	}
+	#/cobra_shot
+	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
+# AoE.
 AddIcon help=aoe mastery=3 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
 	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if Spell(EXPLOSIVETRAPLAUNCHER) Spell(TRAPLAUNCHER usable=1)
+	if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+		if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 	#/multi_shot,if=target.adds>2
 	if Mana(more 39) Spell(MULTISHOT)
-	if Speed(equal 0) or BuffPresent(ASPECTOFTHEFOX)
-	{
-		#/cobra_shot,if=target.adds>2
-		Spell(COBRASHOT)
-		#/steady_shot
-		Spell(STEADYSHOT)
-	}
+	#/cobra_shot,if=target.adds>2
+	Spell(COBRASHOT)
+	#/steady_shot
+	Spell(STEADYSHOT)
 }
 
+# Long CDs.
 AddIcon help=cd mastery=3
 {
-	unless InCombat() SummonPet()
-	if PetPresent(yes) and TargetIsInterruptible() PetInterrupt()
+	if PetPresent() and TargetIsInterruptible() PetInterrupt()
 
 	#/hunters_mark,if=target.time_to_die>=21
-	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK nored=1)
+	unless TargetDebuffPresent(HUNTERSMARK) or TargetDebuffPresent(MARKEDFORDEATH) if TargetDeadIn(more 21) Spell(HUNTERSMARK)
 	#/tolvir_potion,if=!in_combat
 	if InCombat(no) and CheckBoxOn(potions) and TargetClassification(worldboss) Item(POTIONOFTHETOLVIR)
 	#/summon_pet
 	SummonPet()
 	#/tolvir_potion,if=!in_combat|buff.bloodlust.react|target.time_to_die<=60
-	#if ( glyphs.rapid_fire -> ok() ) { |buff.rapid_fire.react }
 	if CheckBoxOn(potions) and TargetClassification(worldboss)
 	{
 		if BuffPresent(heroism) or TargetDeadIn(less 60) Item(POTIONOFTHETOLVIR)
@@ -614,11 +581,24 @@ AddIcon help=cd mastery=3
 	UseItemActions()
 	#init_use_profession_actions()
 	UseProfessionActions()
-	#/rapid_fire
-	Spell(RAPIDFIRE)
+	unless {TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetDeadIn(more 10) and Mana(more 24)}
+		or {TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1)
+			and {Mana(more 43) or BuffPresent(LOCKANDLOAD)} and 0s before Spell(EXPLOSIVESHOT)}
+		or {{CheckBoxOff(blackarrow) or TalentPoints(BLACKARROWTALENT less 1)}
+			and TargetDeadIn(more 11)
+			and {BuffPresent(TRAPLAUNCHER)
+				or {0s before Spell(EXPLOSIVETRAPLAUNCHER)
+					and {Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} and 0s before Spell(TRAPLAUNCHER)}}}}
+		or {TargetLifePercent(less 20) and 0s before Spell(KILLSHOT)}
+		or {CheckBoxOn(blackarrow) and TalentPoints(BLACKARROWTALENT more 0)
+			and TargetDeadIn(more 8) and Mana(more 34) and 0s before Spell(BLACKARROW)}
+	{
+		#/rapid_fire
+		Spell(RAPIDFIRE)
+	}
 }
 
-AddIcon size=small
+AddIcon help=cd size=small
 {
 	Spell(MISDIRECTION)
 }
