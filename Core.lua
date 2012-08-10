@@ -38,7 +38,7 @@ function NerienOvaleScripts:SetDefaultScript()
 	for name, module in Ovale:IterateModules() do
 		-- Expect that each module has a "defaut" table indexed by class token containing
 		-- class scripts.
-		if module.IsEnabled() and module.defaut and module.defaut[classToken] then
+		if module:IsEnabled() and module.defaut and module.defaut[classToken] then
 			code = module.defaut[classToken]
 		end
 	end
@@ -46,7 +46,7 @@ function NerienOvaleScripts:SetDefaultScript()
 	-- Make a copy of the old defaults table for Ovale.db, change the default code string,
 	-- then set that as the new defaults table for Ovale.db.
 	local defaults = deepCopy(Ovale.db.defaults)
-	for _, tbl in defaults do
+	for _, tbl in pairs(defaults) do
 		if type(tbl) == "table" and tbl.code then
 			tbl.code = code
 		end
