@@ -3,7 +3,7 @@
 - **Main Rotation Icon**: shows how to maximize DPS without the use of any cooldown abilities
 - **Cooldown Icon**: suggests cooldowns or other situational abilities that can be applied at the current time
 
-Each class script may also have additional icons for other class-specific information, e.g., to suggest dumping rage using [Heroic Strike](http://www.wowhead.com/spell=78) as a warrior or [Maul](http://www.wowhead.com/spell=6807) as a bear druid.
+Each class script may also have additional icons for other class-specific information, e.g., to suggest dumping rage using [Heroic Strike](http://www.wowhead.com/spell=78) as a warrior or [Maul](http://www.wowhead.com/spell=6807) as a bear druid.  Each class script will also suggest maintaining self buffs, e.g., [Arcane Brilliance](http://www.wowhead.com/spell=1459), [Mark of the Wild](http://www.wowhead.com/spell=1126), etc., and raid buffs and debuffs, e.g., [Critical Mass](http://www.wowhead.com/spell=22959), [Curse of the Elements](http://www.wowhead.com/spell=1490), etc.
 
 ### How to Use ###
 
