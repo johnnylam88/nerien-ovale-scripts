@@ -11,12 +11,16 @@ Simply install Nerien's Ovale Scripts like any other addon.  This addon works by
 
 If you have a custom script pasted into the code window, then run **/ovale-restore** in the chat window to use the default scripts again.  This command should be run for each toon that has a custom script.
 
+### Status ###
+
+The script for each specialization of each class is marked as either Experimental or **Tested** in a raid environment.  If a class specialization is not listed, then it has not yet been implemented.
+
 - Death Knight: Blood, Frost, Unholy
-- Druid: _Balance_, **Feral**, _Restoration_
+- Druid: **Feral**
 - Hunter: Beast Mastery, Marksmanship, Survival
 - Mage: **Arcane**, **Fire**, **Frost**
 - Paladin: **Holy**, **Protection**, Retribution
-- Priest: Discipline, Holy, **Shadow**
+- Priest: Discipline, Holy, Shadow
 - Rogue: Assassination, **Combat**, **Subtlety**
 - Shaman: **Elemental**, **Enhancement**, **Restoration**
 - Warlock: **Affliction**, Demonology, **Destruction**
