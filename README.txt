@@ -5,4 +5,8 @@
 
 Each class script may also have additional icons for other class-specific information, e.g., to suggest dumping rage using [Heroic Strike](http://www.wowhead.com/spell=78) as a warrior or [Maul](http://www.wowhead.com/spell=6807) as a bear druid.
 
-This addon also adds a slash-command **/ovale-restore** which can be used to remove a previously-saved custom script from the current Ovale profile and fallback to using the default script instead.  In this case, the fallback would be to the default class script installed by this addon.
+### How to Use ###
+
+Simply install Nerien's Ovale Scripts like any other addon.  This addon works by adjusting in-game what Ovale thinks are the default class scripts, so there is no additional configuration.
+
+If you have a custom script pasted into the code window, then run **/ovale-restore** in the chat window to use the default scripts again.  This command should be run for each toon that has a custom script.
