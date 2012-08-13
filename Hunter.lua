@@ -306,8 +306,8 @@ AddIcon help=offgcd size=small
 ### Beast Mastery
 ###
 
-# Main rotation.
-AddIcon help=main mastery=1
+# Main rotation minus focus generators.
+AddFunction MainRotationBeastMastery
 {
 	#/serpent_sting,if=!ticking
 	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1)
@@ -319,10 +319,21 @@ AddIcon help=main mastery=1
 		if Mana(more 39) or {BuffPresent(THEBEASTWITHIN) and Mana(more 19)} Spell(KILLCOMMAND)
 	#/arcane_shot,if=focus>=59|buff.beast_within.up
 	if Mana(more 58) or {BuffPresent(THEBEASTWITHIN) and Mana(more 10)} Spell(ARCANESHOT)
+}
+
+# Main rotation.
+AddIcon help=main mastery=1
+{
+	MainRotationBeastMastery()
 	#/cobra_shot
 	Spell(COBRASHOT)
 	#/steady_shot
 	Spell(STEADYSHOT)
+}
+
+AddIcon help=main mastery=1
+{
+	MainRotationBeastMastery()
 }
 
 # AoE.
@@ -392,8 +403,8 @@ AddIcon help=cd mastery=1
 ### Marksmanship
 ###
 
-# Main rotation.
-AddIcon help=main mastery=2
+# Main rotation minus focus generators.
+AddFunction MainRotationMarksmanship
 {
 	#/serpent_sting,if=!ticking&target.health_pct<=90
 	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetLifePercent(less 90) and Mana(more 24) Spell(SERPENTSTING)
@@ -463,8 +474,19 @@ AddIcon help=main mastery=2
 			}
 		}
 	}
+}
+
+# Main rotation.
+AddIcon help=main mastery=2
+{
+	MainRotationMarksmanship()
 	#/steady_shot
 	Spell(STEADYSHOT)
+}
+
+AddIcon help=main mastery=2
+{
+	MainRotationMarksmanship()
 }
 
 # AoE.
@@ -518,8 +540,8 @@ AddIcon help=cd mastery=2
 ### Survival
 ###
 
-# Main rotation.
-AddIcon help=main mastery=3
+# Main rotation minus focus generators.
+AddFunction MainRotationSurvival
 {
 	#/serpent_sting,if=!ticking&target.time_to_die>=10
 	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetDeadIn(more 10) and Mana(more 24) Spell(SERPENTSTING)
@@ -542,10 +564,21 @@ AddIcon help=main mastery=3
 	if CheckBoxOn(blackarrow) and TargetDeadIn(more 8) and Mana(more 34) Spell(BLACKARROW)
 	#/arcane_shot,if=focus>=67
 	if Mana(more 66) Spell(ARCANESHOT)
+}
+
+# Main rotation.
+AddIcon help=main mastery=3
+{
+	MainRotationSurvival()
 	#/cobra_shot
 	Spell(COBRASHOT)
 	#/steady_shot
 	Spell(STEADYSHOT)
+}
+
+AddIcon help=main mastery=3
+{
+	MainRotationSurvival()
 }
 
 # AoE.
