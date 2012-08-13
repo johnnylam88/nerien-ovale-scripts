@@ -419,7 +419,7 @@ AddIcon help=main mastery=3
 	}
 
 	# Maintain raid debuffs.
-	if CheckBoxOn(hemorrhage) and TalentPoints(HEMORRHAGETALENT more 0) and TargetDebuffExpires(bleed 2) Spell(HEMORRHAGE)
+	if CheckBoxOn(hemorrhage) and TalentPoints(HEMORRHAGETALENT more 0) and TargetDebuffExpires(bleed 2) and Stealthed(no) Spell(HEMORRHAGE)
 
 	#/apply_poison,main_hand=instant,off_hand=deadly
 	if WeaponEnchantExpires(mainhand 5) Item(INSTANTPOISON)
@@ -449,9 +449,9 @@ AddIcon help=main mastery=3
 	if TalentPoints(HEMORRHAGETALENT more 0) and Glyph(GLYPHOFHEMORRHAGE)
 	{
 		#/hemorrhage,if=combo_points<4&dot.hemorrhage.remains<4
-		if ComboPoints(less 4) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
+		if ComboPoints(less 4) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE)
 		#/hemorrhage,if=combo_points<5&energy>80&dot.hemorrhage.remains<4
-		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE nored=1)
+		if ComboPoints(less 5) and Mana(more 80) and TargetDebuffExpires(HEMORRHAGEDOT 4 mine=1) Spell(HEMORRHAGE)
 	}
 	#/backstab,if=combo_points<4
 	if ComboPoints(less 4) Spell(BACKSTAB)
