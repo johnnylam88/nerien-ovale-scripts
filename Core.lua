@@ -1,6 +1,6 @@
 local Ovale = LibStub("AceAddon-3.0"):GetAddon("Ovale")
-NerienOvaleScripts = Ovale:NewModule("NerienOvaleScripts", "AceConsole-3.0")
-NerienOvaleScripts:RegisterChatCommand("ovale-restore", "RestoreDefaultScript")
+local OvaleOptions = LibStub("AceAddon-3.0"):GetAddon("OvaleOptions")
+NerienOvaleScripts = OvaleOptions:NewModule("NerienOvaleScripts")
 
 -- Table of default class scripts, indexed by class tokens.
 NerienOvaleScripts.script = { }
@@ -35,7 +35,7 @@ function NerienOvaleScripts:SetDefaultScript()
 	if Ovale.defaut and Ovale.defaut[classToken] then
 		code = Ovale.defaut[classToken]
 	end
-	for name, module in Ovale:IterateModules() do
+	for name, module in OvaleOptions:IterateModules() do
 		-- Expect that each module has a "defaut" table indexed by class token containing
 		-- class scripts.
 		if module:IsEnabled() and module.defaut and module.defaut[classToken] then
@@ -43,18 +43,18 @@ function NerienOvaleScripts:SetDefaultScript()
 		end
 	end
 
-	-- Make a copy of the old defaults table for Ovale.db, change the default code string,
-	-- then set that as the new defaults table for Ovale.db.
-	local defaults = deepCopy(Ovale.db.defaults)
+	-- Make a copy of the old defaults table for OvaleOptions.db, change the default code string,
+	-- then set that as the new defaults table for OvaleOptions.db.
+	local defaults = deepCopy(OvaleOptions.db.defaults)
 	for _, tbl in pairs(defaults) do
 		if type(tbl) == "table" and tbl.code then
 			tbl.code = code
 		end
 	end
-	Ovale.db:RegisterDefaults(defaults)
+	OvaleOptions.db:RegisterDefaults(defaults)
 
 	-- Force a recompile of the code with the new code string.
-	if Ovale.db.profile.code then
+	if OvaleOptions.db.profile.code then
 		Ovale.needCompile = true
 	end
 end
@@ -65,11 +65,4 @@ end
 
 function NerienOvaleScripts:OnDisable()
 	self:SetDefaultScript()
-end
-
-function NerienOvaleScripts:RestoreDefaultScript()
-	if Ovale.db.defaults.profile.code then
-		Ovale.db.profile.code = Ovale.db.defaults.profile.code
-		Ovale.needCompile = true
-	end
 end
