@@ -9,7 +9,7 @@ Each class script may also have additional icons for other class-specific inform
 
 Simply install Nerien's Ovale Scripts like any other addon.  This addon works by adjusting in-game what Ovale thinks are the default class scripts, so there is no additional configuration.
 
-If you have a custom script pasted into the code window, then click the button to "Restore default".
+If you have a custom script pasted into the code window, then open the code window and click the button near the bottom to "Restore default".
 
 ### Status ###
 
