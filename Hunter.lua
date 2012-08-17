@@ -77,8 +77,8 @@ Define(EXPLOSIVESHOT 53301)
 	SpellInfo(EXPLOSIVESHOT mana=44 talent=EFFICIENCYTALENT) # Efficiency (Rank 3)
 	SpellAddTargetDebuff(EXPLOSIVESHOT EXPLOSIVESHOT=2)
 	SpellAddBuff(EXPLOSIVESHOT LOCKANDLOAD=-1)
-Define(EXPLOSIVETRAPLAUNCHER 82939)
-	SpellInfo(EXPLOSIVETRAPLAUNCHER cd=30 sharedcd=firetrap)
+Define(EXPLOSIVETRAP 13813)
+	SpellInfo(EXPLOSIVETRAP cd=30 sharedcd=firetrap)
 Define(FERVOR 82726)
 	SpellInfo(FERVOR mana=-50 cd=120)
 Define(FOCUSFIRE 82692)
@@ -340,8 +340,8 @@ AddIcon help=main mastery=1
 AddIcon help=aoe mastery=1 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
-	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAP)
+	if 0s before Spell(EXPLOSIVETRAP)
 		if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 	#/serpent_sting,if=!ticking
 	if TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1)
@@ -493,8 +493,8 @@ AddIcon help=main mastery=2
 AddIcon help=aoe mastery=2 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
-	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAP)
+	if 0s before Spell(EXPLOSIVETRAP)
 		if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 	#/multi_shot,if=target.adds>5
 	if Mana(more 39) Spell(MULTISHOT)
@@ -548,16 +548,6 @@ AddFunction MainRotationSurvival
 	#/explosive_shot,if=(remains<2.0)
 	if TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1)
 		if Mana(more 43) or BuffPresent(LOCKANDLOAD) Spell(EXPLOSIVESHOT)
-	if CheckBoxOff(blackarrow) or TalentPoints(BLACKARROWTALENT less 1)
-	{
-		#/explosive_trap,not_flying=1,if=target.time_to_die>=11
-		if TargetDeadIn(more 11)
-		{
-			if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-			if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
-				if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
-		}
-	}
 	#/kill_shot
 	if TargetLifePercent(less 20) Spell(KILLSHOT)
 	#/black_arrow,if=target.time_to_die>=8
@@ -585,8 +575,8 @@ AddIcon help=main mastery=3
 AddIcon help=aoe mastery=3 checkboxon=aoe
 {
 	#/explosive_trap,if=target.adds>0
-	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAPLAUNCHER)
-	if 0s before Spell(EXPLOSIVETRAPLAUNCHER)
+	if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAP)
+	if 0s before Spell(EXPLOSIVETRAP)
 		if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
 	#/multi_shot,if=target.adds>2
 	if Mana(more 39) Spell(MULTISHOT)
@@ -622,17 +612,24 @@ AddIcon help=cd mastery=3
 	unless {TargetDebuffExpires(SERPENTSTINGDEBUFF mine=1) and TargetDeadIn(more 10) and Mana(more 24)}
 		or {TargetDebuffExpires(EXPLOSIVESHOT 2 mine=1)
 			and {Mana(more 43) or BuffPresent(LOCKANDLOAD)} and 0s before Spell(EXPLOSIVESHOT)}
-		or {{CheckBoxOff(blackarrow) or TalentPoints(BLACKARROWTALENT less 1)}
-			and TargetDeadIn(more 11)
-			and {BuffPresent(TRAPLAUNCHER)
-				or {0s before Spell(EXPLOSIVETRAPLAUNCHER)
-					and {Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} and 0s before Spell(TRAPLAUNCHER)}}}}
-		or {TargetLifePercent(less 20) and 0s before Spell(KILLSHOT)}
-		or {CheckBoxOn(blackarrow) and TalentPoints(BLACKARROWTALENT more 0)
-			and TargetDeadIn(more 8) and Mana(more 34) and 0s before Spell(BLACKARROW)}
 	{
-		#/rapid_fire
-		Spell(RAPIDFIRE)
+		if CheckBoxOff(blackarrow) or TalentPoints(BLACKARROWTALENT less 1)
+		{
+			#/explosive_trap,not_flying=1,if=target.time_to_die>=11
+			if TargetDeadIn(more 11)
+			{
+				if BuffPresent(TRAPLAUNCHER) Spell(EXPLOSIVETRAP)
+				if 0s before Spell(EXPLOSIVETRAP)
+					if Mana(more 19) or {Glyph(GLYPHOFTRAPLAUNCHER) and Mana(more 9)} Spell(TRAPLAUNCHER)
+			}
+		}
+		unless {TargetLifePercent(less 20) and 0s before Spell(KILLSHOT)}
+			or {CheckBoxOn(blackarrow) and TalentPoints(BLACKARROWTALENT more 0)
+				and TargetDeadIn(more 8) and Mana(more 34) and 0s before Spell(BLACKARROW)}
+		{
+			#/rapid_fire
+			Spell(RAPIDFIRE)
+		}
 	}
 }
 
