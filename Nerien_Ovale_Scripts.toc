@@ -10,13 +10,13 @@
 
 Core.lua
 
-DeathKnight.lua
-Druid.lua
-Hunter.lua
-Mage.lua
-Paladin.lua
-Priest.lua
-Rogue.lua
-Shaman.lua
-Warlock.lua
-Warrior.lua
+Nerien\deathknight.lua
+Nerien\druid.lua
+Nerien\hunter.lua
+Nerien\mage.lua
+Nerien\paladin.lua
+Nerien\priest.lua
+Nerien\rogue.lua
+Nerien\shaman.lua
+Nerien\warlock.lua
+Nerien\warrior.lua
