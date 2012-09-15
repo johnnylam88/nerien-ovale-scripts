@@ -1,14 +1,17 @@
 ## Title: |c333399ffNerien's |rOvale Scripts
-## Notes: Nerien's default Ovale scripts.
+## Notes: Ovale script manager that allows choosing between scripts contributed by various authors.
 ##
-## Interface: 40300
+## Interface: 50001
 ## Dependencies: Ovale
 ##
 ## Version: @project-version@
-## Author: Johnny C. Lam
+## Author: Johnny C. Lam, Leafkiller
 ##
 
 Core.lua
+Ovale.lua
+
+Leafkiller\druid.lua
 
 Nerien\deathknight.lua
 Nerien\druid.lua
