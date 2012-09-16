@@ -3,6 +3,17 @@ NerienOvaleScripts.script.MAGE.Opisthobranch = {
 	code =
 [[
 # Opisthobranch: Arcane, Fire, Frost
+#
+# Caveats:
+# 1. The entire arcane rotation will change based on which level 90 talent you
+#    take, and it is an inferior spec atm. When MoP comes, you'll get new
+#    scripts with rotations based on these talents.
+#
+# 2. Combustion usage is heavily dependent on gear and situation, so I have left
+#    out a combustion suggestion. I would strongly advise users of this script
+#    to get the CombustionHelper addon.
+#
+# 3. I have left many cooldowns (trinkets etc.) up to the user.
 
 Define(alter_time 110909)
   SpellInfo(alter_time duration=6 )
