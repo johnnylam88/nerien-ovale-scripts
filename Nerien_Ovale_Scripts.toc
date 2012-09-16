@@ -1,12 +1,12 @@
 ## Title: |c333399ffNerien's |rOvale Scripts
 ## Notes: Ovale script manager that allows choosing between scripts contributed by various authors.
 ##
+## Version: @project-version@
+## Author: Johnny C. Lam (jlam), Leafkiller
+## X-Contributer: Opisthobranch
+##
 ## Interface: 50001
 ## Dependencies: Ovale
-##
-## Version: @project-version@
-## Author: Johnny C. Lam, Leafkiller, Opisthobranch
-##
 
 Core.lua
 Ovale.lua
