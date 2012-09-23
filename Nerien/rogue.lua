@@ -166,7 +166,7 @@ Define(virmens_bite_potion 76089)
 Define(virmens_bite_potion_buff 105697)
 	SpellInfo(virmens_bite_potion_buff duration=25)
 
-# Racials & Professions
+# Racials
 Define(berserking 26297)
 	SpellInfo(berserking cd=180 duration=10 sharedcd=racial)
 	SpellAddBuff(berserking berserking=1)
@@ -188,11 +188,7 @@ AddFunction UseRacialSurvivalActions
 	Spell(stoneform)
 }
 
-AddCheckBox(aoe L(AOE))
 AddCheckBox(potions "Use potions" default)
-AddCheckBox(opt_honor_among_thieves SpellName(honor_among_thieves) default mastery=3)
-AddCheckBox(opt_tricks_of_the_trade SpellName(tricks_of_the_trade) default)
-AddCheckBox(shadowstep SpellName(shadowstep) default mastery=3)
 
 # Trinket CDs
 AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
@@ -211,7 +207,17 @@ AddFunction UseItemActions
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
+AddCheckBox(targetdummy "Target Dummy")
+AddFunction TimeUntilTargetIsDead
+{
+	if CheckBoxOn(targetdummy) 3600
+	if CheckBoxOff(targetdummy) target.TimeToDie()
+}
+
 # Common rogue actions.
+
+AddCheckBox(opt_expose_armor) SpellName(expose_armor))
+AddCheckBox(opt_tricks_of_the_trade SpellName(tricks_of_the_trade) default)
 
 AddFunction ApplyPoisons
 {
@@ -231,11 +237,6 @@ AddFunction ApplyPoisons
 	{
 		Spell(deadly_poison)
 	}
-	if BuffExpires(non_lethal_poison)
-	{
-		if TalentPoints(leeching_poison_talent) Spell(leeching_poison)
-		Spell(mind_numbing_poison)
-	}
 }
 
 AddFunction IsStealthed
@@ -248,6 +249,16 @@ AddFunction Interrupt
 	if {IsStealthed() or BuffPresent(shadow_dance)} and TargetInRange(cheap_shot) Spell(cheap_shot)
 	if TargetInRange(kick) Spell(kick)
 	if not TargetClassification(worldboss) and TargetInRange(kidney_shot) Spell(kidney_shot)
+}
+
+AddIcon size=small
+{
+	Spell(tricks_of_the_trade)
+}
+
+AddIcon size=small
+{
+	Spell(redirect)
 }
 
 ###
@@ -271,7 +282,7 @@ AddFunction AssassinationFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TargetDeadIn(less 40)}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -297,6 +308,10 @@ AddFunction AssassinationFullRotation
 	if CheckBoxOn(opt_tricks_of_the_trade) and ArmorSetParts(T13 more 1) Spell(tricks_of_the_trade)
 	#slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffExpires(slice_and_dice 2) Spell(slice_and_dice)
+	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
+	{
+		Spell(expose_armor)
+	}
 	if TargetTicksRemain(rupture) <2 and Energy(more 90)
 	{
 		#dispatch,if=dot.rupture.ticks_remain<2&energy>90
@@ -322,9 +337,128 @@ AddFunction AssassinationFullRotation
 	Spell(mutilate)
 }
 
-AddIcon mastery=1
+AddFunction AssassinationMainActions
 {
-	AssassinationFullRotation()
+	#auto_attack
+	#ambush
+	if IsStealthed() Spell(ambush)
+	#tricks_of_the_trade,if=set_bonus.tier13_2pc_melee
+	if CheckBoxOn(opt_tricks_of_the_trade) and ArmorSetParts(T13 more 1) Spell(tricks_of_the_trade)
+	#slice_and_dice,if=buff.slice_and_dice.remains<2
+	if BuffExpires(slice_and_dice 2) Spell(slice_and_dice)
+	#rupture,if=ticks_remain<2|(combo_points=5&ticks_remain<3)
+	if TargetTicksRemain(rupture) <2 or {ComboPoints(more 4) and TargetTicksRemain(rupture) <3} Spell(rupture)
+	#envenom,if=combo_points>=4&buff.envenom.remains<1
+	if ComboPoints(more 3) and BuffExpires(envenom 1) Spell(envenom)
+	#envenom,if=combo_points>4
+	if ComboPoints(more 4) Spell(envenom)
+	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
+	if ComboPoints(more 1) and BuffExpires(slice_and_dice 3) Spell(envenom)
+	#tricks_of_the_trade
+	if CheckBoxOn(opt_tricks_of_the_trade) Spell(tricks_of_the_trade)
+}
+
+AddFunction AssassinationMainPlusFillerActions
+{
+	#auto_attack
+	#ambush
+	if IsStealthed() Spell(ambush)
+	#tricks_of_the_trade,if=set_bonus.tier13_2pc_melee
+	if CheckBoxOn(opt_tricks_of_the_trade) and ArmorSetParts(T13 more 1) Spell(tricks_of_the_trade)
+	#slice_and_dice,if=buff.slice_and_dice.remains<2
+	if BuffExpires(slice_and_dice 2) Spell(slice_and_dice)
+	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
+	{
+		Spell(expose_armor)
+	}
+	if TargetTicksRemain(rupture) <2 and Energy(more 90)
+	{
+		#dispatch,if=dot.rupture.ticks_remain<2&energy>90
+		if BuffPresent(blindside) or TargetHealthPercent(less 35) Spell(dispatch)
+		#mutilate,if=dot.rupture.ticks_remain<2&energy>90
+		Spell(mutilate)
+	}
+	#rupture,if=ticks_remain<2|(combo_points=5&ticks_remain<3)
+	if TargetTicksRemain(rupture) <2 or {ComboPoints(more 4) and TargetTicksRemain(rupture) <3} Spell(rupture)
+	#envenom,if=combo_points>=4&buff.envenom.remains<1
+	if ComboPoints(more 3) and BuffExpires(envenom 1) Spell(envenom)
+	#envenom,if=combo_points>4
+	if ComboPoints(more 4) Spell(envenom)
+	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
+	if ComboPoints(more 1) and BuffExpires(slice_and_dice 3) Spell(envenom)
+	#dispatch,if=combo_points<5
+	if ComboPoints(less 5) and {BuffPresent(blindside) or TargetHealthPercent(less 35)} Spell(dispatch)
+	#tricks_of_the_trade
+	if CheckBoxOn(opt_tricks_of_the_trade) Spell(tricks_of_the_trade)
+	#mutilate
+	Spell(mutilate)
+}
+
+AddFunction AssassinationCooldownActions
+{
+	if InCombat(no)
+	{
+		if BuffPresent(lethal_poison 400) and BuffPresent(non_lethal_poison 400)
+		{
+			#virmens_bite_potion
+			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+			#stealth
+			if not IsStealthed() Spell(stealth)
+		}
+	}
+
+	if BuffPresent(lethal_poison)
+	{
+		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+		{
+			Item(virmens_bite_potion usable=1)
+		}
+		#preparation,if=talent.preparation.enabled&!buff.vanish.up&cooldown.vanish.remains>60
+		if TalentPoints(preparation_talent) and BuffExpires(vanish) and SpellCooldown(vanish) >60 Spell(preparation)
+		#kick
+		if TargetIsInterruptible() Interrupt()
+		#use_item,name=gloves_of_the_thousandfold_blades
+		UseItemActions()
+		#berserking
+		UseRacialActions()
+		#vanish,if=time>10&!buff.stealthed.up&!buff.shadow_blades.up
+		if TimeInCombat(more 10) and not IsStealthed() and BuffExpires(shadow_blades) Spell(vanish)
+
+		unless IsStealthed()
+		{
+			#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
+			if {BuffPresent(bloodlust any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
+			{
+				Spell(shadow_blades)
+			}
+
+			unless {BuffExpires(slice_and_dice 2) and ComboPoints(more 0)}
+				or {CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}}
+				or {TargetTicksRemain(rupture) <2 and Energy(more 90)}
+				or {TargetTicksRemain(rupture) <2 or {ComboPoints(more 4) and TargetTicksRemain(rupture) <3} and ComboPoints(more 0)}
+			{
+				#vendetta
+				Spell(vendetta)
+			}
+		}
+	}
+}
+
+AddIcon help=main mastery=1
+{
+	AssassinationMainActions()
+}
+
+AddIcon help=main mastery=1
+{
+	ApplyPoisons()
+	AssassinationMainPlusFillerActions()
+}
+
+AddIcon help=cd mastery=1
+{
+	AssassinationCooldownActions()
 }
 
 ###
@@ -356,7 +490,7 @@ AddFunction CombatFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TargetDeadIn(less 40)}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -402,7 +536,7 @@ AddFunction CombatFullRotation
 	#adrenaline_rush,if=energy<35|buff.shadow_blades.up
 	if Energy(less 35) or BuffPresent(shadow_blades) Spell(adrenaline_rush)
 	#rupture,if=ticks_remain<2&combo_points=5&buff.deep_insight.up&target.time_to_die>10
-	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TargetDeadIn(more 10) Spell(rupture)
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TimeUntilTargetIsDead() >10 Spell(rupture)
 	if TalentPoints(anticipation_talent)
 	{
 		#eviscerate,if=(combo_points=5&buff.deep_insight.up)|anticipation_charges>=4
@@ -420,7 +554,11 @@ AddFunction CombatFullRotation
 		}
 	}
 	#rupture,if=ticks_remain<2&combo_points=5&target.time_to_die>10
-	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TargetDeadIn(more 10) Spell(rupture)
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TimeUntilTargetIsDead() >10 Spell(rupture)
+	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
+	{
+		Spell(expose_armor)
+	}
 	#revealing_strike,if=((buff.deep_insight.down&anticipation_charges<5)|(buff.deep_insight.up&combo_points<5))&ticks_remain<2
 	if TargetTicksRemain(revealing_strike) < 2 and CombatFillerCondition() Spell(revealing_strike)
 	#tricks_of_the_trade
@@ -429,9 +567,135 @@ AddFunction CombatFullRotation
 	if CombatFillerCondition() Spell(sinister_strike)
 }
 
-AddIcon mastery=2
+AddFunction CombatFillerActions
 {
-	CombatFullRotation()
+	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
+	{
+		Spell(expose_armor)
+	}
+	#revealing_strike,if=((buff.deep_insight.down&anticipation_charges<5)|(buff.deep_insight.up&combo_points<5))&ticks_remain<2
+	if TargetTicksRemain(revealing_strike) < 2 and CombatFillerCondition() Spell(revealing_strike)
+	#sinister_strike,if=(buff.deep_insight.down&anticipation_charges<5)|(buff.deep_insight.up&combo_points<5)
+	if CombatFillerCondition() Spell(sinister_strike)
+}
+
+AddFunction CombatMainActions
+{
+	#auto_attack
+	#ambush
+	if IsStealthed() Spell(ambush)
+	#tricks_of_the_trade,if=set_bonus.tier13_2pc_melee
+	if CheckBoxOn(opt_tricks_of_the_trade) and ArmorSetParts(T13 more 1) Spell(tricks_of_the_trade)
+	#slice_and_dice,if=buff.slice_and_dice.remains<2|(buff.slice_and_dice.remains<15&buff.bandits_guile.stack=11&combo_points>=4)
+	if BuffExpires(slice_and_dice 2)
+		or {BuffExpires(slice_and_dice 15) and BuffPresent(moderate_insight) and ComboPoints(more 3)}
+	{
+		Spell(slice_and_dice)
+	}
+	#rupture,if=ticks_remain<2&combo_points=5&buff.deep_insight.up&target.time_to_die>10
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TimeUntilTargetIsDead() >10 Spell(rupture)
+	if TalentPoints(anticipation_talent)
+	{
+		#eviscerate,if=(combo_points=5&buff.deep_insight.up)|anticipation_charges>=4
+		if {ComboPoints(more 4) and BuffPresent(deep_insight)} or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) >= 4}
+		{
+			Spell(eviscerate)
+		}
+	}
+	if not TalentPoints(anticipation_talent)
+	{
+		#eviscerate,if=combo_points>=(5-buff.shadow_blades.up)
+		if ComboPoints() >= {5 - BuffStacks(shadow_blades)}
+		{
+			Spell(eviscerate)
+		}
+	}
+	#rupture,if=ticks_remain<2&combo_points=5&target.time_to_die>10
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TimeUntilTargetIsDead() >10 Spell(rupture)
+
+	unless {CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}}
+		or {TargetTicksRemain(revealing_strike) < 2 and CombatFillerCondition()}
+	{
+		#tricks_of_the_trade
+		if CheckBoxOn(opt_tricks_of_the_trade) Spell(tricks_of_the_trade)
+	}
+}
+
+AddFunction CombatCooldownActions
+{
+	if InCombat(no)
+	{
+		if BuffPresent(lethal_poison 400) and BuffPresent(non_lethal_poison 400)
+		{
+			#virmens_bite_potion
+			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+			#stealth
+			if not IsStealthed() Spell(stealth)
+		}
+	}
+
+	if BuffPresent(lethal_poison)
+	{
+		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+		{
+			Item(virmens_bite_potion usable=1)
+		}
+		#preparation,if=talent.preparation.enabled&!buff.vanish.up&cooldown.vanish.remains>60
+		if TalentPoints(preparation_talent) and BuffExpires(vanish) and SpellCooldown(vanish) >60 Spell(preparation)
+		#kick
+		if TargetIsInterruptible() Interrupt()
+		#use_item,name=gloves_of_the_thousandfold_blades
+		UseItemActions()
+		#berserking
+		UseRacialActions()
+		if TimeInCombat(more 10) and not IsStealthed() and BuffExpires(shadow_blades) and BuffExpires(adrenaline_rush) and Energy(less 20)
+		{
+			if TalentPoints(anticipation_talent)
+			{
+				#vanish,if=time>10&!buff.shadow_blades.up&!buff.adrenaline_rush.up&energy<20&((buff.deep_insight.up&combo_points<4)|anticipation_charges<4)
+				if {BuffPresent(deep_insight) and ComboPoints(less 4)} or BuffStacks(anticipation) <4 Spell(vanish)
+			}
+			if not TalentPoints(anticipation_talent)
+			{
+				#vanish,if=time>10&!buff.shadow_blades.up&!buff.adrenaline_rush.up&energy<20&combo_points<4
+				if ComboPoints(less 4) Spell(vanish)
+			}
+		}
+
+		unless IsStealthed()
+			or {CheckBoxOn(opt_tricks_of_the_trade) and ArmorSetParts(T13 more 1) and Spell(tricks_of_the_trade)}
+			or {BuffExpires(slice_and_dice 2)
+				or {BuffExpires(slice_and_dice 15) and BuffPresent(moderate_insight) and ComboPoints(more 3)}}
+		{
+			#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
+			if {BuffPresent(bloodlust any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
+			{
+				Spell(shadow_blades)
+			}
+			#killing_spree,if=energy<35&buff.slice_and_dice.remains>4&buff.adrenaline_rush.down
+			if Energy(less 35) and BuffPresent(slice_and_dice 4) and BuffExpires(adrenaline_rush) Spell(killing_spree)
+			#adrenaline_rush,if=energy<35|buff.shadow_blades.up
+			if Energy(less 35) or BuffPresent(shadow_blades) Spell(adrenaline_rush)
+		}
+	}
+}
+
+AddIcon help=main mastery=2
+{
+	CombatMainActions()
+}
+
+AddIcon help=main mastery=2
+{
+	ApplyPoisons()
+	CombatMainActions()
+	CombatFillerActions()
+}
+
+AddIcon help=cd mastery=2
+{
+	CombatCooldownActions()
 }
 
 ###
@@ -475,14 +739,14 @@ AddFunction SubtletyFullRotation
 		#stealth
 		if not IsStealthed() Spell(stealth)
 		#premeditation
-		Spell(premeditation)
+		if IsStealthed() or BuffPresent(shadow_dance) Spell(premeditation)
 		#slice_and_dice
 		Spell(slice_and_dice)
 	}
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TargetDeadIn(less 40)}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -508,7 +772,7 @@ AddFunction SubtletyFullRotation
 		Spell(vanish)
 	}
 	#premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
-	if ComboPoints(less 3) Spell(premeditation)
+	if ComboPoints(less 3) and {IsStealthed() or BuffPresent(shadow_dance)} Spell(premeditation)
 	#ambush,if=combo_points<=5&anticipation_charges=0
 	if IsStealthed() or BuffPresent(shadow_dance)
 	{
@@ -537,17 +801,174 @@ AddFunction SubtletyFullRotation
 		#hemorrhage,if=combo_points<5&energy>80&(dot.hemorrhage.remains<4|position_front)
 		if ComboPoints(less 5) and Energy(more 80) Spell(hemorrhage)
 	}
+	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
+	{
+		Spell(expose_armor)
+	}
 	#backstab,if=combo_points<4&(cooldown.shadow_dance.remains>7|(cooldown.shadow_dance.remains=0&time<=9))
-	if ComboPoints(less 4) and {SpellCooldown(shadow_dance) >7 or {Spell(shadow_dance) and TimeInCombat(less 9)} Spell(backstab)
+	if ComboPoints(less 4) and {SpellCooldown(shadow_dance) >7 or {Spell(shadow_dance) and TimeInCombat(less 9)}} Spell(backstab)
 	#tricks_of_the_trade
 	if CheckBoxOn(opt_tricks_of_the_trade) Spell(tricks_of_the_trade)
 	#backstab,if=combo_points<5&energy>80&cooldown.shadow_dance.remains>=2
 	if ComboPoints(less 5) and Energy(more 80) and SpellCooldown(shadow_dance) >=2 Spell(backstab)
 }
 
-AddIcon mastery=3
+AddFunction SubtletyMainActions
 {
-	SubtletyFullRotation()
+	if InCombat(no)
+	{
+		#flask,type=spring_blossoms
+		#food,type=sea_mist_rice_noodles
+		#apply_poison,lethal=deadly
+		ApplyPoisons()
+		#snapshot_stats
+		#slice_and_dice
+		Spell(slice_and_dice)
+	}
+
+	ApplyPoisons()
+	#auto_attack
+	#ambush,if=combo_points<=5&anticipation_charges=0
+	if IsStealthed() or BuffPresent(shadow_dance)
+	{
+		if TalentPoints(anticipation_talent) and BuffStacks(anticipation) ==0 Spell(ambush)
+		if not TalentPoints(anticipation_talent) and ComboPoints(less 3) Spell(ambush)
+	}
+	if ComboPoints(more 4)
+	{
+		#slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
+		if BuffExpires(slice_and_dice 3) Spell(slice_and_dice)
+		#rupture,if=combo_points=5&dot.rupture.remains<5
+		if TargetDebuffExpires(rupture 5) Spell(rupture)
+	}
+	#ambush,if=anticipation_charges<3&buff.shadow_dance.remains<=2
+	if IsStealthed() or {BuffPresent(shadow_dance) and BuffExpires(shadow_dance 2)}
+	{
+		if TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3 Spell(ambush)
+		if not TalentPoints(anticipation_talent) and ComboPoints(less 3) Spell(ambush)
+	}
+	#eviscerate,if=combo_points=5
+	if ComboPoints(more 4) Spell(eviscerate)
+	if TargetDebuffExpires(hemorrhage_dot 4)
+	{
+		#hemorrhage,if=combo_points<4&(dot.hemorrhage.remains<4|position_front)
+		if ComboPoints(less 4) Spell(hemorrhage)
+		#hemorrhage,if=combo_points<5&energy>80&(dot.hemorrhage.remains<4|position_front)
+		if ComboPoints(less 5) and Energy(more 80) Spell(hemorrhage)
+	}
+	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
+	{
+		Spell(expose_armor)
+	}
+	#backstab,if=combo_points<4&(cooldown.shadow_dance.remains>7|(cooldown.shadow_dance.remains=0&time<=9))
+	if ComboPoints(less 4) and {SpellCooldown(shadow_dance) >7 or {Spell(shadow_dance) and TimeInCombat(less 9)}} Spell(backstab)
+	#tricks_of_the_trade
+	if CheckBoxOn(opt_tricks_of_the_trade) Spell(tricks_of_the_trade)
+	#backstab,if=combo_points<5&energy>80&cooldown.shadow_dance.remains>=2
+	if ComboPoints(less 5) and Energy(more 80) and SpellCooldown(shadow_dance) >=2 Spell(backstab)
+}
+
+AddFunction SubtletyStealthCooldownActions
+{
+	if InCombat(no)
+	{
+		if BuffPresent(lethal_poison 400) and BuffPresent(non_lethal_poison 400)
+		{
+			#stealth
+			if not IsStealthed() Spell(stealth)
+			#premeditation
+			if IsStealthed() or BuffPresent(shadow_dance) Spell(premeditation)
+		}
+	}
+
+	if BuffPresent(lethal_poison)
+	{
+		#preparation,if=talent.preparation.enabled&!buff.vanish.up&cooldown.vanish.remains>60
+		if TalentPoints(preparation_talent) and BuffExpires(vanish) and SpellCooldown(vanish) >60 Spell(preparation)
+		#pool_resource,for_next=1,extra_amount=75
+		#shadow_dance,if=energy>=75&buff.stealthed.down&!target.debuff.find_weakness.up
+		if Energy(more 75) and not IsStealthed() and TargetDebuffExpires(find_weakness) Spell(shadow_dance)
+		unless Spell(shadow_dance) and not IsStealthed() and TargetDebuffExpires(find_weakness)
+		{
+			#pool_resource,for_next=1,extra_amount=30
+			#vanish,if=time>10&energy>=45&energy<=75&combo_points<=3&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!target.debuff.find_weakness.up
+			if TimeInCombat(more 10) and not IsStealthed() and Energy(more 45) and Energy(less 75)
+				and BuffExpires(shadow_dance) and BuffExpires(master_of_subtlety) and TargetDebuffExpires(find_weakness)
+			{
+				Spell(vanish)
+			}
+			unless Spell(vanish) and TimeInCombat(more 10) and not IsStealthed() and Energy(less 75)
+				and BuffExpires(shadow_dance) and BuffExpires(master_of_subtlety) and TargetDebuffExpires(find_weakness)
+			{
+				#premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
+				if ComboPoints(less 3) and {IsStealthed() or BuffPresent(shadow_dance)} Spell(premeditation)
+			}
+		}
+	}
+}
+
+AddFunction SubtletyCooldownActions
+{
+	if InCombat(no)
+	{
+		if BuffPresent(lethal_poison 400) and BuffPresent(non_lethal_poison 400)
+		{
+			#virmens_bite_potion
+			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+		}
+	}
+
+	if BuffPresent(lethal_poison)
+	{
+		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+		{
+			Item(virmens_bite_potion usable=1)
+		}
+		unless {TalentPoints(preparation_talent) and BuffExpires(vanish) and SpellCooldown(vanish) >60 and Spell(preparation)}
+		{
+			#kick
+			if TargetIsInterruptible() Interrupt()
+			#shadow_blades
+			Spell(shadow_blades)
+			#pool_resource,for_next=1,extra_amount=75
+			#shadow_dance,if=energy>=75&buff.stealthed.down&!target.debuff.find_weakness.up
+			unless Spell(shadow_dance) and not IsStealthed() and TargetDebuffExpires(find_weakness)
+			{
+				#use_item,name=gloves_of_the_thousandfold_blades,if=buff.shadow_dance.up
+				UseItemActionsSubtlety()
+				#berserking,if=buff.shadow_dance.up
+				if BuffPresent(shadow_dance) UseRacialActions()
+			}
+		}
+	}
+}
+
+AddIcon help=main mastery=3
+{
+	SubtletyMainActions()
+}
+
+AddIcon help=cd mastery=3
+{
+	SubtletyStealthCooldownActions()
+}
+
+AddIcon help=cd mastery=3
+{
+	SubtletyCooldownActions()
+}
+
+# Survival cooldowns
+AddIcon help=cd size=small
+{
+	Spell(feint)
+	UseRacialSurvivalActions()
+}
+
+AddIcon help=cd size=small
+{
+	Spell(cloak_of_shadows)
 }
 ]]
 }
