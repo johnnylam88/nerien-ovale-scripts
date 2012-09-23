@@ -471,23 +471,23 @@ AddFunction BeastMasteryCooldownActions
 	}
 }
 
-AddIcon help=main mastery=1
+AddIcon mastery=1 help=main
 {
 	BeastMasteryMainActions()
 }
 
-AddIcon help=main mastery=1
+AddIcon mastery=1 help=main
 {
 	BeastMasteryMainActions()
 	BeastMasteryFillerActions()
 }
 
-AddIcon help=aoe mastery=1 checkboxon=aoe
+AddIcon mastery=1 help=aoe checkboxon=aoe
 {
 	BeastMasteryAoEActions()
 }
 
-AddIcon help=cd mastery=1
+AddIcon mastery=1 help=cd
 {
 	BeastMasteryCooldownActions()
 }
@@ -729,23 +729,23 @@ AddFunction SurvivalCooldownActions
 	}
 }
 
-AddIcon help=main mastery=3
+AddIcon mastery=3 help=main
 {
 	SurvivalMainActions()
 }
 
-AddIcon help=main mastery=3
+AddIcon mastery=3 help=main
 {
 	SurvivalMainActions()
 	SurvivalFillerActions()
 }
 
-AddIcon help=aoe mastery=3 checkboxon=aoe
+AddIcon mastery=3 help=aoe checkboxon=aoe
 {
 	SurvivalAoEActions()
 }
 
-AddIcon help=cd mastery=3
+AddIcon mastery=3 help=cd
 {
 	SurvivalCooldownActions()
 }

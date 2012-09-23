@@ -445,18 +445,18 @@ AddFunction AssassinationCooldownActions
 	}
 }
 
-AddIcon help=main mastery=1
+AddIcon mastery=1 help=main
 {
 	AssassinationMainActions()
 }
 
-AddIcon help=main mastery=1
+AddIcon mastery=1 help=main
 {
 	ApplyPoisons()
 	AssassinationMainPlusFillerActions()
 }
 
-AddIcon help=cd mastery=1
+AddIcon mastery=1 help=cd
 {
 	AssassinationCooldownActions()
 }
@@ -681,19 +681,19 @@ AddFunction CombatCooldownActions
 	}
 }
 
-AddIcon help=main mastery=2
+AddIcon mastery=2 help=main
 {
 	CombatMainActions()
 }
 
-AddIcon help=main mastery=2
+AddIcon mastery=2 help=main
 {
 	ApplyPoisons()
 	CombatMainActions()
 	CombatFillerActions()
 }
 
-AddIcon help=cd mastery=2
+AddIcon mastery=2 help=cd
 {
 	CombatCooldownActions()
 }
@@ -944,17 +944,17 @@ AddFunction SubtletyCooldownActions
 	}
 }
 
-AddIcon help=main mastery=3
+AddIcon mastery=3 help=main
 {
 	SubtletyMainActions()
 }
 
-AddIcon help=cd mastery=3
+AddIcon mastery=3 help=cd
 {
 	SubtletyStealthCooldownActions()
 }
 
-AddIcon help=cd mastery=3
+AddIcon mastery=3 help=cd
 {
 	SubtletyCooldownActions()
 }
