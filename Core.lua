@@ -56,6 +56,7 @@ function NerienOvaleScripts:GetOptions()
 						end,
 				},
 				codeDisplay = {
+					order = 10,
 					name = "Code",
 					type = "input",
 					multiline = 15,
@@ -73,6 +74,19 @@ function NerienOvaleScripts:GetOptions()
 						end,
 					set = function(info, v) end,
 				},
+				restore =
+				{
+					order = 20,
+					type = "execute",
+					name = "Restore default",
+					hidden = function()
+						return OvaleOptions.db.profile.code == OvaleOptions.db.defaults.profile.code
+					end,
+					func = function()
+						OvaleOptions.db.profile.code = OvaleOptions.db.defaults.profile.code
+						Ovale.needCompile = true
+					end,
+				}
 			},
 		}
 	end
