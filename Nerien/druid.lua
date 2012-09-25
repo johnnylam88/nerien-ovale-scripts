@@ -2,7 +2,10 @@ NerienOvaleScripts.script.DRUID.Nerien = {
 	desc = "Nerien: Guardian",
 	code =
 [[
-# Nerien's Druid Ovale script.
+# Nerien's druid script based on SimulationCraft
+#
+# Guardian:
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#Ub!...1..
 
 # Spells.
 Define(barkskin 22812)
@@ -48,6 +51,9 @@ Define(ferocious_bite 22568)
 Define(force_of_nature_talent 12)
 Define(frenzied_regeneration 22842)
 Define(frenzied_regeneration_buff 124769)
+Define(glyph_of_frenzied_regeneration 54810)
+Define(glyph_of_savagery 127540)
+Define(glyph_of_shred 114234)
 Define(healing_touch 5185)
 	SpellAddBuff(healing_touch natures_swiftness=0)
 Define(hibernate 2637)
@@ -180,28 +186,26 @@ Define(wild_charge_cat 49376)
 Define(wild_charge_moonkin 102383)
 	SpellInfo(wild_charge_moonkin cd=15)
 
-# Racials & Professions
-Define(berserking 26297) # troll
-	SpellInfo(berserking cd=180 duration=10)
-	SpellAddBuff(berserking berserking=1)
-Define(lifeblood 74497) # herbalism (rank 8)
-	SpellInfo(lifeblood cd=120 duration=20)
-	SpellAddBuff(lifeblood lifeblood=1)
-
 # Items
-Define(tolvir_potion 58145)
-	Define(tolvir_potion_spell 80495)
+Define(virmens_bite_potion 76089)
+Define(virmens_bite_potion_buff 105697)
+	SpellInfo(virmens_bite_potion_buff duration=25)
 
-# Glyphs.
-Define(glyph_of_frenzied_regeneration 54810)
-Define(glyph_of_savagery 127540)
-Define(glyph_of_shred 114234)
+# Racials
+Define(berserking 26297)
+	SpellInfo(berserking cd=180 duration=10 sharedcd=racial)
+	SpellAddBuff(berserking berserking=1)
 
-# Options.
-AddCheckBox(aoe L(aoe))
+AddFunction UseRacialActions
+{
+	Spell(berserking)
+}
 
-# Trinket CD options.
-AddListItem(trinketcd0_opt 000s "Trinket 0 CD - none" default)
+AddCheckBox(aoe L(AOE))
+AddCheckBox(potions "Use potions" default)
+
+# Trinket CDs
+AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
 AddListItem(trinketcd0 060s "Trinket 0 CD - 1 min")
 AddListItem(trinketcd0 090s "Trinket 0 CD - 1 min 30s")
 AddListItem(trinketcd0 120s "Trinket 0 CD - 2 min")
@@ -210,85 +214,73 @@ AddListItem(trinketcd1 060s "Trinket 1 CD - 1 min")
 AddListItem(trinketcd1 090s "Trinket 1 CD - 1 min 30s")
 AddListItem(trinketcd1 120s "Trinket 1 CD - 2 min")
 
-AddFunction UseProfessionActions
+AddFunction UseItemActions
 {
-	Spell(lifeblood)
+	Item(HandsSlot usable=1)
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
-AddFunction UseRacialActions
+AddCheckBox(targetdummy "Target Dummy")
+AddFunction TimeUntilTargetIsDead
 {
-	Spell(berserking)
+	if CheckBoxOn(targetdummy) 3600
+	if CheckBoxOff(targetdummy) target.TimeToDie()
 }
 
 ###
 ### Guardian
 ###
 
-# Main rotation from The Inconspicious Bear Guardian Patch 5.0.4 Survival Guide:
-#	http://theincbear.com/forums/viewtopic.php?p=12230&sid=49a0322cdc7cae2e3a488c4681a27202#p12230
+AddCheckBox(opt_maul SpellName(maul) default mastery=3)
 
-# Rage cooldowns.
-AddIcon mastery=3 help=cd size=small
+AddFunction GuardianInterrupt
 {
-	if Rage(less 11) Spell(enrage)
-	if HealthPercent(less 25)
+	if TargetInRange(skull_bash_bear) Spell(skull_bash_bear)
+	if not TargetClassification(worldboss) and TalentPoints(mighty_bash_talent) and TargetInRange(mighty_bash)
 	{
-		if BuffExpires(incarnation_son_of_ursoc) Spell(berserk_bear)
-		if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(incarnation_son_of_ursoc)
+		Spell(mighty_bash)
 	}
-	if not BuffPresent(heroism any=1)
-	{
-		Spell(berserking)
-		Spell(lifeblood)
-	}
-	if BuffExpires(incarnation_son_of_ursoc) Spell(berserk_bear)
-	if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(incarnation_son_of_ursoc)
 }
 
-AddFunction HasAggroOnTarget
+# Rotation from The Inconspicious Bear Mists of Pandaria Guardian Guide by Arielle:
+#	http://theincbear.com/forums/viewtopic.php?p=12230#p12230
+
+# Health increase cooldowns.
+AddIcon mastery=3 help=cd size=small
 {
-	[
-		local isTanking = UnitDetailedThreatSituation("player", "target")
-		if (UnitExists("target") and UnitIsEnemy("player", "target") and isTanking) then
-			return 1
-		else
-			return 0
-		end
-	]
+	Spell(might_of_ursoc)
+}
+
+# Damage reduction cooldowns.
+AddIcon mastery=3 help=cd size=small
+{
+	Spell(barkskin)
+	if TalentPoints(force_of_nature_talent) Spell(treants_guardian)
+	Spell(survival_instincts)
 }
 
 # Main rotation (rage-consuming abilities).
-AddIcon mastery=3 help=main
+AddIcon mastery=3
 {
-	if TargetIsInterruptible()
-	{
-		if TargetInRange(skull_bash_bear) Spell(skull_bash_bear)
-		if not TargetClassification(worldboss) and TalentPoints(mighty_bash_talent) and TargetInRange(mighty_bash)
-		{
-			Spell(mighty_bash)
-		}
-	}
-	if HasAggroOnTarget() == 0
+	if TargetIsAggroed(no)
 	{
 		# Always bank enough rage so that if we need to switch to defense, we can.
-		if Rage(more 75) Spell(maul)
+		if CheckBoxOn(opt_maul) and Rage(more 75) Spell(maul)
 	}
-	if HasAggroOnTarget() > 0
-	{
-		Spell(savage_defense usable=1)
-		if Glyph(glyph_of_frenzied_regeneration) or Rage(more 60) Spell(frenzied_regeneration)
-	}
+	Spell(savage_defense)
+	if Glyph(glyph_of_frenzied_regeneration) or Rage(more 60) Spell(frenzied_regeneration)
 }
 
-# Main rotation (rage-generating abilities): Mangle > Lacerate > Thrash > Maintenance > FFF
+# Main rotation (rage-generating abilities): Mangle > Lacerate > Thrash Maintenance > FFF
 AddIcon mastery=3 help=main
 {
-	if InCombat(no) and BuffRemains(str_agi_int any=1) < 400 Spell(mark_of_the_wild)
+	if InCombat(no) and BuffRemains(str_agi_int any=1) <400 Spell(mark_of_the_wild)
 	if not Stance(1) Spell(bear_form)
 
 	# Debuff maintenance.
 	if TargetDebuffExpires(weakened_blows 3 any=1) Spell(thrash_bear)
-	if TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) < 3
+	if TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3
 	{
 		Spell(faerie_fire)
 	}
@@ -307,15 +299,22 @@ AddIcon mastery=3 help=aoe checkboxon=aoe
 	Spell(swipe_bear)
 }
 
-# Damage reduction cooldowns.
-AddIcon mastery=3 help=cd size=small
+# Rage cooldowns.
+AddIcon mastery=3 help=cd
 {
-	Spell(barkskin)
-	if TalentPoints(force_of_nature_talent) Spell(treants_guardian)
-	Spell(survival_instincts)
-	Spell(might_of_ursoc)
-	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
-	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
+	if TargetIsInterruptible() GuardianInterrupt()
+	if Rage(less 11) Spell(enrage)
+	if HealthPercent(less 25)
+	{
+		if BuffExpires(incarnation_son_of_ursoc) Spell(berserk_bear)
+		if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(incarnation_son_of_ursoc)
+	}
+	if not BuffPresent(burst_haste any=1)
+	{
+		Spell(berserking)
+	}
+	if BuffExpires(incarnation_son_of_ursoc) Spell(berserk_bear)
+	if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(incarnation_son_of_ursoc)
 }
 
 # Healing cooldowns.
@@ -324,6 +323,12 @@ AddIcon mastery=3 help=cd size=small
 	if TalentPoints(natures_swiftness_talent) Spell(natures_swiftness)
 	if TalentPoints(renewal_talent) Spell(renewal)
 	if TalentPoints(cenarion_ward_talent) Spell(cenarion_ward)
+}
+
+AddIcon mastery=3 help=cd size=small
+{
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 ]]
 }
