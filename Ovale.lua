@@ -49,6 +49,6 @@ NerienOvaleScripts.script.WARLOCK.Ovale = {
 }
 
 NerienOvaleScripts.script.WARRIOR.Ovale = {
-	desc = "Ovale: Arms, Fury",
+	desc = "Ovale: Arms, Fury, Protection",
 	code = Ovale.defaut.WARRIOR
 }
