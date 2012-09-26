@@ -282,7 +282,7 @@ AddFunction AssassinationFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -300,7 +300,7 @@ AddFunction AssassinationFullRotation
 	#ambush
 	if IsStealthed() Spell(ambush)
 	#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
-	if {BuffPresent(bloodlust any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
+	if {BuffPresent(burst_haste any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
 	{
 		Spell(shadow_blades)
 	}
@@ -410,7 +410,7 @@ AddFunction AssassinationCooldownActions
 	if BuffPresent(lethal_poison)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -428,7 +428,7 @@ AddFunction AssassinationCooldownActions
 		unless IsStealthed()
 		{
 			#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
-			if {BuffPresent(bloodlust any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
+			if {BuffPresent(burst_haste any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
 			{
 				Spell(shadow_blades)
 			}
@@ -490,7 +490,7 @@ AddFunction CombatFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -527,7 +527,7 @@ AddFunction CombatFullRotation
 		Spell(slice_and_dice)
 	}
 	#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
-	if {BuffPresent(bloodlust any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
+	if {BuffPresent(burst_haste any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
 	{
 		Spell(shadow_blades)
 	}
@@ -637,7 +637,7 @@ AddFunction CombatCooldownActions
 	if BuffPresent(lethal_poison)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -669,7 +669,7 @@ AddFunction CombatCooldownActions
 				or {BuffExpires(slice_and_dice 15) and BuffPresent(moderate_insight) and ComboPoints(more 3)}}
 		{
 			#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
-			if {BuffPresent(bloodlust any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
+			if {BuffPresent(burst_haste any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
 			{
 				Spell(shadow_blades)
 			}
@@ -746,7 +746,7 @@ AddFunction SubtletyFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -921,7 +921,7 @@ AddFunction SubtletyCooldownActions
 	if BuffPresent(lethal_poison)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <40}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
 		{
 			Item(virmens_bite_potion usable=1)
 		}

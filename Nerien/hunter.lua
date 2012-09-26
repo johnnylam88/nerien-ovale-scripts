@@ -270,7 +270,7 @@ AddFunction BeastMasteryFullRotation
 
 	SummonPet()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <60}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -427,7 +427,7 @@ AddFunction BeastMasteryCooldownActions
 	if pet.Present() and pet.Health(more 0)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <60}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -517,7 +517,7 @@ AddFunction SurvivalFullRotation
 
 	SummonPet()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <60}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -688,7 +688,7 @@ AddFunction SurvivalCooldownActions
 	if pet.Present() and pet.Health(more 0)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(bloodlust any=1) or TimeUntilTargetIsDead() <60}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
