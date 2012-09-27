@@ -51,6 +51,11 @@ AddFunction UseRacialActions
 	Spell(blood_fury)
 }
 
+AddFunction UseRacialInterruptActions
+{
+	if not TargetClassification(worldboss) and TargetInRange(quaking_palm) Spell(quaking_palm)
+}
+
 AddFunction UseRacialSurvivalActions
 {
 	Spell(stoneform)
