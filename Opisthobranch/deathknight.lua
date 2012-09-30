@@ -105,7 +105,12 @@ Define(scourge_strike 55090)
 Define(shadow_infusion 91342)
   SpellInfo(shadow_infusion duration 30)
   SpellAddBuff(shadow_infusion shadow_infusion=1)
-Define(soul_reaper 114867)
+Define(soul_reaper_blood 114866)
+  SpellInfo(soul_reaper_blood blood=1 runicpower=-200 cd=6 xxx=0)
+Define(soul_reaper_frost 130735)
+  SpellInfo(soul_reaper_frost frost=1 runicpower=-200 cd=6 xxx=0)
+Define(soul_reaper_unholy 130736)
+  SpellInfo(soul_reaper_unholy unholy=1 runicpower=-200 cd=6 xxx=0)
 Define(sudden_doom 81340)
   SpellInfo(sudden_doom duration 10)
   SpellAddBuff(sudden_doom sudden_doom=1)
@@ -141,7 +146,7 @@ AddIcon mastery=1 help=main
     if target.DebuffRemains(frost_fever) <3 Spell(icy_touch)
     if target.DebuffRemains(blood_plague) <3 Spell(plague_strike)
     if BuffRemains(blood_shield) <2 Spell(death_strike)
-    if target.HealthPercent() <=35 Spell(soul_reaper)
+    if target.HealthPercent() <=35 and {RuneCount(blood) >=1 and RunicPower() <90} Spell(soul_reaper_blood)
     if RuneCount(blood) >=1 and LifePercent(less 90) Spell(rune_tap usable=1)
     if RunicPower() >=60 Spell(rune_strike usable=1)
     if RuneCount(blood) >=1 and RunicPower() <90 Spell(heart_strike)
@@ -209,7 +214,7 @@ AddIcon mastery=2 help=main
         unless Stance(2) Spell(frost_presence)
         Spell(horn_of_winter)
     }
-    if target.HealthPercent() <=35 Spell(soul_reaper)
+    if target.HealthPercent() <=35 and {{RuneCount(frost) >=1 or RuneCount(death) >=1} and RunicPower() <90} Spell(soul_reaper_frost)
     if {{TalentPoints(plague_leech_talent) and target.DebuffPresent(frost_fever) and target.DebuffPresent(blood_plague) and {target.DebuffRemains(frost_fever) <4 or target.DebuffRemains(blood_plague) <4}} and {{RuneCount(unholy) <1 or RuneCount(frost) <1} or RuneCount(death) <1 }} Spell(plague_leech)
     if target.DebuffRemains(frost_fever) <3 or target.DebuffRemains(blood_plague) <3 Spell(outbreak)
     if not target.DebuffPresent(frost_fever) Spell(howling_blast)
@@ -229,7 +234,6 @@ AddIcon mastery=2 help=main
 AddIcon help=aoe mastery=2 checkboxon=aoe
 
 {
-    if target.HealthPercent() <=35 Spell(soul_reaper)
     if {{TalentPoints(plague_leech_talent) and target.DebuffPresent(frost_fever) and target.DebuffPresent(blood_plague) and {target.DebuffRemains(frost_fever) <4 or target.DebuffRemains(blood_plague) <4}} and {{RuneCount(unholy) <1 or RuneCount(frost) <1} or RuneCount(death) <1 }} Spell(plague_leech)
     if target.DebuffRemains(frost_fever) <3 or target.DebuffRemains(blood_plague) <3 Spell(outbreak)
     if not target.DebuffPresent(frost_fever) Spell(howling_blast)
@@ -273,7 +277,7 @@ AddIcon mastery=3 help=main
         unless Stance(3) Spell(unholy_presence)
         Spell(horn_of_winter)
     }
-    if target.HealthPercent() <=35 Spell(soul_reaper)
+    if target.HealthPercent() <=35 and {{RuneCount(unholy) >=1 or RuneCount(death) >=1} and RunicPower() <90} Spell(soul_reaper_unholy)
     if {{TalentPoints(plague_leech_talent) and target.DebuffPresent(frost_fever) and target.DebuffPresent(blood_plague) and {target.DebuffRemains(frost_fever) <4 or target.DebuffRemains(blood_plague) <4}} and {{RuneCount(unholy) <1 or RuneCount(frost) <1} or RuneCount(death) <1 }} Spell(plague_leech)
     if target.DebuffRemains(frost_fever) <3 or target.DebuffRemains(blood_plague) <3 Spell(outbreak)
     if not target.DebuffPresent(frost_fever) Spell(icy_touch)
@@ -291,8 +295,6 @@ AddIcon mastery=3 help=main
 }
 AddIcon help=aoe mastery=3 checkboxon=aoe
 {
-    if target.HealthPercent() <=35 Spell(soul_reaper)
-
     if {{TalentPoints(plague_leech_talent) and target.DebuffPresent(frost_fever) and target.DebuffPresent(blood_plague) and {target.DebuffRemains(frost_fever) <4 or target.DebuffRemains(blood_plague) <4}} and {{RuneCount(unholy) <1 or RuneCount(frost) <1} or RuneCount(death) <1 }} Spell(plague_leech)
     if target.DebuffRemains(frost_fever) <3 or target.DebuffRemains(blood_plague) <3 Spell(outbreak)
     if not target.DebuffPresent(frost_fever) Spell(icy_touch)
