@@ -7,6 +7,18 @@ These scripts are meant to be used in live raiding scenarios where the player mu
 
 Each class script may also have additional icons for other class-specific information, e.g., to suggest dumping rage using [Heroic Strike](http://www.wowhead.com/spell=78) as a warrior or [Savage Defense](http://www.wowhead.com/spell=62606) as a bear druid.  Each class script may also suggest maintaining self buffs, e.g., [Arcane Brilliance](http://www.wowhead.com/spell=1459), [Mark of the Wild](http://www.wowhead.com/spell=1126), etc., and raid buffs and debuffs, e.g., [Curse of the Elements](http://www.wowhead.com/spell=1490), etc.
 
+### Status ###
+
+There are user-contributed scripts for the following classes and specializations.
+
+- Death Knight: Blood, Frost, Unholy
+- Druid: Feral, Guardian
+- Hunter: Beast Mastery, Survival
+- Mage: Arcane, Fire, Frost
+- Paladin: Protection, Retribution
+- Priest: Shadow
+- Rogue: Assassination, Combat, Subtlety
+
 ### How to Use ###
 
 Install Nerien's Ovale Scripts like any other addon.  Open up the options for the addon and select the script you would like to use as the default class script for the current profile.
