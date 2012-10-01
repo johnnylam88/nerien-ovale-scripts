@@ -1,32 +1,48 @@
 NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "Nerien: Brewmaster (leveling)",
+	desc = "Nerien: Brewmaster",
 	code =
 [[
 # Nerien's monk script.
+#
+# Windwalker
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!022221
 
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
 	SpellInfo(blackout_kick chi=2)
-	SpellAddBuff(blackout_kick shuffle=1)
+	SpellAddBuff(blackout_kick combo_breaker_bok=0 shuffle=1)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
 Define(chi_brew 115399)
-	SpellInfo(chi_brew chi=-4 cd=90)
+	SpellInfo(chi_brew cd=90 chi=-4)
+	SpellInfo(chi_brew chi=-5 talent=ascension_talent)
 Define(chi_brew_talent 9)
 Define(chi_burst 123986)
 	SpellInfo(chi_burst chi=2)
 Define(chi_burst_talent 6)
 Define(chi_sphere 121286)
 	SpellInfo(chi_sphere duration=120)
+Define(chi_torpedo 115008)
+Define(chi_torpedo_talent 18)
 Define(chi_wave 115098)
 	SpellInfo(chi_wave cd=8 chi=2)
 Define(chi_wave_talent 4)
 Define(combo_breaker_bok 116768)
 	SpellInfo(combo_breaker_bok duration=15)
-	SpellAddBuff(combo_breaker_bok combo_breaker_bok=1)
 Define(combo_breaker_tp 118864)
 	SpellInfo(combo_breaker_tp duration=15)
-	SpellAddBuff(combo_breaker_tp combo_breaker_tp=1)
+Define(dampen_harm 122278)
+	SpellInfo(dampen_harm cd=90 duration=45)
+	SpellAddBuff(dampen_harm dampen_harm=1)
+Define(dampen_harm_talent 14)
+Define(death_note 121125)
+Define(diffuse_magic 122783)
+	SpellInfo(diffuse_magic cd=90 duration=6)
+	SpellAddBuff(diffuse_magic diffuse_magic=1)
+Define(diffuse_magic_talent 15)
+Define(disable 116095)
+	SpellInfo(disable duration=15 energy=15)
+	SpellAddTargetDebuff(disable disable=1)
 Define(dizzying_haze 115180)
 	SpellInfo(dizzying_haze energy=20)
 Define(dizzying_haze_aura 116330)
@@ -37,13 +53,15 @@ Define(elusive_brew_use 115308)
 	SpellInfo(elusive_brew_use cd=9 duration=1)
 	SpellAddBuff(elusive_brew_use elusive_brew=0 elusive_brew_use=1)
 Define(energizing_brew 115288)
-	SpellInfo(energizing_brew duration=6 cd=60)
+	SpellInfo(energizing_brew cd=60 duration=6 tick=1)
 	SpellAddBuff(energizing_brew energizing_brew=1)
 Define(expel_harm 115072)
 	SpellInfo(expel_harm cd=15 chi=-1 energy=40)
 Define(fists_of_fury 113656)
-	SpellInfo(fists_of_fury duration=4 chi=3 cd=25)
+	SpellInfo(fists_of_fury cd=25 chi=3 duration=4 tick=1)
 	SpellAddBuff(fists_of_fury fists_of_fury=1)
+Define(flying_serpent_kick 101545)
+	SpellInfo(flying_serpent_kick cd=25)
 Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=180)
 Define(guard 115295)
@@ -52,7 +70,7 @@ Define(guard 115295)
 Define(heavy_stagger 124273)
 	SpellInfo(heavy_stagger duration=10 tick=1)
 Define(invoke_xuen 123904)
-	SpellInfo(invoke_xuen duration=45 cd=180)
+	SpellInfo(invoke_xuen cd=180 duration=45)
 Define(invoke_xuen_the_white_tiger_talent 17)
 Define(jab 100780)
 	SpellInfo(jab chi=-1 energy=40)
@@ -64,10 +82,16 @@ Define(legacy_of_the_emperor 115921)
 	SpellAddBuff(legacy_of_the_emperor legacy_of_the_emperor_aura=1)
 Define(legacy_of_the_emperor_aura 117666)
 	SpellInfo(legacy_of_the_emperor_aura duration=3600)
+Define(legacy_of_the_white_tiger 116781)
+	SpellInfo(legacy_of_the_white_tiger duration=3600)
+	SpellAddBuff(legacy_of_the_white_tiger legacy_of_the_white_tiger=1)
 Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
 Define(moderate_stagger 124274)
 	SpellInfo(moderate_stagger duration=10 tick=1)
+Define(paralysis 115078)
+	SpellInfo(paralysis cd=15 duration=30 energy=20)
+	SpellAddTargetDebuff(paralysis paraylsis=1)
 Define(power_guard 118636)
 	SpellInfo(power_guard duration=30)
 Define(power_strikes 121817)
@@ -76,10 +100,14 @@ Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 chi=1)
 	SpellAddDebuff(purifying_brew heavy_stagger=0 light_stagger=0 moderate_stagger=0)
 Define(rising_sun_kick 107428)
-	SpellInfo(rising_sun_kick chi=2 cd=8)
+	SpellInfo(rising_sun_kick cd=8 chi=2)
+	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_aura=1)
+Define(rising_sun_kick_aura 130320)
+	SpellInfo(rising_sun_kick_aura duration=15)
 Define(rushing_jade_wind 116847)
-	SpellInfo(rushing_jade_wind duration=8 chi=2 cd=30)
-	SpellAddBuff(rushing_jade_wind rushing_jade_wind=1)
+	SpellInfo(rushing_jade_wind cd=30 chi=2 duration=8)
+	SpellAddBuff(rushing_jade_wind shuffle=1)
+	SpellAddTargetDebuff(rushing_jade_wind rushing_jade_wind=1)
 Define(rushing_jade_wind_talent 16)
 Define(shuffle 115307)
 	SpellInfo(shuffle duration=6)
@@ -89,22 +117,34 @@ Define(spear_hand_strike 116705)
 Define(spinning_crane_kick 101546)
 	SpellInfo(spinning_crane_kick duration=2.25 energy=40 tick=0.75)
 	SpellAddBuff(spinning_crane_kick spinning_crane_kick=1)
+Define(spinning_fire_blossom 115073)
+	SpellInfo(spinning_fire_blossom chi=1)
 Define(stance_of_the_fierce_tiger 103985)
 Define(stance_of_the_sturdy_ox 115069)
 Define(summon_black_ox_statue 115315)
 	SpellInfo(summon_black_ox_statue cd=30)
+Define(symbiosis_bear_hug 127361)
+	SpellInfo(symbiosis_bear_hug cd=60 duration=3)
+	SpellAddTargetDebuff(symbiosis_bear_hug symbiosis_bear_hug=1)
+Define(symbiosis_survival_instincts 113306)
+	SpellInfo(symbiosis_survival_instincts cd=180 duration=6)
+	SpellAddBuff(symbiosis_survival_instincts symbiosis_survival_instincts=1)
 Define(tiger_palm 100787)
 	SpellInfo(tiger_palm chi=1)
 	SpellInfo(tiger_palm chi=0 mastery=1) # with Brewmaster Training at level 34
-	SpellAddBuff(tiger_palm power_guard=1 tiger_power=1)
+	SpellAddBuff(tiger_palm combo_break_tp=0 power_guard=1 tiger_power=1)
 Define(tiger_power 125359)
 	SpellInfo(tiger_power duration=20)
-	SpellAddBuff(tiger_power tiger_power=1)
 Define(tigereye_brew 125195)
 	SpellInfo(tigereye_brew duration=120)
 Define(tigereye_brew_use 116740)
-	SpellInfo(tigereye_brew_use duration=15 cd=1)
+	SpellInfo(tigereye_brew_use cd=1 duration=15)
 	SpellAddBuff(tigereye_brew_use tigereye_brew=0 tigereye_brew_use=1)
+Define(touch_of_death 115080)
+	SpellInfo(touch_of_death cd=90 chi=3)
+Define(touch_of_karma 122470)
+	SpellInfo(touch_of_karma cd=90 chi=2 duration=10)
+	SpellAddTargetDebuff(touch_of_karma touch_of_karma=1)
 Define(weakened_blows 115798)
 	SpellInfo(weakened_blows duration=30)
 Define(zen_sphere 124081)
@@ -120,17 +160,19 @@ Define(jade_serpent_potion_buff 105702)
 	SpellInfo(jade_serpent_potion_buff duration=25)
 
 # Racials
+Define(arcane_torrent_chi 129597)
+	SpellInfo(arcane_torrent_chi cd=120 chi=1)
 Define(berserking 26297)
-	SpellInfo(berserking cd=180 duration=10 sharedcd=racial)
+	SpellInfo(berserking cd=180 duration=10)
 	SpellAddBuff(berserking berserking=1)
 Define(blood_fury 20572)
-	SpellInfo(blood_fury cd=120 duration=15 sharedcd=racial)
+	SpellInfo(blood_fury cd=120 duration=15)
 	SpellAddBuff(blood_fury blood_fury=1)
 Define(quaking_palm 107079)
-	SpellInfo(quaking_palm cd=120 duration=4 sharedcd=racial)
+	SpellInfo(quaking_palm cd=120 duration=4)
 	SpellAddTargetDebuff(quaking_palm quaking_palm=1)
 Define(stoneform 20594)
-	SpellInfo(stoneform cd=120 duration=8 sharedcd=racial)
+	SpellInfo(stoneform cd=120 duration=8)
 	SpellAddBuff(stoneform stoneform=1)
 
 AddFunction UseRacialActions
@@ -141,7 +183,11 @@ AddFunction UseRacialActions
 
 AddFunction UseRacialInterruptActions
 {
-	if not TargetClassification(worldboss) and TargetInRange(quaking_palm) Spell(quaking_palm)
+	if TargetClassification(worldboss no)
+	{
+		Spell(arcane_torrent_chi)
+		if TargetInRange(quaking_palm) Spell(quaking_palm)
+	}
 }
 
 AddFunction UseRacialSurvivalActions
@@ -180,9 +226,15 @@ AddFunction TimeUntilTargetIsDead
 ### Monk (all specializations)
 ###
 
+AddFunction EnergyRegen
+{
+	Energy() / TimeToMaxEnergy()
+}
+
 AddFunction Interrupt
 {
 	if TargetInRange(spear_hand_strike) Spell(spear_hand_strike)
+	if TargetClassification(worldboss no) and TargetInRange(paralysis) Spell(paralysis)
 	UseRacialInterruptActions()
 }
 
@@ -192,16 +244,32 @@ AddFunction NumberToMaxChi
 	unless TalentPoints(ascension_talent) {4 - Chi()}
 }
 
-AddFunction MonkTier2TalentActions
+AddFunction Tier2TalentActions
 {
 	if TalentPoints(chi_burst_talent) Spell(chi_burst)
 	if TalentPoints(chi_wave_talent) Spell(chi_wave)
 	if TalentPoints(zen_sphere_talent) and BuffExpires(zen_sphere) Spell(zen_sphere)
 }
 
+AddFunction Tier5TalentActions
+{
+	if TalentPoints(dampen_harm_talent) Spell(dampen_harm)
+	if TalentPoints(diffuse_magic_talent) Spell(diffuse_magic)
+}
+
 ###
 ### Brewmaster
 ###
+# Single-target and AoE rotations from Alaron's 5.0 Brewmaster PvE Guide:
+#	http://worldofmonkcraft.com/brewmaster-mists-of-pandaria-guide/
+
+AddFunction BrewmasterOOCActions
+{
+	if InCombat(no)
+	{
+		unless BuffPresent(str_agi_int 400 any=1) Spell(legacy_of_the_emperor)
+	}
+}
 
 AddFunction BrewmasterBuffActions
 {
@@ -209,17 +277,21 @@ AddFunction BrewmasterBuffActions
 	unless BuffPresent(str_agi_int any=1) Spell(legacy_of_the_emperor)
 }
 
-AddFunction BrewmasterMainActions
+AddFunction BrewmasterGenerateChiActions
 {
-	if Chi(more 3) and BuffExpires(shuffle) Spell(blackout_kick)
-	if HealthPercent(less 35) and NumberToMaxChi() >=1 Spell(expel_harm)
+	if NumberToMaxChi() >=1 and Health(less 35) Spell(expel_harm)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
-	if HealthPercent(less 90) and NumberToMaxChi() >=1 Spell(expel_harm)
+	if NumberToMaxChi() >=1 and Health(less 90) Spell(expel_harm)
+}
+
+AddFunction BrewmasterMaintenanceActions
+{
 	if Level(more 33)
 	{
-		# Brewmaster Training is automatically learned at level 34, which makes Tiger Palm usable.
+		# Brewmaster Training is automatically learned at level 34 and makes Tiger Palm cost no chi.
 		if BuffStacks(power_guard) <3 and BuffExpires(guard 6) Spell(tiger_palm)
 		if BuffPresent(power_guard) and BuffExpires(power_guard 3) Spell(tiger_palm)
+		if BuffPresent(tiger_power) and BuffExpires(tiger_power 3) Spell(tiger_palm)
 	}
 }
 
@@ -230,10 +302,18 @@ AddFunction BrewmasterFillerActions
 	unless Level(more 33) Spell(jab)
 }
 
+# Tier 5 damage reduction cooldown
+AddIcon mastery=1 help=cd size=small
+{
+	Tier5TalentActions()
+}
+
 # Damage reduction cooldowns
 AddIcon mastery=1 help=cd size=small
 {
 	Spell(fortifying_brew)
+	Spell(symbiosis_survival_instincts)
+	UseRacialSurvivalActions()
 }
 
 # Defensive abilities
@@ -246,37 +326,129 @@ AddIcon mastery=1 help=cd
 
 AddIcon mastery=1 help=main
 {
+	BrewmasterOOCActions()
 	BrewmasterBuffActions()
-	BrewmasterMainActions()
-	if Chi(more 3) and BuffPresent(shuffle)
+	if BuffExpires(shuffle)
 	{
-		MonkTier2TalentActions()
+		# Try to keep Shuffle uptime at 80-90%.
+		Spell(blackout_kick)
 	}
+	if NumberToMaxChi() ==0 or {NumberToMaxChi() <2	and SpellCooldown(keg_smash) <1.5}
+	{
+		# Chi is capped or will cap with Keg Smash and KS coming off CD.
+		Tier2TalentActions()
+	}
+	BrewmasterGenerateChiActions()
 	if TimeToMaxEnergy() <1.2 Spell(jab)
+	BrewmasterMaintenanceActions()
 	BrewmasterFillerActions()
 }
 
 AddIcon mastery=1 help=aoe checkboxon=aoe
 {
+	BrewmasterOOCActions()
 	BrewmasterBuffActions()
-	BrewmasterMainActions()
-	if Chi(more 3) and BuffPresent(shuffle)
+	if BuffExpires(shuffle)
 	{
+		# Try to keep Shuffle uptime at 80-90%.
+		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+		Spell(blackout_kick)
+	}
+	if NumberToMaxChi() ==0 or {NumberToMaxChi() <2 and SpellCooldown(keg_smash) <1.5}
+	{
+		# Chi is capped or will cap with Keg Smash and KS coming off CD.
 		Spell(breath_of_fire)
 	}
+	BrewmasterGenerateChiActions()
 	if TimeToMaxEnergy() <1.2 Spell(spinning_crane_kick)
+	BrewmasterMaintenanceActions()
 	BrewmasterFillerActions()
 }
 
 AddIcon mastery=1 help=cd
 {
 	if TargetIsInterruptible() Interrupt()
+	if BuffPresent(death_note) Spell(touch_of_death)
+	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=1 help=cd size=small
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
+}
+
+###
+### Windwalker
+###
+
+AddFunction WindwalkerFullRotation
+{
+	if InCombat(no)
+	{
+		#flask,type=spring_blossoms
+		#food,type=sea_mist_rice_noodles
+		#stance
+		#snapshot_stats
+		#virmens_bite_potion
+		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+	}
+
+	#auto_attack
+	if TargetIsInterruptible() Interrupt()
+	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
+	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <=60}
+	{
+		Item(virmens_bite_potion usable=1)
+	}
+	#use_item,name=red_crane_grips
+	UseItemActions()
+	#berserking
+	UseRacialActions()
+	#chi_brew,if=talent.chi_brew.enabled&chi=0
+	if TalentPoints(chi_brew_talent) and Chi(equal 0) Spell(chi_brew)
+	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
+	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
+	#tiger_palm,if=buff.tiger_power.stack<3|buff.tiger_power.remains<=3
+	if BuffExpires(tiger_power 3 stacks=3) Spell(tiger_palm)
+	#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
+	if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
+	#energizing_brew,if=energy.time_to_max>5
+	if TimeToMaxEnergy() >5 Spell(energizing_brew)
+	#invoke_xuen,if=talent.invoke_xuen.enabled
+	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+	#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
+	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+	#run_action_list,name=aoe,if=active_enemies>=5
+	#run_action_list,name=st,if=active_enemies<5
+
+	if CheckBoxOn(aoe)
+	{
+		#rising_sun_kick,if=chi=4
+		if NumberToMaxChi() ==0 Spell(rising_sun_kick)
+		#spinning_crane_kick
+		Spell(spinning_crane_kick)
+	}
+
+	#rising_sun_kick
+	Spell(rising_sun_kick)
+	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>5&buff.tiger_power.remains>4&buff.tiger_power.stack=3
+	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >5 and BuffPresent(tiger_power 4 stacks=3) Spell(fists_of_fury)
+	#blackout_kick,if=buff.combo_breaker_bok.react
+	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
+	#blackout_kick,if=chi>=3&energy.time_to_max<=2
+	if NumberToMaxChi() <2 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
+	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.up)
+	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 2)} Spell(tiger_palm)
+	#jab,if=talent.ascension.enabled&chi<=3
+	if TalentPoints(ascension_talent) and NumberToMaxChi() >2 Spell(jab)
+	#jab,if=talent.chi_brew.enabled&chi<=2
+	if TalentPoints(chi_brew_talent) and Chi() <=2 Spell(jab)
+	#jab,if=talent.power_strikes.enabled&((chi<=2&cooldown.power_strikes.remains)|(chi<=1&!cooldown.power_strikes.remains))
+	if TalentPoints(power_strikes_talent) and Chi() <=2 Spell(jab)
+	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
+	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
 }
 ]],
 }
