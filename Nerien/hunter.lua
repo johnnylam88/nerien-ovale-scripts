@@ -160,13 +160,13 @@ Define(virmens_bite_potion_buff 105697)
 
 # Racials
 Define(berserking 26297)
-	SpellInfo(berserking cd=180 duration=10 sharedcd=racial)
+	SpellInfo(berserking cd=180 duration=10)
 	SpellAddBuff(berserking berserking=1)
 Define(blood_fury 20572)
-	SpellInfo(blood_fury cd=120 duration=15 sharedcd=racial)
+	SpellInfo(blood_fury cd=120 duration=15)
 	SpellAddBuff(blood_fury blood_fury=1)
 Define(stoneform 20594)
-	SpellInfo(stoneform cd=120 duration=8 sharedcd=racial)
+	SpellInfo(stoneform cd=120 duration=8)
 	SpellAddBuff(stoneform stoneform=1)
 
 AddFunction UseRacialActions

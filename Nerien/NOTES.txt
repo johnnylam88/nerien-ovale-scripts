@@ -2,17 +2,17 @@
 
 # Need to find a way to include Arcane Torrent into the racials.
 Define(arcane_torrent_chi 129597)
-	SpellInfo(arcane_torrent_chi cd=120 chi=1 sharedcd=racial)
+	SpellInfo(arcane_torrent_chi cd=120 chi=1)
 Define(arcane_torrent_energy 25046)
-	SpellInfo(arcane_torrent_energy cd=120 energy=-15 sharedcd=racial)
+	SpellInfo(arcane_torrent_energy cd=120 energy=-15)
 Define(arcane_torrent_focus 80483)
-	SpellInfo(arcane_torrent_focus cd=120 focus=-15 sharedcd=racial)
+	SpellInfo(arcane_torrent_focus cd=120 focus=-15)
 Define(arcane_torrent_mana 28730)
-	SpellInfo(arcane_torrent_mana cd=120 sharedcd=racial)
+	SpellInfo(arcane_torrent_mana cd=120)
 Define(arcane_torrent_rage 69179)
-	SpellInfo(arcane_torrent_rage cd=120 rage=-15 sharedcd=racial)
+	SpellInfo(arcane_torrent_rage cd=120 rage=-15)
 Define(arcane_torrent_runic_power 50613)
-	SpellInfo(arcane_torrent_runicpower cd=120 runicpower=-15 sharedcd=racial)
+	SpellInfo(arcane_torrent_runicpower cd=120 runicpower=-15)
 
 # Items
 Define(golemblood_potion 58146)
@@ -36,13 +36,13 @@ Define(volcanic_potion_buff 79476)
 
 # Racials
 Define(berserking 26297)
-	SpellInfo(berserking cd=180 duration=10 sharedcd=racial)
+	SpellInfo(berserking cd=180 duration=10)
 	SpellAddBuff(berserking berserking=1)
 Define(blood_fury 20572)
-	SpellInfo(blood_fury cd=120 duration=15 sharedcd=racial)
+	SpellInfo(blood_fury cd=120 duration=15)
 	SpellAddBuff(blood_fury blood_fury=1)
 Define(stoneform 20594)
-	SpellInfo(stoneform cd=120 duration=8 sharedcd=racial)
+	SpellInfo(stoneform cd=120 duration=8)
 	SpellAddBuff(stoneform stoneform=1)
 
 AddFunction UseRacialActions
