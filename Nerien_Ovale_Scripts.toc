@@ -17,6 +17,7 @@ Nerien\deathknight.lua
 Nerien\druid.lua
 Nerien\hunter.lua
 Nerien\mage.lua
+Nerien\monk.lua
 Nerien\paladin.lua
 Nerien\priest.lua
 Nerien\rogue.lua
