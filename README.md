@@ -27,6 +27,8 @@ There are user-contributed scripts for the following classes and specializations
 - Priest: Shadow
 - Rogue: Assassination, Combat, Subtlety
 
+Contributors: Leafkiller, Nerien (jlam), Opisthobranch.
+
 ### How to Use ###
 
 Install **Nerien's Ovale Scripts** like any other addon.  Open up the options panel for the addon and select the script you would like to use as the default script for the current profile.
