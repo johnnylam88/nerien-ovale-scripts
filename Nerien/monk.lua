@@ -279,9 +279,9 @@ AddFunction BrewmasterBuffActions
 
 AddFunction BrewmasterGenerateChiActions
 {
-	if NumberToMaxChi() >=1 and Health(less 35) Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent(less 35) Spell(expel_harm)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
-	if NumberToMaxChi() >=1 and Health(less 90) Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 }
 
 AddFunction BrewmasterMaintenanceActions
