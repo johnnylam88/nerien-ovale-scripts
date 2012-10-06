@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "MAGE" then
+
 NerienOvaleScripts.script.MAGE.Nerien = {
 	desc = "Nerien: Frost",
 	code =
@@ -812,3 +814,5 @@ AddIcon mastery=3 help=mana size=small
 }
 ]],
 }
+
+end

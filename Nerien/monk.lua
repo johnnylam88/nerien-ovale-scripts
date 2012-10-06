@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "MONK" then
+
 NerienOvaleScripts.script.MONK.Nerien = {
 	desc = "Nerien: Brewmaster",
 	code =
@@ -452,3 +454,5 @@ AddFunction WindwalkerFullRotation
 }
 ]],
 }
+
+end

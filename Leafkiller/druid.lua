@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "DRUID" then
+
 NerienOvaleScripts.script.DRUID.Leafkiller = {
 	desc = "Leafkiller: Feral, Guardian",
 	code =
@@ -453,3 +455,5 @@ AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
 
 ]]
 }
+
+end

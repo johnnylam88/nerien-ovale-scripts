@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "DRUID" then
+
 NerienOvaleScripts.script.DRUID.Nerien = {
 	desc = "Nerien: Guardian",
 	code =
@@ -332,3 +334,5 @@ AddIcon mastery=3 help=cd size=small
 }
 ]]
 }
+
+end

@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "DEATHKNIGHT" then
+
 NerienOvaleScripts.script.DEATHKNIGHT.Opisthobranch = {
 	desc = "Opisthobranch: Blood, Frost, Unholy",
 	code =
@@ -337,3 +339,5 @@ AddIcon mastery=3 help=cd
 }
 ]]
 }
+
+end
