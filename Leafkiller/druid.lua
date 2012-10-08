@@ -7,6 +7,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.05.5 10/08/2012 Update to include optimizations in simc script
 # 5.05.5 09/24/2012 Multiply damage ratios by 100 to avoid rounding issues, put in variable Rip overwriting during BitW, tweak numbers slightly (TF is 14% not 15% for example).
 # 5.05.4 09/23/2012 Level 90 script - First complete version
 # 5.05.2 09/20/2012 Level 90 script - WiP
@@ -48,7 +49,7 @@ Define(cenarion_ward_talent 6)
 Define(soul_of_the_forest 10)
 Define(incarnation_talent 11)
 Define(force_of_nature_talent 12)
-Define(heart_of_the)wild 16)
+Define(heart_of_the_wild 16)
 Define(dream_of_cenarius_talent 17)
 Define(natures_vigil_talent 18)
 
@@ -268,13 +269,10 @@ AddIcon help=cd size=small mastery=2 checkboxon=cooldownsL { # Berserk Icon
 
 AddFunction StartRotation
 {
-    if CheckBoxOn(lucioles) and target.DebuffStacks(weakened_armor any=1) <3 {
-        Spell(FAERIEFERAL)
-    }
     if BuffRemains(savage_roar_buff) <=1 SavageRoar()
     if TalentPoints(dream_of_cenarius_talent) and BuffPresent(predatory_swiftness) and ComboPoints() >= 4 and BuffStacks(dream_of_cenarius_damage) <2
         Spell(healing_touch)
-    if TalentPoints(dream_of_cenarius_talent) and BuffPresent(predatory_swiftness) and BuffRemains(predatory_swiftness) <=1 and BuffExpires(dream_of_cenarius_damage) 
+    if TalentPoints(dream_of_cenarius_talent) and BuffPresent(predatory_swiftness) and BuffRemains(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) 
         Spell(healing_touch)
     if TalentPoints(dream_of_cenarius_talent) and PreviousSpell(natures_swiftness) Spell(healing_touch)
 }
@@ -298,15 +296,18 @@ AddFunction MainRotation
     # Two conditions for FB during Blood of the Water phase
     # Add in FB code for end of fight - only do this is Rip buff is present
     if BITWRange() and ComboPoints(more 0) and TargetDebuffPresent(RIP) and TargetDebuffExpires(RIP 2.9) Spell(FEROCIOUSBITE)
+    if CheckBoxOn(lucioles) and target.DebuffStacks(weakened_armor any=1) <3 {
+        Spell(FAERIEFERAL)
+    }
     
     if BuffPresent(CLEARCASTING) and TargetDebuffExpires(THRASHCAT 3) and BuffExpires(dream_of_cenarius_damage) Spell(THRASHCAT)
     
     # Blood in the water code - mostly for DoC
     if BITWRange() and BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0)} SavageRoar()   
-    if BITWRange() and TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 
+    if BITWRange() and TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) 
+            and ComboPoints() >=5 and BuffRemains(savage_roar_buff) >4
         Spell(natures_swiftness)    
-    #if BITWRange() and ComboPoints() >=5 and TimeUntilTargetIsDead() >60 and RipTickDamageRatio() >=112 Spell(RIP)
-    if BITWRange() and ComboPoints() >=5 and TimeUntilTargetIsDead() >=60 and RipTickDamageRatio() >= MinRatioForRipOverwrite() Spell(RIP)
+    if BITWRange() and ComboPoints() >=5 and TimeUntilTargetIsDead() >30 and RipTickDamageRatio() >=114 Spell(RIP)
     if BITWRange() and TargetDebuffPresent(RIP) and ComboPoints() >=5 Spell(FEROCIOUSBITE)
     
     if BuffPresent(dream_of_cenarius_damage) and ComboPoints() >=5 and TimeUntilTargetIsDead() >6 and {TargetDebuffExpires(RIP 2) or
@@ -315,7 +316,8 @@ AddFunction MainRotation
     if BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0)} SavageRoar()
     
     if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 
-            and TargetDebuffExpires(RIP 3) and {BuffPresent(BERSERK) or target.DebuffRemains(RIP) <SpellCooldown(TIGERSFURY)} and not BITWRange()
+             and BuffRemains(savage_roar_buff) >4 and TargetDebuffExpires(RIP 3) and {BuffPresent(BERSERK) or target.DebuffRemains(RIP) <SpellCooldown(TIGERSFURY)} 
+             and not BITWRange()
         Spell(natures_swiftness)
     
     # Time to recast Rip - clip if possible - try to hold off for TF        
@@ -334,8 +336,7 @@ AddFunction MainRotation
         or ExtendedRipDuration() >10} Spell(FEROCIOUSBITE)
 
     # clip Rake early if TF is up and rake ramining is less than 9 seconds 
-    if TimeUntilTargetIsDead() >8.5 and RakeTickDamageRatio() >=124 Spell(RAKE)
-    if TimeUntilTargetIsDead() >8.5 and TargetDebuffExpires(RAKE 2.9) and RakeTickDamageRatio() >=114 Spell(RAKE)
+    if TimeUntilTargetIsDead() >8.5 and RakeTickDamageRatio() >=112 Spell(RAKE)
     if TimeUntilTargetIsDead() >8.5 and TargetDebuffExpires(RAKE 2.9) and {BuffPresent(BERSERK) or {SpellCooldown(tigers_fury) +0.8 } >=target.DebuffRemains(RAKE)} 
         Spell(RAKE)
 }
@@ -371,7 +372,7 @@ AddIcon help=main mastery=2 {
     TFBerserk()    
     if not TargetInRange(SHRED) Texture(ability_druid_catformattack)
     MainRotation()
-    if BuffPresent(CLEARCASTING) AddCombo()
+    if BuffPresent(CLEARCASTING) AddComboWithThrash()
     Fillers()
 }
 
