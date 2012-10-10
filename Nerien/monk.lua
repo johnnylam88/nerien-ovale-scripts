@@ -438,21 +438,19 @@ AddFunction WindwalkerFullRotation
 
 	#rising_sun_kick
 	Spell(rising_sun_kick)
-	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>5&buff.tiger_power.remains>4&buff.tiger_power.stack=3
-	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >5 and BuffPresent(tiger_power 4 stacks=3) Spell(fists_of_fury)
+	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=3
+	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >4 and BuffPresent(tiger_power 4 stacks=3) Spell(fists_of_fury)
 	#blackout_kick,if=buff.combo_breaker_bok.react
 	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
-	#blackout_kick,if=chi>=3&energy.time_to_max<=2
-	if NumberToMaxChi() <2 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
-	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.up)
+	#blackout_kick,if=(chi>=3&energy.time_to_max<=2&!talent.ascension.enabled)|(chi>=4&energy.time_to_max<=2&talent.ascension.enabled)
+	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
+	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
 	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 2)} Spell(tiger_palm)
 	#jab,if=talent.ascension.enabled&chi<=3
-	if TalentPoints(ascension_talent) and NumberToMaxChi() >2 Spell(jab)
-	#jab,if=talent.chi_brew.enabled&chi<=2
-	if TalentPoints(chi_brew_talent) and Chi() <=2 Spell(jab)
-	#jab,if=talent.power_strikes.enabled&((chi<=2&cooldown.power_strikes.remains)|(chi<=1&!cooldown.power_strikes.remains))
-	if TalentPoints(power_strikes_talent) and Chi() <=2 Spell(jab)
-	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
+	#jab,if=!talent.ascension.enabled&chi<=2
+	if TalentPoints(ascension_talent) and NumberToMaxChi() >=2 Spell(jab)
+	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
+	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
 }
 ]],
