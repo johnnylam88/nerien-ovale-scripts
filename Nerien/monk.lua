@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "MONK" then
 
 NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "Nerien: Brewmaster",
+	desc = "Nerien: Brewmaster, Windwalker",
 	code =
 [[
 # Nerien's monk script.
@@ -452,6 +452,11 @@ AddFunction WindwalkerFullRotation
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
 	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
+}
+
+AddIcon mastery=3 help=main
+{
+	WindwalkerFullRotation()
 }
 ]],
 }
