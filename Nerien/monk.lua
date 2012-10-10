@@ -68,7 +68,7 @@ Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=180)
 Define(guard 115295)
 	SpellInfo(guard cd=30 chi=2 duration=30)
-	SpellAddBuff(guard guard=1)
+	SpellAddBuff(guard guard=1 power_guard=0)
 Define(heavy_stagger 124273)
 	SpellInfo(heavy_stagger duration=10 tick=1)
 Define(invoke_xuen 123904)
@@ -111,6 +111,7 @@ Define(rushing_jade_wind 116847)
 	SpellAddBuff(rushing_jade_wind shuffle=1)
 	SpellAddTargetDebuff(rushing_jade_wind rushing_jade_wind=1)
 Define(rushing_jade_wind_talent 16)
+Define(sanctuary_of_the_ox 126119)
 Define(shuffle 115307)
 	SpellInfo(shuffle duration=6)
 Define(spear_hand_strike 116705)
@@ -264,6 +265,8 @@ AddFunction BrewmasterOOCActions
 {
 	if InCombat(no)
 	{
+		# Clear Stagger debuff if there is enough Chi to do so.
+		if DebuffPresent(light_stagger) or DebuffPresent(moderate_stagger) or DebuffPresent(heavy_stagger) Spell(purifying_brew)
 		unless BuffPresent(str_agi_int 400 any=1) Spell(legacy_of_the_emperor)
 	}
 }
@@ -367,6 +370,11 @@ AddIcon mastery=1 help=cd
 	if TargetIsInterruptible() Interrupt()
 	if BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+}
+
+AddIcon mastery=1 help=cd size=small
+{
+	Spell(summon_black_ox_statue)
 }
 
 AddIcon mastery=1 help=cd size=small
