@@ -453,7 +453,7 @@ AddFunction WindwalkerFullRotation
 	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
-	if TalentPoints(ascension_talent) and NumberToMaxChi() >=2 Spell(jab)
+	if NumberToMaxChi() >=2 Spell(jab)
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
 	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
@@ -494,7 +494,7 @@ AddFunction WindwalkerMainActions
 	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
-	if TalentPoints(ascension_talent) and NumberToMaxChi() >=2 Spell(jab)
+	if NumberToMaxChi() >=2 Spell(jab)
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
 	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
