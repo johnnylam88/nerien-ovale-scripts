@@ -4,7 +4,7 @@ NerienOvaleScripts.script.MONK.Nerien = {
 	desc = "Nerien: Brewmaster, Windwalker",
 	code =
 [[
-# Nerien's monk script.
+# Nerien's monk script based on SimulationCraft
 #
 # Windwalker
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!022221
@@ -416,7 +416,7 @@ AddFunction WindwalkerFullRotation
 	#berserking
 	UseRacialActions()
 	#chi_brew,if=talent.chi_brew.enabled&chi=0
-	if TalentPoints(chi_brew_talent) and Chi(equal 0) Spell(chi_brew)
+	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
 	#tiger_palm,if=buff.tiger_power.stack<3|buff.tiger_power.remains<=3
@@ -555,7 +555,7 @@ AddFunction WindwalkerCooldownActions
 		#berserking
 		UseRacialActions()
 		#chi_brew,if=talent.chi_brew.enabled&chi=0
-		if TalentPoints(chi_brew_talent) and Chi(equal 0) Spell(chi_brew)
+		if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 
 		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
 			or {BuffExpires(tiger_power 3 stacks=3) and Spell(tiger_palm)}
