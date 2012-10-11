@@ -23,6 +23,7 @@ There are user-contributed scripts for the following classes and specializations
 - Druid: Feral, Guardian
 - Hunter: Beast Mastery, Survival
 - Mage: Arcane, Fire, Frost
+- Monk: Brewmaster, Windwalker
 - Paladin: Protection, Retribution
 - Priest: Shadow
 - Rogue: Assassination, Combat, Subtlety
