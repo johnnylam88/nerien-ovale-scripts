@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.05.6 10/11/2012 Heart of the Wild support, add out of combat support
 # 5.05.6 10/10/2012 Update to limit SR using comb points when DoC is up
 # 5.05.5a 10/08/2012 Update to include optimizations in simc script
 # 5.05.5 09/24/2012 Multiply damage ratios by 100 to avoid rounding issues, put in variable Rip overwriting during BitW, tweak numbers slightly (TF is 14% not 15% for example).
@@ -29,6 +30,9 @@ Define(dream_of_cenarius_damage 108381)
 Define(force_of_nature 106737)
     SpellInfo(force_of_nature cd=60)
 Define(healing_touch 5185)
+Define(heart_of_the_wild_spell 108292)
+    SpellInfo(heart_of_the_wild_spell cd=360)
+    SpellAddBuff(heart_of_the_wild_spell heart_of_the_wild_spell=1)
 Define(mark_of_the_wild 1126)
     SpellInfo(mark_of_the_wild duration=3600)
     SpellAddBuff(mark_of_the_wild mark_of_the_wild=1)
@@ -40,6 +44,7 @@ Define(renewal 108238)
     SpellInfo(renewal cd=120 )
 Define(treants 106737)
     SpellInfo(treants duration=15 cd=60)
+Define(wrath 5176)
 Define(weakened_armor 113746)
     SpellInfo(weakened_armor duration=30)
 Define(weakened_blows 115798)
@@ -144,7 +149,7 @@ AddCheckBox(berserk "Cat Berserk" default mastery=2)
 AddCheckBox(infront "Frontal attack" mastery=2)
 AddCheckBox(predictive "Hide predictive box" mastery=2)
 
-AddCheckBox(bearaoe "Bear AOE Rotation" mastery=3)
+AddCheckBox(bearaoe "Bear AOE Rotation")
 #
 # Mastery=2 Feral cooldown boxes and rotation
 #
@@ -270,6 +275,16 @@ AddIcon help=cd size=small mastery=2 checkboxon=cooldownsL { # Berserk Icon
     if 0s before Spell(BERSERK) Texture(Ability_mount_polarbear_white)
 }
 
+AddFunction NotInCombat
+{
+    if not InCombat() {
+        if not BuffPresent(str_agi_int any=1) Spell(mark_of_the_wild)
+        if not BuffPresent(dream_of_cenarius_damage) and TalentPoints(dream_of_cenarius_talent) Spell(healing_touch)
+        unless Stance(3) Spell(cat_form)
+        if BuffRemains(savage_roar_buff) <=1 SavageRoar()
+        if TalentPoints(force_of_nature_talent) Spell(treants)
+    }
+}
 AddFunction StartRotation
 {
     if BuffRemains(savage_roar_buff) <=1 SavageRoar()
@@ -372,18 +387,49 @@ AddFunction Fillers
 
 # Main rotation
 AddIcon help=main mastery=2 {
-    StartRotation()
-    TFBerserk()    
-    if not TargetInRange(SHRED) Texture(ability_druid_catformattack)
-    MainRotation()
-    if BuffPresent(CLEARCASTING) AddComboWithThrash()
-    Fillers()
+    NotInCombat()
+    if Stance(3) {
+        StartRotation()
+        TFBerserk()    
+        if not TargetInRange(SHRED) Texture(ability_druid_catformattack)
+        MainRotation()
+        if BuffPresent(CLEARCASTING) AddComboWithThrash()
+        Fillers()
+    }
+    if Stance(1) {
+        if BuffPresent(heart_of_the_wild_spell) {
+            if CheckBoxOff(bearaoe) BearMain()
+            if CheckBoxOn(bearaoe) BearMainAOE()
+        }
+        if not BuffPresent(heart_of_the_wild_spell) Spell(cat_form)
+    }
+    if Stance(0) {
+        if BuffPresent(heart_of_the_wild_spell) {
+            if CastTime(wrath) <BuffRemains(heart_of_the_wild_spell) Spell(wrath)
+            Spell(cat_form)
+        }
+        if not BuffPresent(heart_of_the_wild_spell) Spell(cat_form)
+    }
+    if Stance(4) or Stance(2) Spell(cat_form)
 }
 
 # Predictive rotation
 AddIcon help=predictive mastery=2 checkboxoff=predictive {
-    StartRotation()
-    MainRotation()
+    if Stance(3) {
+        StartRotation()
+        MainRotation()
+    }
+    if Stance(1) {
+        if BuffPresent(heart_of_the_wild_spell) Spell(FRENZIEDREGEN)
+        if not BuffPresent(heart_of_the_wild_spell) Spell(cat_form)
+    }
+    if Stance(0) {
+        if BuffPresent(heart_of_the_wild_spell) {
+            if BuffExpires(heart_of_the_wild_spell) Texture(spell_holy_blessingofagility)
+        }
+        if not BuffPresent(heart_of_the_wild_spell) Spell(cat_form)
+    }
+    if Stance(4) or Stance(2) Spell(cat_form)
 }
 
 AddIcon help=cd size=small mastery=2 checkboxon=cooldownsR { # Rake
@@ -412,24 +458,29 @@ AddIcon help=cd size=small mastery=3 checkboxon=cooldownsL {
     if TalentPoints(cenarion_ward_talent) Spell(cenarion_ward)
 }
 
+AddFunction BearMain
+{
+    if 1s before Spell(MANGLEBEAR) Spell(MANGLEBEAR)
+
+    if not TargetDebuffPresent(weakened_blows any=1) Spell(THRASHBEAR)
+    if target.DebuffStacks(weakened_armor any=1) <1 Spell(FAERIEFERAL)
+    if TargetDebuffPresent(THRASHBEAR) <4 Spell(THRASHBEAR)
+
+    Spell(LACERATE)
+    Spell(FAERIEFERAL)
+}
+
+AddFunction BearMainAOE
+{
+    if 1s before Spell(MANGLEBEAR) Spell(MANGLEBEAR)
+    Spell(THRASHBEAR)
+    Spell(SWIPEBEAR)
+}
+
 # Main rotation
-AddIcon help=main mastery=3 {    
-    if CheckBoxOff(bearaoe) {
-        if 1s before Spell(MANGLEBEAR) Spell(MANGLEBEAR)
-
-        if not TargetDebuffPresent(weakened_blows any=1) Spell(THRASHBEAR)
-        if target.DebuffStacks(weakened_armor any=1) <1 Spell(FAERIEFERAL)
-        if TargetDebuffPresent(THRASHBEAR) <4 Spell(THRASHBEAR)
-
-        Spell(LACERATE)
-        Spell(FAERIEFERAL)
-    }
-   
-    if CheckBoxOn(bearaoe) {   
-        if 1s before Spell(MANGLEBEAR) Spell(MANGLEBEAR)
-        Spell(THRASHBEAR)
-        Spell(SWIPEBEAR)
-    }
+AddIcon help=main mastery=3 {
+    if CheckBoxOff(bearaoe) BearMain()
+    if CheckBoxOn(bearaoe) BearMainAOE()
 }
 
 AddIcon help=defense mastery=3 {
