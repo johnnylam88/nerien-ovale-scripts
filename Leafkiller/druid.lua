@@ -7,7 +7,8 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
-# 5.05.5 10/08/2012 Update to include optimizations in simc script
+# 5.05.6 10/10/2012 Update to limit SR using comb points when DoC is up
+# 5.05.5a 10/08/2012 Update to include optimizations in simc script
 # 5.05.5 09/24/2012 Multiply damage ratios by 100 to avoid rounding issues, put in variable Rip overwriting during BitW, tweak numbers slightly (TF is 14% not 15% for example).
 # 5.05.4 09/23/2012 Level 90 script - First complete version
 # 5.05.2 09/20/2012 Level 90 script - WiP
@@ -303,7 +304,8 @@ AddFunction MainRotation
     if BuffPresent(CLEARCASTING) and TargetDebuffExpires(THRASHCAT 3) and BuffExpires(dream_of_cenarius_damage) Spell(THRASHCAT)
     
     # Blood in the water code - mostly for DoC
-    if BITWRange() and BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0)} SavageRoar()   
+    if BITWRange() and {BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage)}} 
+        SavageRoar()   
     if BITWRange() and TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) 
             and ComboPoints() >=5 and BuffRemains(savage_roar_buff) >4
         Spell(natures_swiftness)    
@@ -313,7 +315,7 @@ AddFunction MainRotation
     if BuffPresent(dream_of_cenarius_damage) and ComboPoints() >=5 and TimeUntilTargetIsDead() >6 and {TargetDebuffExpires(RIP 2) or
         {TargetDebuffExpires(RIP 6) and RipTickDamageRatio() >=100 and not BITWRange()}} Spell(RIP)
     
-    if BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0)} SavageRoar()
+    if BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage)} SavageRoar()
     
     if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 
              and BuffRemains(savage_roar_buff) >4 and TargetDebuffExpires(RIP 3) and {BuffPresent(BERSERK) or target.DebuffRemains(RIP) <SpellCooldown(TIGERSFURY)} 
