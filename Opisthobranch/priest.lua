@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "PRIEST" then
+
 NerienOvaleScripts.script.PRIEST.Opisthobranch = {
 	desc = "Opisthobranch: Shadow",
 	code =
@@ -92,3 +94,5 @@ AddIcon mastery=3 help=cd
 }
 ]]
 }
+
+end

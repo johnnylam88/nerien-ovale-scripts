@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "MAGE" then
+
 NerienOvaleScripts.script.MAGE.Opisthobranch = {
 	desc = "Opisthobranch: Arcane, Fire, Frost",
 	code =
@@ -255,3 +257,5 @@ AddIcon help=Mobility size=small checkboxon=mob
 }
 ]]
 }
+
+end

@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "ROGUE" then
+
 NerienOvaleScripts.script.ROGUE.Nerien = {
 	desc = "Nerien: Assassination, Combat, Subtlety",
 	code =
@@ -972,3 +974,5 @@ AddIcon help=cd size=small
 }
 ]]
 }
+
+end

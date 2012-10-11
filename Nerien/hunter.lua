@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "HUNTER" then
+
 NerienOvaleScripts.script.HUNTER.Nerien = {
 	desc = "Nerien: Beast Mastery, Survival",
 	code =
@@ -763,3 +765,5 @@ AddIcon help=cd size=small
 }
 ]],
 }
+
+end

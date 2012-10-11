@@ -1,3 +1,5 @@
+if NerienOvaleScripts.class == "PALADIN" then
+
 NerienOvaleScripts.script.PALADIN.Opisthobranch = {
 	desc = "Opisthobranch: Protection, Retribution",
 	code =
@@ -131,3 +133,5 @@ AddIcon mastery=3 help=cd
 }
 ]]
 }
+
+end
