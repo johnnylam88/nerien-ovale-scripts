@@ -228,11 +228,6 @@ AddFunction TimeUntilTargetIsDead
 ### Monk (all specializations)
 ###
 
-AddFunction EnergyRegen
-{
-	Energy() / TimeToMaxEnergy()
-}
-
 AddFunction Interrupt
 {
 	if TargetInRange(spear_hand_strike) Spell(spear_hand_strike)
