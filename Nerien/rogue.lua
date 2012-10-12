@@ -294,11 +294,8 @@ AddFunction AssassinationFullRotation
 	if TimeInCombat(more 10) and not IsStealthed() and BuffExpires(shadow_blades) Spell(vanish)
 	#ambush
 	if IsStealthed() Spell(ambush)
-	#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
-	if {BuffPresent(burst_haste any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
-	{
-		Spell(shadow_blades)
-	}
+	#shadow_blades,if=(buff.bloodlust.react|time>60)
+	if BuffPresent(burst_haste any=1) or TimeInCombat(more 60) Spell(shadow_blades)
 	#tricks_of_the_trade,if=set_bonus.tier13_2pc_melee
 	if CheckBoxOn(opt_tricks_of_the_trade) and ArmorSetParts(T13 more 1) Spell(tricks_of_the_trade)
 	#slice_and_dice,if=buff.slice_and_dice.remains<2
@@ -318,8 +315,6 @@ AddFunction AssassinationFullRotation
 	if TargetTicksRemain(rupture) <2 or {ComboPoints(more 4) and TargetTicksRemain(rupture) <3} Spell(rupture)
 	#vendetta
 	Spell(vendetta)
-	#envenom,if=combo_points>=4&buff.envenom.remains<1
-	if ComboPoints(more 3) and BuffExpires(envenom 1) Spell(envenom)
 	#envenom,if=combo_points>4
 	if ComboPoints(more 4) Spell(envenom)
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
@@ -375,8 +370,6 @@ AddFunction AssassinationMainPlusFillerActions
 	}
 	#rupture,if=ticks_remain<2|(combo_points=5&ticks_remain<3)
 	if TargetTicksRemain(rupture) <2 or {ComboPoints(more 4) and TargetTicksRemain(rupture) <3} Spell(rupture)
-	#envenom,if=combo_points>=4&buff.envenom.remains<1
-	if ComboPoints(more 3) and BuffExpires(envenom 1) Spell(envenom)
 	#envenom,if=combo_points>4
 	if ComboPoints(more 4) Spell(envenom)
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
@@ -422,11 +415,8 @@ AddFunction AssassinationCooldownActions
 
 		unless IsStealthed()
 		{
-			#shadow_blades,if=(buff.bloodlust.react|time>60)&buff.slice_and_dice.remains>=buff.shadow_blades.duration
-			if {BuffPresent(burst_haste any=1) or TimeInCombat(more 60)} and BuffRemains(slice_and_dice) >= SpellData(shadow_blades duration)
-			{
-				Spell(shadow_blades)
-			}
+			#shadow_blades,if=(buff.bloodlust.react|time>60)
+			if BuffPresent(burst_haste any=1) or TimeInCombat(more 60) Spell(shadow_blades)
 
 			unless {BuffExpires(slice_and_dice 2) and ComboPoints(more 0)}
 				or {CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}}
