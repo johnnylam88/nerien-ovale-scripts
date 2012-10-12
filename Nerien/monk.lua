@@ -233,6 +233,12 @@ AddFunction Interrupt
 	UseRacialInterruptActions()
 }
 
+AddFunction Jab
+{
+	# Always display the "fist" jab texture when suggesting Jab.
+	if Spell(jab) Texture(ability_monk_jab)
+}
+
 AddFunction NumberToMaxChi
 {
 	if TalentPoints(ascension_talent) {5 - Chi()}
@@ -296,7 +302,7 @@ AddFunction BrewmasterFillerActions
 {
 	# Don't Tiger Palm before getting Brewmaster Training at level 34 since it costs Chi.
 	if Level(more 33) Spell(tiger_palm)
-	unless Level(more 33) Spell(jab)
+	unless Level(more 33) Jab()
 }
 
 # Tier 5 damage reduction cooldown
@@ -336,7 +342,7 @@ AddIcon mastery=1 help=main
 		Tier2TalentActions()
 	}
 	BrewmasterGenerateChiActions()
-	if TimeToMaxEnergy() <1.2 Spell(jab)
+	if TimeToMaxEnergy() <1.2 Jab()
 	BrewmasterMaintenanceActions()
 	BrewmasterFillerActions()
 }
@@ -451,7 +457,7 @@ AddFunction WindwalkerFullRotation
 	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >=2 Spell(jab)
+	if NumberToMaxChi() >=2 Jab()
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
 	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
@@ -492,7 +498,7 @@ AddFunction WindwalkerMainActions
 	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >=2 Spell(jab)
+	if NumberToMaxChi() >=2 Jab()
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
 	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
