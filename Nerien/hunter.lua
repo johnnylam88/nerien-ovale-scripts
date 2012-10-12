@@ -202,13 +202,6 @@ AddFunction UseItemActions
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
-AddCheckBox(targetdummy "Target Dummy")
-AddFunction TimeUntilTargetIsDead
-{
-	if CheckBoxOn(targetdummy) 3600
-	if CheckBoxOff(targetdummy) target.TimeToDie()
-}
-
 # Common hunter actions.
 
 AddCheckBox(opt_widow_venom SpellName(widow_venom))
@@ -260,7 +253,7 @@ AddFunction BeastMasteryFullRotation
 		#flask,type=spring_blossoms
 		#food,type=sea_mist_rice_noodles
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TimeUntilTargetIsDead() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		#summon_pet
 		SummonPet()
 		if BuffExpires(trap_launcher) Spell(trap_launcher)
@@ -272,7 +265,7 @@ AddFunction BeastMasteryFullRotation
 
 	SummonPet()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -418,7 +411,7 @@ AddFunction BeastMasteryCooldownActions
 	if InCombat(no)
 	{
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TimeUntilTargetIsDead() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		if pet.Present() and pet.Health(more 0)
 		{
 			#virmens_bite_potion
@@ -429,7 +422,7 @@ AddFunction BeastMasteryCooldownActions
 	if pet.Present() and pet.Health(more 0)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -507,7 +500,7 @@ AddFunction SurvivalFullRotation
 		#flask,type=spring_blossoms
 		#food,type=sea_mist_rice_noodles
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TimeUntilTargetIsDead() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		#summon_pet
 		SummonPet()
 		if BuffExpires(trap_launcher) Spell(trap_launcher)
@@ -519,7 +512,7 @@ AddFunction SurvivalFullRotation
 
 	SummonPet()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -549,14 +542,14 @@ AddFunction SurvivalFullRotation
 	#cobra_shot,if=target.adds>2
 	if CheckBoxOn(aoe) Spell(cobra_shot)
 	#serpent_sting,if=!ticking&target.time_to_die>=10
-	if TargetDebuffExpires(serpent_sting_dot) and TimeUntilTargetIsDead() >10 Spell(serpent_sting)
+	if TargetDebuffExpires(serpent_sting_dot) and TargetTimeToDie() >10 Spell(serpent_sting)
 	if CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3) Spell(widow_venom)
 	#explosive_shot,if=cooldown_react
 	Spell(explosive_shot)
 	#kill_shot
 	if TargetHealthPercent(less 20) Spell(kill_shot)
 	#black_arrow,if=!ticking&target.time_to_die>=8
-	if TimeUntilTargetIsDead() >8
+	if TargetTimeToDie() >8
 	{
 		if CheckBoxOn(opt_black_arrow) and TargetDebuffExpires(black_arrow) Spell(black_arrow)
 		if CheckBoxOff(opt_black_arrow) Spell(explosive_trap)
@@ -624,14 +617,14 @@ AddFunction SurvivalMainActions
 	#barrage,if=enabled
 	if TalentPoints(barrage_talent) Spell(barrage)
 	#serpent_sting,if=!ticking&target.time_to_die>=10
-	if TargetDebuffExpires(serpent_sting_dot) and TimeUntilTargetIsDead() >10 Spell(serpent_sting)
+	if TargetDebuffExpires(serpent_sting_dot) and TargetTimeToDie() >10 Spell(serpent_sting)
 	if CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3) Spell(widow_venom)
 	#explosive_shot,if=cooldown_react
 	Spell(explosive_shot)
 	#kill_shot
 	if TargetHealthPercent(less 20) Spell(kill_shot)
 	#black_arrow,if=!ticking&target.time_to_die>=8
-	if TimeUntilTargetIsDead() >8
+	if TargetTimeToDie() >8
 	{
 		if CheckBoxOn(opt_black_arrow) and TargetDebuffExpires(black_arrow) Spell(black_arrow)
 		if CheckBoxOff(opt_black_arrow) Spell(explosive_trap)
@@ -679,7 +672,7 @@ AddFunction SurvivalCooldownActions
 	if InCombat(no)
 	{
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TimeUntilTargetIsDead() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		if pet.Present() and pet.Health(more 0)
 		{
 			#virmens_bite_potion
@@ -690,7 +683,7 @@ AddFunction SurvivalCooldownActions
 	if pet.Present() and pet.Health(more 0)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <60}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -709,11 +702,11 @@ AddFunction SurvivalCooldownActions
 				or {TalentPoints(glaive_toss_talent) and Spell(glaive_toss)}
 				or {TalentPoints(powershot_talent) and Spell(powershot)}
 				or {TalentPoints(barrage_talent) and Spell(barrage)}
-				or {TargetDebuffExpires(serpent_sting_dot) and TimeUntilTargetIsDead() >10}
+				or {TargetDebuffExpires(serpent_sting_dot) and TargetTimeToDie() >10}
 				or {CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3)}
 				or Spell(explosive_shot)
 				or {TargetHealthPercent(less 20) and Spell(kill_shot)}
-				or {TimeUntilTargetIsDead() >8
+				or {TargetTimeToDie() >8
 					and {{CheckBoxOn(opt_black_arrow) and TargetDebuffExpires(black_arrow) and Spell(black_arrow)}
 						or {CheckBoxOff(opt_black_arrow) and Spell(explosive_trap)}}}
 				or {BuffPresent(thrill_of_the_hunt)

@@ -209,13 +209,6 @@ AddFunction UseItemActions
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
-AddCheckBox(targetdummy "Target Dummy")
-AddFunction TimeUntilTargetIsDead
-{
-	if CheckBoxOn(targetdummy) 3600
-	if CheckBoxOff(targetdummy) target.TimeToDie()
-}
-
 # Common rogue actions.
 
 AddCheckBox(opt_expose_armor) SpellName(expose_armor))
@@ -284,7 +277,7 @@ AddFunction AssassinationFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -412,7 +405,7 @@ AddFunction AssassinationCooldownActions
 	if BuffPresent(lethal_poison)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <40}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -492,7 +485,7 @@ AddFunction CombatFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -538,7 +531,7 @@ AddFunction CombatFullRotation
 	#adrenaline_rush,if=energy<35|buff.shadow_blades.up
 	if Energy(less 35) or BuffPresent(shadow_blades) Spell(adrenaline_rush)
 	#rupture,if=ticks_remain<2&combo_points=5&buff.deep_insight.up&target.time_to_die>10
-	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TimeUntilTargetIsDead() >10 Spell(rupture)
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TargetTimeToDie() >10 Spell(rupture)
 	if TalentPoints(anticipation_talent)
 	{
 		#eviscerate,if=(combo_points=5&buff.deep_insight.up)|anticipation_charges>=4
@@ -556,7 +549,7 @@ AddFunction CombatFullRotation
 		}
 	}
 	#rupture,if=ticks_remain<2&combo_points=5&target.time_to_die>10
-	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TimeUntilTargetIsDead() >10 Spell(rupture)
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TargetTimeToDie() >10 Spell(rupture)
 	if CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}
 	{
 		Spell(expose_armor)
@@ -595,7 +588,7 @@ AddFunction CombatMainActions
 		Spell(slice_and_dice)
 	}
 	#rupture,if=ticks_remain<2&combo_points=5&buff.deep_insight.up&target.time_to_die>10
-	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TimeUntilTargetIsDead() >10 Spell(rupture)
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 4) and BuffPresent(deep_insight) and TargetTimeToDie() >10 Spell(rupture)
 	if TalentPoints(anticipation_talent)
 	{
 		#eviscerate,if=(combo_points=5&buff.deep_insight.up)|anticipation_charges>=4
@@ -613,7 +606,7 @@ AddFunction CombatMainActions
 		}
 	}
 	#rupture,if=ticks_remain<2&combo_points=5&target.time_to_die>10
-	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TimeUntilTargetIsDead() >10 Spell(rupture)
+	if TargetTicksRemain(rupture) < 2 and ComboPoints(more 5) and TargetTimeToDie() >10 Spell(rupture)
 
 	unless {CheckBoxOn(opt_expose_armor) and {TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3}}
 		or {TargetTicksRemain(revealing_strike) < 2 and CombatFillerCondition()}
@@ -639,7 +632,7 @@ AddFunction CombatCooldownActions
 	if BuffPresent(lethal_poison)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <40}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
@@ -748,7 +741,7 @@ AddFunction SubtletyFullRotation
 
 	ApplyPoisons()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <40}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -923,7 +916,7 @@ AddFunction SubtletyCooldownActions
 	if BuffPresent(lethal_poison)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <40}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <40}
 		{
 			Item(virmens_bite_potion usable=1)
 		}

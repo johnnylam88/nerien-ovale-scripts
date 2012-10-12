@@ -222,13 +222,6 @@ AddFunction UseItemActions
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
-AddCheckBox(targetdummy "Target Dummy")
-AddFunction TimeUntilTargetIsDead
-{
-	if CheckBoxOn(targetdummy) 3600
-	if CheckBoxOff(targetdummy) target.TimeToDie()
-}
-
 ###
 ### Monk (all specializations)
 ###
@@ -411,7 +404,7 @@ AddFunction WindwalkerFullRotation
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <=60}
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <=60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -551,7 +544,7 @@ AddFunction WindwalkerCooldownActions
 	unless {BuffExpires(str_agi_int any=1) or BuffExpires(critical_strike any=1)}
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TimeUntilTargetIsDead() <=60}
+		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <=60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}

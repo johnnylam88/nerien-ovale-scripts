@@ -223,13 +223,6 @@ AddFunction UseItemActions
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
-AddCheckBox(targetdummy "Target Dummy")
-AddFunction TimeUntilTargetIsDead
-{
-	if CheckBoxOn(targetdummy) 3600
-	if CheckBoxOff(targetdummy) target.TimeToDie()
-}
-
 ###
 ### Guardian
 ###
