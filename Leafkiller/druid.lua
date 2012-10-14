@@ -321,7 +321,7 @@ AddFunction MainRotation
     # Blood in the water code - mostly for DoC - combined the BITW check to make Ovale more efficient
     if BITWRange() {
         if BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage) SavageRoar()   
-        if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) snd ComboPoints() >=5
+        if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5
             Spell(natures_swiftness)    
         if ComboPoints() >=5 and TimeUntilTargetIsDead() >30 and RipTickDamageRatio() >=114 Spell(RIP)
         if TargetDebuffPresent(RIP) and ComboPoints() >=5 Spell(FEROCIOUSBITE)
