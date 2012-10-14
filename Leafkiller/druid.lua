@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.05.7 10/14/2012 Update to latest version of sim script - small changes and Rake improvements
 # 5.05.6 10/11/2012 Heart of the Wild support, add out of combat support
 # 5.05.6 10/10/2012 Update to limit SR using comb points when DoC is up
 # 5.05.5a 10/08/2012 Update to include optimizations in simc script
@@ -141,7 +142,8 @@ Define(WILDCHARGEBEAR 102401)
 
 AddCheckBox(cooldownsL "Show Left Rotation Boxes" default)
 AddCheckBox(cooldownsR "Show Right Cooldown Boxes" default)
-AddCheckBox(targetdummy "Target dummy")
+
+AddCheckBox(bearaoe "Bear AOE Rotation")
 
 AddCheckBox(cooldownsRatio "Show Rake and Rip Ratio Boxes" mastery=2)
 AddCheckBox(lucioles SpellName(FAERIEFERAL) default mastery=2)
@@ -149,7 +151,6 @@ AddCheckBox(berserk "Cat Berserk" default mastery=2)
 AddCheckBox(infront "Frontal attack" mastery=2)
 AddCheckBox(predictive "Hide predictive box" mastery=2)
 
-AddCheckBox(bearaoe "Bear AOE Rotation")
 #
 # Mastery=2 Feral cooldown boxes and rotation
 #
@@ -161,8 +162,7 @@ AddFunction SavageRoar
 
 AddFunction TimeUntilTargetIsDead
 {
-    if CheckBoxOn(targetdummy) 120
-    if CheckBoxOff(targetdummy) target.TimeToDie()
+    target.TimeToDie()
 }
 
 
@@ -287,10 +287,10 @@ AddFunction NotInCombat
 }
 AddFunction StartRotation
 {
+    if TalentPoints(dream_of_cenarius_talent) and BuffPresent(predatory_swiftness) and BuffRemains(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) 
+        Spell(healing_touch)
     if BuffRemains(savage_roar_buff) <=1 SavageRoar()
     if TalentPoints(dream_of_cenarius_talent) and BuffPresent(predatory_swiftness) and ComboPoints() >= 4 and BuffStacks(dream_of_cenarius_damage) <2
-        Spell(healing_touch)
-    if TalentPoints(dream_of_cenarius_talent) and BuffPresent(predatory_swiftness) and BuffRemains(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) 
         Spell(healing_touch)
     if TalentPoints(dream_of_cenarius_talent) and PreviousSpell(natures_swiftness) Spell(healing_touch)
 }
@@ -314,33 +314,30 @@ AddFunction MainRotation
     # Two conditions for FB during Blood of the Water phase
     # Add in FB code for end of fight - only do this is Rip buff is present
     if BITWRange() and ComboPoints(more 0) and TargetDebuffPresent(RIP) and TargetDebuffExpires(RIP 2.9) Spell(FEROCIOUSBITE)
-    if CheckBoxOn(lucioles) and target.DebuffStacks(weakened_armor any=1) <3 {
-        Spell(FAERIEFERAL)
-    }
+    if CheckBoxOn(lucioles) and target.DebuffStacks(weakened_armor any=1) <3  Spell(FAERIEFERAL)
     
     if BuffPresent(CLEARCASTING) and TargetDebuffExpires(THRASHCAT 3) and BuffExpires(dream_of_cenarius_damage) Spell(THRASHCAT)
     
-    # Blood in the water code - mostly for DoC
-    if BITWRange() and {BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage)}} 
-        SavageRoar()   
-    if BITWRange() and TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) 
-            and ComboPoints() >=5 and BuffRemains(savage_roar_buff) >4
-        Spell(natures_swiftness)    
-    if BITWRange() and ComboPoints() >=5 and TimeUntilTargetIsDead() >30 and RipTickDamageRatio() >=114 Spell(RIP)
-    if BITWRange() and TargetDebuffPresent(RIP) and ComboPoints() >=5 Spell(FEROCIOUSBITE)
+    # Blood in the water code - mostly for DoC - combined the BITW check to make Ovale more efficient
+    if BITWRange() {
+        if BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage) SavageRoar()   
+        if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) snd ComboPoints() >=5
+            Spell(natures_swiftness)    
+        if ComboPoints() >=5 and TimeUntilTargetIsDead() >30 and RipTickDamageRatio() >=114 Spell(RIP)
+        if TargetDebuffPresent(RIP) and ComboPoints() >=5 Spell(FEROCIOUSBITE)
+    }
     
     if BuffPresent(dream_of_cenarius_damage) and ComboPoints() >=5 and TimeUntilTargetIsDead() >6 and {TargetDebuffExpires(RIP 2) or
         {TargetDebuffExpires(RIP 6) and RipTickDamageRatio() >=100 and not BITWRange()}} Spell(RIP)
     
-    if BuffRemains(savage_roar_buff) <=1 or {BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage)} SavageRoar()
+    if BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage) SavageRoar()
     
     if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 
-             and BuffRemains(savage_roar_buff) >4 and TargetDebuffExpires(RIP 3) and {BuffPresent(BERSERK) or target.DebuffRemains(RIP) <SpellCooldown(TIGERSFURY)} 
-             and not BITWRange()
+             and TargetDebuffExpires(RIP) <3 and {BuffPresent(BERSERK) or target.DebuffRemains(RIP)+1.9 <=SpellCooldown(TIGERSFURY)} and not BITWRange()
         Spell(natures_swiftness)
     
     # Time to recast Rip - clip if possible - try to hold off for TF        
-    if ComboPoints() >=5 and TimeUntilTargetIsDead() >6 and TargetDebuffExpires(RIP 2) and {BuffPresent(BERSERK) or target.DebuffRemains(RIP)+1.9 <=SpellCooldown(TIGERSFURY)}
+    if ComboPoints() >=5 and TimeUntilTargetIsDead() >=6 and TargetDebuffExpires(RIP) <2 and {BuffPresent(BERSERK) or target.DebuffRemains(RIP)+1.9 <=SpellCooldown(TIGERSFURY)}
         Spell(RIP)
     
     #Extends Rip with shred/mangle/ravage
@@ -355,8 +352,10 @@ AddFunction MainRotation
         or ExtendedRipDuration() >10} Spell(FEROCIOUSBITE)
 
     # clip Rake early if TF is up and rake ramining is less than 9 seconds 
+    if TimeUntilTargetIsDead() >8.5 and BuffPresent(dream_of_cenarius_damage) and target.DebuffRemains(RAKE) <6 and RakeTickDamageRatio() >=100 Spell(RAKE)
     if TimeUntilTargetIsDead() >8.5 and RakeTickDamageRatio() >=112 Spell(RAKE)
-    if TimeUntilTargetIsDead() >8.5 and TargetDebuffExpires(RAKE 2.9) and {BuffPresent(BERSERK) or {SpellCooldown(tigers_fury) +0.8 } >=target.DebuffRemains(RAKE)} 
+    if TimeUntilTargetIsDead() >8.5 and target.DebuffRemains(RAKE) <3 and {BuffPresent(BERSERK) or {SpellCooldown(tigers_fury) +0.8 } >=target.DebuffRemains(RAKE)
+            or Energy(more 70) } 
         Spell(RAKE)
 }
 
