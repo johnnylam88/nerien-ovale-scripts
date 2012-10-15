@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.05.8 10/14/2012 Fix 3 second SR to interfere less with Rip for HotW (and NV). 60 seconds for Rake.
 # 5.05.7 10/14/2012 Update to latest version of sim script - small changes and Rake improvements
 # 5.05.6 10/11/2012 Heart of the Wild support, add out of combat support
 # 5.05.6 10/10/2012 Update to limit SR using comb points when DoC is up
@@ -330,7 +331,10 @@ AddFunction MainRotation
     if BuffPresent(dream_of_cenarius_damage) and ComboPoints() >=5 and TimeUntilTargetIsDead() >6 and {TargetDebuffExpires(RIP 2) or
         {TargetDebuffExpires(RIP 6) and RipTickDamageRatio() >=100 and not BITWRange()}} Spell(RIP)
     
-    if BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage) SavageRoar()
+    if BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and BuffExpires(dream_of_cenarius_damage) and TalentPoints(dream_of_cenarius_talent) SavageRoar()
+    if BuffRemains(savage_roar_buff) <=3 and ComboPoints(more 0) and not TalentPoints(dream_of_cenarius_talent) {
+        if not {TargetDebuffExpires(RIP) <2 and {BuffPresent(BERSERK) or target.DebuffRemains(RIP)+1.9 <=SpellCooldown(TIGERSFURY)}} SavageRoar()
+    }
     
     if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 
              and TargetDebuffExpires(RIP) <3 and {BuffPresent(BERSERK) or target.DebuffRemains(RIP)+1.9 <=SpellCooldown(TIGERSFURY)} and not BITWRange()
@@ -354,8 +358,8 @@ AddFunction MainRotation
     # clip Rake early if TF is up and rake ramining is less than 9 seconds 
     if TimeUntilTargetIsDead() >8.5 and BuffPresent(dream_of_cenarius_damage) and target.DebuffRemains(RAKE) <6 and RakeTickDamageRatio() >=100 Spell(RAKE)
     if TimeUntilTargetIsDead() >8.5 and RakeTickDamageRatio() >=112 Spell(RAKE)
-    if TimeUntilTargetIsDead() >8.5 and target.DebuffRemains(RAKE) <3 and {BuffPresent(BERSERK) or {SpellCooldown(tigers_fury) +0.8 } >=target.DebuffRemains(RAKE)
-            or Energy(more 70) } 
+    if TimeUntilTargetIsDead() >8.5 and TargetDebuffExpires(RAKE 2.9) and {BuffPresent(BERSERK) or Energy(more 60) 
+            or {SpellCooldown(tigers_fury) +0.8 } >=target.DebuffRemains(RAKE)}
         Spell(RAKE)
 }
 
