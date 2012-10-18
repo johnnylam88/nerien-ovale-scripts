@@ -423,8 +423,8 @@ AddFunction WindwalkerFullRotation
 	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
-	#tiger_palm,if=buff.tiger_power.stack<3|buff.tiger_power.remains<=3
-	if BuffExpires(tiger_power 3 stacks=3) Spell(tiger_palm)
+	#tiger_palm,if=(buff.tiger_power.stack<3&energy.time_to_max>2)|buff.tiger_power.remains<=3
+	if {BuffStacks(tiger_power) <3 and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
 	#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
 	if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
 	#energizing_brew,if=energy.time_to_max>5
@@ -481,8 +481,8 @@ AddFunction WindwalkerMaintenanceActions
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
-	#tiger_palm,if=buff.tiger_power.stack<3|buff.tiger_power.remains<=3
-	if BuffExpires(tiger_power 3 stacks=3) Spell(tiger_palm)
+	#tiger_palm,if=(buff.tiger_power.stack<3&energy.time_to_max>2)|buff.tiger_power.remains<=3
+	if {BuffStacks(tiger_power) <3 and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
 }
 
 AddFunction WindwalkerMainActions
@@ -563,7 +563,7 @@ AddFunction WindwalkerCooldownActions
 		if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 
 		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
-			or {BuffExpires(tiger_power 3 stacks=3) and Spell(tiger_palm)}
+			or {{{BuffStacks(tiger_power) <3 and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3)} and Spell(tiger_palm)}
 			or {BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 and Spell(tigereye_brew_use)}
 			or {TimeToMaxEnergy() >5 and Spell(energizing_brew)}
 		{
