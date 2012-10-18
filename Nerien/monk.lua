@@ -371,7 +371,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 AddIcon mastery=1 help=cd
 {
 	if TargetIsInterruptible() Interrupt()
-	if BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth(more 0) and BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
@@ -405,6 +405,7 @@ AddFunction WindwalkerFullRotation
 	}
 
 	#auto_attack
+	if TargetHealth(more 0) and BuffPresent(death_note) Spell(touch_of_death)
 	if TargetIsInterruptible() Interrupt()
 	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
@@ -420,7 +421,6 @@ AddFunction WindwalkerFullRotation
 	UseRacialActions()
 	#chi_brew,if=talent.chi_brew.enabled&chi=0
 	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
-	if BuffPresent(death_note) Spell(touch_of_death)
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
 	#tiger_palm,if=buff.tiger_power.stack<3|buff.tiger_power.remains<=3
@@ -428,7 +428,7 @@ AddFunction WindwalkerFullRotation
 	#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
 	if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
 	#energizing_brew,if=energy.time_to_max>5
-	if TimeToMaxEnergy() >5 Spell(energizing_brew)
+	if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 	#invoke_xuen,if=talent.invoke_xuen.enabled
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 	#run_action_list,name=aoe,if=active_enemies>=5
@@ -517,15 +517,15 @@ AddFunction WindwalkerAoEActions
 AddFunction WindwalkerShortCooldownActions
 {
 	unless {BuffExpires(str_agi_int any=1) or BuffExpires(critical_strike any=1)}
-		or {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
-		or {BuffExpires(tiger_power 3 stacks=3) and Spell(tiger_palm)}
 	{
 		#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
 		if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
 		#energizing_brew,if=energy.time_to_max>5
-		if TimeToMaxEnergy() >5 Spell(energizing_brew)
+		if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 
-		unless Spell(rising_sun_kick)
+		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
+			or {BuffExpires(tiger_power 3 stacks=3) and Spell(tiger_palm)}
+			or Spell(rising_sun_kick)
 		{
 			#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=3
 			if BuffExpires(energizing_brew) and TimeToMaxEnergy() >4 and BuffPresent(tiger_power 4 stacks=3) Spell(fists_of_fury)
@@ -546,6 +546,7 @@ AddFunction WindwalkerCooldownActions
 		}
 	}
 
+	if TargetHealth(more 0) and BuffPresent(death_note) Spell(touch_of_death)
 	if TargetIsInterruptible() Interrupt()
 	unless {BuffExpires(str_agi_int any=1) or BuffExpires(critical_strike any=1)}
 	{
@@ -560,7 +561,6 @@ AddFunction WindwalkerCooldownActions
 		UseRacialActions()
 		#chi_brew,if=talent.chi_brew.enabled&chi=0
 		if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
-		if BuffPresent(death_note) Spell(touch_of_death)
 
 		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
 			or {BuffExpires(tiger_power 3 stacks=3) and Spell(tiger_palm)}
