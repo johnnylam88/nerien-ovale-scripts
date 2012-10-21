@@ -324,7 +324,7 @@ AddIcon mastery=1 help=cd
 {
 	if DebuffPresent(moderate_stagger) or DebuffPresent(heavy_stagger) Spell(purifying_brew)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
-	Spell(guard)
+	if Level(more 33) and BuffStacks(power_guard) >=3 Spell(guard)
 }
 
 AddIcon mastery=1 help=main
