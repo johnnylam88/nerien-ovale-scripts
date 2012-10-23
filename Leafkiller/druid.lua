@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.05.12 10/22/2012 Fix bad spell name in Rake conditional (tigers_fury should be TIGERSFURY)
 # 5.05.11 10/22/2012 Fix for energy pooling for non-DoC specs. Small updates based on most recent sim script for TTD. FFF() added. TTD updated.
 # 5.05.10 10/21/2012 4 Piece PvP gear support and Nature's Vigil HT code
 # 5.05.9 10/16/2012 Feral Spirit support
