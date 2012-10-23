@@ -390,7 +390,7 @@ AddFunction MainRotation
     if TimeUntilTargetIsDead() >3 and BuffPresent(dream_of_cenarius_damage) and target.DebuffRemains(RAKE) <6 and RakeTickDamageRatio() >=100 Spell(RAKE)
     if TimeUntilTargetIsDead() >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
     if TimeUntilTargetIsDead() >3 and TargetDebuffExpires(RAKE 2.9) and {BuffPresent(BERSERK) or Energy(more 60) 
-            or {SpellCooldown(tigers_fury) +0.8 } >=target.DebuffRemains(RAKE)}
+            or {SpellCooldown(TIGERSFURY) +0.8 } >=target.DebuffRemains(RAKE)}
         Spell(RAKE)
 }
 
