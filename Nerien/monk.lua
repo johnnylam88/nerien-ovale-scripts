@@ -68,9 +68,13 @@ Define(flying_serpent_kick 101545)
 	SpellInfo(flying_serpent_kick cd=25)
 Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=180)
+Define(glyph_of_guard 123401)
 Define(guard 115295)
 	SpellInfo(guard cd=30 chi=2 duration=30)
 	SpellAddBuff(guard guard=1 power_guard=0)
+Define(guard_glyphed 123402)
+	SpellInfo(guard_glyphed cd=30 chi=2 duration=30)
+	SpellAddBuff(guard_glyphed guard_glyphed=1 power_guard=0)
 Define(heavy_stagger 124273)
 	SpellInfo(heavy_stagger duration=10 tick=1)
 Define(invoke_xuen 123904)
@@ -292,7 +296,11 @@ AddFunction BrewmasterMaintenanceActions
 	if Level(more 33)
 	{
 		# Brewmaster Training is automatically learned at level 34 and makes Tiger Palm cost no chi.
-		if BuffStacks(power_guard) <3 and BuffExpires(guard 6) Spell(tiger_palm)
+		if BuffStacks(power_guard) <3
+			and {{Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 6)} or {Glyph(glyph_of_guard no) and BuffExpires(guard 6)}}
+		{
+			Spell(tiger_palm)
+		}
 		if BuffPresent(power_guard) and BuffExpires(power_guard 3) Spell(tiger_palm)
 		if BuffPresent(tiger_power) and BuffExpires(tiger_power 3) Spell(tiger_palm)
 	}
@@ -324,7 +332,11 @@ AddIcon mastery=1 help=cd
 {
 	if DebuffPresent(moderate_stagger) or DebuffPresent(heavy_stagger) Spell(purifying_brew)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
-	if Level(more 33) and BuffStacks(power_guard) >=3 Spell(guard)
+	if Level(more 33) and BuffStacks(power_guard) >=3
+	{
+		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
+		if Glyph(glyph_of_guard no) and BuffExpires(guard) Spell(guard)
+	}
 }
 
 AddIcon mastery=1 help=main
