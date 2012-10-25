@@ -313,6 +313,20 @@ AddFunction BrewmasterFillerActions
 	unless Level(more 33) Jab()
 }
 
+AddFunction StaggerDamageRemaining
+{
+	if DebuffPresent(light_stagger)		{ TicksRemain(light_stagger)    * TickValue(light_stagger) }
+	if DebuffPresent(moderate_stagger)	{ TicksRemain(moderate_stagger) * TickValue(moderate_stagger) }
+	if DebuffPresent(heavy_stagger)		{ TicksRemain(heavy_stagger)    * TickValue(heavy_stagger) }
+}
+
+AddFunction StaggerTickDamage
+{
+	if DebuffPresent(light_stagger)		TickValue(light_stagger)
+	if DebuffPresent(moderate_stagger)	TickValue(moderate_stagger)
+	if DebuffPresent(heavy_stagger)		TickValue(heavy_stagger)
+}
+
 # Tier 5 damage reduction cooldown
 AddIcon mastery=1 help=cd size=small
 {
@@ -330,8 +344,8 @@ AddIcon mastery=1 help=cd size=small
 # Defensive abilities
 AddIcon mastery=1 help=cd
 {
-	if DebuffPresent(moderate_stagger) or DebuffPresent(heavy_stagger) Spell(purifying_brew)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
+	if {StaggerDamageRemaining() / MaxHealth() >0.30} or {StaggerTickDamage() / Health() >0.5} Spell(purifying_brew)
 	if Level(more 33) and BuffStacks(power_guard) >=3
 	{
 		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
