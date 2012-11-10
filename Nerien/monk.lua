@@ -33,6 +33,8 @@ Define(combo_breaker_bok 116768)
 	SpellInfo(combo_breaker_bok duration=15)
 Define(combo_breaker_tp 118864)
 	SpellInfo(combo_breaker_tp duration=15)
+#Define(crackling_jade_lightning 117952)
+#	SpellAddBuff(crackling_jade_lightning power_strikes=0)
 Define(dampen_harm 122278)
 	SpellInfo(dampen_harm cd=90 duration=45)
 	SpellAddBuff(dampen_harm dampen_harm=1)
@@ -62,13 +64,14 @@ Define(expel_harm 115072)
 	SpellInfo(expel_harm chi=-2 if_stance=1 mastery=3)
 	SpellInfo(expel_harm chi=-2 if_stance=2)
 Define(fists_of_fury 113656)
-	SpellInfo(fists_of_fury cd=25 chi=3 duration=4 tick=1)
+	SpellInfo(fists_of_fury canStopChannelling=4 cd=25 chi=3 tick=1)
 	SpellAddBuff(fists_of_fury fists_of_fury=1)
 Define(flying_serpent_kick 101545)
 	SpellInfo(flying_serpent_kick cd=25)
 Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=180)
 Define(glyph_of_guard 123401)
+Define(glyph_of_retreat 124969)
 Define(guard 115295)
 	SpellInfo(guard cd=30 chi=2 duration=30)
 	SpellAddBuff(guard guard=1 power_guard=0)
@@ -84,16 +87,17 @@ Define(jab 100780)
 	SpellInfo(jab chi=-1 energy=40)
 	SpellInfo(jab chi=-2 if_stance=1 mastery=3)
 	SpellInfo(jab chi=-2 if_stance=2)
+	SpellAddBuff(jab power_strikes=0)
 Define(keg_smash 121253)
 	SpellInfo(keg_smash cd=8 chi=-2 energy=40)
 	SpellAddTargetDebuff(keg_smash dizzying_haze_aura=1 weakened_blows=1)
 Define(legacy_of_the_emperor 115921)
-	SpellInfo(legacy_of_the_emperor energy=50)
+	SpellInfo(legacy_of_the_emperor energy=20)
 	SpellAddBuff(legacy_of_the_emperor legacy_of_the_emperor_aura=1)
 Define(legacy_of_the_emperor_aura 117666)
 	SpellInfo(legacy_of_the_emperor_aura duration=3600)
 Define(legacy_of_the_white_tiger 116781)
-	SpellInfo(legacy_of_the_white_tiger duration=3600)
+	SpellInfo(legacy_of_the_white_tiger duration=3600 energy=20)
 	SpellAddBuff(legacy_of_the_white_tiger legacy_of_the_white_tiger=1)
 Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
@@ -104,11 +108,14 @@ Define(paralysis 115078)
 	SpellAddTargetDebuff(paralysis paraylsis=1)
 Define(power_guard 118636)
 	SpellInfo(power_guard duration=30)
-Define(power_strikes 121817)
+Define(power_strikes 129914)
+	SpellInfo(power_strikes duration=3600)
 Define(power_strikes_talent 7)
 Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 chi=1)
 	SpellAddDebuff(purifying_brew heavy_stagger=0 light_stagger=0 moderate_stagger=0)
+Define(retreat 124968)
+	SpellInfo(retreat duration=10)
 Define(rising_sun_kick 107428)
 	SpellInfo(rising_sun_kick cd=8 chi=2)
 	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_aura=1)
@@ -123,7 +130,7 @@ Define(sanctuary_of_the_ox 126119)
 Define(shuffle 115307)
 	SpellInfo(shuffle duration=6)
 Define(spear_hand_strike 116705)
-	SpellInfo(spear_hand_strike cd=15 energy=30)
+	SpellInfo(spear_hand_strike cd=15 energy=10)
 	SpellInfo(spear_hand_strike energy=0 mastery=1)
 Define(spinning_crane_kick 101546)
 	SpellInfo(spinning_crane_kick duration=2.25 energy=40 tick=0.75)
@@ -403,7 +410,7 @@ AddIcon mastery=1 help=cd
 
 AddIcon mastery=1 help=cd size=small
 {
-	Spell(summon_black_ox_statue)
+	if BuffExpires(sanctuary_of_the_ox) Spell(summon_black_ox_statue)
 }
 
 AddIcon mastery=1 help=cd size=small
@@ -449,8 +456,8 @@ AddFunction WindwalkerFullRotation
 	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
-	#tiger_palm,if=(buff.tiger_power.stack<3&energy.time_to_max>2)|buff.tiger_power.remains<=3
-	if {BuffStacks(tiger_power) <3 and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
+	#tiger_palm,if=(buff.tiger_power.stack<1&energy.time_to_max>2)|buff.tiger_power.remains<=3
+	if {BuffExpires(tiger_power) and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
 	#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
 	if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
 	#energizing_brew,if=energy.time_to_max>5
@@ -472,14 +479,14 @@ AddFunction WindwalkerFullRotation
 
 	#rising_sun_kick
 	Spell(rising_sun_kick)
-	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=3
-	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >4 and BuffPresent(tiger_power 4 stacks=3) Spell(fists_of_fury)
+	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=1
+	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
 	#blackout_kick,if=buff.combo_breaker_bok.react
 	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
 	#blackout_kick,if=(chi>=3&energy.time_to_max<=2&!talent.ascension.enabled)|(chi>=4&energy.time_to_max<=2&talent.ascension.enabled)
 	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
-	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
-	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 2)} Spell(tiger_palm)
+	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains=0&buff.combo_breaker_tp.react)
+	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 1)} Spell(tiger_palm)
 	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
@@ -507,8 +514,8 @@ AddFunction WindwalkerMaintenanceActions
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
-	#tiger_palm,if=(buff.tiger_power.stack<3&energy.time_to_max>2)|buff.tiger_power.remains<=3
-	if {BuffStacks(tiger_power) <3 and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
+	#tiger_palm,if=(buff.tiger_power.stack<1&energy.time_to_max>2)|buff.tiger_power.remains<=3
+	if {BuffExpires(tiger_power) and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
 }
 
 AddFunction WindwalkerMainActions
@@ -519,8 +526,8 @@ AddFunction WindwalkerMainActions
 	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
 	#blackout_kick,if=(chi>=3&energy.time_to_max<=2&!talent.ascension.enabled)|(chi>=4&energy.time_to_max<=2&talent.ascension.enabled)
 	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
-	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
-	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 2)} Spell(tiger_palm)
+	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains=0&buff.combo_breaker_tp.react)
+	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 1)} Spell(tiger_palm)
 	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
@@ -550,11 +557,11 @@ AddFunction WindwalkerShortCooldownActions
 		if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 
 		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
-			or {BuffExpires(tiger_power 3 stacks=3) and Spell(tiger_palm)}
+			or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
 			or Spell(rising_sun_kick)
 		{
-			#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=3
-			if BuffExpires(energizing_brew) and TimeToMaxEnergy() >4 and BuffPresent(tiger_power 4 stacks=3) Spell(fists_of_fury)
+			#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=1
+			if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
 		}
 	}
 }
@@ -589,9 +596,8 @@ AddFunction WindwalkerCooldownActions
 		if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 
 		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
-			or {{{BuffStacks(tiger_power) <3 and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3)} and Spell(tiger_palm)}
+			or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
 			or {BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 and Spell(tigereye_brew_use)}
-			or {TimeToMaxEnergy() >5 and Spell(energizing_brew)}
 		{
 			#invoke_xuen,if=talent.invoke_xuen.enabled
 			if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
