@@ -303,13 +303,12 @@ AddFunction BrewmasterMaintenanceActions
 	if Level(more 33)
 	{
 		# Brewmaster Training is automatically learned at level 34 and makes Tiger Palm cost no chi.
-		if BuffStacks(power_guard) <3
-			and {{Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 6)} or {Glyph(glyph_of_guard no) and BuffExpires(guard 6)}}
+		if BuffExpires(power_guard 3)
 		{
-			Spell(tiger_palm)
+			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 3) and SpellCooldown(guard_glyphed) <3 Spell(tiger_palm)
+			if Glyph(glyph_of_guard no) and BuffExpires(guard 3) and SpellCooldown(guard) <3 Spell(tiger_palm)
 		}
-		if BuffPresent(power_guard) and BuffExpires(power_guard 3) Spell(tiger_palm)
-		if BuffPresent(tiger_power) and BuffExpires(tiger_power 3) Spell(tiger_palm)
+		if BuffExpires(tiger_power 3) Spell(tiger_palm)
 	}
 }
 
@@ -353,7 +352,7 @@ AddIcon mastery=1 help=cd
 {
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
 	if {StaggerDamageRemaining() / MaxHealth() >0.30} or {StaggerTickDamage() / Health() >0.5} Spell(purifying_brew)
-	if Level(more 33) and BuffStacks(power_guard) >=3
+	if Level(more 33) and BuffPresent(power_guard)
 	{
 		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
 		if Glyph(glyph_of_guard no) and BuffExpires(guard) Spell(guard)
