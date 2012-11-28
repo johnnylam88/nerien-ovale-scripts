@@ -160,6 +160,10 @@ Define(thrash_cat 106830)
 Define(tigers_fury 5217)
 	SpellInfo(tigers_fury cd=30 duration=6 energy=-60)
 	SpellAddBuff(tigers_fury tigers_fury=1)
+Define(tooth_and_claw 135286)
+	SpellInfo(tooth_and_claw duration=10)
+Define(tooth_and_claw_debuff 135601)
+	SpellInfo(tooth_and_claw_debuff duration=15)
 Define(treants 106737)
 	SpellInfo(treants cd=60)
 Define(treants_balance 33831)
@@ -261,9 +265,9 @@ AddIcon mastery=3
 	if TargetIsAggroed(no)
 	{
 		# Always bank enough rage so that if we need to switch to defense, we can.
-		if CheckBoxOn(opt_maul) and Rage(more 75) Spell(maul)
+		if CheckBoxOn(opt_maul) and Rage(more 90) Spell(maul)
 	}
-	Spell(savage_defense)
+	if BuffExpires(savage_defense_buff 3) Spell(savage_defense)
 	if Glyph(glyph_of_frenzied_regeneration) or Rage(more 60) Spell(frenzied_regeneration)
 }
 
