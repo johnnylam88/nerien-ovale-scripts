@@ -5,7 +5,7 @@
 ## Author: Johnny C. Lam (jlam), Leafkiller
 ## X-Contributer: Opisthobranch
 ##
-## Interface: 50001
+## Interface: 50100
 ## Dependencies: Ovale
 
 Core.lua
