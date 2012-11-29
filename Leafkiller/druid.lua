@@ -9,6 +9,9 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.05.14 11/09/2012 New spell ID for clearcasting
+# 5.05.14 11/09/2012 Only suggest Feral_spirit if the symbiosis buff is present - otherwise it suggests symbiosis even when the buff is not up
+# 5.05.13 10/23/2012 Don't pool during NV
 # 5.05.12 10/22/2012 Fix bad spell name in Rake conditional (tigers_fury should be TIGERSFURY)
 # 5.05.11 10/22/2012 Fix for energy pooling for non-DoC specs. Small updates based on most recent sim script for TTD. FFF() added. TTD updated.
 # 5.05.10 10/21/2012 4 Piece PvP gear support and Nature's Vigil HT code
@@ -53,6 +56,8 @@ Define(predatory_swiftness 69369)
     SpellAddBuff(predatory_swiftness predatory_swiftness=1)
 Define(renewal 108238)
     SpellInfo(renewal cd=120 )
+Define(symbiosis 110309)
+    SpellAddBuff(symbiosis symbiosis=1)
 Define(treants 106737)
     SpellInfo(treants duration=15 cd=60)
 Define(tricks 57933)
@@ -76,7 +81,7 @@ Define(dream_of_cenarius_talent 17)
 Define(natures_vigil_talent 18)
 
 #Buff
-Define(CLEARCASTING 16870)
+Define(CLEARCASTING 135700)
 
 #Glyphs
 Define(GLYPHOFSHRED 114234)
@@ -400,8 +405,7 @@ AddFunction Fillers
     # take care of OOC when it was not used for Thrash
     if BuffPresent(CLEARCASTING) AddCombo()
 
-    # use Ravage! before other fillers since it is free
-    if BuffPresent(STAMPEDEBUFF) Spell(RAVAGEBANG)
+    # use Ravage! before other fillers since it is freen
     
     # aggressive shred for Predatory Swiftness and/or Soul of the Forest
     if TalentPoints(dream_of_cenarius_talent) and BuffRemains(predatory_swiftness) >1 and EnergyForPredatorySwiftness() > {{4 - ComboPoints()}*20} AddCombo()
@@ -414,7 +418,7 @@ AddFunction Fillers
     if TimeUntilTargetIsDead() <=8.5 AddCombo()
     
     # Shred aggressively for Berserk and TF
-    if BuffPresent(BERSERK) or BuffPresent(TIGERSFURY) AddComboWithThrash()
+    if BuffPresent(BERSERK) or BuffPresent(TIGERSFURY) or BuffPresent(natures_vigil_buff) AddComboWithThrash()
     
     # Shred to burn off energy so we can TF without capping
     if { 4s before Spell(TIGERSFURY) } AddComboWithThrash()
@@ -423,11 +427,13 @@ AddFunction Fillers
     if 1.4s before Energy(more 99) AddComboWithThrash()
     
     # Nature's Vigil HTs for extra damage
-    if BuffPresent(natures_vigil_buff) and not {BuffPresent(BERSERK) or BuffPresent(predatory_swiftness)} Spell(natures_swiftness)
-    if BuffPresent(natures_vigil_buff) and {BuffPresent(predatory_swiftness) or BuffPresent(natures_swiftness)} and not BuffPresent(BERSERK) Spell(healing_touch)
+    if not BuffPresent(BERSERK) and BuffPresent(natures_vigil_buff) {
+        if BuffExpires(predatory_swiftness) Spell(natures_swiftness)
+        if BuffPresent(predatory_swiftness) or BuffPresent(natures_swiftness) Spell(healing_touch)
+    }
     
     # Feral Spirit
-    Spell(feral_spirit)
+    if BuffPresent(symbiosis) Spell(feral_spirit)
     
     # opportunistic FF
     if CheckBoxOn(lucioles) and target.DebuffExpires(weakened_armor) <15 and Energy(less 75) FFF()
