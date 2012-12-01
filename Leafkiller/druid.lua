@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.1.1 11/30/2012 Ravage fix for PVP 4 set and support for faster combo points on crits
 # 5.05.14 11/09/2012 New spell ID for clearcasting
 # 5.05.14 11/09/2012 Only suggest Feral_spirit if the symbiosis buff is present - otherwise it suggests symbiosis even when the buff is not up
 # 5.05.13 10/23/2012 Don't pool during NV
@@ -54,6 +55,7 @@ Define(natures_vigil_buff 124974)
     SpellAddBuff(natures_vigil_buff natures_vigil_buff=1)
 Define(predatory_swiftness 69369)
     SpellAddBuff(predatory_swiftness predatory_swiftness=1)
+Define(primal_fury 16961)
 Define(renewal 108238)
     SpellInfo(renewal cd=120 )
 Define(symbiosis 110309)
@@ -105,15 +107,19 @@ Define(MAIM 22570) #cat interrupt
     SpellInfo(MAIM cd=10 energy=35 combo=0)
 Define(MANGLECAT 33876) #cat bleed+debuff
     SpellInfo(MANGLECAT inccounter=ripshreds energy=35 combo=1)
+    SpellInfo(MANGLECAT critcombo=1 if_spell=primal_fury)
 Define(RAKE 1822) #cat bleed
     SpellInfo(RAKE combo=1 duration=15 energy=35 tick=3)
     SpellInfo(RAKE base=98.13 bonusap=0.31453)
+    SpellInfo(RAKE critcombo=1 if_spell=primal_fury)
     SpellAddTargetDebuff(RAKE RAKE=1)
     SpellDamageBuff(RAKE dream_of_cenarius_damage=1.25)
 Define(RAVAGE 6785)
     SpellInfo(RAVAGE inccounter=ripshreds energy=45 combo=1)
+    SpellInfo(RAVAGE critcombo=1 if_spell=primal_fury)
 Define(RAVAGEBANG 102545)
     SpellInfo(RAVAGEBANG inccounter=ripshreds energy=0 combo=1)
+    SpellInfo(RAVAGEBANG critcombo=1 if_spell=primal_fury)
 Define(RIP 1079) #cat bleed
     SpellInfo(RIP resetcounter=ripshreds duration=16 energy=30 tick=2 combo=0)
     SpellInfo(RIP base=112.76 bonuscp=320 bonusapcp=0.0484) # damage coefficients
@@ -128,8 +134,10 @@ Define(SAVAGEROARGLYPHED 127538)
 SpellList(savage_roar_buff 52610 127538)
 Define(SHRED 5221) #cat behind
     SpellInfo(SHRED inccounter=ripshreds energy=40 combo=1)
+    SpellInfo(SHRED critcombo=1 if_spell=primal_fury)
 Define(SHREDBANG 114236)
     SpellInfo(SHREDBANG inccounter=ripshreds energy=40 combo=1)
+    SpellInfo(SHREDBANG critcombo=1 if_spell=primal_fury)
 Define(STAMPEDEBUFF 81022)
     SpellAddBuff(STAMPEDEBUFF STAMPEDEBUFF=1)
 Define(SKULLBASHCAT 80965) #cat interrupt
@@ -255,7 +263,7 @@ AddIcon help=Rip size=small mastery=2 checkboxon=cooldownsRatio
 
 AddFunction ExtendRip
 {
-    if TalentPoints(incarnation_talent) Spell(RAVAGE usable=1)
+    Spell(RAVAGE usable=1)
     if CheckBoxOn(infront) {
         if Glyph(GLYPHOFSHRED) and {BuffPresent(TIGERSFURY) or BuffPresent(BERSERK)} Spell(SHRED)
         Spell(MANGLECAT)
