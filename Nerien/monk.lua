@@ -15,6 +15,7 @@ Define(blackout_kick 100784)
 	SpellAddBuff(blackout_kick combo_breaker_bok=0 shuffle=1)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
+Define(brewmaster_training 117967)
 Define(chi_brew 115399)
 	SpellInfo(chi_brew cd=90 chi=-4)
 	SpellInfo(chi_brew chi=-5 talent=ascension_talent)
@@ -60,9 +61,9 @@ Define(energizing_brew 115288)
 	SpellInfo(energizing_brew cd=60 duration=6 tick=1)
 	SpellAddBuff(energizing_brew energizing_brew=1)
 Define(expel_harm 115072)
-	SpellInfo(expel_harm cd=15 chi=-1 energy=40)
-	SpellInfo(expel_harm chi=-2 if_stance=1 mastery=3)
-	SpellInfo(expel_harm chi=-2 if_stance=2)
+	SpellInfo(expel_harm cd=15 chi=-2 energy=40)
+	SpellInfo(expel_harm chi=-1 if_spell=brewmaster_training if_stance=1)
+	SpellInfo(expel_harm chi=-1 if_spell=teachings_of_the_monastery if_stance=1)
 Define(fists_of_fury 113656)
 	SpellInfo(fists_of_fury canStopChannelling=4 cd=25 chi=3 tick=1)
 	SpellAddBuff(fists_of_fury fists_of_fury=1)
@@ -84,9 +85,9 @@ Define(invoke_xuen 123904)
 	SpellInfo(invoke_xuen cd=180 duration=45)
 Define(invoke_xuen_the_white_tiger_talent 17)
 Define(jab 100780)
-	SpellInfo(jab chi=-1 energy=40)
-	SpellInfo(jab chi=-2 if_stance=1 mastery=3)
-	SpellInfo(jab chi=-2 if_stance=2)
+	SpellInfo(jab chi=-2 energy=40)
+	SpellInfo(jab chi=-1 if_spell=brewmaster_training if_stance=1)
+	SpellInfo(jab chi=-1 if_spell=teachings_of_the_monastery if_stance=1)
 	SpellAddBuff(jab power_strikes=0)
 Define(keg_smash 121253)
 	SpellInfo(keg_smash cd=8 chi=-2 energy=40)
@@ -130,8 +131,8 @@ Define(sanctuary_of_the_ox 126119)
 Define(shuffle 115307)
 	SpellInfo(shuffle duration=6)
 Define(spear_hand_strike 116705)
-	SpellInfo(spear_hand_strike cd=15 energy=10)
-	SpellInfo(spear_hand_strike energy=0 mastery=1)
+	SpellInfo(spear_hand_strike cd=10 energy=10)
+	SpellInfo(spear_hand_strike energy=0 if_spell=brewmaster_training if_stance=1)
 Define(spinning_crane_kick 101546)
 	SpellInfo(spinning_crane_kick duration=2.25 energy=40 tick=0.75)
 	SpellAddBuff(spinning_crane_kick spinning_crane_kick=1)
@@ -147,9 +148,10 @@ Define(symbiosis_bear_hug 127361)
 Define(symbiosis_survival_instincts 113306)
 	SpellInfo(symbiosis_survival_instincts cd=180 duration=6)
 	SpellAddBuff(symbiosis_survival_instincts symbiosis_survival_instincts=1)
+Define(teachings_of_the_monastery 116645)
 Define(tiger_palm 100787)
 	SpellInfo(tiger_palm chi=1)
-	SpellInfo(tiger_palm chi=0 mastery=1) # with Brewmaster Training at level 34
+	SpellInfo(tiger_palm chi=0 if_spell=brewmaster_training)
 	SpellAddBuff(tiger_palm combo_break_tp=0 power_guard=1 tiger_power=1)
 Define(tiger_power 125359)
 	SpellInfo(tiger_power duration=20)
@@ -293,16 +295,14 @@ AddFunction BrewmasterBuffActions
 
 AddFunction BrewmasterGenerateChiActions
 {
-	if NumberToMaxChi() >=1 and HealthPercent(less 35) Spell(expel_harm)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
-	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
 }
 
 AddFunction BrewmasterMaintenanceActions
 {
-	if Level(more 33)
+	# Use Tiger Palm to maintain buffs only if costs no Chi.
+	if SpellData(tiger_palm chi) ==0
 	{
-		# Brewmaster Training is automatically learned at level 34 and makes Tiger Palm cost no chi.
 		if BuffExpires(power_guard 3)
 		{
 			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 3) and SpellCooldown(guard_glyphed) <3 Spell(tiger_palm)
@@ -314,9 +314,9 @@ AddFunction BrewmasterMaintenanceActions
 
 AddFunction BrewmasterFillerActions
 {
-	# Don't Tiger Palm before getting Brewmaster Training at level 34 since it costs Chi.
-	if Level(more 33) Spell(tiger_palm)
-	unless Level(more 33) Jab()
+	# Use Tiger Palm as a filler only if it costs no Chi.
+	if SpellData(tiger_palm chi) ==0 Spell(tiger_palm)
+	Jab()
 }
 
 AddFunction StaggerDamageRemaining
@@ -350,9 +350,10 @@ AddIcon mastery=1 help=cd size=small
 # Defensive abilities
 AddIcon mastery=1 help=cd
 {
-	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
 	if {StaggerDamageRemaining() / MaxHealth() >0.30} or {StaggerTickDamage() / Health() >0.5} Spell(purifying_brew)
-	if Level(more 33) and BuffPresent(power_guard)
+	if NumberToMaxChi() >=1 and HealthPercent(less 50) Spell(expel_harm)
+	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
+	if BuffPresent(power_guard)
 	{
 		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
 		if Glyph(glyph_of_guard no) and BuffExpires(guard) Spell(guard)
