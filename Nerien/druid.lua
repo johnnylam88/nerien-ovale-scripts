@@ -277,6 +277,8 @@ AddIcon mastery=3 help=main
 	if InCombat(no) and BuffRemains(str_agi_int any=1) <400 Spell(mark_of_the_wild)
 	if not Stance(1) Spell(bear_form)
 
+	Spell(mangle_bear)
+
 	# Debuff maintenance.
 	if TargetDebuffExpires(weakened_blows 3 any=1) Spell(thrash_bear)
 	if TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3
@@ -284,7 +286,6 @@ AddIcon mastery=3 help=main
 		Spell(faerie_fire)
 	}
 
-	Spell(mangle_bear)
 	Spell(lacerate)
 	if TargetDebuffExpires(thrash_bear 6) Spell(thrash_bear)
 	Spell(faerie_fire)
