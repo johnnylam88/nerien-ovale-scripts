@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.1.4 12/07/2012 Tooth and Claw
 # 5.1.3 12/07/2012 Tweak for Bear display with alternate setup selected
 # 5.1.2 12/07/2012 Misc changes including SR, Ravage!, alternate layout for Aggixx and some script reconciliation
 # 5.1.1 11/30/2012 Ravage fix for PVP 4 set and support for faster combo points on crits
@@ -172,6 +173,8 @@ Define(SAVAGEDEFENSE 62606)
 Define(SURVIVALINSTINCTS 61336)
 Define(SWIPEBEAR 779)
 Define(THRASHBEAR 77758)
+Define(TOOTHANDCLAW 135286)
+    SpellAddBuff(TOOTHANDCLAW TOOTHANDCLAW=1)
 Define(WILDCHARGEBEAR 102401)
     SpellInfo(WILDCHARGEBEAR cd=15)
 
@@ -571,7 +574,8 @@ AddIcon mastery=3 size=small checkboxon=altpredictive checkboxoff=cooldownsL {
 }
 
 AddIcon mastery=3 size=small checkboxon=altpredictive checkboxoff=cooldownsL {
-    Spell(MAUL)
+    if BuffPresent(TOOTHANDCLAW) Spell(TOOTHANDCLAW)
+    unless BuffPresent(TOOTHANDCLAW) Spell(MAUL)
 }
 
 # Main rotation
