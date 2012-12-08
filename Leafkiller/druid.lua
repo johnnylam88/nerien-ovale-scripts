@@ -9,6 +9,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Guardian script from Tinderhoof.
 # Lots of input and constructs from jlam aka Nerien
 # Revision History
+# 5.1.3 12/07/2012 Tweak for Bear display with alternate setup selected
 # 5.1.2 12/07/2012 Misc changes including SR, Ravage!, alternate layout for Aggixx and some script reconciliation
 # 5.1.1 11/30/2012 Ravage fix for PVP 4 set and support for faster combo points on crits
 # 5.05.14 11/09/2012 New spell ID for clearcasting
@@ -176,6 +177,7 @@ Define(WILDCHARGEBEAR 102401)
 
 AddCheckBox(cooldownsL "Show Left Rotation Boxes" default)
 AddCheckBox(cooldownsR "Show Right Cooldown Boxes" default)
+AddCheckBox(altpredictive "Alternate predictive box")
 
 AddCheckBox(bearaoe "Bear AOE Rotation")
 
@@ -184,8 +186,6 @@ AddCheckBox(lucioles SpellName(FAERIEFERAL) default mastery=2)
 AddCheckBox(berserk "Cat Berserk" default mastery=2)
 AddCheckBox(infront "Frontal attack" mastery=2)
 AddCheckBox(predictive "Hide predictive box" mastery=2)
-AddCheckBox(altpredictive "Alternate predictive box" mastery=2)
-
 #
 # Mastery=2 Feral cooldown boxes and rotation
 #
@@ -565,6 +565,13 @@ AddFunction BearMainAOE
 }
 
 AddIcon mastery=3 size=small checkboxon=altpredictive checkboxoff=cooldownsL {
+    if Rage(less 11) Spell(ENRAGE useable=1)
+    Spell(SAVAGEDEFENSE usable=1)
+    Spell(FRENZIEDREGEN)
+}
+
+AddIcon mastery=3 size=small checkboxon=altpredictive checkboxoff=cooldownsL {
+    Spell(MAUL)
 }
 
 # Main rotation
@@ -573,7 +580,7 @@ AddIcon help=main mastery=3 {
     if CheckBoxOn(bearaoe) BearMainAOE()
 }
 
-AddIcon help=defense mastery=3 {
+AddIcon help=defense mastery=3 checkboxoff=altpredictive {
     if Rage(less 11) Spell(ENRAGE useable=1)
     Spell(SAVAGEDEFENSE usable=1)
     Spell(FRENZIEDREGEN)
