@@ -46,6 +46,7 @@ Define(combustion 11129)
 	SpellAddTargetDebuff(combustion combustion_aura=1)
 Define(combustion_aura 83853)
 	SpellInfo(combustion_aura duration=10 tick=1)
+Define(conjure_brilliant_mana_gem 119316)
 Define(conjure_mana_gem 759)
 Define(counterspell 2139)
 	SpellInfo(counterspell cd=24 duration=6)
@@ -60,7 +61,7 @@ Define(fire_blast 2136)
 Define(fireball 133)
 Define(frost_armor 7302)
 Define(frost_bomb 112948)
-	SpellInfo(frost_bomb cd=10 duration=5)
+	SpellInfo(frost_bomb cd=10 duration=6 tick=6)
 	SpellAddTargetDebuff(frost_bomb frost_bomb=1)
 Define(frost_bomb_talent 15)
 Define(frostbolt 116)
@@ -145,6 +146,7 @@ Define(water_elemental_freeze 33395)
 	SpellAddTargetDebuff(water_elemental_freeze water_elemental_freeze=1)
 
 # Items
+Define(brilliant_mana_gem 81901)
 Define(jade_serpent_potion 76093)
 Define(jade_serpent_potion_buff 105702)
 	SpellInfo(jade_serpent_potion_buff duration=25)
@@ -178,6 +180,7 @@ AddFunction UseRacialSurvivalActions
 }
 
 AddCheckBox(aoe L(AOE))
+AddCheckBox(opt_alter_time SpellName(alter_time) default)
 AddCheckBox(potions "Use potions" default)
 
 # Trinket CDs
@@ -207,6 +210,18 @@ AddFunction Interrupt
 	UseRacialInterruptActions()
 }
 
+AddFunction ConjureManaGem
+{
+	if Glyph(glyph_of_mana_gem) and ItemCharges(brilliant_mana_gem less 10) Spell(conjure_brilliant_mana_gem)
+	if Glyph(glyph_of_mana_gem no) and ItemCharges(mana_gem less 3) Spell(conjure_mana_gem)
+}
+
+AddFunction UseManaGem
+{
+	if Glyph(glyph_of_mana_gem) Item(brilliant_mana_gem)
+	if Glyph(glyph_of_mana_gem no) Item(mana_gem)
+}
+
 ###
 ### Frost
 ###
@@ -220,7 +235,64 @@ AddFunction FrostIcyVeins
 AddFunction FrostIcyVeinsCooldown
 {
 	if Glyph(glyph_of_icy_veins) SpellCooldown(icy_veins_glyphed)
-	if Glyph(glyph_of_icy_veins no) FrostIcyVeinsCooldown()
+	if Glyph(glyph_of_icy_veins no) SpellCooldown(icy_veins)
+}
+
+AddFunction FrostTier6FrozenOrb
+{
+	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.invocation.remains>20&buff.alter_time.down
+	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.rune_of_power.remains>20&buff.alter_time.down
+	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.alter_time.down
+	if {TalentPoints(invocation_talent) and BuffPresent(invocation 20)}
+		or {TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power 20)}
+		or TalentPoints(incanters_ward_talent)
+	{
+		if BuffExpires(alter_time)
+		{
+			if TargetDeadIn(more 4) and BuffStacks(fingers_of_frost_aura) <2 and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
+		}
+	}
+}
+
+AddFunction FrostTier6IcyVeinsActions
+{
+	if ArmorSetParts(T14 more 3)
+	{
+		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.invocation.remains>20&buff.alter_time.down
+		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.rune_of_power.remains>20&buff.alter_time.down
+		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.alter_time.down
+		if {TalentPoints(invocation_talent) and BuffPresent(invocation 20)}
+			or {TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power 20)}
+			or {TalentPoints(incanters_ward_talent)}
+			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+		{
+			if BuffExpires(alter_time) FrostIcyVeins()
+		}
+	}
+	#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
+	if ArmorSetParts(T14 less 4)
+	{
+		if SpellCooldown(frozen_orb) >50 FrostIcyVeins()
+	}
+}
+
+AddFunction FrostTier6Action()
+{
+	if TalentPoints(invocation_talent)
+	{
+		#evocation,if=buff.invocation.down&buff.alter_time.down		
+		if BuffExpires(invocation) and BuffExpires(alter_time) Spell(evocation)
+	}
+	if TalentPoints(rune_of_power_talent)
+	{
+		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
+		if BuffExpires(rune_of_power) and BuffExpires(alter_time) Spell(rune_of_power)
+	}
+	if TalentPoints(incanters_ward_talent)
+	{
+		#incanters_ward
+		Spell(incanters_ward)
+	}
 }
 
 AddFunction FrostFullRotation
@@ -232,35 +304,39 @@ AddFunction FrostFullRotation
 		#arcane_brilliance
 		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
 		#frost_armor
-		if BuffExpires(frost_armor 400) and BuffExpires(mage_armor 400) and BuffExpires(molten_armor 400) Spell(frost_armor)
+		if BuffExpires(frost_armor) Spell(frost_armor)
 		#water_elemental
 		if pet.Present(no) Spell(water_elemental)
 		#snapshot_stats
 		#evocation
 		if TalentPoints(invocation_talent) Spell(evocation)
-		if False() and TalentPoints(rune_of_power_talent) Spell(rune_of_power)
+		if TalentPoints(rune_of_power_talent) Spell(rune_of_power)
 		#jade_serpent_potion
 		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(jade_serpent_potion usable=1)
 	}
 
 	#counterspell,if=target.debuff.casting.react
 	if TargetIsInterruptible() Interrupt()
+	#cancel_buff,name=alter_time,moving=1
 	#cold_snap,if=health.pct<30
 	if TalentPoints(cold_snap) and HealthPercent(less 30) Spell(cold_snap)
 	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
-	if InCombat(no) and ItemCharges(mana_gem less 3) Spell(conjure_mana_gem)
+	if InCombat(no) ConjureManaGem()
 	#time_warp,if=target.health.pct<25|time>5
-	if {TargetHealthPercent(less 25) or TimeInCombat(more 5)} and BuffExpires(burst_haste any=1) Spell(time_warp)
-	#presence_of_mind,if=buff.alter_time.down
-	if TalentPoints(presence_of_mind_talent) and BuffExpires(alter_time) Spell(presence_of_mind)
-	#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.stack<2
-	if pet.Present() and BuffExpires(alter_time) and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
+	if InCombat() and {TargetHealthPercent(less 25) or TimeInCombat(more 5)} and BuffExpires(burst_haste any=1) Spell(time_warp)
+	if BuffExpires(alter_time)
+	{
+		#presence_of_mind,if=buff.alter_time.down
+		if TalentPoints(presence_of_mind_talent) Spell(presence_of_mind)
+		#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.react<2
+		if pet.Present() and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
+	}
 	#icy_veins,if=target.time_to_die<22
-	if TimeUntilTargetIsDead(less 22) FrostIcyVeins()
+	if TargetDeadIn(less 22) FrostIcyVeins()
 	#blood_fury,if=target.time_to_die<12
-	if TargetTimeToDie() <12 Spell(blood_fury)
+	if TargetDeadIn(less 12) Spell(blood_fury)
 	#berserking,if=target.time_to_die<18
-	if TargetTimeToDie() <18 Spell(berserking)
+	if TargetDeadIn(less 18) Spell(berserking)
 	if BuffPresent(alter_time)
 	{
 		#frostfire_bolt,if=buff.alter_time.up&buff.brain_freeze.up
@@ -272,165 +348,123 @@ AddFunction FrostFullRotation
 	}
 	if TalentPoints(invocation_talent)
 	{
-		#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<5
-		if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 5) Spell(ice_lance)
-		if BuffExpires(alter_time) and BuffPresent(invocation 20)
-		{
-			#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.invocation.remains>20&buff.alter_time.down
-			if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
-			#icy_veins,if=set_bonus.tier14_4pc_caster&buff.invocation.remains>20&buff.alter_time.down
-			if ArmorSetParts(T14 more 3) FrostIcyVeins()
-		}
-		#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
-		if ArmorSetParts(T14 less 4) and SpellCooldown(frozen_orb) >50 FrostIcyVeins()
+		FrostTier6FrozenOrb()
+		FrostTier6IcyVeinsActions()
 	}
-	#frost_bomb,if=!ticking
-	if TalentPoints(frost_bomb_talent) and TargetDebuffExpires(frost_bomb) Spell(frost_bomb)
-	if TalentPoints(rune_of_power_talent)
+	#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
+	if TalentPoints(frost_bomb_talent)
 	{
-		if BuffExpires(alter_time) and BuffPresent(rune_of_power 20)
-		{
-			#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.rune_of_power.remains>20&buff.alter_time.down
-			if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
-			#icy_veins,if=set_bonus.tier14_4pc_caster&buff.rune_of_power.remains>20&buff.alter_time.down
-			if ArmorSetParts(T14 more 3) FrostIcyVeins()
-		}
-		#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
-		if ArmorSetParts(T14 less 4) and SpellCooldown(frozen_orb) >50 FrostIcyVeins()
+		if TargetDebuffExpires(frost_bomb) and TargetTimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
 	}
-	if TalentPoints(incanters_ward_talent)
+	if not TalentPoints(invocation_talent)
 	{
-		if BuffExpires(alter_time)
-		{
-			#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.alter_time.down
-			if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
-			#icy_veins,if=set_bonus.tier14_4pc_caster&buff.alter_time.down
-			if ArmorSetParts(T14 more 3) FrostIcyVeins()
-		}
-		#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
-		if ArmorSetParts(T14 less 4) and SpellCooldown(frozen_orb) >50 FrostIcyVeins()
-	}
-	if not {TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
-	{
-		#icy_veins,if=dot.frozen_orb.ticking&buff.alter_time.down
-		if SpellCooldown(frozen_orb) >50 and BuffExpires(alter_time) FrostIcyVeins()
+		FrostTier6FrozenOrb()
+		FrostTier6IcyVeinsActions()
 	}
 	#mirror_image
 	Spell(mirror_image)
-	if TalentPoints(invocation_talent)
+	if TalentPoints(invocation_talent) FrostTier6Action()
+	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
+	if BuffPresent(brain_freeze_aura)
+		and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
 	{
-		#evocation,if=buff.invocation.down&buff.alter_time.down		
-		if BuffExpires(invocation) and BuffExpires(alter_time) Spell(evocation)
+		Spell(frostfire_bolt)
 	}
 	#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<2
-	if BuffPresent(fingers_of_frost_aura) and BuffStacks(fingers_of_frost_aura) <2 Spell(ice_lance)
-	if TalentPoints(rune_of_power_talent)
-	{
-		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
-		if False() and BuffExpires(rune_of_power) and BuffExpires(alter_time) Spell(rune_of_power)
-	}
-	if TalentPoints(incanters_ward_talent)
-	{
-		#incanters_ward
-		Spell(incanters_ward)
-	}
+	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
+	if TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent) FrostTier6Action()
 	#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
 	if CheckBoxOn(potions) and TargetClassification(worldboss)
 	{
-		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or TargetTimeToDie() <40
+		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or TargetDeadIn(less 40)
 		{
 			Item(jade_serpent_potion usable=1)
 		}
 	}
-	if TalentPoints(invocation_talent)
+	if BuffExpires(alter_time)
 	{
-		if BuffExpires(alter_time)
 		{
-			if ManaPercent(more 28)
-			{
-				#blood_fury,if=buff.invocation.remains>15&buff.alter_time.down&mana.pct>28
-				if BuffPresent(invocation 15) Spell(blood_fury)
-				#/berserking,if=buff.invocation.remains>10&buff.alter_time.down&mana.pct>28
-				if BuffPresent(invocation 10) Spell(berserking)
-			}
-			if BuffPresent(invocation 15) UseItemActions()
-		}
-		#frostbolt,if=debuff.frostbolt.stack<3
-		if TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
-		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6
-		if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) and BuffPresent(invocation 6) Spell(alter_time_activate)
-	}
-	if TalentPoints(rune_of_power_talent)
-	{
-		if BuffExpires(alter_time)
-		{
+			#blood_fury,if=buff.invocation.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
-			if BuffPresent(rune_of_power 15) Spell(blood_fury)
-			#/berserking,if=buff.rune_of_power.remains>10&buff.alter_time.down
-			if BuffPresent(rune_of_power 10) Spell(berserking)
-			if BuffPresent(rune_of_power 15) UseItemActions()
-		}
-		#frostbolt,if=debuff.frostbolt.stack<3
-		if TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
-		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6
-		if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) and BuffPresent(rune_of_power 6) Spell(alter_time_activate)
-	}
-	if TalentPoints(incanters_ward_talent)
-	{
-		if BuffExpires(alter_time)
-		{
-			if BuffPresent(incanters_ward_post)
-			{
-				#blood_fury,if=buff.incanters_ward_post.react&buff.alter_time.down
-				if BuffPresent(incanters_ward_post) Spell(blood_fury)
-				#/berserking,if=buff.incanters_ward_post.react&buff.alter_time.down
-				if BuffPresent(incanters_ward_post) Spell(berserking)
-			}
-			UseItemActions()
-		}
-		#frostbolt,if=debuff.frostbolt.stack<3
-		if TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
-		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react
-		if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
-	}
-	if not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
-	{
-		if BuffExpires(alter_time)
-		{
+			#blood_fury,if=buff.incanters_ward_post.react&buff.alter_time.down
 			#blood_fury,if=buff.alter_time.down
-			if BuffPresent(incanters_ward_post) Spell(blood_fury)
-			#/berserking,if=buff.alter_time.down
-			if BuffPresent(incanters_ward_post) Spell(berserking)
-			UseItemActions()
+			if {BuffPresent(invocation 15) and ManaPercent(more 28)}
+				or BuffPresent(rune_of_power 15)
+				or BuffPresent(BuffPresent(incanters_ward_post)
+				or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+			{
+				Spell(blood_fury)
+			}
 		}
-		#frostbolt,if=debuff.frostbolt.stack<3
-		if TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
-		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react
-		if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
+		{
+			#/berserking,if=buff.invocation.remains>10&buff.alter_time.down&mana.pct>28
+			#/berserking,if=buff.rune_of_power.remains>10&buff.alter_time.down
+			#/berserking,if=buff.incanters_ward_post.react&buff.alter_time.down
+			#/berserking,if=buff.alter_time.down
+			if {BuffPresent(invocation 10) and ManaPercent(more 28)}
+				or BuffPresent(rune_of_power 10)
+				or BuffPresent(BuffPresent(incanters_ward_post)
+				or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+			{
+				Spell(berserking)
+			}
+		}
+		if BuffPresent(invocation 15) or BuffPresent(rune_of_power 15) or TalentPoints(incanters_ward_talent)
+			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+		{
+			UseItemActions()
+			#UseProfessionActions()
+		}
 	}
-	if Level() >=87 and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}
+	#frostbolt,if=debuff.frostbolt.stack<3
+	if TargetDeadIn(more 20) and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
+	if CheckBoxOn(opt_alter_time)
+	{
+		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6,moving=0
+		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6,moving=0
+		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
+		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
+		if BuffPresent(invocation 6) or BuffPresent(rune_of_power 6) or TalentPoints(incanters_ward_talent)
+			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+		{
+			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
+		}
+	}
+	if TalentPoints(nether_tempest_talent)
+	{
+		#nether_tempest,if=!ticking
+		if TargetDebuffExpires(nether_tempest_debuff) Spell(nether_tempest)
+	}
+	if TalentPoints(living_bomb_talent)
+	{
+		#living_bomb,if=!ticking
+		if TargetDebuffExpires(living_bomb) Spell(living_bomb)
+	}
+	#ice_lance,if=buff.fingers_of_frost.react
+	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
+	if Level() >=87
 	{
 		#frostfire_bolt,if=buff.brain_freeze.react&(buff.alter_time.up|cooldown.alter_time_activate.remains>4)
-		if BuffPresent(brain_freeze_aura) Spell(frostfire_bolt)
-		#ice_lance,if=buff.fingers_of_frost.react&(buff.alter_time.up|cooldown.alter_time_activate.remains>4)
-		if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
+		if BuffPresent(brain_freeze_aura) and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}
+		{
+			Spell(frostfire_bolt)
+		}
 	}
-	if Level() <87
+	if Level() <87 or CheckBoxOff(opt_alter_time)
 	{
 		#frostfire_bolt,if=buff.brain_freeze.react
 		if BuffPresent(brain_freeze_aura) Spell(frostfire_bolt)
 	}
-	#ice_lance,if=buff.fingers_of_frost.react
-	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
 	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
-	if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
+	if TargetDeadIn(more 4) and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
 	#mana_gem,if=mana.pct<84&buff.alter_time.down
-	if ManaPercent(less 84) and BuffExpires(alter_time) Item(mana_gem)
+	if ManaPercent(less 84) and BuffExpires(alter_time) UseManaGem()
 	if not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent)}
 	{
 		#evocation,if=mana.pct<10&target.time_to_die>=30
-		if ManaPercent(less 10) and TargetTimeToDie() >=30 Spell(evocation)
+		if ManaPercent(less 10) and TargetDeadIn(more 30) Spell(evocation)
 	}
+	#ice_floes,moving=1
 	#frostbolt
 	Spell(frostbolt)
 	#scorch,moving=1
@@ -447,14 +481,10 @@ AddFunction FrostMainActions
 		#arcane_brilliance
 		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
 		#frost_armor
-		if BuffExpires(frost_armor 400) and BuffExpires(mage_armor 400) and BuffExpires(molten_armor 400) Spell(frost_armor)
-		#water_elemental
-		if pet.Present(no) Spell(water_elemental)
+		if BuffExpires(frost_armor) Spell(frost_armor)
 		#snapshot_stats
-		#evocation
-		if TalentPoints(invocation_talent) Spell(evocation)
 		#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
-		if ItemCharges(mana_gem less 3) Spell(conjure_mana_gem)
+		ConjureManaGem()
 	}
 
 	if BuffPresent(alter_time)
@@ -466,36 +496,45 @@ AddFunction FrostMainActions
 		#frostbolt,if=buff.alter_time.up&buff.presence_of_mind.up
 		if BuffPresent(presence_of_mind) Spell(frostbolt)
 	}
-	if TalentPoints(invocation_talent)
+	#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
+	if TalentPoints(frost_bomb_talent)
 	{
-		#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<5
-		if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 5) Spell(ice_lance)
+		if TargetDebuffExpires(frost_bomb) and TargetTimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
 	}
-	#frost_bomb,if=!ticking
-	if TalentPoints(frost_bomb_talent) and TargetDebuffExpires(frost_bomb) Spell(frost_bomb)
-	if TalentPoints(invocation_talent)
+	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
+	if BuffPresent(brain_freeze_aura)
+		and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
 	{
-		#evocation,if=buff.invocation.down&buff.alter_time.down		
-		if BuffExpires(invocation) and BuffExpires(alter_time) Spell(evocation)
+		Spell(frostfire_bolt)
 	}
 	#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<2
-	if BuffPresent(fingers_of_frost_aura) and BuffStacks(fingers_of_frost_aura) <2 Spell(ice_lance)
+	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
 	#frostbolt,if=debuff.frostbolt.stack<3
-	if TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
-	if Level() >=87 and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}
+	if TalentPoints(nether_tempest_talent)
+	{
+		#nether_tempest,if=!ticking
+		if TargetDebuffExpires(nether_tempest_debuff) Spell(nether_tempest)
+	}
+	if TalentPoints(living_bomb_talent)
+	{
+		#living_bomb,if=!ticking
+		if TargetDebuffExpires(living_bomb) Spell(living_bomb)
+	}
+	#ice_lance,if=buff.fingers_of_frost.react
+	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
+	if Level() >=87
 	{
 		#frostfire_bolt,if=buff.brain_freeze.react&(buff.alter_time.up|cooldown.alter_time_activate.remains>4)
-		if BuffPresent(brain_freeze_aura) Spell(frostfire_bolt)
-		#ice_lance,if=buff.fingers_of_frost.react&(buff.alter_time.up|cooldown.alter_time_activate.remains>4)
-		if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
+		if BuffPresent(brain_freeze_aura) and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}
+		{
+			Spell(frostfire_bolt)
+		}
 	}
-	if Level() <87
+	if Level() <87 or CheckBoxOff(opt_alter_time)
 	{
 		#frostfire_bolt,if=buff.brain_freeze.react
 		if BuffPresent(brain_freeze_aura) Spell(frostfire_bolt)
 	}
-	#ice_lance,if=buff.fingers_of_frost.react
-	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
 	#frostbolt
 	Spell(frostbolt)
 	#scorch,moving=1
@@ -507,84 +546,47 @@ AddFunction FrostShortCooldownActions
 {
 	if InCombat(no)
 	{
-		#flask,type=warm_sun
-		#food,type=mogu_fish_stew
-		#arcane_brilliance
-		unless {BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1)}
-			or {BuffExpires(frost_armor 400) and BuffExpires(mage_armor 400) and BuffExpires(molten_armor 400)}
-		{
-			#water_elemental
-			if pet.Present(no) Spell(water_elemental)
-			#snapshot_stats
-			#evocation
-			unless TalentPoints(invocation_talent) and Spell(evocation)
-			{
-				if False() and TalentPoints(rune_of_power_talent) Spell(rune_of_power)
-			}
-		}
+		#water_elemental
+		if pet.Present(no) Spell(water_elemental)
 	}
 
 	#counterspell,if=target.debuff.casting.react
 	if TargetIsInterruptible() Interrupt()
-	#presence_of_mind,if=buff.alter_time.down
-	if TalentPoints(presence_of_mind_talent) and BuffExpires(alter_time) Spell(presence_of_mind)
-	#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.stack<2
-	if pet.Present() and BuffExpires(alter_time) and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
+	#cancel_buff,name=alter_time,moving=1
+	#cold_snap,if=health.pct<30
+	if TalentPoints(cold_snap) and HealthPercent(less 30) Spell(cold_snap)
+	if BuffExpires(alter_time)
+	{
+		#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.react<2
+		if pet.Present() and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
+	}
 	unless {BuffPresent(alter_time) and {BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura) or BuffPresent(presence_of_mind)}}
 	{
 		if TalentPoints(invocation_talent)
 		{
-			unless BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 5)
-			{
-				if BuffExpires(alter_time) and BuffPresent(invocation 20)
-				{
-					#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.invocation.remains>20&buff.alter_time.down
-					if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
-				}
-			}
+			FrostTier6FrozenOrb()
 		}
-		#presence_of_mind,if=buff.alter_time.down
-		if TalentPoints(presence_of_mind_talent) and BuffExpires(alter_time) Spell(presence_of_mind)
-		unless TalentPoints(frost_bomb_talent) and TargetDebuffExpires(frost_bomb) and Spell(frost_bomb)
+		unless {TalentPoints(frost_bomb_talent) and {TargetDebuffExpires(frost_bomb) and TargetTimeToDie() > timeWithHaste(7.5) and Spell(frost_bomb)}}
 		{
-			if TalentPoints(rune_of_power_talent)
+			if not TalentPoints(invocation_talent)
 			{
-				if BuffExpires(alter_time) and BuffPresent(rune_of_power 20)
-				{
-					#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.rune_of_power.remains>20&buff.alter_time.down
-					if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
-				}
+				FrostTier6FrozenOrb()
 			}
-			if TalentPoints(incanters_ward_talent)
+			#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
+			unless {BuffPresent(brain_freeze_aura)
+					and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}}
+				or {BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2)}
+				or {TargetDeadIn(more 20) and TargetDebuffExpires(frostbolt 3 stacks=3)}
+				or {TalentPoints(nether_tempest_talent) and TargetDebuffExpires(nether_tempest_debuff)}
+				or {TalentPoints(living_bomb_talent) and TargetDebuffExpires(living_bomb)}
+				or BuffPresent(fingers_of_frost_aura)
+				or {Level() >=87
+					and	BuffPresent(brain_freeze_aura) and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}}
+				or {{Level() <87 or CheckBoxOff(opt_alter_time)} and BuffPresent(brain_freeze_aura)}
 			{
-				if BuffExpires(alter_time)
-				{
-					#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.alter_time.down
-					if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
-				}
-			}
-			unless TalentPoints(invocation_talent) and BuffExpires(invocation) and BuffExpires(alter_time) and Spell(evocation)
-				or {BuffPresent(fingers_of_frost_aura) and BuffStacks(fingers_of_frost_aura) <2}
-			{
-				if TalentPoints(rune_of_power_talent)
-				{
-					#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
-					if False() and BuffExpires(rune_of_power) and BuffExpires(alter_time) Spell(rune_of_power)
-				}
-				if TalentPoints(incanters_ward_talent)
-				{
-					#incanters_ward
-					Spell(incanters_ward)
-				}
-				unless {TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3)}
-					or {Level() >=87 and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}
-						and {BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura)}}
-					or {Level() <87	and BuffPresent(brain_freeze_aura)}
-					or BuffPresent(fingers_of_frost_aura)
-				{
-					#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
-					if TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
-				}
+				#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
+				if TargetDeadIn(more 4) and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
+				#ice_floes,moving=1
 			}
 		}
 	}
@@ -594,174 +596,104 @@ AddFunction FrostCooldownActions
 {
 	if InCombat(no)
 	{
-		#flask,type=warm_sun
-		#food,type=mogu_fish_stew
-		unless {BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1)}
-			or {BuffExpires(frost_armor 400) and BuffExpires(mage_armor 400) and BuffExpires(molten_armor 400)}
-			or {pet.Present(no) and Spell(water_elemental)}
-			or {TalentPoints(invocation_talent) and Spell(evocation)}
-			or {False() and TalentPoints(rune_of_power_talent) and Spell(rune_of_power)}
-		{
-			#jade_serpent_potion
-			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(jade_serpent_potion usable=1)
-		}
+		#evocation
+		if TalentPoints(invocation_talent) Spell(evocation)
+		if TalentPoints(rune_of_power_talent) Spell(rune_of_power)
+		#jade_serpent_potion
+		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(jade_serpent_potion usable=1)
 	}
 
-	unless pet.Present() and BuffExpires(alter_time) and BuffStacks(fingers_of_frost_aura) <2 and Spell(water_elemental_freeze)
+	#time_warp,if=target.health.pct<25|time>5
+	if InCombat() and {TargetHealthPercent(less 25) or TimeInCombat(more 5)} and BuffExpires(burst_haste any=1) Spell(time_warp)
+	if BuffExpires(alter_time)
 	{
-		#icy_veins,if=target.time_to_die<22
-		if TimeUntilTargetIsDead(less 22) FrostIcyVeins()
-		#blood_fury,if=target.time_to_die<12
-		if TargetTimeToDie() <12 Spell(blood_fury)
-		#berserking,if=target.time_to_die<18
-		if TargetTimeToDie() <18 Spell(berserking)
-		unless {BuffPresent(alter_time) and {BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura) or BuffPresent(presence_of_mind)}}
+		#presence_of_mind,if=buff.alter_time.down
+		if TalentPoints(presence_of_mind_talent) Spell(presence_of_mind)
+	}
+	#icy_veins,if=target.time_to_die<22
+	if TargetDeadIn(less 22) FrostIcyVeins()
+	#blood_fury,if=target.time_to_die<12
+	if TargetDeadIn(less 12) Spell(blood_fury)
+	#berserking,if=target.time_to_die<18
+	if TargetDeadIn(less 18) Spell(berserking)
+	unless {BuffPresent(alter_time)
+		and {BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura) or BuffPresent(presence_of_mind)}}
+	{
+		if TalentPoints(invocation_talent)
 		{
-			if TalentPoints(invocation_talent)
+			FrostTier6IcyVeinsActions()
+		}
+		#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
+		unless TalentPoints(frost_bomb_talent) and TargetDebuffExpires(frost_bomb) and TargetTimeToDie() > timeWithHaste(7.5) and Spell(frost_bomb)
+		{
+			if not TalentPoints(invocation_talent)
 			{
-				unless {BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 5)}
-				{
-					if BuffExpires(alter_time) and BuffPresent(invocation 20)
-					{
-						unless TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() and Spell(frozen_orb)
-						{
-							#icy_veins,if=set_bonus.tier14_4pc_caster&buff.invocation.remains>20&buff.alter_time.down
-							if ArmorSetParts(T14 more 3) FrostIcyVeins()
-						}
-					}
-					#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
-					if ArmorSetParts(T14 less 4) and SpellCooldown(frozen_orb) >50 FrostIcyVeins()
-				}
+				FrostTier6IcyVeinsActions()
 			}
-			unless {TalentPoints(presence_of_mind_talent) and BuffExpires(alter_time) and Spell(presence_of_mind)}
-				or {TalentPoints(frost_bomb_talent) and TargetDebuffExpires(frost_bomb) and Spell(frost_bomb)}
+			#mirror_image
+			Spell(mirror_image)
+			if TalentPoints(invocation_talent) FrostTier6Action()
+			unless {BuffPresent(brain_freeze_aura)
+					and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}}
+				or {BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2)}
 			{
-				if TalentPoints(rune_of_power_talent)
+				if TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent) FrostTier6Action()
+				#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
+				if CheckBoxOn(potions) and TargetClassification(worldboss)
 				{
-					if BuffExpires(alter_time) and BuffPresent(rune_of_power 20)
+					if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or TargetDeadIn(less 40)
 					{
-						unless TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() and Spell(frozen_orb)
-						{
-							#icy_veins,if=set_bonus.tier14_4pc_caster&buff.rune_of_power.remains>20&buff.alter_time.down
-							if ArmorSetParts(T14 more 3) FrostIcyVeins()
-						}
+						Item(jade_serpent_potion usable=1)
 					}
-					#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
-					if ArmorSetParts(T14 less 4) and SpellCooldown(frozen_orb) >50 FrostIcyVeins()
 				}
-				if TalentPoints(incanters_ward_talent)
+				if BuffExpires(alter_time)
 				{
-					if BuffExpires(alter_time)
 					{
-						unless TargetTimeToDie() >=4 and BuffStacks(fingers_of_frost_aura) <2	and FrostIcyVeinsCooldown() < GCD() and Spell(frozen_orb)
+						#blood_fury,if=buff.invocation.remains>15&buff.alter_time.down&mana.pct>28
+						#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
+						#blood_fury,if=buff.incanters_ward_post.react&buff.alter_time.down
+						#blood_fury,if=buff.alter_time.down
+						if {BuffPresent(invocation 15) and ManaPercent(more 28)}
+							or BuffPresent(rune_of_power 15)
+							or BuffPresent(BuffPresent(incanters_ward_post)
+							or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 						{
-							#icy_veins,if=set_bonus.tier14_4pc_caster&buff.alter_time.down
-							if ArmorSetParts(T14 more 3) FrostIcyVeins()
+							Spell(blood_fury)
 						}
 					}
-					#icy_veins,if=!set_bonus.tier14_4pc_caster&dot.frozen_orb.ticking
-					if ArmorSetParts(T14 less 4) and SpellCooldown(frozen_orb) >50 FrostIcyVeins()
+					{
+						#/berserking,if=buff.invocation.remains>10&buff.alter_time.down&mana.pct>28
+						#/berserking,if=buff.rune_of_power.remains>10&buff.alter_time.down
+						#/berserking,if=buff.incanters_ward_post.react&buff.alter_time.down
+						#/berserking,if=buff.alter_time.down
+						if {BuffPresent(invocation 10) and ManaPercent(more 28)}
+							or BuffPresent(rune_of_power 10)
+							or BuffPresent(BuffPresent(incanters_ward_post)
+							or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+						{
+							Spell(berserking)
+						}
+					}
+					if BuffPresent(invocation 15) or BuffPresent(rune_of_power 15) or TalentPoints(incanters_ward_talent)
+						or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+					{
+						UseItemActions()
+						#UseProfessionActions()
+					}
 				}
-				if not {TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
+				#frostbolt,if=debuff.frostbolt.stack<3
+				unless {TargetDeadIn(more 20) and TargetDebuffExpires(frostbolt 3 stacks=3)}
 				{
-					#icy_veins,if=dot.frozen_orb.ticking&buff.alter_time.down
-					if SpellCooldown(frozen_orb) >50 and BuffExpires(alter_time) FrostIcyVeins()
-				}
-				#mirror_image
-				Spell(mirror_image)
-				unless {TalentPoints(invocation_talent) and BuffExpires(invocation) and BuffExpires(alter_time) and Spell(evocation)}
-					or {BuffPresent(fingers_of_frost_aura) and BuffStacks(fingers_of_frost_aura) <2}
-					or {TalentPoints(rune_of_power_talent) and False() and BuffExpires(rune_of_power) and BuffExpires(alter_time) and Spell(rune_of_power)}
-					or {TalentPoints(incanters_ward_talent) and Spell(incanters_ward)}
-				{
-					#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
-					if CheckBoxOn(potions) and TargetClassification(worldboss)
+					if CheckBoxOn(opt_alter_time)
 					{
-						if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or TargetTimeToDie() <40
+						#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6,moving=0
+						#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6,moving=0
+						#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
+						#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
+						if BuffPresent(invocation 6) or BuffPresent(rune_of_power 6) or TalentPoints(incanters_ward_talent)
+							or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 						{
-							Item(jade_serpent_potion usable=1)
-						}
-					}
-					if TalentPoints(invocation_talent)
-					{
-						if BuffExpires(alter_time)
-						{
-							if ManaPercent(more 28)
-							{
-								#blood_fury,if=buff.invocation.remains>15&buff.alter_time.down&mana.pct>28
-								if BuffPresent(invocation 15) Spell(blood_fury)
-								#/berserking,if=buff.invocation.remains>10&buff.alter_time.down&mana.pct>28
-								if BuffPresent(invocation 10) Spell(berserking)
-							}
-							if BuffPresent(invocation 15) UseItemActions()
-						}
-						unless TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3)
-						{
-							#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6
-							if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) and BuffPresent(invocation 6)
-							{
-								Spell(alter_time_activate)
-							}
-						}
-					}
-					if TalentPoints(rune_of_power_talent)
-					{
-						if BuffExpires(alter_time)
-						{
-							#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
-							if BuffPresent(rune_of_power 15) Spell(blood_fury)
-							#/berserking,if=buff.rune_of_power.remains>10&buff.alter_time.down
-							if BuffPresent(rune_of_power 10) Spell(berserking)
-							if BuffPresent(rune_of_power 15) UseItemActions()
-						}
-						unless TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3)
-						{
-							#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6
-							if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) and BuffPresent(rune_of_power 6)
-							{
-								Spell(alter_time_activate)
-							}
-						}
-					}
-					if TalentPoints(incanters_ward_talent)
-					{
-						if BuffExpires(alter_time)
-						{
-							if BuffPresent(incanters_ward_post)
-							{
-								#blood_fury,if=buff.incanters_ward_post.react&buff.alter_time.down
-								if BuffPresent(incanters_ward_post) Spell(blood_fury)
-								#/berserking,if=buff.incanters_ward_post.react&buff.alter_time.down
-								if BuffPresent(incanters_ward_post) Spell(berserking)
-							}
-							UseItemActions()
-						}
-						unless TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3)
-						{
-							#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react
-							if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura)
-							{
-								Spell(alter_time_activate)
-							}
-						}
-					}
-					if not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
-					{
-						if BuffExpires(alter_time)
-						{
-							#blood_fury,if=buff.alter_time.down
-							if BuffPresent(incanters_ward_post) Spell(blood_fury)
-							#/berserking,if=buff.alter_time.down
-							if BuffPresent(incanters_ward_post) Spell(berserking)
-							UseItemActions()
-						}
-						unless TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3)
-						{
-							#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react
-							if BuffExpires(alter_time) and BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura)
-							{
-								Spell(alter_time_activate)
-							}
+							if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
 						}
 					}
 				}
@@ -773,7 +705,7 @@ AddFunction FrostCooldownActions
 AddFunction FrostManaActions
 {
 	#mana_gem,if=mana.pct<84&buff.alter_time.down
-	if ManaPercent(less 84) and BuffExpires(alter_time) Item(mana_gem)
+	if ManaPercent(less 84) and BuffExpires(alter_time) UseManaGem()
 	if not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent)}
 	{
 		#evocation,if=mana.pct<10&target.time_to_die>=30
@@ -786,14 +718,14 @@ AddIcon mastery=3 help=Blink size=small
 	Spell(blink)
 }
 
-AddIcon mastery=3 help=main
-{
-	FrostMainActions()
-}
-
 AddIcon mastery=3 help=cd
 {
 	FrostShortCooldownActions()
+}
+
+AddIcon mastery=3 help=main
+{
+	FrostMainActions()
 }
 
 AddIcon mastery=3 help=cd
