@@ -135,9 +135,12 @@ Define(rune_of_power_talent 17)
 Define(scorch 2948)
 Define(scorch_talent 2)
 Define(spellsteal 30449)
+Define(temporal_displacement 80354)
+	SpellInfo(temporal_displacement duration=600)
 Define(time_warp 80353)
 	SpellInfo(time_warp cd=300 duration=40)
 	SpellAddBuff(time_warp time_warp=1)
+	SpellAddDebuff(time_warp temporal_displacement=1)
 Define(water_elemental 31687)
 	SpellInfo(water_elemental cd=60)
 Define(water_elemental_freeze 33395)
@@ -323,7 +326,10 @@ AddFunction FrostFullRotation
 	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
 	if InCombat(no) ConjureManaGem()
 	#time_warp,if=target.health.pct<25|time>5
-	if InCombat() and {TargetHealthPercent(less 25) or TimeInCombat(more 5)} and BuffExpires(burst_haste any=1) Spell(time_warp)
+	if InCombat() and {TargetHealthPercent(less 25) or TimeInCombat(more 5)}
+	{
+		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+	}
 	if BuffExpires(alter_time)
 	{
 		#presence_of_mind,if=buff.alter_time.down
@@ -604,7 +610,10 @@ AddFunction FrostCooldownActions
 	}
 
 	#time_warp,if=target.health.pct<25|time>5
-	if InCombat() and {TargetHealthPercent(less 25) or TimeInCombat(more 5)} and BuffExpires(burst_haste any=1) Spell(time_warp)
+	if InCombat() and {TargetHealthPercent(less 25) or TimeInCombat(more 5)}
+	{
+		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+	}
 	if BuffExpires(alter_time)
 	{
 		#presence_of_mind,if=buff.alter_time.down
