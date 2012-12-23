@@ -489,8 +489,6 @@ AddFunction FrostMainActions
 		#snapshot_stats
 		#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
 		ConjureManaGem()
-		#evocation
-		if TalentPoints(invocation_talent) Spell(evocation)
 		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
 	}
 
