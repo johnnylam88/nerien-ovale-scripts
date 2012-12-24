@@ -351,7 +351,7 @@ AddIcon mastery=1 help=cd size=small
 AddIcon mastery=1 help=cd
 {
 	if {StaggerDamageRemaining() / MaxHealth() >0.30} or {StaggerTickDamage() / Health() >0.5} Spell(purifying_brew)
-	if NumberToMaxChi() >=1 and HealthPercent(less 50) Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <50 Spell(expel_harm)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
 	if BuffPresent(power_guard)
 	{
@@ -404,7 +404,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 AddIcon mastery=1 help=cd
 {
 	if TargetIsInterruptible() Interrupt()
-	if TargetHealth(more 0) and BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth() >0 and BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
@@ -438,7 +438,7 @@ AddFunction WindwalkerFullRotation
 	}
 
 	#auto_attack
-	if TargetHealth(more 0) and BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth() >0 and BuffPresent(death_note) Spell(touch_of_death)
 	if TargetIsInterruptible() Interrupt()
 	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
@@ -487,7 +487,7 @@ AddFunction WindwalkerFullRotation
 	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
 	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains=0&buff.combo_breaker_tp.react)
 	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 1)} Spell(tiger_palm)
-	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <90 Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
 	if NumberToMaxChi() >=2 Jab()
@@ -528,7 +528,7 @@ AddFunction WindwalkerMainActions
 	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
 	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains=0&buff.combo_breaker_tp.react)
 	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 1)} Spell(tiger_palm)
-	if NumberToMaxChi() >=1 and HealthPercent(less 90) Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <90 Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
 	if NumberToMaxChi() >=2 Jab()
@@ -579,7 +579,7 @@ AddFunction WindwalkerCooldownActions
 		}
 	}
 
-	if TargetHealth(more 0) and BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth() >0 and BuffPresent(death_note) Spell(touch_of_death)
 	if TargetIsInterruptible() Interrupt()
 	unless {BuffExpires(str_agi_int any=1) or BuffExpires(critical_strike any=1)}
 	{
