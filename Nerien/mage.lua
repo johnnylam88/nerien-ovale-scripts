@@ -489,7 +489,6 @@ AddFunction FrostMainActions
 		#snapshot_stats
 		#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
 		ConjureManaGem()
-		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
 	}
 
 	if BuffPresent(alter_time)
@@ -514,11 +513,6 @@ AddFunction FrostMainActions
 	}
 	#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<2
 	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
-	if TalentPoints(rune_of_power_talent)
-	{
-		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
-		if BuffExpires(rune_of_power_aura) and BuffExpires(alter_time) Spell(rune_of_power)
-	}
 	#frostbolt,if=debuff.frostbolt.stack<3
 	if TalentPoints(nether_tempest_talent)
 	{
@@ -567,6 +561,7 @@ AddFunction FrostShortCooldownActions
 		if pet.Present(no) Spell(water_elemental)
 		#evocation
 		if TalentPoints(invocation_talent) Spell(evocation)
+		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
 	}
 
 	#counterspell,if=target.debuff.casting.react
@@ -584,6 +579,11 @@ AddFunction FrostShortCooldownActions
 		FrostTier6FrozenOrb()
 		#evocation,if=buff.invocation.down&buff.alter_time.down		
 		if BuffExpires(invocation) and BuffExpires(alter_time) Spell(evocation)
+	}
+	if TalentPoints(rune_of_power_talent)
+	{
+		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
+		if BuffExpires(rune_of_power_aura) and BuffExpires(alter_time) Spell(rune_of_power)
 	}
 	if TalentPoints(incanters_ward_talent)
 	{
