@@ -596,21 +596,9 @@ AddFunction FrostShortCooldownActions
 	{
 		FrostTier6FrozenOrb()
 	}
-	unless {BuffPresent(brain_freeze_aura)
-			and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}}
-		or {BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2)}
-		or {TargetDeadIn(more 20) and TargetDebuffExpires(frostbolt 3 stacks=3)}
-		or {TalentPoints(nether_tempest_talent) and TargetDebuffExpires(nether_tempest_debuff)}
-		or {TalentPoints(living_bomb_talent) and TargetDebuffExpires(living_bomb)}
-		or BuffPresent(fingers_of_frost_aura)
-		or {{Level() >=87 and CheckBoxOn(opt_alter_time)}
-			and	BuffPresent(brain_freeze_aura) and {BuffPresent(alter_time) or SpellCooldown(alter_time_activate) >4}}
-		or {{Level() <87 or CheckBoxOff(opt_alter_time)} and BuffPresent(brain_freeze_aura)}
-	{
-		#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
-		if TargetDeadIn(more 4) and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
-		#ice_floes,moving=1
-	}
+	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
+	if TargetTimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
+	#ice_floes,moving=1
 }
 
 AddFunction FrostCooldownActions
