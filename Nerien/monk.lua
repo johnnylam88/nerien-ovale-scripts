@@ -7,7 +7,7 @@ NerienOvaleScripts.script.MONK.Nerien = {
 # Nerien's monk script based on SimulationCraft
 #
 # Windwalker
-#	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!022221
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!021221
 
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
@@ -438,7 +438,7 @@ AddFunction WindwalkerFullRotation
 	}
 
 	#auto_attack
-	if TargetHealth() >0 and BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	if TargetIsInterruptible() Interrupt()
 	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
@@ -456,9 +456,9 @@ AddFunction WindwalkerFullRotation
 	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
-	#tiger_palm,if=(buff.tiger_power.stack<1&energy.time_to_max>2)|buff.tiger_power.remains<=3
-	if {BuffExpires(tiger_power) and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
-	#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
+	#tiger_palm,if=buff.tiger_power.remains<=3
+	if BuffExpires(tiger_power 3) Spell(tiger_palm)
+	#tigereye_brew,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
 	if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
 	#energizing_brew,if=energy.time_to_max>5
 	if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
@@ -472,14 +472,14 @@ AddFunction WindwalkerFullRotation
 		#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		#rising_sun_kick,if=chi=4
-		if NumberToMaxChi() ==0 Spell(rising_sun_kick)
+		if Chi() >=4 Spell(rising_sun_kick)
 		#spinning_crane_kick
 		Spell(spinning_crane_kick)
 	}
 
 	#rising_sun_kick
 	Spell(rising_sun_kick)
-	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=1
+	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)
 	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
 	#blackout_kick,if=buff.combo_breaker_bok.react
 	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
@@ -487,12 +487,17 @@ AddFunction WindwalkerFullRotation
 	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
 	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains=0&buff.combo_breaker_tp.react)
 	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 1)} Spell(tiger_palm)
-	if NumberToMaxChi() >=1 and HealthPercent() <90 Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
-	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >=2 Jab()
-	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
-	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
+	if TalentPoints(ascension_talent) and Chi() <=3 Jab()
+	#jab,if=talent.chi_brew.enabled&chi<=2
+	if TalentPoints(chi_brew_talent) and Chi() <=2 Jab()
+	#jab,if=talent.power_strikes.enabled&((chi<=1&!cooldown.power_strikes.remains)|(chi<=2&cooldown.power_strikes.remains))
+	if TalentPoints(power_strikes_talent)
+	{
+		if {Chi() <=1 and BuffExpires(power_strikes_buff)} or {Chi() <=2 and BuffPresent(power_strikes_buff)} Jab()
+	}
+	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
 }
 
@@ -514,8 +519,8 @@ AddFunction WindwalkerMaintenanceActions
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
 	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
-	#tiger_palm,if=(buff.tiger_power.stack<1&energy.time_to_max>2)|buff.tiger_power.remains<=3
-	if {BuffExpires(tiger_power) and TimeToMaxEnergy() >2} or BuffExpires(tiger_power 3) Spell(tiger_palm)
+	#tiger_palm,if=buff.tiger_power.remains<=3
+	if BuffExpires(tiger_power 3) Spell(tiger_palm)
 }
 
 AddFunction WindwalkerMainActions
@@ -528,41 +533,43 @@ AddFunction WindwalkerMainActions
 	if NumberToMaxChi() <=1 and TimeToMaxEnergy() <=2 Spell(blackout_kick)
 	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains=0&buff.combo_breaker_tp.react)
 	if BuffPresent(combo_breaker_tp) and {TimeToMaxEnergy() >=2 or BuffExpires(combo_breaker_tp 1)} Spell(tiger_palm)
-	if NumberToMaxChi() >=1 and HealthPercent() <90 Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
-	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >=2 Jab()
-	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|\
-	#	(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
+	if TalentPoints(ascension_talent) and Chi() <=3 Jab()
+	#jab,if=talent.chi_brew.enabled&chi<=2
+	if TalentPoints(chi_brew_talent) and Chi() <=2 Jab()
+	#jab,if=talent.power_strikes.enabled&((chi<=1&!cooldown.power_strikes.remains)|(chi<=2&cooldown.power_strikes.remains))
+	if TalentPoints(power_strikes_talent)
+	{
+		if {Chi() <=1 and BuffExpires(power_strikes_buff)} or {Chi() <=2 and BuffPresent(power_strikes_buff)} Jab()
+	}
+	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
 }
 
 AddFunction WindwalkerAoEActions
 {
-	#rising_sun_kick,if=chi=4
-	if NumberToMaxChi() ==0 Spell(rising_sun_kick)
 	#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+	#rising_sun_kick,if=chi=4
+	if Chi() >=4 Spell(rising_sun_kick)
 	#spinning_crane_kick
 	Spell(spinning_crane_kick)
 }
 
 AddFunction WindwalkerShortCooldownActions
 {
-	unless {BuffExpires(str_agi_int any=1) or BuffExpires(critical_strike any=1)}
-	{
-		#tigereye_brew_use,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
-		if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
-		#energizing_brew,if=energy.time_to_max>5
-		if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
+	#tigereye_brew,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
+	if BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 Spell(tigereye_brew_use)
+	#energizing_brew,if=energy.time_to_max>5
+	if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 
-		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
-			or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
-			or Spell(rising_sun_kick)
-		{
-			#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)&buff.tiger_power.stack=1
-			if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
-		}
+	unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
+		or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
+		or Spell(rising_sun_kick)
+	{
+		#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(cast_time)&buff.tiger_power.remains>(cast_time)
+		if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
 	}
 }
 
@@ -579,29 +586,26 @@ AddFunction WindwalkerCooldownActions
 		}
 	}
 
-	if TargetHealth() >0 and BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	if TargetIsInterruptible() Interrupt()
-	unless {BuffExpires(str_agi_int any=1) or BuffExpires(critical_strike any=1)}
+	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <=60}
 	{
-		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <=60}
-		{
-			Item(virmens_bite_potion usable=1)
-		}
-		#use_item,name=red_crane_grips
-		UseItemActions()
-		#berserking
-		UseRacialActions()
-		#chi_brew,if=talent.chi_brew.enabled&chi=0
-		if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
+		Item(virmens_bite_potion usable=1)
+	}
+	#use_item,name=red_crane_grips
+	UseItemActions()
+	#berserking
+	UseRacialActions()
+	#chi_brew,if=talent.chi_brew.enabled&chi=0
+	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 
-		unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
-			or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
-			or {BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 and Spell(tigereye_brew_use)}
-		{
-			#invoke_xuen,if=talent.invoke_xuen.enabled
-			if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
-		}
+	unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
+		or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
+		or {BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 and Spell(tigereye_brew_use)}
+	{
+		#invoke_xuen,if=talent.invoke_xuen.enabled
+		if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 	}
 }
 
