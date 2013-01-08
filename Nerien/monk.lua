@@ -9,6 +9,13 @@ NerienOvaleScripts.script.MONK.Nerien = {
 # Windwalker
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!021221
 
+# Notes for 5.2:
+#	- Tiger's Lust: remove Chi cost.
+#	- Chi Wave: remove Chi cost, increase CD to 15s.
+#	- Chi Burst: remove Chi cost, increase CD to 30s.
+#	- Zen Sphere: remove Chi cost, increase CD to 10s.
+#	- Charging Ox Wave: reduce CD to 30s.
+#
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
 	SpellInfo(blackout_kick chi=2)
@@ -16,12 +23,17 @@ Define(blackout_kick 100784)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
 Define(brewmaster_training 117967)
+Define(charging_ox_wave 119392)
+	SpellInfo(charging_ox_wave cd=60)
+#	SpellInfo(charging_ox_wave cd=30)
+Define(charging_ox_wave_talent 11)
 Define(chi_brew 115399)
 	SpellInfo(chi_brew cd=90 chi=-4)
 	SpellInfo(chi_brew chi=-5 talent=ascension_talent)
 Define(chi_brew_talent 9)
 Define(chi_burst 123986)
 	SpellInfo(chi_burst chi=2)
+#	SpellInfo(chi_burst cd=30)
 Define(chi_burst_talent 6)
 Define(chi_sphere 121286)
 	SpellInfo(chi_sphere duration=120)
@@ -29,6 +41,7 @@ Define(chi_torpedo 115008)
 Define(chi_torpedo_talent 18)
 Define(chi_wave 115098)
 	SpellInfo(chi_wave cd=8 chi=2)
+#	SpellInfo(chi_wave cd=15)
 Define(chi_wave_talent 4)
 Define(combo_breaker_bok 116768)
 	SpellInfo(combo_breaker_bok duration=15)
@@ -104,6 +117,9 @@ Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
 Define(moderate_stagger 124274)
 	SpellInfo(moderate_stagger duration=10 tick=1)
+Define(nimble_brew 137562)
+	SpellInfo(nimble_brew cd=120 duration=6)
+	SpellAddBuff(nimble_brew nimble_brew=1)
 Define(paralysis 115078)
 	SpellInfo(paralysis cd=15 duration=30 energy=20)
 	SpellAddTargetDebuff(paralysis paraylsis=1)
@@ -117,6 +133,9 @@ Define(purifying_brew 119582)
 	SpellAddDebuff(purifying_brew heavy_stagger=0 light_stagger=0 moderate_stagger=0)
 Define(retreat 124968)
 	SpellInfo(retreat duration=10)
+Define(ring_of_peace 116844)
+	SpellInfo(ring_of_peace cd=90 duration=8)
+Define(ring_of_peace_talent 10)
 Define(rising_sun_kick 107428)
 	SpellInfo(rising_sun_kick cd=8 chi=2)
 	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_aura=1)
@@ -160,6 +179,10 @@ Define(tigereye_brew 125195)
 Define(tigereye_brew_use 116740)
 	SpellInfo(tigereye_brew_use cd=1 duration=15)
 	SpellAddBuff(tigereye_brew_use tigereye_brew=0 tigereye_brew_use=1)
+Define(tigers_lust 116841)
+	SpellInfo(tigers_lust cd=30 chi=1 duration=6)
+	SpellAddBuff(tigers_lust tigers_lust=1)
+Define(tigers_lust_talent 2)
 Define(touch_of_death 115080)
 	SpellInfo(touch_of_death cd=90 chi=3)
 Define(touch_of_karma 122470)
@@ -169,6 +192,7 @@ Define(weakened_blows 115798)
 	SpellInfo(weakened_blows duration=30)
 Define(zen_sphere 124081)
 	SpellInfo(zen_sphere chi=2 duration=16 tick=2)
+#	SpellInfo(zen_sphere cd=10 duration=16 tick=2)
 Define(zen_sphere_talent 5)
 
 # Items
@@ -274,8 +298,8 @@ AddFunction Tier5TalentActions
 ###
 ### Brewmaster
 ###
-# Single-target and AoE rotations from Alaron's 5.0 Brewmaster PvE Guide:
-#	http://worldofmonkcraft.com/brewmaster-mists-of-pandaria-guide/
+# Rotations from Elitist Jerks, "Like Water - The Brewmaster's Resource [1-6-13]"
+#	http://elitistjerks.com/f99/t131791-like_water_brewmasters_resource_1_6_13_a/
 
 AddFunction BrewmasterOOCActions
 {
@@ -293,22 +317,17 @@ AddFunction BrewmasterBuffActions
 	unless BuffPresent(str_agi_int any=1) Spell(legacy_of_the_emperor)
 }
 
-AddFunction BrewmasterGenerateChiActions
-{
-	if NumberToMaxChi() >=2 Spell(keg_smash)
-}
-
 AddFunction BrewmasterMaintenanceActions
 {
 	# Use Tiger Palm to maintain buffs only if costs no Chi.
 	if SpellData(tiger_palm chi) ==0
 	{
-		if BuffExpires(power_guard 3)
+		if BuffExpires(power_guard)
 		{
-			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 3) and SpellCooldown(guard_glyphed) <3 Spell(tiger_palm)
-			if Glyph(glyph_of_guard no) and BuffExpires(guard 3) and SpellCooldown(guard) <3 Spell(tiger_palm)
+			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 2) and SpellCooldown(guard_glyphed) <2 Spell(tiger_palm)
+			if Glyph(glyph_of_guard no) and BuffExpires(guard 2) and SpellCooldown(guard) <2 Spell(tiger_palm)
 		}
-		if BuffExpires(tiger_power 3) Spell(tiger_palm)
+		if BuffExpires(tiger_power) Spell(tiger_palm)
 	}
 }
 
@@ -350,7 +369,12 @@ AddIcon mastery=1 help=cd size=small
 # Defensive abilities
 AddIcon mastery=1 help=cd
 {
-	if {StaggerDamageRemaining() / MaxHealth() >0.30} or {StaggerTickDamage() / Health() >0.5} Spell(purifying_brew)
+	# Cast Purifying Brew only if Shuffle uptime won't suffer.
+	if BuffPresent(shuffle 6) or Chi() >=2
+	{
+		if StaggerDamageRemaining() / MaxHealth() >0.30 Spell(purifying_brew)
+		if StaggerTickDamage() / Health() >0.5 Spell(purifying_brew)
+	}
 	if NumberToMaxChi() >=1 and HealthPercent() <50 Spell(expel_harm)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
 	if BuffPresent(power_guard)
@@ -364,19 +388,36 @@ AddIcon mastery=1 help=main
 {
 	BrewmasterOOCActions()
 	BrewmasterBuffActions()
-	if BuffExpires(shuffle)
+	Spell(keg_smash)
+	if BuffExpires(shuffle 2)
 	{
-		# Try to keep Shuffle uptime at 80-90%.
 		Spell(blackout_kick)
 	}
-	if NumberToMaxChi() ==0 or {NumberToMaxChi() <2	and SpellCooldown(keg_smash) <1.5}
-	{
-		# Chi is capped or will cap with Keg Smash and KS coming off CD.
-		Tier2TalentActions()
-	}
-	BrewmasterGenerateChiActions()
-	if TimeToMaxEnergy() <1.2 Jab()
 	BrewmasterMaintenanceActions()
+	if NumberToMaxChi() ==0
+	{
+		if BuffPresent(shuffle 6)
+		{
+			# Shuffle won't fall off.
+			Tier2TalentActions()
+		}
+		Spell(blackout_kick)
+	}
+	if TimeToMaxEnergy() <1.2
+	{
+		# Energy is about to cap.
+		Jab()
+	}
+	if NumberToMaxChi() <2 and SpellCooldown(keg_smash) <1.5
+	{
+		# Chi will cap with Keg Smash and KS coming off CD.
+		if BuffPresent(shuffle 6)
+		{
+			# Shuffle won't fall off.
+			Tier2TalentActions()
+		}
+		Spell(blackout_kick)
+	}
 	BrewmasterFillerActions()
 }
 
@@ -384,27 +425,46 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 {
 	BrewmasterOOCActions()
 	BrewmasterBuffActions()
-	if BuffExpires(shuffle)
+	Spell(keg_smash)
+	if BuffExpires(shuffle 2)
 	{
-		# Try to keep Shuffle uptime at 80-90%.
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		Spell(blackout_kick)
 	}
-	if NumberToMaxChi() ==0 or {NumberToMaxChi() <2 and SpellCooldown(keg_smash) <1.5}
-	{
-		# Chi is capped or will cap with Keg Smash and KS coming off CD.
-		Spell(breath_of_fire)
-	}
-	BrewmasterGenerateChiActions()
-	if TimeToMaxEnergy() <1.2 Spell(spinning_crane_kick)
 	BrewmasterMaintenanceActions()
+	if NumberToMaxChi() ==0
+	{
+		if BuffPresent(shuffle 6)
+		{
+			# Shuffle won't fall off.
+			Spell(breath_of_fire)
+		}
+		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+		Spell(blackout_kick)
+	}
+	if TimeToMaxEnergy() <1.2
+	{
+		# Energy is about to cap.
+		Spell(spinning_crane_kick)
+	}
+	if NumberToMaxChi() <2 and SpellCooldown(keg_smash) <1.5
+	{
+		# Chi will cap with Keg Smash and KS coming off CD.
+		if BuffPresent(shuffle 6)
+		{
+			# Shuffle won't fall off.
+			Spell(breath_of_fire)
+		}
+		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+		Spell(blackout_kick)
+	}
 	BrewmasterFillerActions()
 }
 
 AddIcon mastery=1 help=cd
 {
 	if TargetIsInterruptible() Interrupt()
-	if TargetHealth() >0 and BuffPresent(death_note) Spell(touch_of_death)
+	if TargetHealth() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
