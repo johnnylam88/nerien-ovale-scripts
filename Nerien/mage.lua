@@ -164,6 +164,9 @@ Define(berserking 26297)
 Define(blood_fury 20572)
 	SpellInfo(blood_fury cd=120 duration=15)
 	SpellAddBuff(blood_fury blood_fury=1)
+Define(quaking_palm 107079)
+	SpellInfo(quaking_palm cd=120 duration=4)
+	SpellAddTargetDebuff(quaking_palm quaking_palm=1)
 Define(stoneform 20594)
 	SpellInfo(stoneform cd=120 duration=8)
 	SpellAddBuff(stoneform stoneform=1)
@@ -436,13 +439,26 @@ AddFunction FrostFullRotation
 	}
 	if TalentPoints(nether_tempest_talent)
 	{
-		#nether_tempest,if=!ticking
-		if TargetDebuffExpires(nether_tempest_debuff) Spell(nether_tempest)
+		#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
+		if TargetTimeToDie() >6
+		{
+			if TargetDebuffExpires(nether_tempest_debuff)
+				or {TargetDebuffRemains(nether_tempest_debuff) < TargetNextTick(nether_tempest_debuff)}
+			{
+				Spell(nether_tempest)
+			}
+		}
 	}
 	if TalentPoints(living_bomb_talent)
 	{
-		#living_bomb,if=!ticking
-		if TargetDebuffExpires(living_bomb) Spell(living_bomb)
+		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
+		if TargetTimeToDie() > TargetTickTime(living_bomb) * 3
+		{
+			if TargetDebuffExpires(living_bomb) or {TargetDebuffRemains(living_bomb) < TargetNextTick(living_bomb)}
+			{
+				Spell(living_bomb)
+			}	
+		}
 	}
 	#ice_lance,if=buff.fingers_of_frost.react
 	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
@@ -516,13 +532,26 @@ AddFunction FrostMainActions
 	#frostbolt,if=debuff.frostbolt.stack<3
 	if TalentPoints(nether_tempest_talent)
 	{
-		#nether_tempest,if=!ticking
-		if TargetDebuffExpires(nether_tempest_debuff) Spell(nether_tempest)
+		#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
+		if TargetTimeToDie() >6
+		{
+			if TargetDebuffExpires(nether_tempest_debuff)
+				or {TargetDebuffRemains(nether_tempest_debuff) < TargetNextTick(nether_tempest_debuff)}
+			{
+				Spell(nether_tempest)
+			}
+		}
 	}
 	if TalentPoints(living_bomb_talent)
 	{
-		#living_bomb,if=!ticking
-		if TargetDebuffExpires(living_bomb) Spell(living_bomb)
+		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
+		if TargetTimeToDie() > TargetTickTime(living_bomb) * 3
+		{
+			if TargetDebuffExpires(living_bomb) or {TargetDebuffRemains(living_bomb) < TargetNextTick(living_bomb)}
+			{
+				Spell(living_bomb)
+			}	
+		}
 	}
 	#ice_lance,if=buff.fingers_of_frost.react
 	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
