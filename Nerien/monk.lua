@@ -369,13 +369,17 @@ AddIcon mastery=1 help=cd size=small
 # Defensive abilities
 AddIcon mastery=1 help=cd
 {
-	# Cast Purifying Brew only if Shuffle uptime won't suffer.
-	if BuffPresent(shuffle 6) or Chi() >=2
+	# Cast Purifying Brew only if Heavy Stagger (urgent!) or if Shuffle uptime won't suffer.
+	if DebuffPresent(heavy_stagger) or BuffPresent(shuffle 6) or Chi() >=2
 	{
-		if StaggerDamageRemaining() / MaxHealth() >0.30 Spell(purifying_brew)
+		# Purify Stagger if it ticks for more than half of my remaining health (urgent!).
 		if StaggerTickDamage() / Health() >0.5 Spell(purifying_brew)
+		# Purify Stagger > 40% of my health.
+		if StaggerDamageRemaining() / MaxHealth() >0.40 Spell(purifying_brew)
+		# Purify Medium Stagger if below 70% health.
+		if DebuffPresent(moderate_stagger) and HealthPercent() <70 Spell(purifying_brew)
 	}
-	if NumberToMaxChi() >=1 and HealthPercent() <50 Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
 	if BuffPresent(power_guard)
 	{
@@ -555,7 +559,7 @@ AddFunction WindwalkerFullRotation
 	#jab,if=talent.power_strikes.enabled&((chi<=1&!cooldown.power_strikes.remains)|(chi<=2&cooldown.power_strikes.remains))
 	if TalentPoints(power_strikes_talent)
 	{
-		if {Chi() <=1 and BuffExpires(power_strikes_buff)} or {Chi() <=2 and BuffPresent(power_strikes_buff)} Jab()
+		if {Chi() <=1 and BuffExpires(power_strikes)} or {Chi() <=2 and BuffPresent(power_strikes)} Jab()
 	}
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
@@ -601,7 +605,7 @@ AddFunction WindwalkerMainActions
 	#jab,if=talent.power_strikes.enabled&((chi<=1&!cooldown.power_strikes.remains)|(chi<=2&cooldown.power_strikes.remains))
 	if TalentPoints(power_strikes_talent)
 	{
-		if {Chi() <=1 and BuffExpires(power_strikes_buff)} or {Chi() <=2 and BuffPresent(power_strikes_buff)} Jab()
+		if {Chi() <=1 and BuffExpires(power_strikes)} or {Chi() <=2 and BuffPresent(power_strikes)} Jab()
 	}
 	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
