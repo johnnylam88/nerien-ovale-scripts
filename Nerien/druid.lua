@@ -46,12 +46,16 @@ Define(entangling_roots 339)
 Define(faerie_fire 770)
 	SpellInfo(faerie_fire cd=6 duration=300)
 	SpellAddTargetDebuff(faerie_fire faerie_fire=1 weakened_armor=1)
+Define(faerie_swarm 102355)
+	SpellInfo(faerie_swarm cd=6 duration=300)
+	SpellAddTargetDebuff(faerie_swarm faerie_swarm=1 weakened_armor=1)
 Define(faerie_swarm_talent 7)
 Define(feline_swiftness_talent 1)
 Define(ferocious_bite 22568)
 	SpellInfo(ferocious_bite combo=-5 energy=25)
 Define(force_of_nature_talent 12)
 Define(frenzied_regeneration 22842)
+	SpellInfo(frenzied_regeneration cd=1.5)
 Define(frenzied_regeneration_buff 124769)
 Define(glyph_of_frenzied_regeneration 54810)
 Define(glyph_of_savagery 127540)
@@ -227,6 +231,12 @@ AddFunction UseItemActions
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
+AddFunction FaerieFire
+{
+	if TalentPoints(faerie_swarm_talent) Spell(faerie_swarm)
+	if not TalentPoints(faerie_swarm_talent) Spell(faerie_fire)
+}
+
 ###
 ### Guardian
 ###
@@ -265,10 +275,14 @@ AddIcon mastery=3
 	if TargetIsAggroed(no)
 	{
 		# Always bank enough rage so that if we need to switch to defense, we can.
-		if CheckBoxOn(opt_maul) and Rage(more 90) Spell(maul)
+		if Rage() >90 Spell(maul)
 	}
-	if BuffExpires(savage_defense_buff 3) Spell(savage_defense)
-	if Glyph(glyph_of_frenzied_regeneration) or Rage(more 60) Spell(frenzied_regeneration)
+	if BuffExpires(tooth_and_claw) or {BuffPresent(tooth_and_claw) and BuffExpires(savage_defense_buff 2)}
+	{
+		Spell(savage_defense usable=1)
+		if Glyph(glyph_of_frenzied_regeneration) or Rage() >60 Spell(frenzied_regeneration)
+	}
+	if Rage() >90 and BuffPresent(tooth_and_claw) Spell(maul)
 }
 
 # Main rotation (rage-generating abilities): Mangle > Lacerate > Thrash Maintenance > FFF
@@ -283,12 +297,12 @@ AddIcon mastery=3 help=main
 	if TargetDebuffExpires(weakened_blows 3 any=1) Spell(thrash_bear)
 	if TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3
 	{
-		Spell(faerie_fire)
+		FaerieFire()
 	}
 
 	Spell(lacerate)
-	if TargetDebuffExpires(thrash_bear 6) Spell(thrash_bear)
-	Spell(faerie_fire)
+	if TargetDebuffPresent(thrash_bear 6) FaerieFire()
+	Spell(thrash_bear)
 }
 
 # AoE rotation: Mangle > Thrash > Swipe
