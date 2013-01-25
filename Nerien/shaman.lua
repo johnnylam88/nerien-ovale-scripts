@@ -49,6 +49,7 @@ Define(cleanse_spirit 51886)
 	SpellInfo(cleanse_spirit cd=8)
 Define(clearcasting 16246)
 	SpellInfo(clearcasting duration=15)
+Define(conductivity_talent 15)
 Define(earth_elemental_totem 2062)
 	SpellInfo(earth_elemental_totem cd=300 duration=60)
 Define(earth_shield 974)
@@ -472,9 +473,208 @@ AddFunction ElementalFullRotation
 	Spell(lightning_bolt)
 }
 
+AddFunction ElementalBuffActions
+{
+	if InCombat(no)
+	{
+		#flask,type=warm_sun
+		#food,type=mogu_fish_stew
+		#flametongue_weapon,weapon=main
+		if WeaponEnchantExpires(mainhand) Spell(flametongue_weapon)
+		#lightning_shield,if=!buff.lightning_shield.up
+		if BuffExpires(lightning_shield) Spell(lightning_shield)
+		#snapshot_stats
+	}
+}
+
+AddFunction ElementalMainActions
+{
+	#unleash_elements,if=talent.unleashed_fury.enabled&!buff.ascendance.up
+	if TalentPoints(unleashed_fury_talent) and BuffExpires(ascendance_fire) Spell(unleash_elements)
+	#lava_burst,if=dot.flame_shock.remains>cast_time&(buff.ascendance.up|cooldown_react)
+	if target.DebuffRemains(flame_shock) > CastTime(lava_burst) and {BuffPresent(ascendance_fire) or BuffPresent(lava_surge)} Spell(lava_burst)
+	#flame_shock,if=ticks_remain<3&(ticks_remain<2|buff.bloodlust.up|buff.elemental_mastery.up)
+	if target.TicksRemain(flame_shock) <3 and {target.TicksRemain(flame_shock) <2 or BuffPresent(burst_haste any=1) or BuffPresent(elemental_mastery)} Spell(flame_shock)
+	#elemental_blast,if=talent.elemental_blast.enabled
+	if TalentPoints(elemental_blast_talent) Spell(elemental_blast)
+	#earth_shock,if=buff.lightning_shield.react=buff.lightning_shield.max_stack
+	if BuffStacks(lightning_shield) >6 Spell(earth_shock)
+	#earth_shock,if=buff.lightning_shield.react>3&dot.flame_shock.remains>cooldown&dot.flame_shock.remains<cooldown+action.flame_shock.tick_time
+	if BuffStacks(lightning_shield) >3
+		and target.DebuffRemains(flame_shock) > SpellCooldown(earth_shock)
+		and target.DebuffRemains(flame_shock) < SpellCooldown(earth_shock) + target.NextTick(flame_shock)
+	{
+		Spell(earth_shock)
+	}
+	#searing_totem,if=cooldown.fire_elemental_totem.remains>15&!totem.fire.active
+	if SpellCooldown(fire_elemental_totem) >15 and TotemExpires(fire) Spell(searing_totem)
+	if Speed() >0
+	{
+		if Glyph(glyph_of_unleashed_lightning no)
+		{
+			#unleash_elements,moving=1
+			Spell(unleash_elements)
+		}
+	}
+}
+
+AddFunction ElementalFillerActions
+{
+	#lightning_bolt
+	Spell(lightning_bolt)
+}
+
+AddFunction ElementalAoEActions
+{
+	#/run_action_list,name=ae,if=active_enemies>1
+	#ascendance
+	Spell(ascendance)
+	#lava_beam
+	Spell(lava_beam)
+	if TotemExpires(fire)
+	{
+		#magma_totem,if=active_enemies>2&!totem.fire.active
+		if Enemies() >2 Spell(magma_totem)
+		#searing_totem,if=active_enemies<=2&!totem.fire.active
+		if Enemies() <=2 Spell(searing_totem)
+	}
+	#lava_burst,if=active_enemies<3&dot.flame_shock.remains>cast_time&cooldown_react
+	if Enemies() <3 and target.DebuffRemains(flame_shock) > CastTime(lava_burst) Spell(lava_burst)
+	#flame_shock,cycle_targets=1,if=!ticking&active_enemies<3
+	if target.DebuffExpires(flame_shock) Spell(flame_shock)
+	#earthquake,if=active_enemies>4
+	if Enemies() >4 Spell(earthquake)
+	#thunderstorm,if=mana.pct_nonproc<80
+	if ManaPercent() <80 Spell(thunderstorm)
+	#chain_lightning,if=mana.pct_nonproc>10
+	if ManaPercent() >10 Spell(chain_lightning)
+	#lightning_bolt
+	Spell(lightning_bolt)
+}
+
+AddFunction ElementalCooldownActions
+{
+	if InCombat(no)
+	{
+		#jade_serpent_potion
+		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+	}
+
+	#/wind_shear
+	if target.IsInterruptible() Interrupt()
+	#/stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
+	if BuffExpires(stormlash) and {BuffPresent(burst_haste) or TimeInCombat() >60} Spell(stormlash_totem)
+	#/jade_serpent_potion,if=time>60&(pet.primal_fire_elemental.active|pet.greater_fire_elemental.active|target.time_to_die<=60)
+	if TimeInCombat() >60
+	{
+		if TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60 Item(jade_serpent_potion)
+	}
+
+	#use_item,name=firebirds_gloves,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
+	if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() UseItemActions()
+	#berserking,if=!buff.bloodlust.up&!buff.elemental_mastery.up&buff.ascendance.cooldown_remains=0&(dot.flame_shock.remains>buff.ascendance.duration|level<87)
+	if not ElementalHasteBuffPresent() and Spell(ascendance) and {target.DebuffRemains(flame_shock) > SpellData(ascendance_fire duration) or Level() <87} Spell(berserking)
+	#blood_fury,if=buff.bloodlust.up|buff.ascendance.up|((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)
+	if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() UseRacialActions()
+	#elemental_mastery,if=talent.elemental_mastery.enabled&time>15&((!buff.bloodlust.up&time<120)|(!buff.berserking.up&!buff.bloodlust.up&buff.ascendance.up)|(time>=200&(cooldown.ascendance.remains>30|level<87)))
+	if TalentPoints(elemental_mastery_talent) and TimeInCombat() >15
+		and {{BuffExpires(burst_haste any=1) and TimeInCombat() <120}
+			or {BuffExpires(berserking) and BuffExpires(burst_haste any=1) and BuffPresent(ascendance_fire)}
+			or {TimeInCombat() >200 and {SpellCooldown(ascendance_fire) >30 or Level() <87}}}
+	{
+		Spell(elemental_mastery)
+	}
+	#fire_elemental_totem,if=!active
+	if TotemExpires(fire totem=fire_elemental_totem) Spell(fire_elemental_totem)
+	#ascendance,if=dot.flame_shock.remains>buff.ascendance.duration&(target.time_to_die<20|buff.bloodlust.up|time>=180)&cooldown.lava_burst.remains>0
+	if {target.DebuffRemains(flame_shock) > SpellData(ascendance_fire duration)}
+		and {target.TimeToDie() <20 or ElementalHasteBuffPresent() or TimeInCombat() >180}
+		and SpellCooldown(lava_burst) >0
+	{
+		Spell(ascendance)
+	}
+	#ancestral_swiftness,if=talent.ancestral_swiftness.enabled&!buff.ascendance.up
+	if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
+	#earth_elemental_totem,if=!active&cooldown.fire_elemental_totem.remains>=50
+	if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=50 Spell(earth_elemental_totem)
+	if Speed() >0
+	{
+		if Glyph(glyph_of_unleashed_lightning)
+		{
+			#spiritwalkers_grace,moving=1,if=((talent.elemental_blast.enabled&cooldown.elemental_blast.remains=0)|(cooldown.lava_burst.remains=0&!buff.lava_surge.react))|(buff.raid_movement.duration>=action.unleash_elements.gcd+action.earth_shock.gcd)
+			#if {TalentPoints(elemental_blast_talent) and Spell(elemental_blast)} or {Spell(lava_burst) and BuffExpires(lava_surge)} Spell(spiritwalkers_grace)
+		}
+		if Glyph(glyph_of_unleashed_lightning no)
+		{
+			#spiritwalkers_grace,moving=1
+			Spell(spiritwalkers_grace)
+		}
+	}
+}
+
+# Survival cooldowns.
+AddIcon mastery=1 help=cd size=small
+{
+	if TalentPoints(stone_bulwark_totem_talent) Spell(stone_bulwark_totem)
+	if TalentPoints(astral_shift_talent) Spell(astral_shift)
+	if TalentPoints(earthgrab_totem_talent) Spell(earthgrab_totem)
+	Spell(earthbind_totem)
+}
+
+# Utility.
+AddIcon mastery=1 help=buff size=small
+{
+	if IsFeared() Spell(tremor_totem)
+	#if IsStunned() Spell(windwalk_totem)
+	if TalentPoints(conductivity_talent) Spell(healing_rain)
+	if TotemExpires(water)
+	{
+		Spell(healing_stream_totem)
+		if TalentPoints(healing_tide_totem) Spell(healing_tide_totem)
+	}
+	if TalentPoints(ancestral_guidance_talent) Spell(ancestral_guidance)
+}
+
+# Main Rotation plus fillers.
+AddIcon mastery=1 help=cd
+{
+	ElementalBuffActions()
+	ElementalMainActions()
+	ElementalFillerActions()
+}
+
+# Main Rotation.
 AddIcon mastery=1 help=main
 {
-	ElementalFullRotation()
+	ElementalBuffActions()
+	ElementalMainActions()
+}
+
+# AoE.
+AddIcon mastery=1 help=aoe checkboxon=aoe
+{
+	ElementalBuffActions()
+	ElementalAoEActions()
+}
+
+# Cooldowns.
+AddIcon mastery=1 help=cd
+{
+	ElementalCooldownActions()
+}
+
+# Bloodlust.
+AddIcon mastery=1 help=cd size=small
+{
+	#/bloodlust,if=target.health.pct<25|time>5
+	if not ElementalHasteBuffPresent() and target.HealthPercent() <25 or TimeInCombat() >5 Bloodlust()
+}
+
+# Trinkets.
+AddIcon mastery=3 help=cd size=small
+{
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
 ###
@@ -533,13 +733,15 @@ AddFunction RestorationHealingStreamTotemRecall
 }
 
 # Survival cooldowns.
-AddIcon help=cd size=small
+AddIcon mastery=3 help=cd size=small
 {
-	Spell(stone_bulwark_totem)
-	Spell(astral_shift)
+	if TalentPoints(stone_bulwark_totem_talent) Spell(stone_bulwark_totem)
+	if TalentPoints(astral_shift_talent) Spell(astral_shift)
+	if TalentPoints(earthgrab_totem_talent) Spell(earthgrab_totem)
+	Spell(earthbind_totem)
 }
 
-# Totems.
+# Utility.
 AddIcon mastery=3 help=buff size=small
 {
 	if IsFeared() Spell(tremor_totem)
@@ -548,8 +750,9 @@ AddIcon mastery=3 help=buff size=small
 	{
 		if ManaPercent(less 80) Spell(mana_tide_totem)
 		Spell(healing_stream_totem)
-		Spell(healing_tide_totem)
+		if TalentPoints(healing_tide_totem) Spell(healing_tide_totem)
 	}
+	if TalentPoints(ancestral_guidance_talent) Spell(ancestral_guidance)
 	Spell(spirit_link_totem)
 }
 
