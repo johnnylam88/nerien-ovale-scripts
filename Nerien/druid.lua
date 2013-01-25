@@ -272,7 +272,7 @@ AddIcon mastery=3 help=cd size=small
 # Main rotation (rage-consuming abilities).
 AddIcon mastery=3
 {
-	if TargetIsAggroed(no)
+	if CheckBoxOn(opt_maul) and TargetIsAggroed(no)
 	{
 		# Always bank enough rage so that if we need to switch to defense, we can.
 		if Rage() >90 Spell(maul)
