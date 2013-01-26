@@ -153,7 +153,7 @@ Define(spear_hand_strike 116705)
 	SpellInfo(spear_hand_strike cd=10 energy=10)
 	SpellInfo(spear_hand_strike energy=0 if_spell=brewmaster_training if_stance=1)
 Define(spinning_crane_kick 101546)
-	SpellInfo(spinning_crane_kick duration=2.25 energy=40 tick=0.75)
+	SpellInfo(spinning_crane_kick energy=40)
 	SpellAddBuff(spinning_crane_kick spinning_crane_kick=1)
 Define(spinning_fire_blossom 115073)
 	SpellInfo(spinning_fire_blossom chi=1)
@@ -298,8 +298,8 @@ AddFunction Tier5TalentActions
 ###
 ### Brewmaster
 ###
-# Rotations from Elitist Jerks, "Like Water - The Brewmaster's Resource [1-6-13]"
-#	http://elitistjerks.com/f99/t131791-like_water_brewmasters_resource_1_6_13_a/
+# Rotations from Elitist Jerks, "Like Water - The Brewmaster's Resource [1-26-13]"
+#	http://elitistjerks.com/f99/t131791-like_water_brewmasters_resource_1_26_13_a/
 
 AddFunction BrewmasterOOCActions
 {
@@ -324,8 +324,8 @@ AddFunction BrewmasterMaintenanceActions
 	{
 		if BuffExpires(power_guard)
 		{
-			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 2) and SpellCooldown(guard_glyphed) <2 Spell(tiger_palm)
-			if Glyph(glyph_of_guard no) and BuffExpires(guard 2) and SpellCooldown(guard) <2 Spell(tiger_palm)
+			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 2) and SpellCooldown(guard_glyphed) < GCD() Spell(tiger_palm)
+			if Glyph(glyph_of_guard no) and BuffExpires(guard 2) and SpellCooldown(guard) < GCD() Spell(tiger_palm)
 		}
 		if BuffExpires(tiger_power) Spell(tiger_palm)
 	}
@@ -392,7 +392,8 @@ AddIcon mastery=1 help=main
 {
 	BrewmasterOOCActions()
 	BrewmasterBuffActions()
-	Spell(keg_smash)
+
+	if NumberToMaxChi() >=2 Spell(keg_smash)
 	if BuffExpires(shuffle 2)
 	{
 		Spell(blackout_kick)
@@ -400,26 +401,18 @@ AddIcon mastery=1 help=main
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
-		if BuffPresent(shuffle 6)
-		{
-			# Shuffle won't fall off.
-			Tier2TalentActions()
-		}
+		if BuffPresent(shuffle 6) Tier2TalentActions()
 		Spell(blackout_kick)
 	}
-	if TimeToMaxEnergy() <1.2
+	if {Energy() >= SpellData(jab energy)} and {SpellCooldown(keg_smash) > GCD()}
+		and {Energy() - SpellData(jab energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
 	{
-		# Energy is about to cap.
+		# Only Jab if we'll have enough energy to Keg Smash when it comes off cooldown.
 		Jab()
 	}
-	if NumberToMaxChi() <2 and SpellCooldown(keg_smash) <1.5
+	if NumberToMaxChi() <2
 	{
-		# Chi will cap with Keg Smash and KS coming off CD.
-		if BuffPresent(shuffle 6)
-		{
-			# Shuffle won't fall off.
-			Tier2TalentActions()
-		}
+		if BuffPresent(shuffle 6) Tier2TalentActions()
 		Spell(blackout_kick)
 	}
 	BrewmasterFillerActions()
@@ -429,7 +422,8 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 {
 	BrewmasterOOCActions()
 	BrewmasterBuffActions()
-	Spell(keg_smash)
+
+	if NumberToMaxChi() >=2 Spell(keg_smash)
 	if BuffExpires(shuffle 2)
 	{
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
@@ -438,27 +432,18 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
-		if BuffPresent(shuffle 6)
-		{
-			# Shuffle won't fall off.
-			Spell(breath_of_fire)
-		}
+		if BuffPresent(shuffle 6) Spell(breath_of_fire)
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		Spell(blackout_kick)
 	}
-	if TimeToMaxEnergy() <1.2
+	if {Energy() >= SpellData(spinning_crane_kick energy)} and SpellCooldown(keg_smash) >2
 	{
-		# Energy is about to cap.
+		# SCK if Keg Smash is at least 2 seconds from coming off cooldown.
 		Spell(spinning_crane_kick)
 	}
-	if NumberToMaxChi() <2 and SpellCooldown(keg_smash) <1.5
+	if NumberToMaxChi() <2
 	{
-		# Chi will cap with Keg Smash and KS coming off CD.
-		if BuffPresent(shuffle 6)
-		{
-			# Shuffle won't fall off.
-			Spell(breath_of_fire)
-		}
+		if BuffPresent(shuffle 6) Spell(breath_of_fire)
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		Spell(blackout_kick)
 	}
