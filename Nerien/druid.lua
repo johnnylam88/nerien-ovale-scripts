@@ -1,10 +1,14 @@
 if NerienOvaleScripts.class == "DRUID" then
 
 NerienOvaleScripts.script.DRUID.Nerien = {
-	desc = "[5.1] Nerien: Guardian",
+	desc = "[5.1] Nerien: Feral, Guardian",
 	code =
 [[
 # Nerien's druid script based on SimulationCraft
+#
+# Feral:
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#UZ!.0.0.1
+#	glyphs=savagery
 #
 # Guardian:
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#Ub!...1..
@@ -46,6 +50,8 @@ Define(cenarion_ward 102351)
 Define(cenarion_ward_hot 102352)
 	SpellInfo(cenarion_ward_hot duration=6 tick=2)
 Define(cenarion_ward_talent 6)
+Define(chosen_of_elune 102560)
+	SpellInfo(chosen_of_elune cd=180 duration=30)
 Define(clearcasting 16870)
 Define(cyclone 33786)
 	SpellAddBuff(cyclone natures_swiftness=0 predatory_swiftness=0)
@@ -114,14 +120,6 @@ Define(hurricane 16914)
 Define(incarnation 106731)
 	SpellInfo(incarnation cd=180)
 Define(incarnation_talent 11)
-Define(incarnation_chosen_of_elune 102560)
-	SpellInfo(incarnation_chosen_of_elune cd=180 duration=30)
-Define(incarnation_king_of_the_jungle 102543)
-	SpellInfo(incarnation_king_of_the_jungle cd=180 duration=30)
-Define(incarnation_son_of_ursoc 102558)
-	SpellInfo(incarnation_son_of_ursoc cd=180 duration=30)
-Define(incarnation_tree_of_life 33891)
-	SpellInfo(incarnation_tree_of_life cd=180 duration=30)
 Define(infected_wounds 58180)
     SpellInfo(infected_wounds duration=12)
 Define(innervate 29166)
@@ -129,6 +127,8 @@ Define(innervate 29166)
 Define(ironbark 102342)
 	SpellInfo(ironbark cd=120 duration=12)
 	SpellAddTargetBuff(ironbark ironbark=1)
+Define(king_of_the_jungle 102543)
+	SpellInfo(king_of_the_jungle cd=180 duration=30)
 Define(lacerate 33745)
 	SpellInfo(lacerate cd=3 duration=15 tick=3)
 	SpellAddTargetDebuff(lacerate lacerate=1)
@@ -186,6 +186,7 @@ Define(natures_vigil 124974)
 Define(natures_vigil_talent 18)
 Define(nourish 50464)
 	SpellAddBuff(nourish natures_swiftness=0)
+Define(omen_of_clarity 135700)
 Define(owlkin_frenzy 48391)
 	SpellInfo(owlkin_frenzy duration=10)
 Define(pounce 9005)
@@ -237,9 +238,12 @@ Define(savage_defense 62606)
 Define(savage_defense_buff 132402)
 	SpellInfo(savage_defense_buff duration=6)
 Define(savage_roar 52610)
-	SpellInfo(savage_roar combo=-5 energy=25)
-	SpellAddBuff(savage_roar savage_roar_buff=1)
-Define(savage_roar_buff 127538)
+	SpellInfo(savage_roar combo=0 duration=18 energy=25)
+	SpellAddBuff(savage_roar savage_roar=1)
+Define(savage_roar_glyphed 127538)
+	SpellInfo(savage_roar_glyphed combo=-5 duration=18 energy=25)
+	SpellAddBuff(savage_roar_glyphed savage_roar_glyphed=1)
+SpellList(savage_roar_buff savage_roar savage_roar_glyphed)
 Define(shooting_stars 93400)
 	SpellInfo(shooting_stars duration=12)
 Define(shred 5221)
@@ -253,6 +257,8 @@ Define(skull_bash_cat 80965)
 	SpellInfo(skull_bash_cat addcd=10 glyph=glyph_of_skull_bash)
 Define(solar_beam 78675)
 	SpellInfo(solar_beam cd=60)
+Define(son_of_ursoc 102558)
+	SpellInfo(son_of_ursoc cd=180 duration=30)
 Define(soothe 2908)
 Define(soul_of_the_forest 114108)
 	SpellInfo(soul_of_the_forest duration=6)
@@ -306,6 +312,8 @@ Define(treants_guardian 102706)
 	SpellInfo(treants_guardian cd=60)
 Define(treants_restoration 102693)
 	SpellInfo(treants_restoration cd=60)
+Define(tree_of_life 33891)
+	SpellInfo(tree_of_life cd=180 duration=30)
 Define(typhoon 132469)
 	SpellInfo(typhoon cd=20)
 Define(typhoon_talent 9)
@@ -365,15 +373,336 @@ AddListItem(trinketcd1 120s "Trinket 1 CD - 2 min")
 
 AddFunction UseItemActions
 {
-	Item(HandsSlot usable=1)
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
+
+AddFunction UseItemHandActions
+{
+	Item(HandsSlot usable=1)
+}
+
+###
+### Druid (all specializations)
+###
+
+# Show the full rotation in an extra icon.
+AddCheckBox(full_rotation "Full rotation")
 
 AddFunction FaerieFire
 {
 	if TalentPoints(faerie_swarm_talent) Spell(faerie_swarm)
 	if not TalentPoints(faerie_swarm_talent) Spell(faerie_fire)
+}
+
+###
+### Feral
+###
+
+AddFunction FeralUsePotion
+{
+	#virmens_bite_potion
+	if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion)
+}
+
+AddFunction FeralSavageRoar
+{
+    if Glyph(glyph_of_savagery) Spell(savage_roar_glyphed)
+    if Glyph(glyph_of_savagery no) and ComboPoints() >0 Spell(savage_roar)
+}
+
+AddFunction FeralPreCombatActions
+{
+	if InCombat(no)
+	{
+		#flask,type=spring_blossoms
+		#food,type=sea_mist_rice_noodles
+		#mark_of_the_wild,if=!aura.str_agi_int.up
+		if BuffExpires(str_agi_int 400 any=1) Spell(mark_of_the_wild)
+		#healing_touch,if=!buff.dream_of_cenarius_damage.up&talent.dream_of_cenarius.enabled
+		if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
+		#cat_form
+		if BuffExpires(cat_form) Spell(cat_form)
+		#savage_roar
+		if Glyph(glyph_of_savagery no) or BuffRemains(savage_roar_buff) <8 FeralSavageRoar()
+		#snapshot_stats
+		#virmens_bite_potion
+		FeralUsePotion()
+	}
+}
+
+AddFunction FeralBuffActions
+{
+	if BuffExpires(str_agi_int any=1) Spell(mark_of_the_wild)
+	if BuffExpires(cat_form) Spell(cat_form)
+}
+
+AddFunction FeralFillerActions
+{
+	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&combo_points>=5
+	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and ComboPoints() >=5 Spell(thrash_cat)
+	if TalentPoints(incarnation_talent)
+	{
+		#ravage
+		if BuffPresent(king_of_the_jungle) Spell(ravagebang usable=1)
+		Spell(ravage usable=1)
+	}
+	if not TalentPoints(incarnation_talent) or BuffExpires(king_of_the_jungle)
+	{
+		#shred,if=buff.omen_of_clarity.react&buff.king_of_the_jungle.down
+		if BuffPresent(omen_of_clarity) Spell(shred)
+		#shred,if=buff.berserk.up&buff.king_of_the_jungle.down
+		if BuffPresent(berserk_cat) Spell(shred)
+		#mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
+		if {ComboPoints() <5 and target.DebuffRemains(rip) <3} or {ComboPoints() ==0 and BuffRemains(savage_roar) <2} Spell(mangle_cat)
+		#shred,if=buff.king_of_the_jungle.down
+		Spell(shred)
+	}
+}
+
+AddFunction FeralDreamOfCenariusFillerActions
+{
+	#run_action_list,name=filler,if=buff.omen_of_clarity.react
+	if BuffPresent(omen_of_clarity) FeralFillerActions()
+	#run_action_list,name=filler,if=(combo_points<5&dot.rip.remains<3)|(combo_points=0&buff.savage_roar.remains<2)
+	if {ComboPoints() <5 and target.DebuffRemains(rip) <3} or {ComboPoints() ==0 and BuffRemains(savage_roar_buff) <2} FeralFillerActions()
+	#run_action_list,name=filler,if=buff.predatory_swiftness.remains>1
+	if BuffRemains(predatory_swiftness) >1 FeralFillerActions()
+	#run_action_list,name=filler,if=target.time_to_die<=8.5
+	if target.TimeToDie() <=8.5 FeralFillerActions()
+	#run_action_list,name=filler,if=buff.tigers_fury.up|buff.berserk.up
+	if BuffPresent(tigers_fury) or BuffPresent(berserk_cat) FeralFillerActions()
+	#run_action_list,name=filler,if=cooldown.tigers_fury.remains<=3
+	if SpellCooldown(tigers_fury) <=3 FeralFillerActions()
+	#run_action_list,name=filler,if=energy.time_to_max<=1
+	if TimeToMaxEnergy() <=1 FeralFillerActions()
+}
+
+AddFunction FeralExecuteRange
+{
+	# At this target health percent, Ferocious Bite will automatically refresh Rip on the target.
+	target.HealthPercent() <=25
+}
+
+AddFunction FeralDreamOfCenariusFullRotation
+{
+	#auto_attack
+	#skull_bash_cat
+	if target.IsInterruptible() FeralInterrupt()
+	#berserking
+	UseRacialActions()
+	#healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
+	if BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
+	#savage_roar,if=buff.savage_roar.down
+	if BuffExpires(savage_roar_buff) FeralSavageRoar()
+	#faerie_fire,if=debuff.weakened_armor.stack<3
+	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
+	if BuffPresent(predatory_swiftness) and ComboPoints() >=4 and BuffStacks(dream_of_cenarius_damage) <2 Spell(healing_touch)
+	#healing_touch,if=buff.natures_swiftness.up
+	if BuffPresent(natures_swiftness) Spell(healing_touch)
+	if TalentPoints(incarnation_talent)
+	{
+		#incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
+		if Energy() <=35 and BuffExpires(omen_of_clarity) and Spell(tigers_fury) and Spell(berserk_cat) Spell(king_of_the_jungle)
+	}
+	#use_item,name=eternal_blossom_grips,sync=tigers_fury
+	if Spell(tigers_fury) or BuffPresent(tigers_fury) UseItemHandActions()
+	#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
+	if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
+	#berserk,if=buff.tigers_fury.up|(target.time_to_die<15&cooldown.tigers_fury.remains>6)
+	if BuffPresent(tigers_fury) Spell(berserk_cat)
+	if target.TimeToDie() <15 and SpellCooldown(tigers_fury) >6 Spell(berserk_cat)
+	#ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
+	if FeralExecuteRange() and ComboPoints() >=1 and target.DebuffPresent(rip) and target.DebuffRemains(rip) <=3 Spell(ferocious_bite)
+	#thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
+	if target.TimeToDie() >=6 and BuffPresent(omen_of_clarity) and target.DebuffRemains(thrash_cat) <3 Spell(thrash_cat)
+	#ferocious_bite,if=(target.time_to_die<=4&combo_points>=5)|(target.time_to_die<=1&combo_points>=3)
+	if target.TimeToDie() <=4 and ComboPoints() >=5 Spell(ferocious_bite)
+	if target.TimeToDie() <=1 and ComboPoints() >=3 Spell(ferocious_bite)
+	if FeralExecuteRange()
+	{
+		#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&target.health.pct<25
+		if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 FeralSavageRoar()
+		#natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
+		if BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 Spell(natures_swiftness)
+		#virmens_bite_potion,if=(combo_points>=5&target.health.pct<=25&buff.dream_of_cenarius_damage.up)|target.time_to_die<=40
+		if ComboPoints() >=5 and BuffPresent(dream_of_cenarius_damage) FeralUsePotion()
+	}
+	if target.TimeToDie() <=40 FeralUsePotion()
+	#rip,line_cd=30,if=combo_points>=5&buff.virmens_bite_potion.up&buff.dream_of_cenarius_damage.up&target.health.pct<=25&target.time_to_die>30
+	# This action is modified so that we cast Rip only if it's not present or if it would overwrite with a much stronger Rip.
+	if FeralExecuteRange() and ComboPoints() >=5 and BuffPresent(dream_of_cenarius_damage) and target.TimeToDie() >30 Spell(rip)
+	#pool_resource,wait=0.25,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))
+	#ferocious_bite,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25
+	if FeralExecuteRange() and ComboPoints() >=5 and target.DebuffPresent(rip) wait
+	{
+		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(ferocious_bite)
+	}
+	#rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
+	if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(rip) <2 and BuffPresent(dream_of_cenarius_damage) Spell(rip)
+	if TalentPoints(natures_swiftness_talent)
+	{
+		#natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&dot.rip.remains<3&\
+		#	(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
+		if BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 and target.DebuffRemains(rip) <3
+			and {BuffPresent(berserk_cat) or target.DebuffRemains(rip) +1.9 <= SpellCooldown(tigers_fury)}
+		{
+			Spell(natures_swiftness)
+		}
+	}
+	#rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
+	if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(rip) <2
+	{
+		if BuffPresent(berserk_cat) Spell(rip)
+		if target.DebuffRemains(rip) +1.9 <= SpellCooldown(tigers_fury) Spell(rip)
+	}
+	#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
+	if BuffRemains(savage_roar) <=3 and ComboPoints() >0 and {BuffRemains(savage_roar) +2 > target.DebuffRemains(rip)} FeralSavageRoar()
+	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
+	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
+	#pool_resource,wait=0.25,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&dot.rip.remains>=6.5
+	#ferocious_bite,if=combo_points>=5&dot.rip.remains>6
+	if ComboPoints() >=5 and target.DebuffRemains(rip) >6 wait
+	{
+		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(ferocious_bite)
+	}
+	#rake,if=dot.rake.remains<9&buff.dream_of_cenarius_damage.up
+	if target.DebuffRemains(rake) <9 and BuffPresent(dream_of_cenarius_damage) Spell(rake)
+	#rake,if=dot.rake.remains<3
+	if target.DebuffRemains(rake) <3 Spell(rake)
+	#pool_resource,wait=0.25,for_next=1
+	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
+	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)} wait
+	{
+		Spell(thrash_cat)
+	}
+	FeralDreamOfCenariusFillerActions()
+	if TalentPoints(force_of_nature_talent)
+	{
+		#treants
+		Spell(treants_feral)
+	}
+}
+
+AddFunction FeralNonDreamOfCenariusFillerActions
+{
+	#run_action_list,name=filler,if=buff.omen_of_clarity.react
+	if BuffPresent(omen_of_clarity) FeralFillerActions()
+	#run_action_list,name=filler,if=(combo_points<5&dot.rip.remains<3)|(combo_points=0&buff.savage_roar.remains<2)
+	if {ComboPoints() <5 and target.DebuffRemains(rip) <3} or {ComboPoints() ==0 and BuffRemains(savage_roar_buff) <2} FeralFillerActions()
+	#run_action_list,name=filler,if=target.time_to_die<=8.5
+	if target.TimeToDie() <=8.5 FeralFillerActions()
+	#run_action_list,name=filler,if=buff.tigers_fury.up|buff.berserk.up
+	if BuffPresent(tigers_fury) or BuffPresent(berserk_cat) FeralFillerActions()
+	#run_action_list,name=filler,if=cooldown.tigers_fury.remains<=3
+	if SpellCooldown(tigers_fury) <=3 FeralFillerActions()
+	#run_action_list,name=filler,if=energy.time_to_max<=1
+	if TimeToMaxEnergy() <=1 FeralFillerActions()
+	if TalentPoints(soul_of_the_forest_talent)
+	{
+		#run_action_list,name=filler,if=combo_points<5
+		if ComboPoints() <5 FeralFillerActions()
+	}
+}
+
+AddFunction FeralNonDreamOfCenariusFullRotation
+{
+	#skull_bash_cat
+	if target.IsInterruptible() FeralInterrupt()
+	#init_use_racial_actions()
+	UseRacialActions()
+	#init_use_profession_actions()
+	#UseProfessionActions()
+	#savage_roar,if=buff.savage_roar.down
+	if BuffExpires(savage_roar_buff) FeralSavageRoar()
+	#faerie_fire,if=debuff.weakened_armor.stack<3
+	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if TalentPoints(incarnation_talent)
+	{
+		#incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
+		if Energy() <=35 and BuffExpires(omen_of_clarity) and Spell(tigers_fury) and Spell(berserk_cat) Spell(king_of_the_jungle)
+	}
+	#use_item,name=eternal_blossom_grips,sync=tigers_fury
+	if Spell(tigers_fury) or BuffPresent(tigers_fury) UseItemHandActions()
+	#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
+	if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
+	#berserk,if=buff.tigers_fury.up|(target.time_to_die<15&cooldown.tigers_fury.remains>6)
+	if BuffPresent(tigers_fury) Spell(berserk_cat)
+	if target.TimeToDie() <15 and SpellCooldown(tigers_fury) >6 Spell(berserk_cat)
+	if TalentPoints(natures_vigil_talent)
+	{
+		#natures_vigil,if=buff.berserk.up
+		if BuffPresent(berserk_cat) Spell(natures_vigil)
+	}
+	#ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
+	if FeralExecuteRange() and ComboPoints() >=1 and target.DebuffPresent(rip) and target.DebuffRemains(rip) <=3 Spell(ferocious_bite)
+	#thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
+	if target.TimeToDie() >=6 and BuffPresent(omen_of_clarity) and target.DebuffRemains(thrash_cat) <3 Spell(thrash_cat)
+	#ferocious_bite,if=(target.time_to_die<=4&combo_points>=5)|(target.time_to_die<=1&combo_points>=3)
+	if target.TimeToDie() <=4 and ComboPoints() >=5 Spell(ferocious_bite)
+	if target.TimeToDie() <=1 and ComboPoints() >=3 Spell(ferocious_bite)
+	if FeralExecuteRange()
+	{
+		#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&target.health.pct<25
+		if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 FeralSavageRoar()
+		#virmens_bite_potion,if=(buff.berserk.up&target.health.pct<=25)|target.time_to_die<=40
+		if BuffPresent(berserk_cat) FeralUsePotion()
+	}
+	if target.TimeToDie() <=40 FeralUsePotion()
+	#ferocious_bite,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25
+	if FeralExecuteRange() and ComboPoints() >=5 and target.DebuffPresent(rip) Spell(ferocious_bite)
+	#rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
+	if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(rip) <2
+	{
+		if BuffPresent(berserk_cat) Spell(rip)
+		if target.DebuffRemains(rip) +1.9 <= SpellCooldown(tigers_fury) Spell(rip)
+	}
+	#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
+	if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 and BuffRemains(savage_roar_buff) +2 > target.DebuffRemains(rip) FeralSavageRoar()
+	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
+	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
+	#ferocious_bite,if=combo_points>=5&(dot.rip.remains>10|(dot.rip.remains>6&buff.berserk.up))&dot.rip.ticking
+	if ComboPoints() >=5 and target.DebuffPresent(rip)
+	{
+		if target.DebuffRemains(rip) >10 Spell(ferocious_bite)
+		if target.DebuffRemains(rip) >6 and BuffPresent(berserk_cat) Spell(ferocious_bite)
+	}
+	#rake,if=dot.rake.remains<9&buff.tigers_fury.up
+	if target.DebuffRemains(rake) <9 and BuffPresent(tigers_fury) Spell(rake)
+	#rake,if=dot.rake.remains<3&(buff.berserk.up|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains|energy>60)
+	if target.DebuffRemains(rake) <3
+	{
+		if BuffPresent(berserk_cat) Spell(rake)
+		if SpellCooldown(tigers_fury) +0.8 >= target.DebuffRemains(rake) Spell(rake)
+		if Energy() >60 Spell(rake)
+	}
+	#pool_resource,wait=0.1,for_next=1
+	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
+	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)} wait
+	{
+		Spell(thrash_cat)
+	}
+	FeralNonDreamOfCenariusFillerActions()
+	if TalentPoints(force_of_nature_talent)
+	{
+		#treants
+		Spell(treants_feral)
+	}
+}
+
+AddIcon mastery=2 checkboxon=full_rotation
+{
+	FeralPreCombatActions()
+	FeralBuffActions()
+	if TalentPoints(dream_of_cenarius_talent)
+	{
+		FeralDreamOfCenariusFullRotation()
+	}
+	if not TalentPoints(dream_of_cenarius_talent)
+	{
+		FeralNonDreamOfCenariusFullRotation()
+	}
 }
 
 ###
@@ -459,15 +788,15 @@ AddIcon mastery=3 help=cd
 	if Rage(less 11) Spell(enrage)
 	if HealthPercent(less 25)
 	{
-		if BuffExpires(incarnation_son_of_ursoc) Spell(berserk_bear)
-		if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(incarnation_son_of_ursoc)
+		if BuffExpires(son_of_ursoc) Spell(berserk_bear)
+		if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(son_of_ursoc)
 	}
 	if not BuffPresent(burst_haste any=1)
 	{
 		Spell(berserking)
 	}
-	if BuffExpires(incarnation_son_of_ursoc) Spell(berserk_bear)
-	if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(incarnation_son_of_ursoc)
+	if BuffExpires(son_of_ursoc) Spell(berserk_bear)
+	if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(son_of_ursoc)
 }
 
 # Healing cooldowns.
