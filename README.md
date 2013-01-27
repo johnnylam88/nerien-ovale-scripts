@@ -27,8 +27,9 @@ There are user-contributed scripts for the following classes and specializations
 - Paladin: Protection, Retribution
 - Priest: Shadow
 - Rogue: Assassination, Combat, Subtlety
+- Shaman: Elemental, Restoration
 
-Contributors: Leafkiller, Nerien (jlam), Opisthobranch.
+Contributors: Leafkiller, Nerien (jlam), Opisthobranch, Tinderwolf
 
 ### How to Use ###
 
