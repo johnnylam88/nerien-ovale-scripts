@@ -436,7 +436,7 @@ AddFunction ElementalFullRotation
 	#unleash_elements,if=talent.unleashed_fury.enabled&!buff.ascendance.up
 	if TalentPoints(unleashed_fury_talent) and BuffExpires(ascendance_fire) Spell(unleash_elements)
 	#lava_burst,if=dot.flame_shock.remains>cast_time&(buff.ascendance.up|cooldown_react)
-	if target.DebuffRemains(flame_shock) > CastTime(lava_burst) and {BuffPresent(ascendance_fire) or BuffPresent(lava_surge)} Spell(lava_burst)
+	if target.DebuffRemains(flame_shock) > CastTime(lava_burst) and {BuffPresent(ascendance_fire) or Spell(lava_burst)} Spell(lava_burst)
 	#flame_shock,if=ticks_remain<3&(ticks_remain<2|buff.bloodlust.up|buff.elemental_mastery.up)
 	if target.TicksRemain(flame_shock) <3 and {target.TicksRemain(flame_shock) <2 or BuffPresent(burst_haste any=1) or BuffPresent(elemental_mastery)} Spell(flame_shock)
 	#elemental_blast,if=talent.elemental_blast.enabled
@@ -492,7 +492,7 @@ AddFunction ElementalMainActions
 	#unleash_elements,if=talent.unleashed_fury.enabled&!buff.ascendance.up
 	if TalentPoints(unleashed_fury_talent) and BuffExpires(ascendance_fire) Spell(unleash_elements)
 	#lava_burst,if=dot.flame_shock.remains>cast_time&(buff.ascendance.up|cooldown_react)
-	if target.DebuffRemains(flame_shock) > CastTime(lava_burst) and {BuffPresent(ascendance_fire) or BuffPresent(lava_surge)} Spell(lava_burst)
+	if target.DebuffRemains(flame_shock) > CastTime(lava_burst) and {BuffPresent(ascendance_fire) or Spell(lava_burst)} Spell(lava_burst)
 	#flame_shock,if=ticks_remain<3&(ticks_remain<2|buff.bloodlust.up|buff.elemental_mastery.up)
 	if target.TicksRemain(flame_shock) <3 and {target.TicksRemain(flame_shock) <2 or BuffPresent(burst_haste any=1) or BuffPresent(elemental_mastery)} Spell(flame_shock)
 	#elemental_blast,if=talent.elemental_blast.enabled
