@@ -453,7 +453,7 @@ AddFunction ElementalFullRotation
 	#earth_elemental_totem,if=!active&cooldown.fire_elemental_totem.remains>=50
 	if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=50 Spell(earth_elemental_totem)
 	#searing_totem,if=cooldown.fire_elemental_totem.remains>15&!totem.fire.active
-	if SpellCooldown(fire_elemental_totem) >15 and TotemExpires(fire) Spell(searing_totem)
+	if TotemExpires(fire) and {Spell(fire_elemental_totem) or SpellCooldown(fire_elemental_totem) >15} Spell(searing_totem)
 	if Speed() >0
 	{
 		if Glyph(glyph_of_unleashed_lightning)
@@ -507,7 +507,7 @@ AddFunction ElementalMainActions
 		Spell(earth_shock)
 	}
 	#searing_totem,if=cooldown.fire_elemental_totem.remains>15&!totem.fire.active
-	if SpellCooldown(fire_elemental_totem) >15 and TotemExpires(fire) Spell(searing_totem)
+	if TotemExpires(fire) and {Spell(fire_elemental_totem) or SpellCooldown(fire_elemental_totem) >15} Spell(searing_totem)
 	if Speed() >0
 	{
 		if Glyph(glyph_of_unleashed_lightning no)
