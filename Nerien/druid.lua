@@ -384,8 +384,8 @@ AddCheckBox(opt_maul SpellName(maul) default mastery=3)
 
 AddFunction GuardianInterrupt
 {
-	if TargetInRange(skull_bash_bear) Spell(skull_bash_bear)
-	if not TargetClassification(worldboss) and TalentPoints(mighty_bash_talent) and TargetInRange(mighty_bash)
+	if target.InRange(skull_bash_bear) Spell(skull_bash_bear)
+	if not target.Classification(worldboss) and TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash)
 	{
 		Spell(mighty_bash)
 	}
@@ -411,7 +411,7 @@ AddIcon mastery=3 help=cd size=small
 # Main rotation (rage-consuming abilities).
 AddIcon mastery=3
 {
-	if CheckBoxOn(opt_maul) and TargetIsAggroed(no)
+	if CheckBoxOn(opt_maul) and target.IsAggroed(no)
 	{
 		# Always bank enough rage so that if we need to switch to defense, we can.
 		if Rage() >90 Spell(maul)
@@ -433,14 +433,14 @@ AddIcon mastery=3 help=main
 	Spell(mangle_bear)
 
 	# Debuff maintenance.
-	if TargetDebuffExpires(weakened_blows 3 any=1) Spell(thrash_bear)
-	if TargetDebuffExpires(weakened_armor 3 any=1) or TargetDebuffStacks(weakened_armor any=1) <3
+	if target.DebuffExpires(weakened_blows 3 any=1) Spell(thrash_bear)
+	if target.DebuffExpires(weakened_armor 3 any=1) or target.DebuffStacks(weakened_armor any=1) <3
 	{
 		FaerieFire()
 	}
 
 	Spell(lacerate)
-	if TargetDebuffPresent(thrash_bear 6) FaerieFire()
+	if target.DebuffPresent(thrash_bear 6) FaerieFire()
 	Spell(thrash_bear)
 }
 
@@ -455,7 +455,7 @@ AddIcon mastery=3 help=aoe checkboxon=aoe
 # Rage cooldowns.
 AddIcon mastery=3 help=cd
 {
-	if TargetIsInterruptible() GuardianInterrupt()
+	if target.IsInterruptible() GuardianInterrupt()
 	if Rage(less 11) Spell(enrage)
 	if HealthPercent(less 25)
 	{

@@ -227,10 +227,10 @@ AddFunction UseRacialActions
 
 AddFunction UseRacialInterruptActions
 {
-	if TargetClassification(worldboss no)
+	if target.Classification(worldboss no)
 	{
 		Spell(arcane_torrent_chi)
-		if TargetInRange(quaking_palm) Spell(quaking_palm)
+		if target.InRange(quaking_palm) Spell(quaking_palm)
 	}
 }
 
@@ -265,8 +265,8 @@ AddFunction UseItemActions
 
 AddFunction Interrupt
 {
-	if TargetInRange(spear_hand_strike) Spell(spear_hand_strike)
-	if TargetClassification(worldboss no) and TargetInRange(paralysis) Spell(paralysis)
+	if target.InRange(spear_hand_strike) Spell(spear_hand_strike)
+	if target.Classification(worldboss no) and target.InRange(paralysis) Spell(paralysis)
 	UseRacialInterruptActions()
 }
 
@@ -452,8 +452,8 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 
 AddIcon mastery=1 help=cd
 {
-	if TargetIsInterruptible() Interrupt()
-	if TargetHealth() < Health() and BuffPresent(death_note) Spell(touch_of_death)
+	if target.IsInterruptible() Interrupt()
+	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
@@ -483,17 +483,17 @@ AddFunction WindwalkerFullRotation
 		#stance
 		#snapshot_stats
 		#virmens_bite_potion
-		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+		if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion usable=1)
 	}
 
 	#auto_attack
-	if TargetHealth() < Health() and BuffPresent(death_note) Spell(touch_of_death)
-	if TargetIsInterruptible() Interrupt()
+	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
+	if target.IsInterruptible() Interrupt()
 	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <=60}
+	if CheckBoxOn(potions) and target.Classification(worldboss) and {BuffPresent(burst_haste any=1) or target.TimeToDie() <=60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -504,7 +504,7 @@ AddFunction WindwalkerFullRotation
 	#chi_brew,if=talent.chi_brew.enabled&chi=0
 	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
-	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
+	if target.DebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
 	#tiger_palm,if=buff.tiger_power.remains<=3
 	if BuffExpires(tiger_power 3) Spell(tiger_palm)
 	#tigereye_brew,if=!buff.tigereye_brew_use.up&buff.tigereye_brew.react=10
@@ -567,7 +567,7 @@ AddFunction WindwalkerMaintenanceActions
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
 	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains|target.debuff.rising_sun_kick.remains<=3
-	if TargetDebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
+	if target.DebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
 	#tiger_palm,if=buff.tiger_power.remains<=3
 	if BuffExpires(tiger_power 3) Spell(tiger_palm)
 }
@@ -613,7 +613,7 @@ AddFunction WindwalkerShortCooldownActions
 	#energizing_brew,if=energy.time_to_max>5
 	if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 
-	unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
+	unless {target.DebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
 		or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
 		or Spell(rising_sun_kick)
 	{
@@ -631,14 +631,14 @@ AddFunction WindwalkerCooldownActions
 		unless {BuffExpires(str_agi_int 400 any=1) or BuffExpires(critical_strike 400 any=1)}
 		{
 			#virmens_bite_potion
-			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+			if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion usable=1)
 		}
 	}
 
-	if TargetHealth() < Health() and BuffPresent(death_note) Spell(touch_of_death)
-	if TargetIsInterruptible() Interrupt()
+	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
+	if target.IsInterruptible() Interrupt()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <=60}
+	if CheckBoxOn(potions) and target.Classification(worldboss) and {BuffPresent(burst_haste any=1) or target.TimeToDie() <=60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -649,7 +649,7 @@ AddFunction WindwalkerCooldownActions
 	#chi_brew,if=talent.chi_brew.enabled&chi=0
 	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
 
-	unless {TargetDebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
+	unless {target.DebuffExpires(rising_sun_kick_aura 3) and Spell(rising_sun_kick)}
 		or {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
 		or {BuffExpires(tigereye_brew_use) and BuffStacks(tigereye_brew) >=10 and Spell(tigereye_brew_use)}
 	{

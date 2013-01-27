@@ -179,7 +179,7 @@ AddFunction UseRacialActions
 
 AddFunction UseRacialInterruptActions
 {
-	if not TargetClassification(worldboss) and TargetInRange(quaking_palm) Spell(quaking_palm)
+	if not target.Classification(worldboss) and target.InRange(quaking_palm) Spell(quaking_palm)
 }
 
 AddFunction UseRacialSurvivalActions
@@ -258,7 +258,7 @@ AddFunction FrostTier6FrozenOrb
 	{
 		if BuffExpires(alter_time)
 		{
-			if TargetTimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
+			if target.TimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 and FrostIcyVeinsCooldown() < GCD() Spell(frozen_orb)
 		}
 	}
 }
@@ -303,18 +303,18 @@ AddFunction FrostFullRotation
 		if TalentPoints(invocation_talent) Spell(evocation)
 		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
 		#jade_serpent_potion
-		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(jade_serpent_potion usable=1)
+		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
 	}
 
 	#counterspell,if=target.debuff.casting.react
-	if TargetIsInterruptible() Interrupt()
+	if target.IsInterruptible() Interrupt()
 	#cancel_buff,name=alter_time,moving=1
 	#cold_snap,if=health.pct<30
 	if TalentPoints(cold_snap) and HealthPercent() <30 Spell(cold_snap)
 	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
 	if InCombat(no) ConjureManaGem()
 	#time_warp,if=target.health.pct<25|time>5
-	if InCombat() and {TargetHealthPercent() <25 or TimeInCombat() >5}
+	if InCombat() and {target.HealthPercent() <25 or TimeInCombat() >5}
 	{
 		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
 	}
@@ -326,11 +326,11 @@ AddFunction FrostFullRotation
 		if pet.Present() and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
 	}
 	#icy_veins,if=target.time_to_die<22
-	if TargetTimeToDie() <22 FrostIcyVeins()
+	if target.TimeToDie() <22 FrostIcyVeins()
 	#blood_fury,if=target.time_to_die<12
-	if TargetTimeToDie() <12 Spell(blood_fury)
+	if target.TimeToDie() <12 Spell(blood_fury)
 	#berserking,if=target.time_to_die<18
-	if TargetTimeToDie() <18 Spell(berserking)
+	if target.TimeToDie() <18 Spell(berserking)
 	if BuffPresent(alter_time)
 	{
 		#frostfire_bolt,if=buff.alter_time.up&buff.brain_freeze.up
@@ -348,7 +348,7 @@ AddFunction FrostFullRotation
 	#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
 	if TalentPoints(frost_bomb_talent)
 	{
-		if TargetDebuffExpires(frost_bomb) and TargetTimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
+		if target.DebuffExpires(frost_bomb) and target.TimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
 	}
 	if not TalentPoints(invocation_talent)
 	{
@@ -364,7 +364,7 @@ AddFunction FrostFullRotation
 	}
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
 	if BuffPresent(brain_freeze_aura)
-		and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
+		and {{target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
 	{
 		Spell(frostfire_bolt)
 	}
@@ -381,9 +381,9 @@ AddFunction FrostFullRotation
 		Spell(incanters_ward)
 	}
 	#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
-	if CheckBoxOn(potions) and TargetClassification(worldboss)
+	if CheckBoxOn(potions) and target.Classification(worldboss)
 	{
-		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or TargetTimeToDie() <40
+		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or target.TimeToDie() <40
 		{
 			Item(jade_serpent_potion usable=1)
 		}
@@ -424,7 +424,7 @@ AddFunction FrostFullRotation
 		}
 	}
 	#frostbolt,if=debuff.frostbolt.stack<3
-	if TargetTimeToDie() >20 and TargetDebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
+	if target.TimeToDie() >20 and target.DebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
 	if CheckBoxOn(opt_alter_time)
 	{
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6,moving=0
@@ -440,10 +440,10 @@ AddFunction FrostFullRotation
 	if TalentPoints(nether_tempest_talent)
 	{
 		#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
-		if TargetTimeToDie() >6
+		if target.TimeToDie() >6
 		{
-			if TargetDebuffExpires(nether_tempest_debuff)
-				or {TargetDebuffRemains(nether_tempest_debuff) < TargetNextTick(nether_tempest_debuff)}
+			if target.DebuffExpires(nether_tempest_debuff)
+				or {target.DebuffRemains(nether_tempest_debuff) < target.NextTick(nether_tempest_debuff)}
 			{
 				Spell(nether_tempest)
 			}
@@ -452,9 +452,9 @@ AddFunction FrostFullRotation
 	if TalentPoints(living_bomb_talent)
 	{
 		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
-		if TargetTimeToDie() > TargetTickTime(living_bomb) * 3
+		if target.TimeToDie() > target.TickTime(living_bomb) * 3
 		{
-			if TargetDebuffExpires(living_bomb) or {TargetDebuffRemains(living_bomb) < TargetNextTick(living_bomb)}
+			if target.DebuffExpires(living_bomb) or {target.DebuffRemains(living_bomb) < target.NextTick(living_bomb)}
 			{
 				Spell(living_bomb)
 			}	
@@ -476,13 +476,13 @@ AddFunction FrostFullRotation
 		if BuffPresent(brain_freeze_aura) Spell(frostfire_bolt)
 	}
 	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
-	if TargetTimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
+	if target.TimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
 	#mana_gem,if=mana.pct<84&buff.alter_time.down
 	if ManaPercent() <84 and BuffExpires(alter_time) UseManaGem()
 	if not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent)}
 	{
 		#evocation,if=mana.pct<10&target.time_to_die>=30
-		if ManaPercent() <10 and TargetTimeToDie() >30 Spell(evocation)
+		if ManaPercent() <10 and target.TimeToDie() >30 Spell(evocation)
 	}
 	#ice_floes,moving=1
 	#frostbolt
@@ -519,11 +519,11 @@ AddFunction FrostMainActions
 	#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
 	if TalentPoints(frost_bomb_talent)
 	{
-		if TargetDebuffExpires(frost_bomb) and TargetTimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
+		if target.DebuffExpires(frost_bomb) and target.TimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
 	}
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
 	if BuffPresent(brain_freeze_aura)
-		and {{TargetDebuffPresent(frost_bomb) and TargetDebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
+		and {{target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
 	{
 		Spell(frostfire_bolt)
 	}
@@ -533,10 +533,10 @@ AddFunction FrostMainActions
 	if TalentPoints(nether_tempest_talent)
 	{
 		#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
-		if TargetTimeToDie() >6
+		if target.TimeToDie() >6
 		{
-			if TargetDebuffExpires(nether_tempest_debuff)
-				or {TargetDebuffRemains(nether_tempest_debuff) < TargetNextTick(nether_tempest_debuff)}
+			if target.DebuffExpires(nether_tempest_debuff)
+				or {target.DebuffRemains(nether_tempest_debuff) < target.NextTick(nether_tempest_debuff)}
 			{
 				Spell(nether_tempest)
 			}
@@ -545,9 +545,9 @@ AddFunction FrostMainActions
 	if TalentPoints(living_bomb_talent)
 	{
 		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
-		if TargetTimeToDie() > TargetTickTime(living_bomb) * 3
+		if target.TimeToDie() > target.TickTime(living_bomb) * 3
 		{
-			if TargetDebuffExpires(living_bomb) or {TargetDebuffRemains(living_bomb) < TargetNextTick(living_bomb)}
+			if target.DebuffExpires(living_bomb) or {target.DebuffRemains(living_bomb) < target.NextTick(living_bomb)}
 			{
 				Spell(living_bomb)
 			}	
@@ -573,7 +573,7 @@ AddFunction FrostMainActions
 	if not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent)}
 	{
 		#evocation,if=mana.pct<10&target.time_to_die>=30
-		if ManaPercent() <10 and TargetTimeToDie() >=30 Spell(evocation)
+		if ManaPercent() <10 and target.TimeToDie() >=30 Spell(evocation)
 	}
 	#frostbolt
 	Spell(frostbolt)
@@ -594,7 +594,7 @@ AddFunction FrostShortCooldownActions
 	}
 
 	#counterspell,if=target.debuff.casting.react
-	if TargetIsInterruptible() Interrupt()
+	if target.IsInterruptible() Interrupt()
 	#cancel_buff,name=alter_time,moving=1
 	#cold_snap,if=health.pct<30
 	if TalentPoints(cold_snap) and HealthPercent() <30 Spell(cold_snap)
@@ -624,7 +624,7 @@ AddFunction FrostShortCooldownActions
 		FrostTier6FrozenOrb()
 	}
 	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2
-	if TargetTimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
+	if target.TimeToDie() >4 and BuffStacks(fingers_of_frost_aura) <2 Spell(frozen_orb)
 	#ice_floes,moving=1
 }
 
@@ -633,7 +633,7 @@ AddFunction FrostCooldownActions
 	if InCombat(no)
 	{
 		#jade_serpent_potion
-		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(jade_serpent_potion usable=1)
+		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
 	}
 
 	if BuffExpires(alter_time)
@@ -642,11 +642,11 @@ AddFunction FrostCooldownActions
 		if TalentPoints(presence_of_mind_talent) Spell(presence_of_mind)
 	}
 	#icy_veins,if=target.time_to_die<22
-	if TargetTimeToDie() <22 FrostIcyVeins()
+	if target.TimeToDie() <22 FrostIcyVeins()
 	#blood_fury,if=target.time_to_die<12
-	if TargetTimeToDie() <12 Spell(blood_fury)
+	if target.TimeToDie() <12 Spell(blood_fury)
 	#berserking,if=target.time_to_die<18
-	if TargetTimeToDie() <18 Spell(berserking)
+	if target.TimeToDie() <18 Spell(berserking)
 	if TalentPoints(invocation_talent)
 	{
 		FrostTier6IcyVeinsActions()
@@ -658,9 +658,9 @@ AddFunction FrostCooldownActions
 	#mirror_image
 	Spell(mirror_image)
 	#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
-	if CheckBoxOn(potions) and TargetClassification(worldboss)
+	if CheckBoxOn(potions) and target.Classification(worldboss)
 	{
-		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or TargetTimeToDie() <40
+		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or target.TimeToDie() <40
 		{
 			Item(jade_serpent_potion usable=1)
 		}
@@ -717,7 +717,7 @@ AddFunction FrostCooldownActions
 AddFunction FrostTimeWarp
 {
 	#time_warp,if=target.health.pct<25|time>5
-	if InCombat() and {TargetHealthPercent() <25 or TimeInCombat() >5}
+	if InCombat() and {target.HealthPercent() <25 or TimeInCombat() >5}
 	{
 		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
 	}

@@ -253,32 +253,32 @@ AddFunction BeastMasteryFullRotation
 		#flask,type=spring_blossoms
 		#food,type=sea_mist_rice_noodles
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if target.TimeToDie() >21 and target.DebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		#summon_pet
 		SummonPet()
 		if BuffExpires(trap_launcher) Spell(trap_launcher)
 		#trueshot_aura
 		#snapshot_stats
 		#virmens_bite_potion
-		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+		if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion usable=1)
 	}
 
 	SummonPet()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
+	if CheckBoxOn(potions) and target.Classification(worldboss) and {BuffPresent(burst_haste any=1) or target.TimeToDie() <60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
 	UseItemActions()
 	#auto_shot
-	if TargetIsInterruptible() Interrupt()
+	if target.IsInterruptible() Interrupt()
 	#explosive_trap,if=target.adds>0
 	if CheckBoxOn(aoe) Spell(explosive_trap)
 	#focus_fire,five_stacks=1
 	if BuffStacks(pet_frenzy any=1) ==5 Spell(focus_fire)
 	#serpent_sting,if=!ticking
-	if TargetDebuffExpires(serpent_sting_dot) Spell(serpent_sting)
-	if CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3) Spell(widow_venom)
+	if target.DebuffExpires(serpent_sting_dot) Spell(serpent_sting)
+	if CheckBoxOn(opt_widow_venom) and target.DebuffExpires(healing_reduced 3) Spell(widow_venom)
 	#blood_fury
 	UseRacialActions()
 	#fervor,if=enabled&!ticking&focus<=65
@@ -294,11 +294,11 @@ AddFunction BeastMasteryFullRotation
 	#stampede
 	Spell(stampede)
 	#kill_shot
-	if TargetHealthPercent(less 20) Spell(kill_shot)
+	if target.HealthPercent(less 20) Spell(kill_shot)
 	#kill_command
 	Spell(kill_command)
 	#a_murder_of_crows,if=enabled&!ticking
-	if TalentPoints(a_murder_of_crows) and TargetDebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
+	if TalentPoints(a_murder_of_crows) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
 	#lynx_rush,if=enabled&!ticking
@@ -318,7 +318,7 @@ AddFunction BeastMasteryFullRotation
 	#focus_fire,five_stacks=1,if=!ticking&!buff.beast_within.up
 	if BuffStacks(pet_frenzy any=1) ==5 and BuffExpires(focus_fire) and BuffExpires(beast_within) Spell(focus_fire)
 	#cobra_shot,if=dot.serpent_sting.remains<6
-	if TargetDebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
+	if target.DebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
 	#arcane_shot,if=focus>=61|buff.beast_within.up
 	if Focus(more 61) or BuffPresent(beast_within) Spell(arcane_shot)
 	#cobra_shot
@@ -355,18 +355,18 @@ AddFunction BeastMasteryMainActions
 	#focus_fire,five_stacks=1
 	if BuffStacks(pet_frenzy any=1) ==5 Spell(focus_fire)
 	#serpent_sting,if=!ticking
-	if TargetDebuffExpires(serpent_sting_dot) Spell(serpent_sting)
-	if CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3) Spell(widow_venom)
+	if target.DebuffExpires(serpent_sting_dot) Spell(serpent_sting)
+	if CheckBoxOn(opt_widow_venom) and target.DebuffExpires(healing_reduced 3) Spell(widow_venom)
 	#fervor,if=enabled&!ticking&focus<=65
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus(less 65) Spell(fervor)
 	#bestial_wrath,if=focus>60&!buff.beast_within.up
 	if Focus(more 60) and BuffExpires(beast_within) Spell(bestial_wrath)
 	#kill_shot
-	if TargetHealthPercent(less 20) Spell(kill_shot)
+	if target.HealthPercent(less 20) Spell(kill_shot)
 	#kill_command
 	Spell(kill_command)
 	#a_murder_of_crows,if=enabled&!ticking
-	if TalentPoints(a_murder_of_crows) and TargetDebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
+	if TalentPoints(a_murder_of_crows) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
 	#dire_beast,if=enabled&focus<=90
@@ -382,7 +382,7 @@ AddFunction BeastMasteryMainActions
 	#focus_fire,five_stacks=1,if=!ticking&!buff.beast_within.up
 	if BuffStacks(pet_frenzy any=1) ==5 and BuffExpires(focus_fire) and BuffExpires(beast_within) Spell(focus_fire)
 	#cobra_shot,if=dot.serpent_sting.remains<6
-	if TargetDebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
+	if target.DebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
 	#arcane_shot,if=focus>=61|buff.beast_within.up
 	if Focus(more 61) or BuffPresent(beast_within) Spell(arcane_shot)
 }
@@ -395,7 +395,7 @@ AddFunction BeastMasteryAoEActions
 	#focus_fire,five_stacks=1
 	if BuffStacks(pet_frenzy any=1) ==5 Spell(focus_fire)
 	#serpent_sting,if=!ticking
-	if TargetDebuffExpires(serpent_sting_dot) Spell(serpent_sting)
+	if target.DebuffExpires(serpent_sting_dot) Spell(serpent_sting)
 	#fervor,if=enabled&!ticking&focus<=65
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus(less 65) Spell(fervor)
 	#bestial_wrath,if=focus>60&!buff.beast_within.up
@@ -411,27 +411,27 @@ AddFunction BeastMasteryCooldownActions
 	if InCombat(no)
 	{
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if target.TimeToDie() >21 and target.DebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		if pet.Present() and pet.Health(more 0)
 		{
 			#virmens_bite_potion
-			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+			if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion usable=1)
 		}
 	}
 
 	if pet.Present() and pet.Health(more 0)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
+		if CheckBoxOn(potions) and target.Classification(worldboss) and {BuffPresent(burst_haste any=1) or target.TimeToDie() <60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
 		UseItemActions()
-		if TargetIsInterruptible() Interrupt()
+		if target.IsInterruptible() Interrupt()
 
 		unless BuffStacks(pet_frenzy any=1) ==5
-			or TargetDebuffExpires(serpent_sting_dot)
-			or {CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3)}
+			or target.DebuffExpires(serpent_sting_dot)
+			or {CheckBoxOn(opt_widow_venom) and target.DebuffExpires(healing_reduced 3)}
 		{
 			#blood_fury
 			UseRacialActions()
@@ -444,9 +444,9 @@ AddFunction BeastMasteryCooldownActions
 				#stampede
 				Spell(stampede)
 
-				unless {TargetHealthPercent(less 20) and Spell(kill_shot)}
+				unless {target.HealthPercent(less 20) and Spell(kill_shot)}
 					or Spell(kill_command)
-					or {TalentPoints(a_murder_of_crows) and TargetDebuffExpires(a_murder_of_crows) and Spell(a_murder_of_crows)}
+					or {TalentPoints(a_murder_of_crows) and target.DebuffExpires(a_murder_of_crows) and Spell(a_murder_of_crows)}
 					or {TalentPoints(glaive_toss_talent) and Spell(glaive_toss)}
 				{
 					#lynx_rush,if=enabled&!ticking
@@ -500,19 +500,19 @@ AddFunction SurvivalFullRotation
 		#flask,type=spring_blossoms
 		#food,type=sea_mist_rice_noodles
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if target.TimeToDie() >21 and target.DebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		#summon_pet
 		SummonPet()
 		if BuffExpires(trap_launcher) Spell(trap_launcher)
 		#trueshot_aura
 		#snapshot_stats
 		#virmens_bite_potion
-		if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+		if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion usable=1)
 	}
 
 	SummonPet()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
+	if CheckBoxOn(potions) and target.Classification(worldboss) and {BuffPresent(burst_haste any=1) or target.TimeToDie() <60}
 	{
 		Item(virmens_bite_potion usable=1)
 	}
@@ -520,11 +520,11 @@ AddFunction SurvivalFullRotation
 	UseRacialActions()
 	UseItemActions()
 	#auto_shot
-	if TargetIsInterruptible() Interrupt()
+	if target.IsInterruptible() Interrupt()
 	#explosive_trap,if=target.adds>0
 	if CheckBoxOn(aoe) Spell(explosive_trap)
 	#a_murder_of_crows,if=enabled&!ticking
-	if TalentPoints(a_murder_of_crows) and TargetDebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
+	if TalentPoints(a_murder_of_crows) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
 	#blink_strike,if=enabled
 	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#lynx_rush,if=enabled&!ticking
@@ -542,22 +542,22 @@ AddFunction SurvivalFullRotation
 	#cobra_shot,if=target.adds>2
 	if CheckBoxOn(aoe) Spell(cobra_shot)
 	#serpent_sting,if=!ticking&target.time_to_die>=10
-	if TargetDebuffExpires(serpent_sting_dot) and TargetTimeToDie() >10 Spell(serpent_sting)
-	if CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3) Spell(widow_venom)
+	if target.DebuffExpires(serpent_sting_dot) and target.TimeToDie() >10 Spell(serpent_sting)
+	if CheckBoxOn(opt_widow_venom) and target.DebuffExpires(healing_reduced 3) Spell(widow_venom)
 	#explosive_shot,if=cooldown_react
 	Spell(explosive_shot)
 	#kill_shot
-	if TargetHealthPercent(less 20) Spell(kill_shot)
+	if target.HealthPercent(less 20) Spell(kill_shot)
 	#black_arrow,if=!ticking&target.time_to_die>=8
-	if TargetTimeToDie() >8
+	if target.TimeToDie() >8
 	{
-		if CheckBoxOn(opt_black_arrow) and TargetDebuffExpires(black_arrow) Spell(black_arrow)
+		if CheckBoxOn(opt_black_arrow) and target.DebuffExpires(black_arrow) Spell(black_arrow)
 		if CheckBoxOff(opt_black_arrow) Spell(explosive_trap)
 	}
 	if BuffPresent(thrill_of_the_hunt)
 	{
 		#multi_shot,if=buff.thrill_of_the_hunt.react&dot.serpent_sting.remains<2
-		if TargetDebuffExpires(serpent_sting_dot 2) Spell(multi_shot)
+		if target.DebuffExpires(serpent_sting_dot 2) Spell(multi_shot)
 		#arcane_shot,if=buff.thrill_of_the_hunt.react
 		Spell(arcane_shot)
 	}
@@ -572,7 +572,7 @@ AddFunction SurvivalFullRotation
 	#fervor,if=enabled&focus<=50
 	if TalentPoints(fervor_talent) and Focus(less 50) Spell(fervor)
 	#cobra_shot,if=dot.serpent_sting.remains<6
-	if TargetDebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
+	if target.DebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
 	#arcane_shot,if=focus>=67
 	if Focus(more 67) Spell(arcane_shot)
 	#cobra_shot
@@ -617,22 +617,22 @@ AddFunction SurvivalMainActions
 	#barrage,if=enabled
 	if TalentPoints(barrage_talent) Spell(barrage)
 	#serpent_sting,if=!ticking&target.time_to_die>=10
-	if TargetDebuffExpires(serpent_sting_dot) and TargetTimeToDie() >10 Spell(serpent_sting)
-	if CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3) Spell(widow_venom)
+	if target.DebuffExpires(serpent_sting_dot) and target.TimeToDie() >10 Spell(serpent_sting)
+	if CheckBoxOn(opt_widow_venom) and target.DebuffExpires(healing_reduced 3) Spell(widow_venom)
 	#explosive_shot,if=cooldown_react
 	Spell(explosive_shot)
 	#kill_shot
-	if TargetHealthPercent(less 20) Spell(kill_shot)
+	if target.HealthPercent(less 20) Spell(kill_shot)
 	#black_arrow,if=!ticking&target.time_to_die>=8
-	if TargetTimeToDie() >8
+	if target.TimeToDie() >8
 	{
-		if CheckBoxOn(opt_black_arrow) and TargetDebuffExpires(black_arrow) Spell(black_arrow)
+		if CheckBoxOn(opt_black_arrow) and target.DebuffExpires(black_arrow) Spell(black_arrow)
 		if CheckBoxOff(opt_black_arrow) Spell(explosive_trap)
 	}
 	if BuffPresent(thrill_of_the_hunt)
 	{
 		#multi_shot,if=buff.thrill_of_the_hunt.react&dot.serpent_sting.remains<2
-		if TargetDebuffExpires(serpent_sting_dot 2) Spell(multi_shot)
+		if target.DebuffExpires(serpent_sting_dot 2) Spell(multi_shot)
 		#arcane_shot,if=buff.thrill_of_the_hunt.react
 		Spell(arcane_shot)
 	}
@@ -641,7 +641,7 @@ AddFunction SurvivalMainActions
 	#fervor,if=enabled&focus<=50
 	if TalentPoints(fervor_talent) and Focus(less 50) Spell(fervor)
 	#cobra_shot,if=dot.serpent_sting.remains<6
-	if TargetDebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
+	if target.DebuffExpires(serpent_sting_dot 6) Spell(cobra_shot)
 	#arcane_shot,if=focus>=67
 	if Focus(more 67) Spell(arcane_shot)
 }
@@ -672,27 +672,27 @@ AddFunction SurvivalCooldownActions
 	if InCombat(no)
 	{
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if TargetTimeToDie() >21 and TargetDebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
+		if target.TimeToDie() >21 and target.DebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 		if pet.Present() and pet.Health(more 0)
 		{
 			#virmens_bite_potion
-			if CheckBoxOn(potions) and TargetClassification(worldboss) Item(virmens_bite_potion usable=1)
+			if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion usable=1)
 		}
 	}
 
 	if pet.Present() and pet.Health(more 0)
 	{
 		#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-		if CheckBoxOn(potions) and TargetClassification(worldboss) and {BuffPresent(burst_haste any=1) or TargetTimeToDie() <60}
+		if CheckBoxOn(potions) and target.Classification(worldboss) and {BuffPresent(burst_haste any=1) or target.TimeToDie() <60}
 		{
 			Item(virmens_bite_potion usable=1)
 		}
 		#blood_fury
 		UseRacialActions()
 		UseItemActions()
-		if TargetIsInterruptible() Interrupt()
+		if target.IsInterruptible() Interrupt()
 
-		unless {TalentPoints(a_murder_of_crows) and TargetDebuffExpires(a_murder_of_crows) and Spell(a_murder_of_crows)}
+		unless {TalentPoints(a_murder_of_crows) and target.DebuffExpires(a_murder_of_crows) and Spell(a_murder_of_crows)}
 			or {TalentPoints(blink_strike_talent) and Spell(blink_strike)}
 		{
 			#lynx_rush,if=enabled&!ticking
@@ -702,15 +702,15 @@ AddFunction SurvivalCooldownActions
 				or {TalentPoints(glaive_toss_talent) and Spell(glaive_toss)}
 				or {TalentPoints(powershot_talent) and Spell(powershot)}
 				or {TalentPoints(barrage_talent) and Spell(barrage)}
-				or {TargetDebuffExpires(serpent_sting_dot) and TargetTimeToDie() >10}
-				or {CheckBoxOn(opt_widow_venom) and TargetDebuffExpires(healing_reduced 3)}
+				or {target.DebuffExpires(serpent_sting_dot) and target.TimeToDie() >10}
+				or {CheckBoxOn(opt_widow_venom) and target.DebuffExpires(healing_reduced 3)}
 				or Spell(explosive_shot)
-				or {TargetHealthPercent(less 20) and Spell(kill_shot)}
-				or {TargetTimeToDie() >8
-					and {{CheckBoxOn(opt_black_arrow) and TargetDebuffExpires(black_arrow) and Spell(black_arrow)}
+				or {target.HealthPercent(less 20) and Spell(kill_shot)}
+				or {target.TimeToDie() >8
+					and {{CheckBoxOn(opt_black_arrow) and target.DebuffExpires(black_arrow) and Spell(black_arrow)}
 						or {CheckBoxOff(opt_black_arrow) and Spell(explosive_trap)}}}
 				or {BuffPresent(thrill_of_the_hunt)
-					and {{TargetDebuffExpires(serpent_sting_dot 2) and Spell(multi_shot)} or Spell(arcane_shot)}}
+					and {{target.DebuffExpires(serpent_sting_dot 2) and Spell(multi_shot)} or Spell(arcane_shot)}}
 				or {TalentPoints(dire_beast_talent) and Spell(dire_beast)}
 			{
 				#rapid_fire,if=!buff.rapid_fire.up
