@@ -101,11 +101,11 @@ Define(icy_veins_glyphed 131078)
 SpellList(icy_veins_aura 12472 131078)
 Define(ignite 12654)
 	SpellInfo(ignite duration=4 tick=2)
+Define(incanters_absorption 116267)
+	SpellInfo(incanters_absorption duration=15)
 Define(incanters_ward 1463)
 	SpellInfo(incanters_ward cd=25 duration=8)
 	SpellAddBuff(incanters_ward incanters_ward=1)
-Define(incanters_ward_post 116267)
-	SpellInfo(incanters_ward_post duration=15)
 Define(incanters_ward_talent 18)
 Define(inferno_blast 108853)
 	SpellInfo(inferno_blast cd=8 )
@@ -249,10 +249,10 @@ AddFunction FrostIcyVeinsCooldown
 
 AddFunction FrostTier6FrozenOrb
 {
-	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.invocation.remains>20&buff.alter_time.down
+	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.invokers_energy.remains>20&buff.alter_time.down
 	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.rune_of_power.remains>20&buff.alter_time.down
 	#frozen_orb,if=target.time_to_die>=4&buff.fingers_of_frost.stack<2&cooldown.icy_veins.remains<gcd&buff.alter_time.down
-	if {TalentPoints(invocation_talent) and BuffPresent(invocation 20)}
+	if {TalentPoints(invocation_talent) and BuffPresent(invokers_energy 20)}
 		or {TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power_aura)}
 		or TalentPoints(incanters_ward_talent)
 	{
@@ -267,10 +267,10 @@ AddFunction FrostTier6IcyVeinsActions
 {
 	if ArmorSetParts(T14) >3
 	{
-		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.invocation.remains>20&buff.alter_time.down
+		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.invokers_energy.remains>20&buff.alter_time.down
 		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.rune_of_power.remains>20&buff.alter_time.down
 		#icy_veins,if=set_bonus.tier14_4pc_caster&buff.alter_time.down
-		if {TalentPoints(invocation_talent) and BuffPresent(invocation 20)}
+		if {TalentPoints(invocation_talent) and BuffPresent(invokers_energy 20)}
 			or {TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power_aura)}
 			or {TalentPoints(incanters_ward_talent)}
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
@@ -359,8 +359,8 @@ AddFunction FrostFullRotation
 	Spell(mirror_image)
 	if TalentPoints(invocation_talent)
 	{
-		#evocation,if=buff.invocation.down&buff.alter_time.down		
-		if BuffExpires(invocation) and BuffExpires(alter_time) Spell(evocation)
+		#evocation,if=buff.invokers_energy.down&buff.alter_time.down
+		if BuffExpires(invokers_energy) and BuffExpires(alter_time) Spell(evocation)
 	}
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
 	if BuffPresent(brain_freeze_aura)
@@ -391,32 +391,32 @@ AddFunction FrostFullRotation
 	if BuffExpires(alter_time)
 	{
 		{
-			#blood_fury,if=buff.invocation.remains>15&buff.alter_time.down&mana.pct>28
+			#blood_fury,if=buff.invokers_energy.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
-			#blood_fury,if=buff.incanters_ward_post.react&buff.alter_time.down
+			#blood_fury,if=buff.incanters_absorption.react&buff.alter_time.down
 			#blood_fury,if=buff.alter_time.down
-			if {BuffPresent(invocation 15) and ManaPercent() >28}
+			if {BuffPresent(invokers_energy 15) and ManaPercent() >28}
 				or BuffPresent(rune_of_power_aura)
-				or BuffPresent(incanters_ward_post)
+				or BuffPresent(incanters_absorption)
 				or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 			{
 				Spell(blood_fury)
 			}
 		}
 		{
-			#/berserking,if=buff.invocation.remains>10&buff.alter_time.down&mana.pct>28
+			#/berserking,if=buff.invokers_energy.remains>10&buff.alter_time.down&mana.pct>28
 			#/berserking,if=buff.rune_of_power.remains>10&buff.alter_time.down
-			#/berserking,if=buff.incanters_ward_post.react&buff.alter_time.down
+			#/berserking,if=buff.incanters_absorption.react&buff.alter_time.down
 			#/berserking,if=buff.alter_time.down
-			if {BuffPresent(invocation 10) and ManaPercent() > 28}
+			if {BuffPresent(invokers_energy 10) and ManaPercent() > 28}
 				or BuffPresent(rune_of_power_aura)
-				or BuffPresent(incanters_ward_post)
+				or BuffPresent(incanters_absorption)
 				or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 			{
 				Spell(berserking)
 			}
 		}
-		if BuffPresent(invocation 15) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
+		if BuffPresent(invokers_energy 15) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 		{
 			UseItemActions()
@@ -427,11 +427,11 @@ AddFunction FrostFullRotation
 	if target.TimeToDie() >20 and target.DebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
 	if CheckBoxOn(opt_alter_time)
 	{
-		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6,moving=0
+		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invokers_energy.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
-		if BuffPresent(invocation 6) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
+		if BuffPresent(invokers_energy 6) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 		{
 			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
@@ -606,8 +606,8 @@ AddFunction FrostShortCooldownActions
 	if TalentPoints(invocation_talent)
 	{
 		FrostTier6FrozenOrb()
-		#evocation,if=buff.invocation.down&buff.alter_time.down		
-		if BuffExpires(invocation) and BuffExpires(alter_time) Spell(evocation)
+		#evocation,if=buff.invokers_energy.down&buff.alter_time.down
+		if BuffExpires(invokers_energy) and BuffExpires(alter_time) Spell(evocation)
 	}
 	if TalentPoints(rune_of_power_talent)
 	{
@@ -668,32 +668,32 @@ AddFunction FrostCooldownActions
 	if BuffExpires(alter_time)
 	{
 		{
-			#blood_fury,if=buff.invocation.remains>15&buff.alter_time.down&mana.pct>28
+			#blood_fury,if=buff.invokers_energy.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
-			#blood_fury,if=buff.incanters_ward_post.react&buff.alter_time.down
+			#blood_fury,if=buff.incanters_absorption.react&buff.alter_time.down
 			#blood_fury,if=buff.alter_time.down
-			if {BuffPresent(invocation 15) and ManaPercent() >28}
+			if {BuffPresent(invokers_energy 15) and ManaPercent() >28}
 				or BuffPresent(rune_of_power_aura)
-				or BuffPresent(incanters_ward_post)
+				or BuffPresent(incanters_absorption)
 				or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 			{
 				Spell(blood_fury)
 			}
 		}
 		{
-			#/berserking,if=buff.invocation.remains>10&buff.alter_time.down&mana.pct>28
+			#/berserking,if=buff.invokers_energy.remains>10&buff.alter_time.down&mana.pct>28
 			#/berserking,if=buff.rune_of_power.remains>10&buff.alter_time.down
-			#/berserking,if=buff.incanters_ward_post.react&buff.alter_time.down
+			#/berserking,if=buff.incanters_absorption.react&buff.alter_time.down
 			#/berserking,if=buff.alter_time.down
-			if {BuffPresent(invocation 10) and ManaPercent() >28}
+			if {BuffPresent(invokers_energy 10) and ManaPercent() >28}
 				or BuffPresent(rune_of_power_aura)
-				or BuffPresent(incanters_ward_post)
+				or BuffPresent(incanters_absorption)
 				or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 			{
 				Spell(berserking)
 			}
 		}
-		if BuffPresent(invocation 15) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
+		if BuffPresent(invokers_energy 15) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 		{
 			UseItemActions()
@@ -702,11 +702,11 @@ AddFunction FrostCooldownActions
 	}
 	if CheckBoxOn(opt_alter_time)
 	{
-		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invocation.remains>6,moving=0
+		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invokers_energy.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
-		if BuffPresent(invocation 6) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
+		if BuffPresent(invokers_energy 6) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 		{
 			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
