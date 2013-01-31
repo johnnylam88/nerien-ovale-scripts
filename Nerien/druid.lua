@@ -91,6 +91,10 @@ Define(faerie_swarm_talent 7)
 Define(feline_swiftness_talent 1)
 Define(ferocious_bite 22568)
 	SpellInfo(ferocious_bite combo=0 energy=25)
+	# Ferocious Bite does ((316 to 658) + 762 * CP + 0.196 * AP * CP) damage (from Wowhead).
+	# Average the base damage to (316 + 658) / 2 = 487.
+	SpellInfo(ferocious_bite base=487 bonuscp=762 bonusapcp=0.196)
+	SpellDamageBuff(ferocious_bite dream_of_cenarius_damage=1.25)
 Define(force_of_nature_talent 12)
 Define(frenzied_regeneration 22842)
 	SpellInfo(frenzied_regeneration cd=1.5)
@@ -148,6 +152,7 @@ Define(mangle_bear 33878)
 	SpellAddTargetDebuff(mangle_bear infected_wounds=1)
 Define(mangle_cat 33876)
 	SpellInfo(mangle_cat combo=1 energy=35 inccounter=ripshreds)
+	SpellInfo(mangle_cat critcombo=1 if_spell=primal_fury)
 	SpellAddTargetDebuff(mangle_cat infected_wounds=1)
 Define(mark_of_the_wild 1126)
 	SpellInfo(mark_of_the_wild duration=3600)
@@ -199,6 +204,7 @@ Define(pounce_bleed 9007)
 	SpellInfo(pounce_bleed duration=18 tick=3)
 Define(predatory_swiftness 69369)
 	SpellInfo(predatory_swiftness duration=8)
+Define(primal_fury 16961)
 Define(prowl 5215)
 	SpellInfo(prowl duration=1800)
 	SpellAddBuff(prowl cat_form=1 prowl=1)
@@ -207,12 +213,19 @@ Define(prowl_incarnation 102547)
 	SpellAddBuff(prowl_incarnation cat_form=1 prowl_incarnation=1)
 Define(rake 1822)
 	SpellInfo(rake combo=1 duration=15 energy=35 tick=3)
+	SpellInfo(rake critcombo=1 if_spell=primal_fury)
+	# Damage(rake) = (99 + 0.3 * AP) damage per tick (from Catus).
+	SpellInfo(rake base=99 bonusap=0.3)
+	SpellDamageBuff(rake dream_of_cenarius_damage=1.25)
 	SpellAddTargetDebuff(rake rake=1)
 Define(ravage 6785)
 	SpellInfo(ravage combo=1 energy=45 inccounter=ripshreds)
+	SpellInfo(ravage critcombo=1 if_spell=primal_fury)
 	SpellAddTargetDebuff(ravage infected_wounds=1)
 Define(ravagebang 102545)
-	SpellInfo(ravagebang combo=1 energy=45 inccounter=ripshreds)
+	SpellInfo(ravagebang combo=1 energy=0 inccounter=ripshreds)
+	SpellInfo(ravagebang critcombo=1 if_spell=primal_fury)
+	SpellAddBuff(ravagebang stampede=0)
 	SpellAddTargetDebuff(ravagebang infected_wounds=1)
 Define(rebirth 20484)
 	SpellInfo(rebirth cd=600)
@@ -230,6 +243,10 @@ Define(renewal_talent 5)
 Define(revive 50769)
 Define(rip 1079)
 	SpellInfo(rip combo=0 duration=16 energy=30 resetcounter=ripshreds tick=2)
+	# Rip does (113 + 320 * CP + 0.0484 * AP * CP * 8) damage over 16 seconds (from Wowhead).
+	# Damage(rip) = (14.125 + 40 * CP + 0.0484 * AP * CP) damage per tick.
+	SpellInfo(rip base=14.125 bonuscp=40 bonusapcp=0.0484)
+	SpellDamageBuff(rip dream_of_cenarius_damage=1.25)
 	SpellAddTargetDebuff(rip rip=1)
 Define(savage_defense 62606)
 	SpellInfo(savage_defense rage=60)
@@ -248,7 +265,12 @@ Define(shooting_stars 93400)
 	SpellInfo(shooting_stars duration=12)
 Define(shred 5221)
 	SpellInfo(shred combo=1 energy=40 inccounter=ripshreds)
+	SpellInfo(shred critcombo=1 if_spell=primal_fury)
 	SpellAddTargetDebuff(shred infected_wounds=1)
+Define(shredbang 114236)
+	SpellInfo(shredbang combo=1 energy=40 inccounter=ripshreds)
+	SpellInfo(shredbang critcombo=1 if_spell=primal_fury)
+	SpellAddTargetDebuff(shredbang infected_wounds=1)
 Define(skull_bash_bear 106839)
 	SpellInfo(skull_bash_bear cd=15)
 	SpellInfo(skull_bash_bear addcd=10 glyph=glyph_of_skull_bash)
@@ -263,6 +285,8 @@ Define(soothe 2908)
 Define(soul_of_the_forest 114108)
 	SpellInfo(soul_of_the_forest duration=6)
 Define(soul_of_the_forest_talent 10)
+Define(stampede 81022)
+	SpellInfo(stampede duration=86400)
 Define(stampeding_roar 106898)
 	SpellInfo(stampeding_roar cd=120 duration=8)
 	SpellAddBuff(stampeding_roar stampeding_roar=1)
@@ -395,6 +419,29 @@ AddFunction FaerieFire
 	if not TalentPoints(faerie_swarm_talent) Spell(faerie_fire)
 }
 
+AddFunction RipDamageTillDead
+{
+	# The damage from Rip that is cast under the current conditions and lasting till target is dead.
+	# Multiply the damage per tick with the number of ticks that can fit into the time to die.
+	# XXX Should factor in crit somehow.
+	Damage(rip) * {1 + Mastery() / 100} * {target.TimeToDie() / 2}
+}
+
+AddFunction ExistingRipDamageTillDead
+{
+	# The damage from Rip that is already on the target and lasting till target is dead.
+	if target.DebuffPresent(rip)
+	{
+		# Multiply the damage per tick with the number of ticks that can fit into the time to die.
+		# XXX Should factor in crit somehow.
+		LastSpellEstimatedDamage(rip) * {1 + LastSpellMastery(rip) / 100} * {target.TimeToDie() / 2}
+	}
+	if not target.DebuffPresent(rip)
+	{
+		0
+	}
+}
+
 ###
 ### Feral
 ###
@@ -409,6 +456,12 @@ AddFunction FeralSavageRoar
 {
     if Glyph(glyph_of_savagery) Spell(savage_roar_glyphed)
     if Glyph(glyph_of_savagery no) and ComboPoints() >0 Spell(savage_roar)
+}
+
+AddFunction FeralExecuteRange
+{
+	# At this target health percent, Ferocious Bite will automatically refresh Rip on the target.
+	target.HealthPercent() <=25
 }
 
 AddFunction FeralPreCombatActions
@@ -478,12 +531,6 @@ AddFunction FeralDreamOfCenariusFillerActions
 	if TimeToMaxEnergy() <=1 FeralFillerActions()
 }
 
-AddFunction FeralExecuteRange
-{
-	# At this target health percent, Ferocious Bite will automatically refresh Rip on the target.
-	target.HealthPercent() <=25
-}
-
 AddFunction FeralDreamOfCenariusFullRotation
 {
 	#auto_attack
@@ -531,8 +578,11 @@ AddFunction FeralDreamOfCenariusFullRotation
 	}
 	if target.TimeToDie() <=40 FeralUsePotion()
 	#rip,line_cd=30,if=combo_points>=5&buff.virmens_bite_potion.up&buff.dream_of_cenarius_damage.up&target.health.pct<=25&target.time_to_die>30
-	# This action is modified so that we cast Rip only if it's not present or if it would overwrite with a much stronger Rip.
-	if FeralExecuteRange() and ComboPoints() >=5 and BuffPresent(dream_of_cenarius_damage) and target.TimeToDie() >30 Spell(rip)
+	if FeralExecuteRange() and ComboPoints() >=5 and target.TimeToDie() >30
+	{
+		# Assume that FB will be 400% normal damage (100% increased damage + crit) to decide if we should overwrite Rip.
+		if RipDamageTillDead() > {ExistingRipDamageTillDead() + Damage(ferocious_bite) * 4} Spell(rip)
+	}
 	#pool_resource,wait=0.25,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))
 	#ferocious_bite,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25
 	if FeralExecuteRange() and ComboPoints() >=5 and target.DebuffPresent(rip) wait
