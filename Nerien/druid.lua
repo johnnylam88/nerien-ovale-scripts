@@ -625,7 +625,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
 	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)} wait
 	{
-		Spell(thrash_cat)
+		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(thrash_cat)
 	}
 	FeralDreamOfCenariusFillerActions()
 	if TalentPoints(force_of_nature_talent)
@@ -731,7 +731,7 @@ AddFunction FeralNonDreamOfCenariusFullRotation
 	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
 	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)} wait
 	{
-		Spell(thrash_cat)
+		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(thrash_cat)
 	}
 	FeralNonDreamOfCenariusFillerActions()
 	if TalentPoints(force_of_nature_talent)
