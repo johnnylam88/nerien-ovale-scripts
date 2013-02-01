@@ -7,7 +7,7 @@ NerienOvaleScripts.script.MAGE.Nerien = {
 # Nerien's mage script based on SimulationCraft.
 #
 # Frost:
-#	talents=http://us.battle.net/wow/en/tool/talent-calculator#eb!022220
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#eb!0...20
 #	glyphs=evocation/icy_veins/ice_lance
 
 Define(alter_time 110909)
@@ -309,6 +309,8 @@ AddFunction FrostFullRotation
 		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
 		#jade_serpent_potion
 		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+		#mirror_image
+		Spell(mirror_image)
 	}
 
 	#counterspell,if=target.debuff.casting.react
@@ -362,11 +364,6 @@ AddFunction FrostFullRotation
 	}
 	#mirror_image
 	Spell(mirror_image)
-	if TalentPoints(invocation_talent)
-	{
-		#evocation,if=buff.invokers_energy.down&buff.alter_time.down
-		if BuffExpires(invokers_energy) and BuffExpires(alter_time) Spell(evocation)
-	}
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
 	if BuffPresent(brain_freeze_aura)
 		and {{target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
@@ -375,26 +372,23 @@ AddFunction FrostFullRotation
 	}
 	#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<2
 	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
-	if TalentPoints(rune_of_power_talent)
-	{
-		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
-		if BuffExpires(rune_of_power_aura) and BuffExpires(alter_time) Spell(rune_of_power)
-	}
-	if TalentPoints(incanters_ward_talent)
-	{
-		#incanters_ward
-		Spell(incanters_ward)
-	}
-	#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
-	if CheckBoxOn(potions) and target.Classification(worldboss)
-	{
-		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or target.TimeToDie() <40
-		{
-			Item(jade_serpent_potion usable=1)
-		}
-	}
 	if BuffExpires(alter_time)
 	{
+		if CheckBoxOn(potions) and target.Classification(worldboss)
+		{
+			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
+			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
+			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
+			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
+		}
+
+		#/evocation,if=buff.invocation.down&buff.alter_time.down
+		if TalentPoints(invocation_talent) and BuffExpires(invokers_energy) Spell(evocation)
+		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
+		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
+		#incanters_ward,break_after=4,if=buff.alter_time.down
+		if TalentPoints(incanters_ward_talent) Spell(incanters_ward)
+
 		{
 			#blood_fury,if=buff.invokers_energy.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
@@ -611,8 +605,6 @@ AddFunction FrostShortCooldownActions
 	if TalentPoints(invocation_talent)
 	{
 		FrostTier6FrozenOrb()
-		#evocation,if=buff.invokers_energy.down&buff.alter_time.down
-		if BuffExpires(invokers_energy) and BuffExpires(alter_time) Spell(evocation)
 	}
 	if TalentPoints(rune_of_power_talent)
 	{
@@ -621,8 +613,8 @@ AddFunction FrostShortCooldownActions
 	}
 	if TalentPoints(incanters_ward_talent)
 	{
-		#incanters_ward
-		Spell(incanters_ward)
+		#incanters_ward,break_after=4,if=buff.alter_time.down
+		if BuffExpires(alter_time) Spell(incanters_ward)
 	}
 	if not TalentPoints(invocation_talent)
 	{
@@ -639,6 +631,8 @@ AddFunction FrostCooldownActions
 	{
 		#jade_serpent_potion
 		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+		#mirror_image
+		Spell(mirror_image)
 	}
 
 	if BuffExpires(alter_time)
@@ -662,16 +656,23 @@ AddFunction FrostCooldownActions
 	}
 	#mirror_image
 	Spell(mirror_image)
-	#jade_serpent_potion,if=buff.bloodlust.react|buff.icy_veins.up|target.time_to_die<=40
-	if CheckBoxOn(potions) and target.Classification(worldboss)
-	{
-		if BuffPresent(burst_haste any=1) or BuffPresent(icy_veins_aura) or target.TimeToDie() <40
-		{
-			Item(jade_serpent_potion usable=1)
-		}
-	}
 	if BuffExpires(alter_time)
 	{
+		if CheckBoxOn(potions) and target.Classification(worldboss)
+		{
+			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
+			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
+			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
+			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
+		}
+
+		#/evocation,if=buff.invocation.down&buff.alter_time.down
+		if TalentPoints(invocation_talent) and BuffExpires(invokers_energy) Spell(evocation)
+		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
+		if TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
+		#incanters_ward,break_after=4,if=buff.alter_time.down
+		if TalentPoints(incanters_ward_talent) Spell(incanters_ward)
+
 		{
 			#blood_fury,if=buff.invokers_energy.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
