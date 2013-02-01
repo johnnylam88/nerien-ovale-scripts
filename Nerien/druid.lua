@@ -585,9 +585,9 @@ AddFunction FeralDreamOfCenariusFullRotation
 	}
 	#pool_resource,wait=0.25,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))
 	#ferocious_bite,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25
-	if FeralExecuteRange() and ComboPoints() >=5 and target.DebuffPresent(rip) wait
+	if FeralExecuteRange() and ComboPoints() >=5 and target.DebuffPresent(rip)
 	{
-		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(ferocious_bite)
+		wait if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(ferocious_bite)
 	}
 	#rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
 	if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(rip) <2 and BuffPresent(dream_of_cenarius_damage) Spell(rip)
@@ -613,9 +613,9 @@ AddFunction FeralDreamOfCenariusFullRotation
 	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
 	#pool_resource,wait=0.25,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&dot.rip.remains>=6.5
 	#ferocious_bite,if=combo_points>=5&dot.rip.remains>6
-	if ComboPoints() >=5 and target.DebuffRemains(rip) >6 wait
+	if ComboPoints() >=5 and target.DebuffRemains(rip) >6
 	{
-		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(ferocious_bite)
+		wait if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(ferocious_bite)
 	}
 	#rake,if=dot.rake.remains<9&buff.dream_of_cenarius_damage.up
 	if target.DebuffRemains(rake) <9 and BuffPresent(dream_of_cenarius_damage) Spell(rake)
@@ -623,9 +623,9 @@ AddFunction FeralDreamOfCenariusFullRotation
 	if target.DebuffRemains(rake) <3 Spell(rake)
 	#pool_resource,wait=0.25,for_next=1
 	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
-	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)} wait
+	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)}
 	{
-		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(thrash_cat)
+		wait if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(thrash_cat)
 	}
 	FeralDreamOfCenariusFillerActions()
 	if TalentPoints(force_of_nature_talent)
@@ -729,9 +729,9 @@ AddFunction FeralNonDreamOfCenariusFullRotation
 	}
 	#pool_resource,wait=0.1,for_next=1
 	#thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
-	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)} wait
+	if target.DebuffRemains(thrash_cat) <3 and target.TimeToDie() >=6 and {target.DebuffRemains(rip) >=4 or BuffPresent(berserk_cat)}
 	{
-		if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(thrash_cat)
+		wait if {BuffExpires(berserk_cat) and Energy() >=50} or {BuffPresent(berserk_cat) and Energy() >=25} Spell(thrash_cat)
 	}
 	FeralNonDreamOfCenariusFillerActions()
 	if TalentPoints(force_of_nature_talent)
