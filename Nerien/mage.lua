@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "MAGE" then
 
 NerienOvaleScripts.script.MAGE.Nerien = {
-	desc = "Nerien: Frost",
+	desc = "[5.1] Nerien: Frost",
 	code =
 [[
 # Nerien's mage script based on SimulationCraft.

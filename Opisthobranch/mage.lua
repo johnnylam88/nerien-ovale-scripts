@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "MAGE" then
 
 NerienOvaleScripts.script.MAGE.Opisthobranch = {
-	desc = "Opisthobranch: Arcane, Fire, Frost",
+	desc = "[5.0] Opisthobranch: Arcane, Fire, Frost",
 	code =
 [[
 # Opisthobranch: Arcane, Fire, Frost

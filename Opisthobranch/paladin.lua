@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "PALADIN" then
 
 NerienOvaleScripts.script.PALADIN.Opisthobranch = {
-	desc = "Opisthobranch: Protection, Retribution",
+	desc = "[5.0] Opisthobranch: Protection, Retribution",
 	code =
 [[
 # Opisthobranch: Protection, Retribution

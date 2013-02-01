@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "PRIEST" then
 
 NerienOvaleScripts.script.PRIEST.Opisthobranch = {
-	desc = "Opisthobranch: Shadow",
+	desc = "[5.0] Opisthobranch: Shadow",
 	code =
 [[
 # Opisthobranch: Shadow

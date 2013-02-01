@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "SHAMAN" then
 
 NerienOvaleScripts.script.SHAMAN.Nerien = {
-	desc = "Nerien: Elemental, Restoration",
+	desc = "[5.1] Nerien: Elemental, Restoration",
 	code =
 [[
 # Nerien's shaman script based on SimulationCraft

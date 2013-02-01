@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "ROGUE" then
 
 NerienOvaleScripts.script.ROGUE.Nerien = {
-	desc = "Nerien: Assassination, Combat, Subtlety",
+	desc = "[5.0] Nerien: Assassination, Combat, Subtlety",
 	code =
 [[
 # Nerien's rogue script based on SimulationCraft

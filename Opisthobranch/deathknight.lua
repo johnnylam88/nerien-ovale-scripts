@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "DEATHKNIGHT" then
 
 NerienOvaleScripts.script.DEATHKNIGHT.Opisthobranch = {
-	desc = "Opisthobranch: Blood, Frost, Unholy",
+	desc = "[5.0] Opisthobranch: Blood, Frost, Unholy",
 	code =
 [[
 # Opisthobranch: Blood, Frost, Unholy

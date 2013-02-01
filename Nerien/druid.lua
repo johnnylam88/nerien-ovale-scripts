@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "DRUID" then
 
 NerienOvaleScripts.script.DRUID.Nerien = {
-	desc = "Nerien: Guardian",
+	desc = "[5.1] Nerien: Guardian",
 	code =
 [[
 # Nerien's druid script based on SimulationCraft

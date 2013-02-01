@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "MONK" then
 
 NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "Nerien: Brewmaster, Windwalker",
+	desc = "[5.1] Nerien: Brewmaster, Windwalker",
 	code =
 [[
 # Nerien's monk script based on SimulationCraft

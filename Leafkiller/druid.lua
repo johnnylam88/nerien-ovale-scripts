@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "DRUID" then
 
 NerienOvaleScripts.script.DRUID.Leafkiller = {
-	desc = "Leafkiller: Feral, Guardian",
+	desc = "[5.1] Leafkiller: Feral, Guardian",
 	code =
 [[
 # Leafkiller's Feral/Guardian druid script.

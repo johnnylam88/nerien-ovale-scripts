@@ -1,7 +1,7 @@
 if NerienOvaleScripts.class == "HUNTER" then
 
 NerienOvaleScripts.script.HUNTER.Nerien = {
-	desc = "Nerien: Beast Mastery, Survival",
+	desc = "[5.0] Nerien: Beast Mastery, Survival",
 	code =
 [[
 # Nerien's hunter script based on SimulationCraft
