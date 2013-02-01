@@ -571,7 +571,11 @@ AddFunction FeralDreamOfCenariusFullRotation
 	#faerie_fire,if=debuff.weakened_armor.stack<3
 	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
 	#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
-	if BuffPresent(predatory_swiftness) and ComboPoints() >=4 and BuffStacks(dream_of_cenarius_damage) <2 Spell(healing_touch)
+	if BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
+		and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}
+	{
+		Spell(healing_touch)
+	}
 	#healing_touch,if=buff.natures_swiftness.up
 	if BuffPresent(natures_swiftness) Spell(healing_touch)
 	if TalentPoints(incarnation_talent)
@@ -739,7 +743,11 @@ AddFunction FeralDreamOfCenariusShortCooldownActions
 		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
 	{
 		#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
-		if BuffPresent(predatory_swiftness) and ComboPoints() >=4 and BuffStacks(dream_of_cenarius_damage) <2 Spell(healing_touch)
+		if BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
+			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}
+		{
+			Spell(healing_touch)
+		}
 		#healing_touch,if=buff.natures_swiftness.up
 		if BuffPresent(natures_swiftness) Spell(healing_touch)
 		#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
@@ -755,7 +763,8 @@ AddFunction FeralDreamOfCenariusCooldownActions
 	unless {BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage)}
 		or {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
 		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
-		or {BuffPresent(predatory_swiftness) and ComboPoints() >=4 and BuffStacks(dream_of_cenarius_damage) <2}
+		or {BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
+			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}}
 		or BuffPresent(natures_swiftness)
 	{
 		# Sync Incarnation, Hand enchant, and Berserk with Tiger's Fury.
