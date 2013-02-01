@@ -383,8 +383,6 @@ AddFunction FrostFullRotation
 
 		if CheckBoxOn(potions) and target.Classification(worldboss)
 		{
-			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
-			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
 			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
 			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
 		}
@@ -425,6 +423,7 @@ AddFunction FrostFullRotation
 	if target.TimeToDie() >20 and target.DebuffExpires(frostbolt 3 stacks=3) Spell(frostbolt)
 	if CheckBoxOn(opt_alter_time)
 	{
+		#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invokers_energy.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
@@ -432,7 +431,11 @@ AddFunction FrostFullRotation
 		if BuffPresent(invokers_energy 6) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 		{
-			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
+			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) and Spell(alter_time_activate)
+			{
+				if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+				Spell(alter_time_activate)
+			}
 		}
 	}
 	if TalentPoints(nether_tempest_talent)
@@ -666,8 +669,6 @@ AddFunction FrostCooldownActions
 
 		if CheckBoxOn(potions) and target.Classification(worldboss)
 		{
-			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
-			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
 			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
 			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
 		}
@@ -706,6 +707,7 @@ AddFunction FrostCooldownActions
 	}
 	if CheckBoxOn(opt_alter_time)
 	{
+		#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.invokers_energy.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react&buff.rune_of_power.remains>6,moving=0
 		#alter_time,if=buff.alter_time.down&buff.brain_freeze.react&buff.fingers_of_frost.react,moving=0
@@ -713,7 +715,11 @@ AddFunction FrostCooldownActions
 		if BuffPresent(invokers_energy 6) or BuffPresent(rune_of_power_aura) or TalentPoints(incanters_ward_talent)
 			or not {TalentPoints(invocation_talent) or TalentPoints(rune_of_power_talent) or TalentPoints(incanters_ward_talent)}
 		{
-			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) Spell(alter_time_activate)
+			if BuffPresent(brain_freeze_aura) and BuffPresent(fingers_of_frost_aura) and Spell(alter_time_activate)
+			{
+				if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+				Spell(alter_time_activate)
+			}
 		}
 	}
 }
