@@ -374,14 +374,6 @@ AddFunction FrostFullRotation
 	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
 	if BuffExpires(alter_time)
 	{
-		if CheckBoxOn(potions) and target.Classification(worldboss)
-		{
-			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
-			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
-			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
-			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
-		}
-
 		#/evocation,if=buff.invocation.down&buff.alter_time.down
 		if TalentPoints(invocation_talent) and BuffExpires(invokers_energy) Spell(evocation)
 		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
@@ -389,6 +381,13 @@ AddFunction FrostFullRotation
 		#incanters_ward,break_after=4,if=buff.alter_time.down
 		if TalentPoints(incanters_ward_talent) Spell(incanters_ward)
 
+		if CheckBoxOn(potions) and target.Classification(worldboss)
+		{
+			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
+			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
+			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
+			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
+		}
 		{
 			#blood_fury,if=buff.invokers_energy.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
@@ -658,14 +657,6 @@ AddFunction FrostCooldownActions
 	Spell(mirror_image)
 	if BuffExpires(alter_time)
 	{
-		if CheckBoxOn(potions) and target.Classification(worldboss)
-		{
-			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
-			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
-			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
-			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
-		}
-
 		#/evocation,if=buff.invocation.down&buff.alter_time.down
 		if TalentPoints(invocation_talent) and BuffExpires(invokers_energy) Spell(evocation)
 		#rune_of_power,if=buff.rune_of_power.down&buff.alter_time.down
@@ -673,6 +664,13 @@ AddFunction FrostCooldownActions
 		#incanters_ward,break_after=4,if=buff.alter_time.down
 		if TalentPoints(incanters_ward_talent) Spell(incanters_ward)
 
+		if CheckBoxOn(potions) and target.Classification(worldboss)
+		{
+			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
+			if Spell(alter_time_activate) Item(jade_serpent_potion usable=1)
+			#jade_serpent_potion,if=target.time_to_die<=50&buff.alter_time.down
+			if target.TimeToDie() <=50 Item(jade_serpent_potion usable=1)
+		}
 		{
 			#blood_fury,if=buff.invokers_energy.remains>15&buff.alter_time.down&mana.pct>28
 			#blood_fury,if=buff.rune_of_power.remains>15&buff.alter_time.down
