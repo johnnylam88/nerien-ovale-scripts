@@ -464,6 +464,16 @@ AddFunction FeralExecuteRange
 	target.HealthPercent() <=25
 }
 
+AddFunction FeralInterrupt
+{
+	if target.InRange(skull_bash_cat) Spell(skull_bash_cat)
+	if not target.Classification(worldboss)
+	{
+		if TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash) Spell(mighty_bash)
+		if ComboPoints() >0 and target.InRange(maim) Spell(maim)
+	}
+}
+
 AddFunction FeralPreCombatActions
 {
 	if InCombat(no)
