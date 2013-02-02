@@ -743,7 +743,7 @@ AddIcon mastery=3 checkboxon=full_rotation
 	FrostFullRotation()
 }
 
-AddIcon mastery=3 help=cd
+AddIcon mastery=3 help=shortcd
 {
 	FrostShortCooldownActions()
 }

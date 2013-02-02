@@ -672,7 +672,7 @@ AddIcon mastery=3 help=cd size=small
 	Tier2TalentActions()
 }
 
-AddIcon mastery=3 help=cd
+AddIcon mastery=3 help=shortcd
 {
 	WindwalkerShortCooldownActions()
 }
