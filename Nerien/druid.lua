@@ -538,7 +538,7 @@ AddFunction FeralFillerActions
 		#shred,if=buff.berserk.up&buff.king_of_the_jungle.down
 		if BuffPresent(berserk_cat) Spell(shred)
 		#mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
-		if {ComboPoints() <5 and target.DebuffRemains(rip) <3} or {ComboPoints() ==0 and BuffRemains(savage_roar) <2} Spell(mangle_cat)
+		if {ComboPoints() <5 and target.DebuffRemains(rip) <3} or {ComboPoints() ==0 and BuffRemains(savage_roar_buff) <2} Spell(mangle_cat)
 		#shred,if=buff.king_of_the_jungle.down
 		Spell(shred)
 	}
@@ -572,7 +572,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 	#berserking
 	UseRacialActions()
 	#healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
-	if BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
+	if BuffPresent(predatory_swiftness) and BuffRemains(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
@@ -649,9 +649,9 @@ AddFunction FeralDreamOfCenariusFullRotation
 		if target.DebuffRemains(rip) +1.9 <= SpellCooldown(tigers_fury) Spell(rip)
 	}
 	#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
-	if BuffRemains(savage_roar) <=3 and ComboPoints() >0 and {BuffRemains(savage_roar) +2 > target.DebuffRemains(rip)} FeralSavageRoar()
+	if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 and {BuffRemains(savage_roar_buff) +2 > target.DebuffRemains(rip)} FeralSavageRoar()
 	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
-	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
+	if BuffRemains(savage_roar_buff) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar_buff) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
 	#pool_resource,wait=0.25,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&dot.rip.remains>=6.5
 	#ferocious_bite,if=combo_points>=5&dot.rip.remains>6
 	if ComboPoints() >=5 and target.DebuffRemains(rip) >6
@@ -680,7 +680,7 @@ AddFunction FeralDreamOfCenariusMainActions
 {
 	#auto_attack
 	#healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
-	if BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
+	if BuffPresent(predatory_swiftness) and BuffRemains(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
@@ -730,9 +730,9 @@ AddFunction FeralDreamOfCenariusMainActions
 		if target.DebuffRemains(rip) +1.9 <= SpellCooldown(tigers_fury) Spell(rip)
 	}
 	#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
-	if BuffRemains(savage_roar) <=3 and ComboPoints() >0 and {BuffRemains(savage_roar) +2 > target.DebuffRemains(rip)} FeralSavageRoar()
+	if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 and {BuffRemains(savage_roar_buff) +2 > target.DebuffRemains(rip)} FeralSavageRoar()
 	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
-	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
+	if BuffRemains(savage_roar_buff) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar_buff) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
 	#pool_resource,wait=0.25,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&dot.rip.remains>=6.5
 	#ferocious_bite,if=combo_points>=5&dot.rip.remains>6
 	if ComboPoints() >=5 and target.DebuffRemains(rip) >6
@@ -913,7 +913,7 @@ AddFunction FeralNonDreamOfCenariusFullRotation
 	#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
 	if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 and BuffRemains(savage_roar_buff) +2 > target.DebuffRemains(rip) FeralSavageRoar()
 	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
-	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
+	if BuffRemains(savage_roar_buff) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar_buff) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
 	#ferocious_bite,if=combo_points>=5&(dot.rip.remains>10|(dot.rip.remains>6&buff.berserk.up))&dot.rip.ticking
 	if ComboPoints() >=5 and target.DebuffPresent(rip)
 	{
@@ -973,7 +973,7 @@ AddFunction FeralNonDreamOfCenariusMainActions
 	#savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
 	if BuffRemains(savage_roar_buff) <=3 and ComboPoints() >0 and BuffRemains(savage_roar_buff) +2 > target.DebuffRemains(rip) FeralSavageRoar()
 	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
-	if BuffRemains(savage_roar) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
+	if BuffRemains(savage_roar_buff) <=6 and ComboPoints() >=5 and {BuffRemains(savage_roar_buff) +2 <= target.DebuffRemains(rip)} FeralSavageRoar()
 	#ferocious_bite,if=combo_points>=5&(dot.rip.remains>10|(dot.rip.remains>6&buff.berserk.up))&dot.rip.ticking
 	if ComboPoints() >=5 and target.DebuffPresent(rip)
 	{
