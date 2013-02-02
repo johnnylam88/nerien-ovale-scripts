@@ -117,6 +117,10 @@ Define(growl 6795)
 	SpellAddBuff(growl bear_form=1)
 Define(healing_touch 5185)
 	SpellAddBuff(healing_touch natures_swiftness=0 predatory_swiftness=0)
+Define(heart_of_the_wild 108292)
+	SpellInfo(heart_of_the_wild cd=360)
+	SpellAddBuff(heart_of_the_wild heart_of_the_wild=1)
+Define(heart_of_the_wild_talent 16)
 Define(hibernate 2637)
 	SpellAddBuff(hibernate natures_swiftness=0 predatory_swiftness=0)
 Define(hurricane 16914)
@@ -330,6 +334,8 @@ Define(tooth_and_claw 135286)
 	SpellInfo(tooth_and_claw duration=10)
 Define(tooth_and_claw_debuff 135601)
 	SpellInfo(tooth_and_claw_debuff duration=15)
+Define(tranquility 740)
+	SpellInfo(tranquility canStopChannelling=4 cd=480 duration=8 tick=2)
 Define(treants 106737)
 	SpellInfo(treants cd=60)
 Define(treants_balance 33831)
@@ -354,13 +360,13 @@ Define(weakened_blows 115798)
     SpellInfo(weakened_blows duration=30)
 Define(wild_charge 102401)
 	SpellInfo(wild_charge cd=15)
-Define(wild_charge_talent 3)
 Define(wild_charge_bear 16979)
 	SpellInfo(wild_charge_bear cd=15)
 Define(wild_charge_cat 49376)
 	SpellInfo(wild_charge_cat cd=15)
 Define(wild_charge_moonkin 102383)
 	SpellInfo(wild_charge_moonkin cd=15)
+Define(wild_charge_talent 3)
 Define(wild_growth 48438)
 	SpellInfo(wild_growth cd=8 duration=7 tick=1)
 	SpellInfo(wild_growth addcd=2 glyph=glyph_of_wild_growth)
@@ -482,6 +488,7 @@ AddFunction FeralInterrupt
 	if not target.Classification(worldboss)
 	{
 		if TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash) Spell(mighty_bash)
+		if TalentPoints(typhoon_talent) and target.InRange(skull_bash_cat) Spell(typhoon)
 		if ComboPoints() >0 and target.InRange(maim) Spell(maim)
 	}
 }
@@ -1054,12 +1061,35 @@ AddFunction FeralNonDreamOfCenariusCooldownActions
 
 ### Feral Icons
 
-AddIcon mastery=2 size=small
+# Healing cooldowns.
+AddIcon mastery=2 help=cd size=small
 {
+	Spell(barkskin)
+	Spell(survival_instincts)
+	if TalentPoints(renewal_talent) Spell(renewal)
+	if TalentPoints(cenarion_ward_talent) Spell(cenarion_ward)
+	Spell(tranquility)
 }
 
 AddIcon mastery=2 size=small
 {
+	if TalentPoints(displacer_beast_talent)
+	{
+		Spell(displacer_beast)
+	}
+	if TalentPoints(wild_charge_talent)
+	{
+		if BuffPresent(bear_form)
+		{
+			if target.InRange(wild_charge_bear) and not target.InRange(mangle_bear) Spell(wild_charge_bear)
+		}
+		if BuffPresent(cat_form)
+		{
+			if target.InRange(wild_charge_cat) and not target.InRange(mangle_cat) Spell(wild_charge_cat)
+		}
+		if target.InRange(wild_charge) Spell(wild_charge)
+	}
+	Spell(dash)
 }
 
 # Full rotation in a single icon.
@@ -1135,12 +1165,12 @@ AddIcon mastery=2 help=cd
 	}
 }
 
-# Healing cooldowns.
+# Tier 6 talent cooldown.
 AddIcon mastery=2 help=cd size=small
 {
-	if TalentPoints(natures_swiftness_talent) Spell(natures_swiftness)
-	if TalentPoints(renewal_talent) Spell(renewal)
-	if TalentPoints(cenarion_ward_talent) Spell(cenarion_ward)
+	if TalentPoints(heart_of_the_wild_talent) Spell(heart_of_the_wild)
+	if TalentPoints(dream_of_cenarius_talent) and TalentPoints(natures_swiftness_talent) Spell(natures_swiftness)
+	if TalentPoints(natures_vigil_talent) Spell(natures_vigil)
 }
 
 # Trinkets.
