@@ -339,6 +339,11 @@ AddFunction Interrupt
 #   Make absolutely sure that Ascendance can be used so that only Lava Bursts
 #   need to be cast during it's duration.
 
+AddFunction ElementalUsePotion
+{
+	if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+}
+
 AddFunction ElementalHasteBuffPresent
 {
 	BuffPresent(burst_haste any=1) or BuffPresent(elemental_mastery) or BuffPresent(berserking)
@@ -364,7 +369,7 @@ AddFunction ElementalFullRotation
 		if BuffExpires(lightning_shield) Spell(lightning_shield)
 		#snapshot_stats
 		#jade_serpent_potion
-		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+		ElementalUsePotion()
 	}
 
 	#/wind_shear
@@ -372,11 +377,11 @@ AddFunction ElementalFullRotation
 	#/bloodlust,if=target.health.pct<25|time>5
 	if not ElementalHasteBuffPresent() and target.HealthPercent() <25 or TimeInCombat() >5 Bloodlust()
 	#/stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
-	if BuffExpires(stormlash) and {BuffPresent(burst_haste) or TimeInCombat() >60} Spell(stormlash_totem)
+	if BuffExpires(stormlash any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
 	#/jade_serpent_potion,if=time>60&(pet.primal_fire_elemental.active|pet.greater_fire_elemental.active|target.time_to_die<=60)
-	if TimeInCombat() >60
+	if TimeInCombat() >60 and {TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60}
 	{
-		if TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60 Item(jade_serpent_potion)
+		ElementalUsePotion()
 	}
 
 	#/run_action_list,name=ae,if=active_enemies>1
@@ -564,17 +569,17 @@ AddFunction ElementalCooldownActions
 	if InCombat(no)
 	{
 		#jade_serpent_potion
-		if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion usable=1)
+		ElementalUsePotion()
 	}
 
 	#/wind_shear
 	if target.IsInterruptible() Interrupt()
 	#/stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
-	if BuffExpires(stormlash) and {BuffPresent(burst_haste) or TimeInCombat() >60} Spell(stormlash_totem)
+	if BuffExpires(stormlash any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
 	#/jade_serpent_potion,if=time>60&(pet.primal_fire_elemental.active|pet.greater_fire_elemental.active|target.time_to_die<=60)
-	if TimeInCombat() >60
+	if TimeInCombat() >60 and {TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60}
 	{
-		if TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60 Item(jade_serpent_potion)
+		ElementalUsePotion()
 	}
 
 	#use_item,name=firebirds_gloves,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|\
