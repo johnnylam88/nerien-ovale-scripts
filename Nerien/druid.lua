@@ -574,6 +574,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 	}
 	#healing_touch,if=buff.natures_swiftness.up
 	if BuffPresent(natures_swiftness) Spell(healing_touch)
+	if not target.InRange(mangle_cat) Texture(ability_druid_catformattack)
 	if TalentPoints(incarnation_talent)
 	{
 		#incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
@@ -681,6 +682,7 @@ AddFunction FeralDreamOfCenariusMainActions
 	}
 	#healing_touch,if=buff.natures_swiftness.up
 	if BuffPresent(natures_swiftness) Spell(healing_touch)
+	if not target.InRange(mangle_cat) Texture(ability_druid_catformattack)
 	#ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
 	if FeralExecuteRange() and ComboPoints() >=1 and target.DebuffPresent(rip) and target.DebuffRemains(rip) <=3 Spell(ferocious_bite)
 	#thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
@@ -749,6 +751,7 @@ AddFunction FeralDreamOfCenariusShortCooldownActions
 		or {BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
 			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}}
 		or BuffPresent(natures_swiftness)
+		or not target.InRange(mangle_cat)
 	{
 		#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
 		if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
@@ -766,6 +769,7 @@ AddFunction FeralDreamOfCenariusCooldownActions
 		or {BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
 			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}}
 		or BuffPresent(natures_swiftness)
+		or not target.InRange(mangle_cat)
 	{
 		# Sync Incarnation, Hand enchant, and Berserk with Tiger's Fury.
 		#incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
@@ -851,6 +855,7 @@ AddFunction FeralNonDreamOfCenariusFullRotation
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
 	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if not target.InRange(mangle_cat) Texture(ability_druid_catformattack)
 	if TalentPoints(incarnation_talent)
 	{
 		#incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
@@ -933,6 +938,7 @@ AddFunction FeralNonDreamOfCenariusMainActions
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
 	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if not target.InRange(mangle_cat) Texture(ability_druid_catformattack)
 	#ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
 	if FeralExecuteRange() and ComboPoints() >=1 and target.DebuffPresent(rip) and target.DebuffRemains(rip) <=3 Spell(ferocious_bite)
 	#thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
@@ -987,6 +993,7 @@ AddFunction FeralNonDreamOfCenariusShortCooldownActions
 
 	unless BuffExpires(savage_roar_buff)
 		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or not target.InRange(mangle_cat)
 	{
 		#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
 		if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
@@ -1008,6 +1015,7 @@ AddFunction FeralNonDreamOfCenariusCooldownActions
 
 	unless {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
 		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or not target.InRange(mangle_cat)
 	{
 		# Sync Incarnation, Hand enchant, and Berserk with Tiger's Fury.
 		#incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
