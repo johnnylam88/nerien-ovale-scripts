@@ -21,11 +21,11 @@ Define(ancestral_swiftness_talent 11)
 Define(ascendance 114049)
 	SpellInfo(ascendance cd=180)
 Define(ascendance_air 114051)
-	SpellInfo(ascendance_air duration=15)
+	SpellInfo(ascendance_air cd=180 duration=15)
 Define(ascendance_fire 114050)
-	SpellInfo(ascendance_fire duration=15)
+	SpellInfo(ascendance_fire cd=180 duration=15)
 Define(ascendance_water 114052)
-	SpellInfo(ascendance_water duration=15)
+	SpellInfo(ascendance_water cd=180 duration=15)
 Define(astral_shift 108271)
 	SpellInfo(astral_shift cd=120 duration=6)
 	SpellAddBuff(astral_shift astral_shift=1)
@@ -349,7 +349,7 @@ AddFunction ElementalAscendanceOrFireElementalReady
 	# Returns true if either Ascendance or FE is up or both are on longish cooldown.
 	#((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|buff.ascendance.up|totem.fire_elemental_totem.active
 	BuffPresent(ascendance_fire) or TotemPresent(fire totem=fire_elemental_totem)
-		or {{SpellCooldown(ascendance) >10 or Level() <87} and SpellCooldown(fire_elemental_totem) >10}
+		or {{SpellCooldown(ascendance_fire) >10 or Level() <87} and SpellCooldown(fire_elemental_totem) >10}
 }
 
 AddFunction ElementalFullRotation
@@ -383,7 +383,7 @@ AddFunction ElementalFullRotation
 	if Enemies() >1
 	{
 		#ascendance
-		Spell(ascendance)
+		Spell(ascendance_fire)
 		#lava_beam
 		Spell(lava_beam)
 		if TotemExpires(fire)
@@ -408,13 +408,20 @@ AddFunction ElementalFullRotation
 	}
 
 	#/run_action_list,name=single,if=active_enemies=1
-	#use_item,name=firebirds_gloves,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
+	#use_item,name=firebirds_gloves,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|\
+	#	buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
 	if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() UseItemActions()
-	#berserking,if=!buff.bloodlust.up&!buff.elemental_mastery.up&buff.ascendance.cooldown_remains=0&(dot.flame_shock.remains>buff.ascendance.duration|level<87)
-	if not ElementalHasteBuffPresent() and Spell(ascendance) and {target.DebuffRemains(flame_shock) > SpellData(ascendance_fire duration) or Level() <87} Spell(berserking)
+	#berserking,if=!buff.bloodlust.up&!buff.elemental_mastery.up&buff.ascendance.cooldown_remains=0&\
+	#	(dot.flame_shock.remains>buff.ascendance.duration|level<87)
+	if not ElementalHasteBuffPresent() and Spell(ascendance_fire)
+		and {target.DebuffRemains(flame_shock) > SpellData(ascendance_fire duration) or Level() <87}
+	{
+		Spell(berserking)
+	}
 	#blood_fury,if=buff.bloodlust.up|buff.ascendance.up|((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)
 	if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() UseRacialActions()
-	#elemental_mastery,if=talent.elemental_mastery.enabled&time>15&((!buff.bloodlust.up&time<120)|(!buff.berserking.up&!buff.bloodlust.up&buff.ascendance.up)|(time>=200&(cooldown.ascendance.remains>30|level<87)))
+	#elemental_mastery,if=talent.elemental_mastery.enabled&time>15&\
+	#	((!buff.bloodlust.up&time<120)|(!buff.berserking.up&!buff.bloodlust.up&buff.ascendance.up)|(time>=200&(cooldown.ascendance.remains>30|level<87)))
 	if TalentPoints(elemental_mastery_talent) and TimeInCombat() >15
 		and {{BuffExpires(burst_haste any=1) and TimeInCombat() <120}
 			or {BuffExpires(berserking) and BuffExpires(burst_haste any=1) and BuffPresent(ascendance_fire)}
@@ -429,7 +436,7 @@ AddFunction ElementalFullRotation
 		and {target.TimeToDie() <20 or ElementalHasteBuffPresent() or TimeInCombat() >180}
 		and SpellCooldown(lava_burst) >0
 	{
-		Spell(ascendance)
+		Spell(ascendance_fire)
 	}
 	#ancestral_swiftness,if=talent.ancestral_swiftness.enabled&!buff.ascendance.up
 	if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
@@ -528,7 +535,7 @@ AddFunction ElementalAoEActions
 {
 	#/run_action_list,name=ae,if=active_enemies>1
 	#ascendance
-	Spell(ascendance)
+	Spell(ascendance_fire)
 	#lava_beam
 	Spell(lava_beam)
 	if TotemExpires(fire)
@@ -570,13 +577,20 @@ AddFunction ElementalCooldownActions
 		if TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60 Item(jade_serpent_potion)
 	}
 
-	#use_item,name=firebirds_gloves,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
+	#use_item,name=firebirds_gloves,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|\
+	#	buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
 	if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() UseItemActions()
-	#berserking,if=!buff.bloodlust.up&!buff.elemental_mastery.up&buff.ascendance.cooldown_remains=0&(dot.flame_shock.remains>buff.ascendance.duration|level<87)
-	if not ElementalHasteBuffPresent() and Spell(ascendance) and {target.DebuffRemains(flame_shock) > SpellData(ascendance_fire duration) or Level() <87} Spell(berserking)
+	#berserking,if=!buff.bloodlust.up&!buff.elemental_mastery.up&buff.ascendance.cooldown_remains=0&\
+	#	(dot.flame_shock.remains>buff.ascendance.duration|level<87)
+	if not ElementalHasteBuffPresent() and Spell(ascendance_fire)
+		and {target.DebuffRemains(flame_shock) > SpellData(ascendance_fire duration) or Level() <87}
+	{
+		Spell(berserking)
+	}
 	#blood_fury,if=buff.bloodlust.up|buff.ascendance.up|((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)
 	if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() UseRacialActions()
-	#elemental_mastery,if=talent.elemental_mastery.enabled&time>15&((!buff.bloodlust.up&time<120)|(!buff.berserking.up&!buff.bloodlust.up&buff.ascendance.up)|(time>=200&(cooldown.ascendance.remains>30|level<87)))
+	#elemental_mastery,if=talent.elemental_mastery.enabled&time>15&\
+	#	((!buff.bloodlust.up&time<120)|(!buff.berserking.up&!buff.bloodlust.up&buff.ascendance.up)|(time>=200&(cooldown.ascendance.remains>30|level<87)))
 	if TalentPoints(elemental_mastery_talent) and TimeInCombat() >15
 		and {{BuffExpires(burst_haste any=1) and TimeInCombat() <120}
 			or {BuffExpires(berserking) and BuffExpires(burst_haste any=1) and BuffPresent(ascendance_fire)}
@@ -591,7 +605,7 @@ AddFunction ElementalCooldownActions
 		and {target.TimeToDie() <20 or ElementalHasteBuffPresent() or TimeInCombat() >180}
 		and SpellCooldown(lava_burst) >0
 	{
-		Spell(ascendance)
+		Spell(ascendance_fire)
 	}
 	#ancestral_swiftness,if=talent.ancestral_swiftness.enabled&!buff.ascendance.up
 	if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
@@ -791,7 +805,7 @@ AddIcon mastery=3 help=cd
 {
 	if target.IsInterruptible() Interrupt()
 	if Speed(more 0) Spell(spiritwalkers_grace)
-	Spell(ascendance)
+	Spell(ascendance_water)
 	Spell(fire_elemental_totem)
 	Spell(earth_elemental_totem)
 }
