@@ -401,13 +401,9 @@ AddListItem(trinketcd1 120s "Trinket 1 CD - 2 min")
 
 AddFunction UseItemActions
 {
+	Item(HandsSlot usable=1)
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
-}
-
-AddFunction UseItemHandActions
-{
-	Item(HandsSlot usable=1)
 }
 
 ###
@@ -586,7 +582,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 	#use_item,name=eternal_blossom_grips,sync=tigers_fury
 	if {{Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle)} and Spell(tigers_fury)
 	{
-		UseItemHandActions()
+		UseItemActions()
 	}
 	#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
 	if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
@@ -779,7 +775,7 @@ AddFunction FeralDreamOfCenariusCooldownActions
 		if {{Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle)} and Spell(tigers_fury)
 		{
 			if TalentPoints(incarnation_talent) and Spell(berserk_cat) Spell(king_of_the_jungle)
-			UseItemHandActions()
+			UseItemActions()
 			Spell(berserk_cat)
 		}
 		if BuffPresent(tigers_fury) Spell(berserk_cat)
@@ -863,7 +859,7 @@ AddFunction FeralNonDreamOfCenariusFullRotation
 	#use_item,name=eternal_blossom_grips,sync=tigers_fury
 	if {{Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle)} and Spell(tigers_fury)
 	{
-		UseItemHandActions()
+		UseItemActions()
 	}
 	#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
 	if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
@@ -1021,7 +1017,7 @@ AddFunction FeralNonDreamOfCenariusCooldownActions
 		if {{Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle)} and Spell(tigers_fury)
 		{
 			if TalentPoints(incarnation_talent) and Spell(berserk_cat) Spell(king_of_the_jungle)
-			UseItemHandActions()
+			UseItemActions()
 			Spell(berserk_cat)
 		}
 		if BuffPresent(tigers_fury) Spell(berserk_cat)
