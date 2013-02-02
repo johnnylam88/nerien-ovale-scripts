@@ -671,10 +671,20 @@ AddFunction FeralDreamOfCenariusFullRotation
 AddFunction FeralDreamOfCenariusMainActions
 {
 	#auto_attack
+	#healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
+	if BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
 	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
+	if BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
+		and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}
+	{
+		Spell(healing_touch)
+	}
+	#healing_touch,if=buff.natures_swiftness.up
+	if BuffPresent(natures_swiftness) Spell(healing_touch)
 	#ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
 	if FeralExecuteRange() and ComboPoints() >=1 and target.DebuffPresent(rip) and target.DebuffRemains(rip) <=3 Spell(ferocious_bite)
 	#thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
@@ -736,20 +746,14 @@ AddFunction FeralDreamOfCenariusShortCooldownActions
 {
 	#skull_bash_cat
 	if target.IsInterruptible() FeralInterrupt()
-	#healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
-	if BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
 
-	unless {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
+	unless {BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage)}
+		or {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
 		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or {BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
+			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}}
+		or BuffPresent(natures_swiftness)
 	{
-		#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
-		if BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
-			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}
-		{
-			Spell(healing_touch)
-		}
-		#healing_touch,if=buff.natures_swiftness.up
-		if BuffPresent(natures_swiftness) Spell(healing_touch)
 		#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
 		if {Energy() <=35 and BuffExpires(omen_of_clarity)} or BuffPresent(king_of_the_jungle) Spell(tigers_fury)
 	}
@@ -984,6 +988,7 @@ AddFunction FeralNonDreamOfCenariusShortCooldownActions
 {
 	#skull_bash_cat
 	if target.IsInterruptible() FeralInterrupt()
+
 	unless BuffExpires(savage_roar_buff)
 		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
 	{
@@ -1068,6 +1073,19 @@ AddIcon mastery=2 checkboxon=full_rotation
 	}
 }
 
+# Short cooldowns.
+AddIcon mastery=2 help=shortcd
+{
+	if TalentPoints(dream_of_cenarius_talent)
+	{
+		FeralDreamOfCenariusShortCooldownActions()
+	}
+	if not TalentPoints(dream_of_cenarius_talent)
+	{
+		FeralNonDreamOfCenariusShortCooldownActions()
+	}
+}
+
 # Main rotation plus fillers.
 AddIcon mastery=2 help=main
 {
@@ -1097,19 +1115,6 @@ AddIcon mastery=2 help=main
 	if not TalentPoints(dream_of_cenarius_talent)
 	{
 		FeralNonDreamOfCenariusMainActions()
-	}
-}
-
-# Short cooldowns.
-AddIcon mastery=2 help=shortcd
-{
-	if TalentPoints(dream_of_cenarius_talent)
-	{
-		FeralDreamOfCenariusShortCooldownActions()
-	}
-	if not TalentPoints(dream_of_cenarius_talent)
-	{
-		FeralNonDreamOfCenariusShortCooldownActions()
 	}
 }
 
