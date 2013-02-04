@@ -193,9 +193,11 @@ AddFunction UseRacialSurvivalActions
 }
 
 AddCheckBox(aoe L(AOE))
-AddCheckBox(opt_alter_time SpellName(alter_time) default)
 AddCheckBox(potions "Use potions" default)
+
 AddCheckBox(full_rotation "Full rotation")
+AddCheckBox(opt_icons_left "Left icons" default)
+AddCheckBox(opt_icons_right "Right icons" default)
 
 # Trinket CDs
 AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
@@ -215,8 +217,10 @@ AddFunction UseItemActions
 }
 
 ###
-### Common mage actions.
+### Mage (all specializations)
 ###
+
+AddCheckBox(opt_alter_time SpellName(alter_time) default)
 
 AddFunction Interrupt
 {
@@ -733,7 +737,7 @@ AddFunction FrostTimeWarp
 	}
 }
 
-AddIcon mastery=3 help=Blink size=small
+AddIcon mastery=3 help=Blink size=small checkboxon=opt_icons_left
 {
 	Spell(blink)
 }
@@ -758,7 +762,7 @@ AddIcon mastery=3 help=cd
 	FrostCooldownActions()
 }
 
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	FrostTimeWarp()
 }

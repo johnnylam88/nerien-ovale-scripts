@@ -283,6 +283,9 @@ AddFunction UseRacialSurvivalActions
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions "Use potions" default)
 
+AddCheckBox(opt_icons_left "Left icons" default)
+AddCheckBox(opt_icons_right "Right icons" default)
+
 # Trinket CDs
 AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
 AddListItem(trinketcd0 060s "Trinket 0 CD - 1 min")
@@ -632,7 +635,7 @@ AddFunction ElementalCooldownActions
 }
 
 # Survival cooldowns.
-AddIcon mastery=1 help=cd size=small
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 {
 	if TalentPoints(stone_bulwark_totem_talent) Spell(stone_bulwark_totem)
 	if TalentPoints(astral_shift_talent) Spell(astral_shift)
@@ -641,7 +644,7 @@ AddIcon mastery=1 help=cd size=small
 }
 
 # Utility.
-AddIcon mastery=1 help=buff size=small
+AddIcon mastery=1 help=buff size=small checkboxon=opt_icons_left
 {
 	if IsFeared() Spell(tremor_totem)
 	#if IsStunned() Spell(windwalk_totem)
@@ -683,14 +686,14 @@ AddIcon mastery=1 help=cd
 }
 
 # Bloodlust.
-AddIcon mastery=1 help=cd size=small
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 {
 	#/bloodlust,if=target.health.pct<25|time>5
 	if not ElementalHasteBuffPresent() and target.HealthPercent() <25 or TimeInCombat() >5 Bloodlust()
 }
 
 # Trinkets.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
@@ -752,7 +755,7 @@ AddFunction RestorationHealingStreamTotemRecall
 }
 
 # Survival cooldowns.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 {
 	if TalentPoints(stone_bulwark_totem_talent) Spell(stone_bulwark_totem)
 	if TalentPoints(astral_shift_talent) Spell(astral_shift)
@@ -761,7 +764,7 @@ AddIcon mastery=3 help=cd size=small
 }
 
 # Utility.
-AddIcon mastery=3 help=buff size=small
+AddIcon mastery=3 help=buff size=small checkboxon=opt_icons_left
 {
 	if IsFeared() Spell(tremor_totem)
 	#if IsStunned() Spell(windwalk_totem)
@@ -816,13 +819,13 @@ AddIcon mastery=3 help=cd
 }
 
 # Bloodlust.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	if BuffExpires(burst_haste any=1) Bloodlust()
 }
 
 # Trinkets.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)

@@ -244,6 +244,9 @@ AddFunction UseRacialSurvivalActions
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions "Use potions" default)
 
+AddCheckBox(opt_icons_left "Left icons" default)
+AddCheckBox(opt_icons_right "Right icons" default)
+
 # Trinket CDs
 AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
 AddListItem(trinketcd0 060s "Trinket 0 CD - 1 min")
@@ -355,13 +358,13 @@ AddFunction StaggerTickDamage
 }
 
 # Tier 5 damage reduction cooldown
-AddIcon mastery=1 help=cd size=small
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 {
 	Tier5TalentActions()
 }
 
 # Damage reduction cooldowns
-AddIcon mastery=1 help=cd size=small
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(fortifying_brew)
 	Spell(symbiosis_survival_instincts)
@@ -459,12 +462,12 @@ AddIcon mastery=1 help=cd
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
-AddIcon mastery=1 help=cd size=small
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 {
 	if BuffExpires(sanctuary_of_the_ox) Spell(summon_black_ox_statue)
 }
 
-AddIcon mastery=1 help=cd size=small
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
@@ -661,13 +664,13 @@ AddFunction WindwalkerCooldownActions
 }
 
 # Tier 5 damage reduction cooldown
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 {
 	Tier5TalentActions()
 }
 
 # Tier 2 healing cooldown
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 {
 	Tier2TalentActions()
 }
@@ -694,7 +697,7 @@ AddIcon mastery=3 help=cd
 	WindwalkerCooldownActions()
 }
 
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)

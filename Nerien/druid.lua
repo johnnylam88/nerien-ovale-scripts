@@ -399,6 +399,9 @@ AddFunction UseRacialActions
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions "Use potions" default)
 
+AddCheckBox(opt_icons_left "Left icons" default)
+AddCheckBox(opt_icons_right "Right icons" default)
+
 # Trinket CDs
 AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
 AddListItem(trinketcd0 060s "Trinket 0 CD - 1 min")
@@ -1066,7 +1069,7 @@ AddFunction FeralNonDreamOfCenariusCooldownActions
 ### Feral Icons
 
 # Healing cooldowns.
-AddIcon mastery=2 help=cd size=small
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(barkskin)
 	Spell(survival_instincts)
@@ -1075,7 +1078,7 @@ AddIcon mastery=2 help=cd size=small
 	Spell(tranquility)
 }
 
-AddIcon mastery=2 size=small
+AddIcon mastery=2 size=small checkboxon=opt_icons_left
 {
 	if TalentPoints(displacer_beast_talent)
 	{
@@ -1170,7 +1173,7 @@ AddIcon mastery=2 help=cd
 }
 
 # Tier 6 talent cooldown.
-AddIcon mastery=2 help=cd size=small
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 {
 	if TalentPoints(heart_of_the_wild_talent) Spell(heart_of_the_wild)
 	if TalentPoints(dream_of_cenarius_talent) and TalentPoints(natures_swiftness_talent) Spell(natures_swiftness)
@@ -1178,7 +1181,7 @@ AddIcon mastery=2 help=cd size=small
 }
 
 # Trinkets.
-AddIcon mastery=2 help=cd size=small
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
@@ -1203,13 +1206,13 @@ AddFunction GuardianInterrupt
 #	http://theincbear.com/forums/viewtopic.php?p=12230#p12230
 
 # Health increase cooldowns.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(might_of_ursoc)
 }
 
 # Damage reduction cooldowns.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(barkskin)
 	if TalentPoints(force_of_nature_talent) Spell(treants_guardian)
@@ -1279,7 +1282,7 @@ AddIcon mastery=3 help=cd
 }
 
 # Healing cooldowns.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	if TalentPoints(natures_swiftness_talent) Spell(natures_swiftness)
 	if TalentPoints(renewal_talent) Spell(renewal)
@@ -1287,7 +1290,7 @@ AddIcon mastery=3 help=cd size=small
 }
 
 # Trinkets.
-AddIcon mastery=3 help=cd size=small
+AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
