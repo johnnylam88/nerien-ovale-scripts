@@ -441,9 +441,11 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		Spell(blackout_kick)
 	}
-	if {Energy() >= SpellData(spinning_crane_kick energy)} and SpellCooldown(keg_smash) >2
+	if {Energy() >= SpellData(spinning_crane_kick energy)} and {SpellCooldown(keg_smash) >2}
+		and {Energy() - SpellData(spinning_crane_kick energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
 	{
-		# SCK if Keg Smash is at least 2 seconds from coming off cooldown.
+		# Only SCK if we'll have enough energy to Keg Smash when it comes off cooldown.
+		# The channel time of SCK is 2s, so only SCK if Keg Smash is on CD for at least 2s.
 		Spell(spinning_crane_kick)
 	}
 	if NumberToMaxChi() <2
