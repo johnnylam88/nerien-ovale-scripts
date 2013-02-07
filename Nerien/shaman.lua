@@ -658,7 +658,7 @@ AddIcon mastery=1 help=buff size=small checkboxon=opt_icons_left
 }
 
 # Main Rotation plus fillers.
-AddIcon mastery=1 help=cd
+AddIcon mastery=1 help=main
 {
 	ElementalBuffActions()
 	ElementalMainActions()
@@ -779,7 +779,7 @@ AddIcon mastery=3 help=buff size=small checkboxon=opt_icons_left
 }
 
 # Short cooldowns.
-AddIcon mastery=3 help=cd
+AddIcon mastery=3 help=shortcd
 {
 	RestorationHealingStreamTotemRecall()
 	RestorationPetChannel()
