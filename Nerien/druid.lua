@@ -533,16 +533,22 @@ AddFunction UseItemActions
 # Show the full rotation in an extra icon.
 AddCheckBox(full_rotation "Full rotation")
 
+# Faerie Fire/Swarm
+AddCheckBox(opt_faerie_fire SpellName(faerie_fire) default)
 AddFunction FaerieFire
 {
-	if TalentPoints(faerie_swarm_talent) Spell(faerie_swarm)
-	if not TalentPoints(faerie_swarm_talent) Spell(faerie_fire)
+	if CheckBoxOn(opt_faerie_fire)
+	{
+		if TalentPoints(faerie_swarm_talent) Spell(faerie_swarm)
+		if not TalentPoints(faerie_swarm_talent) Spell(faerie_fire)
+	}
 }
 
 AddFunction FaerieFireReady
 {
-	{TalentPoints(faerie_swarm_talent) and Spell(faerie_swarm)}
-		or {TalentPoints(faerie_swarm_talent) and Spell(faerie_fire)}
+	CheckBoxOn(opt_faerie_fire)
+		and {{TalentPoints(faerie_swarm_talent) and Spell(faerie_swarm)}
+			or {not TalentPoints(faerie_swarm_talent) and Spell(faerie_fire)}}
 }
 
 AddFunction RipDamageTillDead
@@ -686,7 +692,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
-	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if target.DebuffStacks(weakened_armor any=1) <3 FaerieFire()
 	#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
 	if BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
 		and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}
@@ -794,7 +800,7 @@ AddFunction FeralDreamOfCenariusMainActions
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
-	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if target.DebuffStacks(weakened_armor any=1) <3 FaerieFire()
 	#healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
 	if BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
 		and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}
@@ -868,7 +874,7 @@ AddFunction FeralDreamOfCenariusShortCooldownActions
 
 	unless {BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage)}
 		or {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
-		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or {target.DebuffStacks(weakened_armor any=1) <3 and FaerieFireReady()}
 		or {BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
 			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}}
 		or BuffPresent(natures_swiftness)
@@ -886,7 +892,7 @@ AddFunction FeralDreamOfCenariusCooldownActions
 
 	unless {BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage)}
 		or {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
-		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or {target.DebuffStacks(weakened_armor any=1) <3 and FaerieFireReady()}
 		or {BuffPresent(predatory_swiftness) and BuffStacks(dream_of_cenarius_damage) <2
 			and {ComboPoints() >=4 or {ArmorSetParts(T15_melee) >=2 and ComboPoints() >=3}}}
 		or BuffPresent(natures_swiftness)
@@ -975,7 +981,7 @@ AddFunction FeralNonDreamOfCenariusFullRotation
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
-	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if target.DebuffStacks(weakened_armor any=1) <3 FaerieFire()
 	if not target.InRange(mangle_cat) Texture(ability_druid_catformattack)
 	if TalentPoints(incarnation_talent)
 	{
@@ -1058,7 +1064,7 @@ AddFunction FeralNonDreamOfCenariusMainActions
 	#savage_roar,if=buff.savage_roar.down
 	if BuffExpires(savage_roar_buff) FeralSavageRoar()
 	#faerie_fire,if=debuff.weakened_armor.stack<3
-	if target.DebuffStacks(weakened_armor) <3 FaerieFire()
+	if target.DebuffStacks(weakened_armor any=1) <3 FaerieFire()
 	if not target.InRange(mangle_cat) Texture(ability_druid_catformattack)
 	#ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
 	if FeralExecuteRange() and ComboPoints() >=1 and target.DebuffPresent(rip) and target.DebuffRemains(rip) <=3 Spell(ferocious_bite)
@@ -1113,7 +1119,7 @@ AddFunction FeralNonDreamOfCenariusShortCooldownActions
 	if target.IsInterruptible() FeralInterrupt()
 
 	unless BuffExpires(savage_roar_buff)
-		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or {target.DebuffStacks(weakened_armor any=1) <3 and FaerieFireReady()}
 		or not target.InRange(mangle_cat)
 	{
 		#tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
@@ -1135,7 +1141,7 @@ AddFunction FeralNonDreamOfCenariusCooldownActions
 	#UseProfessionActions()
 
 	unless {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
-		or {target.DebuffStacks(weakened_armor) <3 and FaerieFireReady()}
+		or {target.DebuffStacks(weakened_armor any=1) <3 and FaerieFireReady()}
 		or not target.InRange(mangle_cat)
 	{
 		# Sync Incarnation, Hand enchant, and Berserk with Tiger's Fury.
@@ -1351,8 +1357,8 @@ AddIcon mastery=3 help=main
 	Spell(mangle_bear)
 
 	# Debuff maintenance.
-	if target.DebuffExpires(weakened_blows 3 any=1) Spell(thrash_bear)
-	if target.DebuffExpires(weakened_armor 3 any=1) or target.DebuffStacks(weakened_armor any=1) <3
+	if target.DebuffRemains(weakened_blows any=1) <3 Spell(thrash_bear)
+	if target.DebuffRemains(weakened_armor any=1) <3 or target.DebuffStacks(weakened_armor any=1) <3
 	{
 		FaerieFire()
 	}
