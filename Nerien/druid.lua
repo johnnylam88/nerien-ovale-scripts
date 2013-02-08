@@ -1301,8 +1301,6 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 ### Guardian
 ###
 
-AddCheckBox(opt_maul SpellName(maul) default mastery=3)
-
 AddFunction GuardianInterrupt
 {
 	if target.InRange(skull_bash_bear) Spell(skull_bash_bear)
@@ -1330,26 +1328,24 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 }
 
 # Main rotation (rage-consuming abilities).
-AddIcon mastery=3
+AddIcon mastery=3 help=shortcd
 {
-	if CheckBoxOn(opt_maul) and target.IsAggroed(no)
+	if BuffPresent(tooth_and_claw) or target.IsAggroed(no)
 	{
-		# Always bank enough rage so that if we need to switch to defense, we can.
 		if Rage() >90 Spell(maul)
 	}
-	if BuffExpires(tooth_and_claw) or {BuffPresent(tooth_and_claw) and BuffExpires(savage_defense_buff 2)}
+	if BuffExpires(tooth_and_claw) or BuffRemains(savage_defense_buff) <2 Spell(savage_defense usable=1)
+	if HealthPercent() <80
 	{
-		Spell(savage_defense usable=1)
 		if Glyph(glyph_of_frenzied_regeneration) or Rage() >60 Spell(frenzied_regeneration)
 	}
-	if Rage() >90 and BuffPresent(tooth_and_claw) Spell(maul)
 }
 
 # Main rotation (rage-generating abilities): Mangle > Lacerate > Thrash Maintenance > FFF
 AddIcon mastery=3 help=main
 {
 	if InCombat(no) and BuffRemains(str_agi_int any=1) <400 Spell(mark_of_the_wild)
-	if not Stance(1) Spell(bear_form)
+	if BuffExpires(bear_form) Spell(bear_form)
 
 	Spell(mangle_bear)
 
@@ -1361,7 +1357,9 @@ AddIcon mastery=3 help=main
 	}
 
 	Spell(lacerate)
-	if target.DebuffPresent(thrash_bear 6) FaerieFire()
+	if target.DebuffRemains(thrash_bear) <2 Spell(thrash_bear)
+	# FFF currently resets the swing timer, but it will be fixed in MoP 5.2.
+	#FaerieFire()
 	Spell(thrash_bear)
 }
 
@@ -1377,8 +1375,8 @@ AddIcon mastery=3 help=aoe checkboxon=aoe
 AddIcon mastery=3 help=cd
 {
 	if target.IsInterruptible() GuardianInterrupt()
-	if Rage(less 11) Spell(enrage)
-	if HealthPercent(less 25)
+	if Rage() <11 Spell(enrage)
+	if HealthPercent() <25
 	{
 		if BuffExpires(son_of_ursoc) Spell(berserk_bear)
 		if TalentPoints(incarnation_talent) and BuffExpires(berserk_bear) Spell(son_of_ursoc)
