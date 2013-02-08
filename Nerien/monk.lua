@@ -270,9 +270,12 @@ AddFunction UseItemActions
 
 AddFunction Interrupt
 {
-	if target.InRange(spear_hand_strike) Spell(spear_hand_strike)
-	if target.Classification(worldboss no) and target.InRange(paralysis) Spell(paralysis)
-	UseRacialInterruptActions()
+	if not target.IsFriend() and target.IsInterruptible()
+	{
+		if target.InRange(spear_hand_strike) Spell(spear_hand_strike)
+		if target.Classification(worldboss no) and target.InRange(paralysis) Spell(paralysis)
+		UseRacialInterruptActions()
+	}
 }
 
 AddFunction Jab
@@ -459,7 +462,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 
 AddIcon mastery=1 help=cd
 {
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
@@ -507,7 +510,7 @@ AddFunction WindwalkerFullRotation
 
 	#auto_attack
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
 	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
@@ -659,7 +662,7 @@ AddFunction WindwalkerCooldownActions
 	}
 
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
 	if BuffPresent(burst_haste any=1) or target.TimeToDie() <=60 WindwalkerUsePotion()
 	#use_item,name=red_crane_grips

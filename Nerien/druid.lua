@@ -604,12 +604,15 @@ AddFunction FeralExecuteRange
 
 AddFunction FeralInterrupt
 {
-	if target.InRange(skull_bash_cat) Spell(skull_bash_cat)
-	if not target.Classification(worldboss)
+	if not target.IsFriend() and target.IsInterruptible()
 	{
-		if TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash) Spell(mighty_bash)
-		if TalentPoints(typhoon_talent) and target.InRange(skull_bash_cat) Spell(typhoon)
-		if ComboPoints() >0 and target.InRange(maim) Spell(maim)
+		if target.InRange(skull_bash_cat) Spell(skull_bash_cat)
+		if not target.Classification(worldboss)
+		{
+			if TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash) Spell(mighty_bash)
+			if TalentPoints(typhoon_talent) and target.InRange(skull_bash_cat) Spell(typhoon)
+			if ComboPoints() >0 and target.InRange(maim) Spell(maim)
+		}
 	}
 }
 
@@ -684,7 +687,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 {
 	#auto_attack
 	#skull_bash_cat
-	if target.IsInterruptible() FeralInterrupt()
+	FeralInterrupt()
 	#berserking
 	UseRacialActions()
 	#healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
@@ -868,7 +871,7 @@ AddFunction FeralDreamOfCenariusMainActions
 AddFunction FeralDreamOfCenariusShortCooldownActions
 {
 	#skull_bash_cat
-	if target.IsInterruptible() FeralInterrupt()
+	FeralInterrupt()
 
 	unless {BuffPresent(predatory_swiftness) and BuffExpires(predatory_swiftness) <=1.5 and BuffExpires(dream_of_cenarius_damage)}
 		or {BuffExpires(savage_roar_buff) and FeralSavageRoarReady()}
@@ -971,7 +974,7 @@ AddFunction FeralNonDreamOfCenariusFillerActions
 AddFunction FeralNonDreamOfCenariusFullRotation
 {
 	#skull_bash_cat
-	if target.IsInterruptible() FeralInterrupt()
+	FeralInterrupt()
 	#init_use_racial_actions()
 	UseRacialActions()
 	#init_use_profession_actions()
@@ -1112,7 +1115,7 @@ AddFunction FeralNonDreamOfCenariusMainActions
 AddFunction FeralNonDreamOfCenariusShortCooldownActions
 {
 	#skull_bash_cat
-	if target.IsInterruptible() FeralInterrupt()
+	FeralInterrupt()
 
 	unless BuffExpires(savage_roar_buff)
 		or {target.DebuffStacks(weakened_armor any=1) <3 and FaerieFireReady()}
@@ -1303,10 +1306,13 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 
 AddFunction GuardianInterrupt
 {
-	if target.InRange(skull_bash_bear) Spell(skull_bash_bear)
-	if not target.Classification(worldboss) and TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash)
+	if not target.IsFriend() and target.IsInterruptible()
 	{
-		Spell(mighty_bash)
+		if target.InRange(skull_bash_bear) Spell(skull_bash_bear)
+		if not target.Classification(worldboss) and TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash)
+		{
+			Spell(mighty_bash)
+		}
 	}
 }
 

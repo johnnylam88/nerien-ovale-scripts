@@ -318,7 +318,7 @@ AddFunction Bloodlust
 
 AddFunction Interrupt
 {
-	Spell(wind_shear)
+	if not target.IsFriend() and target.IsInterruptible() Spell(wind_shear)
 }
 
 ###
@@ -376,7 +376,7 @@ AddFunction ElementalFullRotation
 	}
 
 	#/wind_shear
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	#/bloodlust,if=target.health.pct<25|time>5
 	if not ElementalHasteBuffPresent() and target.HealthPercent() <25 or TimeInCombat() >5 Bloodlust()
 	#/stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
@@ -576,7 +576,7 @@ AddFunction ElementalCooldownActions
 	}
 
 	#/wind_shear
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	#/stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
 	if BuffExpires(stormlash any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
 	#/jade_serpent_potion,if=time>60&(pet.primal_fire_elemental.active|pet.greater_fire_elemental.active|target.time_to_die<=60)
@@ -811,7 +811,7 @@ AddIcon mastery=3 help=aoe checkboxon=aoe
 # Cooldowns.
 AddIcon mastery=3 help=cd
 {
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	if Speed(more 0) Spell(spiritwalkers_grace)
 	Spell(ascendance_water)
 	Spell(fire_elemental_totem)

@@ -224,8 +224,11 @@ AddCheckBox(opt_alter_time SpellName(alter_time) default)
 
 AddFunction Interrupt
 {
-	Spell(counterspell)
-	UseRacialInterruptActions()
+	if not target.IsFriend() and target.IsInterruptible()
+	{
+		Spell(counterspell)
+		UseRacialInterruptActions()
+	}
 }
 
 AddFunction ConjureManaGem
@@ -318,7 +321,7 @@ AddFunction FrostFullRotation
 	}
 
 	#counterspell,if=target.debuff.casting.react
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	#cancel_buff,name=alter_time,moving=1
 	#cold_snap,if=health.pct<30
 	if TalentPoints(cold_snap) and HealthPercent() <30 Spell(cold_snap)
@@ -599,7 +602,7 @@ AddFunction FrostShortCooldownActions
 	}
 
 	#counterspell,if=target.debuff.casting.react
-	if target.IsInterruptible() Interrupt()
+	Interrupt()
 	#cancel_buff,name=alter_time,moving=1
 	#cold_snap,if=health.pct<30
 	if TalentPoints(cold_snap) and HealthPercent() <30 Spell(cold_snap)
