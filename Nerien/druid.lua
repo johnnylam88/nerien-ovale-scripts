@@ -908,7 +908,7 @@ AddFunction FeralDreamOfCenariusCooldownActions
 		{
 			if TalentPoints(incarnation_talent) and Spell(berserk_cat) Spell(king_of_the_jungle)
 			UseItemActions()
-			Spell(berserk_cat)
+			if not TalentPoints(incarnation_talent) or BuffPresent(king_of_the_jungle) Spell(berserk_cat)
 		}
 		if BuffPresent(tigers_fury) Spell(berserk_cat)
 		if target.TimeToDie() <15 and SpellCooldown(tigers_fury) >6 Spell(berserk_cat)
@@ -1152,7 +1152,7 @@ AddFunction FeralNonDreamOfCenariusCooldownActions
 		{
 			if TalentPoints(incarnation_talent) and Spell(berserk_cat) Spell(king_of_the_jungle)
 			UseItemActions()
-			Spell(berserk_cat)
+			if not TalentPoints(incarnation_talent) or BuffPresent(king_of_the_jungle) Spell(berserk_cat)
 		}
 		if BuffPresent(tigers_fury) Spell(berserk_cat)
 		if target.TimeToDie() <15 and SpellCooldown(tigers_fury) >6 Spell(berserk_cat)
