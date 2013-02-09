@@ -473,11 +473,11 @@ AddFunction MainActionsDoC
         wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(FEROCIOUS_BITE)
     }
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
-    if target.TimeToDie() >3 and target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeTickDamageRatio() >=100 Spell(RAKE)
+    if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeTickDamageRatio() >=100 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
-    if target.TimeToDie() >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
+    if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<3.0&(buff.berserk.up|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains|energy>60)
-    if target.TimeToDie() >3 and target.DebuffRemains(RAKE) <3 and {BuffPresent(BERSERK_CAT) or Energy(more 60) 
+    if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and target.DebuffRemains(RAKE) <3 and {BuffPresent(BERSERK_CAT) or Energy(more 60) 
         or {SpellCooldown(TIGERS_FURY) +0.8 } >=target.DebuffRemains(RAKE)}
         Spell(RAKE)
     #pool_resource,wait=0.25,for_next=1
@@ -568,9 +568,9 @@ AddFunction MainActionsNonDoC
         if target.DebuffRemains(RIP) >6 and BuffPresent(BERSERK_CAT) Spell(FEROCIOUS_BITE)
     }
     #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
-    if target.TimeToDie() >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
+    if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<3.0&(buff.berserk.up|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains|energy>60)
-    if target.TimeToDie() >3 and target.DebuffRemains(RAKE) <3 and {BuffPresent(BERSERK_CAT) or Energy(more 60) 
+    if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and target.DebuffRemains(RAKE) <3 and {BuffPresent(BERSERK_CAT) or Energy(more 60) 
         or {SpellCooldown(TIGERS_FURY) +0.8 } >=target.DebuffRemains(RAKE)}
         Spell(RAKE)
     #pool_resource,wait=0.1,for_next=1
