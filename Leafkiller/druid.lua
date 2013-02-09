@@ -8,6 +8,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Cat Rotation based on Simulationcraft single target default script. Contributions to that have come from many ferals.
 # Guardian rotation based on the guide at theincbear.com
 # Lots of input and constructs from jlam aka Nerien
+# Currently maintained by aggixx and Tinderhoof
 # Revision History
 # 5.1.5 02/09/2013 Update to SimC (Base code from Nerien), code consistency and formatting
 # 5.1.4 12/07/2012 Tooth and Claw
