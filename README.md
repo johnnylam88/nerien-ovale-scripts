@@ -29,7 +29,7 @@ There are user-contributed scripts for the following classes and specializations
 - Rogue: Assassination, Combat, Subtlety
 - Shaman: Elemental, Restoration
 
-Contributors: Leafkiller, Nerien (jlam), Opisthobranch, Tinderwolf
+Contributors: Leafkiller, Nerien (jlam), Opisthobranch, Tinderhoof, aggixx
 
 ### How to Use ###
 
