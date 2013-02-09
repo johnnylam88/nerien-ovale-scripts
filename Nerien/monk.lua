@@ -398,11 +398,11 @@ AddIcon mastery=1 help=main
 	BrewmasterOOCActions()
 	BrewmasterBuffActions()
 
-	if NumberToMaxChi() >=2 Spell(keg_smash)
 	if BuffExpires(shuffle 2)
 	{
 		Spell(blackout_kick)
 	}
+	if NumberToMaxChi() >=2 Spell(keg_smash)
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
@@ -428,12 +428,12 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 	BrewmasterOOCActions()
 	BrewmasterBuffActions()
 
-	if NumberToMaxChi() >=2 Spell(keg_smash)
 	if BuffExpires(shuffle 2)
 	{
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		Spell(blackout_kick)
 	}
+	if NumberToMaxChi() >=2 Spell(keg_smash)
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
