@@ -10,6 +10,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
+# 5.1.6 02/10/2013 Fix frontal attack and talent conditional in main button (dream_of_cenarius_talent should be DREAM_OF_CENARIUS_TALENT)
 # 5.1.5 02/09/2013 Update to SimC (Base code from Nerien), code consistency and formatting
 # 5.1.4 12/07/2012 Tooth and Claw
 # 5.1.3 12/07/2012 Tweak for Bear display with alternate setup selected
@@ -327,14 +328,26 @@ AddFunction FillerActions {
     }
     if not TalentPoints(INCARNATION_TALENT) or BuffExpires(INCARNATION_CAT)
     {
-        #shred,if=buff.omen_of_clarity.react&buff.king_of_the_jungle.down
-        if BuffPresent(CLEARCASTING) Spell(SHRED)
-        #shred,if=buff.berserk.up&buff.king_of_the_jungle.down
-        if BuffPresent(BERSERK_CAT) Spell(SHRED)
-        #mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
-        if {ComboPoints() <5 and target.DebuffRemains(RIP) <3} or {ComboPoints() ==0 and BuffRemains(SAVAGE_ROAR) <2} Spell(MANGLE_CAT)
-        #shred,if=buff.king_of_the_jungle.down
-        Spell(SHRED)
+	if CheckBoxOn(infront)
+	{
+            #mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
+            if {ComboPoints() <5 and target.DebuffRemains(RIP) <3} or {ComboPoints() ==0 and BuffRemains(SAVAGE_ROAR) <2} Spell(MANGLE_CAT)
+	    #shred,if=position.front&(buff.tigers_fury.up|buff.berserk.up)
+	    if Glyph(GLYPH_OF_SHRED) and {BuffPresent(TIGERS_FURY) or BuffPresent(BERSERK_CAT)} Spell(SHRED)
+	    #mangle_cat
+	    Spell(MANGLE_CAT)
+	}
+	if not CheckBoxOn(infront)
+	{
+	    #shred,if=buff.omen_of_clarity.react&buff.king_of_the_jungle.down
+            if BuffPresent(CLEARCASTING) Spell(SHRED)
+            #shred,if=buff.berserk.up&buff.king_of_the_jungle.down
+            if BuffPresent(BERSERK_CAT) Spell(SHRED)
+            #mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
+            if {ComboPoints() <5 and target.DebuffRemains(RIP) <3} or {ComboPoints() ==0 and BuffRemains(SAVAGE_ROAR) <2} Spell(MANGLE_CAT)
+            #shred,if=buff.king_of_the_jungle.down
+	    Spell(SHRED)
+	}
     }
 }
 
@@ -390,7 +403,7 @@ AddFunction MainActionsDoC
         if CheckBoxOn(berserk)
         {
             if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION)
-	    if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
+        if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
         }
         if not CheckBoxOn(berserk) Spell(TIGERS_FURY)
     }
@@ -410,7 +423,7 @@ AddFunction MainActionsDoC
         {
             #natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
             if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) Spell(NATURES_SWIFTNESS)
-            #virmens_bite_potion,if=(combo_points>=5&target.health.pct<=25&buff.dream_of_cenarius_damage.up)|target.time_to_die<=40
+            #virmens_bite_potion,if=(combo_points>=5&target.health.pct<=25&buff.dream_of_cenarius_damage.up)arget.time_to_die<=40
             if ComboPoints() >=5 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) UsePotion()
             if target.TimeToDie() <=40 UsePotion()
             #rip,line_cd=30,if=combo_points>=5&buff.virmens_bite_potion.up&buff.dream_of_cenarius_damage.up&target.health.pct<=25&target.time_to_die>30
@@ -529,14 +542,14 @@ AddFunction MainActionsNonDoC
         if CheckBoxOn(berserk)
         {
             if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION)
-	    if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
+        if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
         }
         if not CheckBoxOn(berserk) Spell(TIGERS_FURY)
     }
     if CheckBoxOn(berserk) and BuffPresent(BERSERK_CAT)
     {
         if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION_CAT)
-	Spell(NATURES_VIGIL)
+    Spell(NATURES_VIGIL)
     }
     #ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
     if BITWRange() and ComboPoints() >=1 and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=3 Spell(FEROCIOUS_BITE)
@@ -586,11 +599,11 @@ AddFunction Prediction
 {
     
     if Stance(3) {
-        if TalentPoints(dream_of_cenarius_talent)
+        if TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsDoC()
         }
-        if not TalentPoints(dream_of_cenarius_talent)
+        if not TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsNonDoC()
         }
@@ -654,17 +667,17 @@ AddIcon help=extraCD size=small mastery=2 checkboxon=altpredictive {
 AddIcon help=main mastery=2 {
     NotInCombat()
     if Stance(3) {
-        if TalentPoints(dream_of_cenarius_talent)
+        if TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsDoC()
             FillerConditionsDoC()
             SpareGcdCooldowns()
         }
-        if not TalentPoints(dream_of_cenarius_talent)
+        if not TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsNonDoC()
             FillerConditionsNonDoC()
-	    SpareGcdCooldowns()
+            SpareGcdCooldowns()
         }
     }
     if Stance(1) {
