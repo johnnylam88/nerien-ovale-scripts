@@ -10,6 +10,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
+# 5.1.7 02/12/2013 Fix FF option, fix WEAKENED_ARMOR.
 # 5.1.6 02/10/2013 Fix frontal attack and talent conditional in main button (dream_of_cenarius_talent should be DREAM_OF_CENARIUS_TALENT)
 # 5.1.5 02/09/2013 Update to SimC (Base code from Nerien), code consistency and formatting
 # 5.1.4 12/07/2012 Tooth and Claw
@@ -388,7 +389,7 @@ AddFunction MainActionsDoC
     #savage_roar,if=buff.savage_roar.down
     if BuffExpires(SAVAGE_ROAR) SavageRoar()
     #faerie_fire,if=debuff.weakened_armor.stack<3
-    if target.DebuffStacks(WEAKENED_ARMOR) <3 FaerieFire()
+    if target.DebuffStacks(WEAKENED_ARMOR any=1) <3 and CheckBoxOn(lucioles) FaerieFire()
     #healing_touch,if=buff.predatory_swiftness.up&(combo_points>=4|(set_bonus.tier15_2pc_melee&combo_points>=3))&buff.dream_of_cenarius_damage.stack<2
     if BuffPresent(PREDATORY_SWIFTNESS) and BuffStacks(DREAM_OF_CENARIUS_DAMAGE) <2 and ComboPoints() >=4 Spell(HEALING_TOUCH)
     #healing_touch,if=buff.natures_swiftness.up
@@ -531,7 +532,7 @@ AddFunction MainActionsNonDoC
     #savage_roar,if=buff.savage_roar.down
     if BuffExpires(SAVAGE_ROAR) SavageRoar()
     #faerie_fire,if=debuff.weakened_armor.stack<3
-    if target.DebuffStacks(WEAKENED_ARMOR) <3 FaerieFire()
+    if target.DebuffStacks(WEAKENED_ARMOR any=1) <3 and CheckBoxOn(lucioles) FaerieFire()
     if not target.InRange(MANGLE_CAT) Texture(ability_druid_catformattack)
     #incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
     #use_item,name=eternal_blossom_grips,sync=tigers_fury
