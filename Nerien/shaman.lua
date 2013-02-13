@@ -693,7 +693,7 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 }
 
 # Trinkets.
-AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
