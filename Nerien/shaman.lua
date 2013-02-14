@@ -726,11 +726,11 @@ AddFunction RestorationPetChannel
 	{
 		if TotemPresent(fire totem=fire_elemental_totem)
 		{
-			if not pet.Casting(pet_empower) Spell(pet_empower)
+			if BuffExpires(pet_empower) Spell(pet_empower)
 		}
 		if TotemPresent(earth totem=earth_elemental_totem)
 		{
-			if not pet.Casting(pet_reinforce) Spell(pet_reinforce)
+			if BuffExpires(pet_reinforce) Spell(pet_reinforce)
 		}
 	}
 }
