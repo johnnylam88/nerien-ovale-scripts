@@ -1348,6 +1348,7 @@ AddIcon mastery=3 help=shortcd
 }
 
 # Main rotation (rage-generating abilities): Mangle > Lacerate > Thrash Maintenance > FFF
+# Faerie Fire resets the swing timer, so only use it if Thrash is on cooldown.
 AddIcon mastery=3 help=main
 {
 	if InCombat(no) and BuffRemains(str_agi_int any=1) <400 Spell(mark_of_the_wild)
@@ -1363,10 +1364,8 @@ AddIcon mastery=3 help=main
 	}
 
 	Spell(lacerate)
-	if target.DebuffRemains(thrash_bear) <2 Spell(thrash_bear)
-	# FFF currently resets the swing timer, but it will be fixed in MoP 5.2.
-	#FaerieFire()
 	Spell(thrash_bear)
+	FaerieFire()
 }
 
 # AoE rotation: Mangle > Thrash > Swipe
