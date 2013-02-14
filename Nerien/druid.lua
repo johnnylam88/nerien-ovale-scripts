@@ -54,6 +54,7 @@ Define(chosen_of_elune 102560)
 	SpellInfo(chosen_of_elune cd=180 duration=30)
 Define(clearcasting 16870)
 Define(cyclone 33786)
+	SpellInfo(cyclone cd=20 mastery=2)
 	SpellAddBuff(cyclone natures_swiftness=0 predatory_swiftness=0)
 Define(dash 1850)
 	SpellInfo(dash cd=180 duration=15)
@@ -63,7 +64,7 @@ Define(disorienting_roar 99)
 Define(disorienting_roar_talent 10)
 Define(displacer_beast 102280)
 	SpellInfo(displacer_beast cd=30)
-	SpellAddBuff(displacer_beast cat_form=1 displacer_beast_buff=1 prowl=1)
+	SpellAddBuff(displacer_beast cat_form=1 displacer_beast_buff=1)
 Define(displacer_beast_buff 137452)
 	SpellInfo(displacer_beast_buff duration=4)
 Define(displacer_beast_talent 2)
@@ -156,7 +157,7 @@ Define(maim 22570)
 Define(mangle 33917)
 Define(mangle_bear 33878)
 	SpellInfo(mangle_bear buffnocd=berserk_bear cd=6 rage=-5)
-	SpellInfo(mangle_bear rage=-7 talent=soul_of_the_forest_talent)
+	SpellInfo(mangle_bear rage=-8 talent=soul_of_the_forest_talent)
 	SpellAddTargetDebuff(mangle_bear infected_wounds=1)
 Define(mangle_cat 33876)
 	SpellInfo(mangle_cat combo=1 energy=35 inccounter=ripshreds)
@@ -165,7 +166,7 @@ Define(mangle_cat 33876)
 Define(mark_of_the_wild 1126)
 	SpellInfo(mark_of_the_wild duration=3600)
 	SpellAddBuff(mark_of_the_wild mark_of_the_wild=1)
-Define(mass_entanglement cd=120 duration=20)
+Define(mass_entanglement cd=30 duration=20)
 Define(mass_entanglement_talent 8)
 Define(maul 6807)
 	SpellInfo(maul cd=3 rage=30)
@@ -196,7 +197,7 @@ Define(natures_swiftness 132158)
 	SpellAddBuff(natures_swiftness natures_swiftness=1)
 Define(natures_swiftness_talent 4)
 Define(natures_vigil 124974)
-	SpellInfo(natures_vigil cd=180 duration=30)
+	SpellInfo(natures_vigil cd=90 duration=30)
 	SpellAddBuff(natures_vigil natures_vigil=1)
 Define(natures_vigil_talent 18)
 Define(nourish 50464)
@@ -387,12 +388,12 @@ Define(symbiosis_frost_nova 110693)
 	SpellInfo(symbiosis_frost_nova cd=25 duration=8)
 Define(symbiosis_clash 126449)
 	SpellInfo(symbiosis_clash cd=35)
+Define(symbiosis_dispersion 110715)
+	SpellInfo(symbiosis_dispersion cd=180 duration=6)
+	SpellAddBuff(symbiosis_dispersion symbiosis_dispersion=1)
 Define(symbiosis_divine_shield 110700)
 	SpellInfo(symbiosis_divine_shield cd=300 duration=8)
 	SpellAddBuff(symbiosis_divine_shield symbiosis_divine_shield=1)
-Define(symbiosis_dispersion 110715)
-	SpellInfo(symbiosis_dispersion cd=120 duration=6)
-	SpellAddBuff(symbiosis_dispersion symbiosis_dispersion=1)
 Define(symbiosis_redirect 110730)
 	SpellInfo(symbiosis_redirect cd=60)
 Define(symbiosis_feral_spirit 110807)
@@ -460,7 +461,7 @@ Define(treants_restoration 102693)
 Define(tree_of_life 33891)
 	SpellInfo(tree_of_life cd=180 duration=30)
 Define(typhoon 132469)
-	SpellInfo(typhoon cd=20)
+	SpellInfo(typhoon cd=30)
 Define(typhoon_talent 9)
 Define(ursols_vortex 102793)
 	SpellInfo(ursols_vortex cd=60)
@@ -1336,8 +1337,13 @@ AddIcon mastery=3 help=shortcd
 	}
 }
 
-# Main rotation (rage-generating abilities): Mangle > Lacerate > Thrash Maintenance > FFF
-# Faerie Fire resets the swing timer, so only use it if Thrash is on cooldown.
+# Main rotation (rage-generating abilities).
+#
+#	Mangle > Lacerate > Thrash Maintenance > FFF
+#
+# Since FFF does more damage than a simple impact hit of Thrash, you should use
+# FFF whenever Thrash still has at least 6 seconds left.
+#
 AddIcon mastery=3 help=main
 {
 	if InCombat(no) and BuffRemains(str_agi_int any=1) <400 Spell(mark_of_the_wild)
@@ -1353,6 +1359,7 @@ AddIcon mastery=3 help=main
 	}
 
 	Spell(lacerate)
+	if target.DebuffPresent(thrash_bear) and target.DebuffRemains(thrash_bear) >6 FaerieFire()
 	Spell(thrash_bear)
 	FaerieFire()
 }
