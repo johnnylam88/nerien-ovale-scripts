@@ -647,8 +647,7 @@ AddFunction FeralFillerActions
 	if TalentPoints(incarnation_talent)
 	{
 		#ravage
-		if BuffPresent(king_of_the_jungle) Spell(ravagebang usable=1)
-		Spell(ravage usable=1)
+		if BuffPresent(king_of_the_jungle) Spell(ravage)
 	}
 	if not TalentPoints(incarnation_talent) or BuffExpires(king_of_the_jungle)
 	{
