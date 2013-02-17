@@ -5,11 +5,13 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 	code =
 [[
 # Leafkiller's Feral/Guardian druid script.
+# Support/Discussion thread: http://fluiddruid.net/forum/viewtopic.php?f=3&t=857
 # Cat Rotation based on Simulationcraft single target default script. Contributions to that have come from many ferals.
 # Guardian rotation based on the guide at theincbear.com
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
+# 5.1.8 02/16/2013 Fix TF not displaying with berserk checked and TF displaying while Berserk is active, fix lookahead issue with Ravage.
 # 5.1.7 02/12/2013 Fix FF option, fix WEAKENED_ARMOR.
 # 5.1.6 02/10/2013 Fix frontal attack and talent conditional in main button (dream_of_cenarius_talent should be DREAM_OF_CENARIUS_TALENT)
 # 5.1.5 02/09/2013 Update to SimC (Base code from Nerien), code consistency and formatting
@@ -324,8 +326,7 @@ AddFunction FillerActions {
     if TalentPoints(INCARNATION_TALENT)
     {
         #ravage
-        if BuffPresent(INCARNATION_CAT) Spell(RAVAGE_BANG usable=1)
-        Spell(RAVAGE usable=1)
+        if BuffPresent(INCARNATION_CAT) Spell(RAVAGE)
     }
     if not TalentPoints(INCARNATION_TALENT) or BuffExpires(INCARNATION_CAT)
     {
@@ -401,12 +402,12 @@ AddFunction MainActionsDoC
     #berserk,if=buff.tigers_fury.up|(target.time_to_die<15&cooldown.tigers_fury.remains>6)
     if {{Energy() <=35 and BuffExpires(CLEARCASTING)} or BuffPresent(INCARNATION_CAT)} and Spell(TIGERS_FURY)
     {
-        if CheckBoxOn(berserk)
+        if CheckBoxOn(berserk) and Spell(BERSERK_CAT)
         {
             if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION)
-        if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
+            if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
         }
-        if not CheckBoxOn(berserk) Spell(TIGERS_FURY)
+        if not BuffPresent(BERSERK_CAT) Spell(TIGERS_FURY)
     }
     if CheckBoxOn(berserk) and TalentPoints(INCARNATION_TALENT) and BuffPresent(BERSERK_CAT) Spell(INCARNATION_CAT)
     #ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
@@ -540,17 +541,17 @@ AddFunction MainActionsNonDoC
     #berserk,if=buff.tigers_fury.up|(target.time_to_die<15&cooldown.tigers_fury.remains>6)
     if {{Energy() <=35 and BuffExpires(CLEARCASTING)} or BuffPresent(INCARNATION_CAT)} and Spell(TIGERS_FURY)
     {
-        if CheckBoxOn(berserk)
+        if CheckBoxOn(berserk) and Spell(BERSERK_CAT)
         {
             if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION)
-        if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
+            if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
         }
-        if not CheckBoxOn(berserk) Spell(TIGERS_FURY)
+        if not BuffPresent(BERSERK_CAT) Spell(TIGERS_FURY)
     }
     if CheckBoxOn(berserk) and BuffPresent(BERSERK_CAT)
     {
         if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION_CAT)
-    Spell(NATURES_VIGIL)
+        if TalentPoints(NATURES_VIGIL_TALENT) Spell(NATURES_VIGIL)
     }
     #ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
     if BITWRange() and ComboPoints() >=1 and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=3 Spell(FEROCIOUS_BITE)
@@ -798,7 +799,8 @@ AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
 
 AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
     Spell(BERSERK_BEAR)
-}]]
+}
+]]
 }
 
 end
