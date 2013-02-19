@@ -336,7 +336,7 @@ AddFunction HuntersMark
 	if InCombat(no)
 	{
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
-		if target.DebuffExpires(ranged_vulnerability any=1) and target.TimeToDie() >=21 Spell(hunters_mark)
+		if target.DebuffExpires(ranged_vulnerability any=1) Spell(hunters_mark)
 	}
 }
 
