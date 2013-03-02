@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "PRIEST" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.PRIEST.Opisthobranch = {
 	desc = "[5.0] Opisthobranch: Shadow",
@@ -94,5 +94,3 @@ AddIcon mastery=3 help=cd
 }
 ]]
 }
-
-end

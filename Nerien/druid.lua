@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "DRUID" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.DRUID.Nerien = {
 	desc = "[5.1] Nerien: Feral, Guardian",
@@ -1399,5 +1399,3 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 }
 ]]
 }
-
-end

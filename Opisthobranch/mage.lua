@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "MAGE" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MAGE.Opisthobranch = {
 	desc = "[5.0] Opisthobranch: Arcane, Fire, Frost",
@@ -257,5 +257,3 @@ AddIcon help=Mobility size=small checkboxon=mob
 }
 ]]
 }
-
-end

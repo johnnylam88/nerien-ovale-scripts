@@ -9,7 +9,6 @@
 ## Dependencies: Ovale
 
 Core.lua
-Ovale.lua
 
 Leafkiller\druid.lua
 

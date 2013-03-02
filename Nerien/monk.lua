@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "MONK" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MONK.Nerien = {
 	desc = "[5.1] Nerien: Brewmaster, Windwalker",
@@ -722,5 +722,3 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 }
 ]],
 }
-
-end

@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "SHAMAN" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.SHAMAN.Nerien = {
 	desc = "[5.1] Nerien: Elemental, Restoration",
@@ -832,5 +832,3 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 }
 ]],
 }
-
-end

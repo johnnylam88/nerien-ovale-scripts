@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "ROGUE" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.ROGUE.Nerien = {
 	desc = "[5.0] Nerien: Assassination, Combat, Subtlety",
@@ -957,5 +957,3 @@ AddIcon help=cd size=small
 }
 ]]
 }
-
-end

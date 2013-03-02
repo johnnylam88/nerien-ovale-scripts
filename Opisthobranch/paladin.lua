@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "PALADIN" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.PALADIN.Opisthobranch = {
 	desc = "[5.0] Opisthobranch: Protection, Retribution",
@@ -133,5 +133,3 @@ AddIcon mastery=3 help=cd
 }
 ]]
 }
-
-end

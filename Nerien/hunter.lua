@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "HUNTER" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.HUNTER.Nerien = {
 	desc = "[5.1] Nerien: Beast Mastery, Survival",
@@ -793,5 +793,3 @@ AddIcon mastery=3 size=small checkboxon=opt_icons_right
 }
 ]],
 }
-
-end

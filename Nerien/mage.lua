@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "MAGE" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MAGE.Nerien = {
 	desc = "[5.1] Nerien: Frost",
@@ -771,5 +771,3 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 }
 ]],
 }
-
-end
