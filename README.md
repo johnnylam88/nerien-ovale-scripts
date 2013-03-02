@@ -1,4 +1,4 @@
-**Nerien's Ovale Scripts** is a script manager for [Ovale Spell Priority][ovale].  The user can choose a default script for the current class from amongst a collection of scripts contributed by other users.
+**Nerien's Ovale Scripts** is a script collection for [Ovale Spell Priority][ovale].  The user can choose a script for the current class from amongst a collection of scripts contributed by other users.
 
   [ovale]: http://www.curse.com/addons/wow/ovale
 
@@ -33,9 +33,7 @@ Contributors: Leafkiller, Nerien (jlam), Opisthobranch, Tinderhoof, aggixx
 
 ### How to Use ###
 
-Install **Nerien's Ovale Scripts** like any other addon.  Open up the options panel for the addon and select the script you would like to use as the default script for the current profile.
-
-If you are using a custom script pasted into the code window, then a `Restore default` button will appear on the options panel.  Click the button to make Ovale use the selected script.  Please note that you will lose any custom script that you may have been using.
+Install **Nerien's Ovale Scripts** like any other addon.  Open up the **Ovale** code window and select the script you would like to use for the current profile.
 
 ### How to Contribute ###
 
