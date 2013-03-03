@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.HUNTER.Nerien = {
-	desc = "[5.1] Nerien: Beast Mastery, Survival",
+	desc = "[5.2] Nerien: Beast Mastery, Survival",
 	code =
 [[
 # Nerien's hunter script based on SimulationCraft
@@ -12,9 +12,6 @@ NerienOvaleScripts.script.HUNTER.Nerien = {
 # Survival:
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#Yb!...120
 
-# Notes for 5.2 (16539)
-#	- Arcane Shot, Chimera Shot, Explosive Shot & Kill Command apply Hunter's Mark.
-#
 # Spells
 Define(a_murder_of_crows 131894)
 	SpellInfo(a_murder_of_crows cd=120 duration=30 focus=60)
@@ -28,7 +25,7 @@ Define(aimed_shot 19434)
 Define(arcane_shot 3044)
 	SpellInfo(arcane_shot focus=20)
 	SpellInfo(arcane_shot if_spell=steady_focus resetcounter=ss)
-#	SpellAddTargetDebuff(arcane_shot hunters_mark=1)
+	SpellAddTargetDebuff(arcane_shot hunters_mark=1)
 Define(aspect_of_the_cheetah 5118)
 	SpellInfo(aspect_of_the_cheetah cd=1)
 Define(aspect_of_the_hawk 13165)
@@ -52,7 +49,7 @@ Define(bestial_wrath 19574)
 	SpellInfo(bestial_wrath cd=60)
 	SpellAddBuff(bestial_wrath beast_within=1)
 Define(binding_shot 109248)
-	SpellInfo(binding_shot cd=45 focus=20)
+	SpellInfo(binding_shot cd=45)
 	SpellInfo(binding_shot if_spell=steady_focus resetcounter=ss)
 Define(binding_shot_talent 6)
 Define(black_arrow 3674)
@@ -78,7 +75,7 @@ Define(chimera_shot 53209)
 	SpellInfo(chimera_shot cd=9 focus=45)
 	SpellInfo(chimera_shot if_spell=steady_focus resetcounter=ss)
 	SpellAddTargetDebuff(chimera_shot serpent_sting_dot=refresh)
-#	SpellAddTargetDebuff(chimera_shot hunters_mark=1)
+	SpellAddTargetDebuff(chimera_shot hunters_mark=1)
 Define(cobra_shot 77767)
 	SpellInfo(cobra_shot focus=-14)
 	SpellInfo(cobra_shot focus=-28 itemset=T13 itemcount=2)
@@ -105,7 +102,7 @@ Define(exhilaration_talent 7)
 Define(explosive_shot 53301)
 	SpellInfo(explosive_shot buffnocd=lock_and_load cd=6 duration=2 focus=25 tick=1)
 	SpellAddTargetDebuff(explosive_shot explosive_shot=1)
-#	SpellAddTargetDebuff(explosive_shot hunters_mark=1)
+	SpellAddTargetDebuff(explosive_shot hunters_mark=1)
 Define(explosive_trap 13813)
 	SpellInfo(explosive_trap cd=30 sharedcd=firetrap)
 	SpellInfo(explosive_trap if_spell=steady_focus resetcounter=ss)
@@ -181,6 +178,7 @@ Define(pet_serenity_dust 50318)
 Define(powershot 109259)
 	SpellInfo(powershot focus=20 cd=60)
 	SpellInfo(powershot if_spell=steady_focus resetcounter=ss)
+	SpellAddBuff(powershot camouflage_buff=0)
 Define(powershot_talent 17)
 Define(rapid_fire 3045)
 	SpellInfo(rapid_fire duration=15 cd=180)
@@ -204,7 +202,7 @@ Define(serpent_sting 1978)
 Define(serpent_sting_dot 118253)
 	SpellInfo(serpent_sting_dot duration=15 tick=3)
 Define(silencing_shot 34490)
-	SpellInfo(silencing_shot cd=20)
+	SpellInfo(silencing_shot cd=24)
 	SpellInfo(silencing_shot if_spell=steady_focus resetcounter=ss)
 Define(silencing_shot_talent 4)
 Define(stampede 121818)
@@ -234,7 +232,7 @@ Define(widow_venom 82654)
 	SpellInfo(widow_venom if_spell=steady_focus resetcounter=ss)
 	SpellAddTargetDebuff(widow_venom widow_venom=1)
 Define(wyvern_sting 19386)
-	SpellInfo(wyvern_sting cd=60 duration=30 focus=10)
+	SpellInfo(wyvern_sting cd=45 duration=30)
 	SpellInfo(wyvern_sting if_spell=steady_focus resetcounter=ss)
 	SpellAddTargetDebuff(wyvern_sting serpent_sting_dot=0 wyvern_sting=1)
 Define(wyvern_sting_talent 5)
