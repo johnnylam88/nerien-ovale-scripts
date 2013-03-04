@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MAGE.Nerien = {
-	desc = "[5.1] Nerien: Frost",
+	desc = "[5.2] Nerien: Frost",
 	code =
 [[
 # Nerien's mage script based on SimulationCraft.
@@ -375,10 +375,14 @@ AddFunction FrostFullRotation
 	#mirror_image
 	Spell(mirror_image)
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
+	#frostfire_bolt,if=buff.brain_freeze.react&((dot.nether_tempest.ticking&dot.nether_tempest.remains<2)|buff.brain_freeze.remains<2)
+	#frostfire_bolt,if=buff.brain_freeze.react&((dot.living_bomb.ticking&dot.living_bomb.remains<2)|buff.brain_freeze.remains<2)
 	if BuffPresent(brain_freeze_aura)
-		and {{target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
 	{
-		Spell(frostfire_bolt)
+		if BuffExpires(brain_freeze_aura 2) Spell(frostfire_bolt)
+		if target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2) Spell(frostfire_bolt)
+		if target.DebuffPresent(nether_tempest) and target.DebuffExpires(nether_tempest 2) Spell(frostfire_bolt)
+		if target.DebuffPresent(living_bomb) and target.DebuffExpires(living_bomb 2) Spell(frostfire_bolt)
 	}
 	#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<2
 	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
@@ -533,10 +537,14 @@ AddFunction FrostMainActions
 		if target.DebuffExpires(frost_bomb) and target.TimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
 	}
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
+	#frostfire_bolt,if=buff.brain_freeze.react&((dot.nether_tempest.ticking&dot.nether_tempest.remains<2)|buff.brain_freeze.remains<2)
+	#frostfire_bolt,if=buff.brain_freeze.react&((dot.living_bomb.ticking&dot.living_bomb.remains<2)|buff.brain_freeze.remains<2)
 	if BuffPresent(brain_freeze_aura)
-		and {{target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2)} or BuffExpires(brain_freeze_aura 2)}
 	{
-		Spell(frostfire_bolt)
+		if BuffExpires(brain_freeze_aura 2) Spell(frostfire_bolt)
+		if target.DebuffPresent(frost_bomb) and target.DebuffExpires(frost_bomb 2) Spell(frostfire_bolt)
+		if target.DebuffPresent(nether_tempest) and target.DebuffExpires(nether_tempest 2) Spell(frostfire_bolt)
+		if target.DebuffPresent(living_bomb) and target.DebuffExpires(living_bomb 2) Spell(frostfire_bolt)
 	}
 	#ice_lance,if=buff.fingers_of_frost.react&buff.fingers_of_frost.remains<2
 	if BuffPresent(fingers_of_frost_aura) and BuffExpires(fingers_of_frost_aura 2) Spell(ice_lance)
