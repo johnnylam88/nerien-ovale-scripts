@@ -11,6 +11,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
+# 5.1.9 02/25/2013 Support for 5.2 changes, rough support for Rune of Reorigination (ASSUMES MASTERY PROC!).
 # 5.1.8 02/16/2013 Fix TF not displaying with berserk checked and TF displaying while Berserk is active, fix lookahead issue with Ravage.
 # 5.1.7 02/12/2013 Fix FF option, fix WEAKENED_ARMOR.
 # 5.1.6 02/10/2013 Fix frontal attack and talent conditional in main button (dream_of_cenarius_talent should be DREAM_OF_CENARIUS_TALENT)
@@ -69,6 +70,13 @@ Define(WEAKENED_ARMOR 113746)
 Define(WEAKENED_BLOWS 115798)
     SpellInfo(WEAKENED_BLOWS duration=30)
 Define(CLEARCASTING 135700)
+Define(RUNE1 139121)
+    SpellInfo(RUNE1 duration=10)
+Define(RUNE2 139117)
+    SpellInfo(RUNE2 duration=10)
+Define(RUNE3 139120)
+    SpellInfo(RUNE3 duration=10)
+SpellList(RUNE_OF_REORIGINATION RUNE1 RUNE2 RUNE3)
 
 # Talents
 Define(NATURES_SWIFTNESS_TALENT 4)
@@ -443,6 +451,14 @@ AddFunction MainActionsDoC
             }
         }
     }
+    if not BITWRange()
+    {
+        #actions.doc+=/natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92&target.time_to_die>30
+	if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS)
+	and ComboPoints() >=5 and RipTickDamageRatio() >=92 and target.TimeToDie() >30 Spell(NATURES_SWIFTNESS)
+	#actions.doc+=/rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
+	if ComboPoints() >=5 and BuffPresent(RUNE_OF_REORIGINATION) and target.TimeToDie() >30 Spell(RIP)
+    }
     #rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
     if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(RIP) <2 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) Spell(RIP)
     #rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rip.multiplier<=tick_multiplier
@@ -488,6 +504,10 @@ AddFunction MainActionsDoC
         unless {{BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25}} SpareGcdCooldowns()
         wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(FEROCIOUS_BITE)
     }
+    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+    if BuffPresent(RUNE_OF_REORIGINATION) and RakeTickDamageRatio() >=100 Spell(RAKE)
+    #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+    if BuffPresent(RUNE_OF_REORIGINATION) and target.DebuffRemains(RAKE) <9 and BuffRemains(RUNE_OF_REORIGINATION) <=1.5 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
     if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeTickDamageRatio() >=100 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
@@ -567,6 +587,11 @@ AddFunction MainActionsNonDoC
         #ferocious_bite,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25
         if ComboPoints() >=5 and target.DebuffPresent(RIP) Spell(FEROCIOUS_BITE)
     }
+    if not BITWRange()
+    {
+	#actions.doc+=/rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
+	if ComboPoints() >=5 and BuffPresent(RUNE_OF_REORIGINATION) and target.TimeToDie() >30 Spell(RIP)
+    }
     #rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
     if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(RIP) <2
     {
@@ -583,6 +608,10 @@ AddFunction MainActionsNonDoC
         if target.DebuffRemains(RIP) >10 Spell(FEROCIOUS_BITE)
         if target.DebuffRemains(RIP) >6 and BuffPresent(BERSERK_CAT) Spell(FEROCIOUS_BITE)
     }
+    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+    if BuffPresent(RUNE_OF_REORIGINATION) and RakeTickDamageRatio() >=100 Spell(RAKE)
+    #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+    if BuffPresent(RUNE_OF_REORIGINATION) and target.DebuffRemains(RAKE) <9 and BuffRemains(RUNE_OF_REORIGINATION) <=1.5 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
     if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<3.0&(buff.berserk.up|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains|energy>60)
@@ -732,10 +761,8 @@ AddFunction BearMain {
     }
     
     Spell(LACERATE)
-    # Faerie Fire (Bear) bugged until 5.2, resets swing timer.
-    #if target.DebuffPresent(THRASH_BEAR 6) FaerieFire()
+    if target.DebuffPresent(THRASH_BEAR 6) FaerieFire()
     Spell(THRASH_BEAR)
-    Spell(SWIPE_BEAR)
 }
 
 AddFunction BearMainAOE {
