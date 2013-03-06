@@ -198,7 +198,6 @@ AddFunction UseRacialSurvivalActions
 AddCheckBox(aoe L(AOE))
 AddCheckBox(potions "Use potions" default)
 
-AddCheckBox(full_rotation "Full rotation")
 AddCheckBox(opt_icons_left "Left icons" default)
 AddCheckBox(opt_icons_right "Right icons" default)
 
@@ -335,13 +334,8 @@ AddFunction FrostFullRotation
 	{
 		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
 	}
-	if BuffExpires(alter_time)
-	{
-		#presence_of_mind,if=buff.alter_time.down
-		if TalentPoints(presence_of_mind_talent) Spell(presence_of_mind)
-		#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.react<2
-		if pet.Present() and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
-	}
+	#presence_of_mind,if=buff.alter_time.down
+	if TalentPoints(presence_of_mind_talent) and BuffExpires(alter_time) Spell(presence_of_mind)
 	#icy_veins,if=target.time_to_die<22
 	if target.TimeToDie() <22 FrostIcyVeins()
 	#blood_fury,if=target.time_to_die<12
@@ -502,7 +496,6 @@ AddFunction FrostFullRotation
 	#ice_floes,moving=1
 	#frostbolt
 	Spell(frostbolt)
-	#scorch,moving=1
 	#fire_blast,moving=1
 	#ice_lance,moving=1
 }
@@ -596,7 +589,6 @@ AddFunction FrostMainActions
 	}
 	#frostbolt
 	Spell(frostbolt)
-	#scorch,moving=1
 	#fire_blast,moving=1
 	#ice_lance,moving=1
 }
@@ -617,11 +609,6 @@ AddFunction FrostShortCooldownActions
 	#cancel_buff,name=alter_time,moving=1
 	#cold_snap,if=health.pct<30
 	if TalentPoints(cold_snap) and HealthPercent() <30 Spell(cold_snap)
-	if BuffExpires(alter_time)
-	{
-		#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.react<2
-		if pet.Present() and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
-	}
 	if TalentPoints(invocation_talent)
 	{
 		FrostTier6FrozenOrb()
@@ -655,11 +642,8 @@ AddFunction FrostCooldownActions
 		Spell(mirror_image)
 	}
 
-	if BuffExpires(alter_time)
-	{
-		#presence_of_mind,if=buff.alter_time.down
-		if TalentPoints(presence_of_mind_talent) Spell(presence_of_mind)
-	}
+	#presence_of_mind,if=buff.alter_time.down
+	if TalentPoints(presence_of_mind_talent) and BuffExpires(alter_time) Spell(presence_of_mind)
 	#icy_veins,if=target.time_to_die<22
 	if target.TimeToDie() <22 FrostIcyVeins()
 	#blood_fury,if=target.time_to_die<12
@@ -756,9 +740,10 @@ AddIcon mastery=3 help=Blink size=small checkboxon=opt_icons_left
 	Spell(blink)
 }
 
-AddIcon mastery=3 checkboxon=full_rotation
+AddIcon mastery=3 help=Freeze size=small checkboxon=opt_icons_left
 {
-	FrostFullRotation()
+	#water_elemental:freeze,if=buff.alter_time.down&buff.fingers_of_frost.react<2
+	if pet.Present() and BuffExpires(alter_time) and BuffStacks(fingers_of_frost_aura) <2 Spell(water_elemental_freeze)
 }
 
 AddIcon mastery=3 help=shortcd
