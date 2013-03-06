@@ -65,11 +65,16 @@ Define(fingers_of_frost_aura 44544)
 Define(fire_blast 2136)
 	SpellInfo(fire_blast cd=8)
 Define(fireball 133)
+Define(flamestrike 2120)
+	SpellInfo(flamestrike cd=12 duration=8 tick=2)
 Define(frost_armor 7302)
 Define(frost_bomb 112948)
-	SpellInfo(frost_bomb cd=10 duration=6 tick=6)
+	SpellInfo(frost_bomb cd=10 duration=4 tick=4)
 	SpellAddTargetDebuff(frost_bomb frost_bomb=1)
 Define(frost_bomb_talent 15)
+Define(frost_nova 122)
+	SpellInfo(frost_nova cd=25 duration=8)
+	SpellInfo(frost_nova addcd=-5 glyph=glyph_of_frost_nova)
 Define(frostbolt 116)
 	SpellInfo(frostbolt duration=15)
 	SpellAddTargetDebuff(frostbolt frostbolt=1)
@@ -84,6 +89,7 @@ Define(frostjaw_talent 9)
 Define(frozen_orb 84714)
 	SpellInfo(frozen_orb cd=60 duration=10)
 Define(glyph_of_combustion 56368)
+Define(glyph_of_frost_nova 56376)
 Define(glyph_of_icy_veins 56364)
 Define(heating_up 48107)
 	SpellInfo(heating_up duration=10)
@@ -98,6 +104,9 @@ Define(ice_floes 108839)
 	SpellAddBuff(ice_floes ice_floes=1)
 Define(ice_floes_talent 3)
 Define(ice_lance 30455)
+Define(ice_ward 111264)
+	SpellInfo(ice_ward cd=20 duration=30)
+Define(ice_ward_talent 8)
 Define(icy_veins 12472)
 	SpellInfo(icy_veins cd=180 duration=20)
 	SpellInfo(icy_veins addcd=-90 itemset=T14 itemcount=4)
@@ -299,6 +308,15 @@ AddFunction FrostTier6IcyVeinsActions
 	}
 }
 
+AddFunction FrostTimeWarp
+{
+	#time_warp,if=target.health.pct<25|time>5
+	if InCombat() and {target.HealthPercent() <25 or TimeInCombat() >5}
+	{
+		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+	}
+}
+
 AddFunction FrostFullRotation
 {
 	if InCombat(no)
@@ -359,7 +377,11 @@ AddFunction FrostFullRotation
 	#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
 	if TalentPoints(frost_bomb_talent)
 	{
-		if target.DebuffExpires(frost_bomb) and target.TimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
+		if target.DebuffExpires(frost_bomb)
+			and {target.TimeToDie() > CastTime(frost_bomb) + SpellData(frost_bomb tick)}
+		{
+			Spell(frost_bomb)
+		}
 	}
 	if not TalentPoints(invocation_talent)
 	{
@@ -463,7 +485,8 @@ AddFunction FrostFullRotation
 		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
 		if target.TimeToDie() > target.TickTime(living_bomb) * 3
 		{
-			if target.DebuffExpires(living_bomb) or {target.DebuffRemains(living_bomb) < target.NextTick(living_bomb)}
+			if target.DebuffExpires(living_bomb)
+				or {target.DebuffRemains(living_bomb) < target.NextTick(living_bomb)}
 			{
 				Spell(living_bomb)
 			}	
@@ -527,7 +550,11 @@ AddFunction FrostMainActions
 	#frost_bomb,if=!ticking&target.time_to_die>cast_time+tick_time
 	if TalentPoints(frost_bomb_talent)
 	{
-		if target.DebuffExpires(frost_bomb) and target.TimeToDie() > timeWithHaste(7.5) Spell(frost_bomb)
+		if target.DebuffExpires(frost_bomb)
+			and {target.TimeToDie() > CastTime(frost_bomb) + SpellData(frost_bomb tick)}
+		{
+			Spell(frost_bomb)
+		}
 	}
 	#frostfire_bolt,if=buff.brain_freeze.up&((dot.frost_bomb.ticking&dot.frost_bomb.remains<2)|buff.brain_freeze.remains<2)
 	#frostfire_bolt,if=buff.brain_freeze.react&((dot.nether_tempest.ticking&dot.nether_tempest.remains<2)|buff.brain_freeze.remains<2)
@@ -559,7 +586,8 @@ AddFunction FrostMainActions
 		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
 		if target.TimeToDie() > target.TickTime(living_bomb) * 3
 		{
-			if target.DebuffExpires(living_bomb) or {target.DebuffRemains(living_bomb) < target.NextTick(living_bomb)}
+			if target.DebuffExpires(living_bomb)
+				or {target.DebuffRemains(living_bomb) < target.NextTick(living_bomb)}
 			{
 				Spell(living_bomb)
 			}	
@@ -726,13 +754,43 @@ AddFunction FrostCooldownActions
 	}
 }
 
-AddFunction FrostTimeWarp
+# Frost AoE rotation from Icy Veins Frost Mage Class Guide:
+#	http://icy-veins.com/frost-mage-wow-pve-dps-rotation-cooldowns-abilities#sec-2
+#
+AddFunction FrostAoEActions
 {
-	#time_warp,if=target.health.pct<25|time>5
-	if InCombat() and {target.HealthPercent() <25 or TimeInCombat() >5}
+	# Freeze targets just before Frost Bomb explodes to increase damage due to Shatter.
+	if TalentPoints(frost_bomb_talent) and target.DebuffRemains(frost_bomb) <0.5
 	{
-		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+		if TalentPoints(ice_ward_talent) Spell(ice_ward)
+		Spell(frost_nova)
+		if pet.Present() Spell(water_elemental_freeze)
 	}
+
+	# Cast Flamestrike on cooldown.
+	Spell(flamestrike)
+
+	# Cast Mage Bomb on at least one target.
+	{
+		if TalentPoints(nether_tempest_talent)
+		{
+			if target.DebuffExpires(nether_tempest_debuff)
+				or {target.DebuffRemains(nether_tempest_debuff) < target.NextTick(nether_tempest_debuff)}
+			{
+				Spell(nether_tempest)
+			}
+		}
+		if TalentPoints(living_bomb_talent) and target.DebuffExpires(living_bomb) Spell(living_bomb)
+		if TalentPoints(frost_bomb_talent) and target.DebuffExpires(frost_bomb) Spell(frost_bomb)
+	}
+
+	# Toss out Frozen Orb to generate Fingers of Frost to use with Ice Lance.
+	# Ice Lance should be glyphed for maximum cleave damage.
+	if BuffExpires(fingers_of_frost_aura) Spell(frozen_orb)
+	if BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
+
+	# Arcane Explosion as filler.
+	Spell(arcane_explosion)
 }
 
 AddIcon mastery=3 help=Blink size=small checkboxon=opt_icons_left
@@ -754,6 +812,11 @@ AddIcon mastery=3 help=shortcd
 AddIcon mastery=3 help=main
 {
 	FrostMainActions()
+}
+
+AddIcon mastery=3 help=aoe checkboxon=aoe
+{
+	FrostAoEActions()
 }
 
 AddIcon mastery=3 help=cd
