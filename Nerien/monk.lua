@@ -313,7 +313,7 @@ AddFunction Tier5TalentActions
 # Rotations from Elitist Jerks, "Like Water - The Brewmaster's Resource [1-26-13]"
 #	http://elitistjerks.com/f99/t131791-like_water_brewmasters_resource_1_26_13_a/
 
-AddFunction BrewmasterOOCActions
+AddFunction BrewmasterPreCombatActions
 {
 	if InCombat(no)
 	{
@@ -402,7 +402,7 @@ AddIcon mastery=1 help=cd
 
 AddIcon mastery=1 help=main
 {
-	BrewmasterOOCActions()
+	BrewmasterPreCombatActions()
 	BrewmasterBuffActions()
 
 	if BuffExpires(shuffle 2)
@@ -432,7 +432,7 @@ AddIcon mastery=1 help=main
 
 AddIcon mastery=1 help=aoe checkboxon=aoe
 {
-	BrewmasterOOCActions()
+	BrewmasterPreCombatActions()
 	BrewmasterBuffActions()
 
 	if BuffExpires(shuffle 2)
@@ -466,6 +466,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 
 AddIcon mastery=1 help=cd
 {
+	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	Interrupt()
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
@@ -512,6 +513,7 @@ AddFunction WindwalkerFullRotation
 		WindwalkerUsePotion()
 	}
 
+	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	#auto_attack
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	Interrupt()
@@ -578,7 +580,7 @@ AddFunction WindwalkerFullRotation
 	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
 }
 
-AddFunction WindwalkerMaintenanceActions
+AddFunction WindwalkerPreCombatActions
 {
 	if InCombat(no)
 	{
@@ -589,7 +591,10 @@ AddFunction WindwalkerMaintenanceActions
 		#stance
 		#snapshot_stats
 	}
+}
 
+AddFunction WindwalkerMaintenanceActions
+{
 	#auto_attack
 	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
 	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
@@ -665,6 +670,7 @@ AddFunction WindwalkerCooldownActions
 		}
 	}
 
+	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	Interrupt()
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
@@ -704,12 +710,14 @@ AddIcon mastery=3 help=shortcd
 
 AddIcon mastery=3 help=main
 {
+	WindwalkerPreCombatActions()
 	WindwalkerMaintenanceActions()
 	WindwalkerMainActions()
 }
 
 AddIcon mastery=3 help=aoe checkboxon=aoe
 {
+	WindwalkerPreCombatActions()
 	WindwalkerMaintenanceActions()
 	WindwalkerAoEActions()
 }
