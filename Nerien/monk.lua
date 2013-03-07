@@ -385,6 +385,23 @@ AddFunction BrewmasterAoEShuffle
 	Spell(blackout_kick)
 }
 
+# Aggressive Jab for maximizing DPS/TPS.
+AddCheckBox(opt_aggressive_jab SpellName(jab) mastery=1)
+
+AddFunction BrewmasterEnergyPoolingCondition
+{
+	if CheckBoxOff(opt_aggressive_jab)
+	{
+		# Pool energy for possible Expel Harm or Healing Sphere.
+		TimeToMaxEnergy() <2
+	}
+	if CheckBoxOn(opt_aggressive_jab)
+	{
+		# Maximize DPS/TPS by using Jab/SCK as long as there is enough energy.
+		Energy() >40
+	}
+}
+
 # Tier 5 damage reduction cooldown
 AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 {
@@ -434,7 +451,8 @@ AddIcon mastery=1 help=main
 		if BuffPresent(shuffle 6) Tier2TalentActions()
 		BrewmasterShuffle()
 	}
-	if {Energy() >= SpellData(jab energy)} and {SpellCooldown(keg_smash) > GCD()}
+	if BrewmasterEnergyPoolingCondition()
+		and {SpellCooldown(keg_smash) > GCD()}
 		and {Energy() - SpellData(jab energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
 	{
 		# Only Jab if we'll have enough energy to Keg Smash when it comes off cooldown.
@@ -464,7 +482,8 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 		if BuffPresent(shuffle 6) Spell(breath_of_fire)
 		BrewmasterAoEShuffle()
 	}
-	if {Energy() >= SpellData(spinning_crane_kick energy)} and {SpellCooldown(keg_smash) >2}
+	if BrewmasterEnergyPoolingCondition()
+		and {SpellCooldown(keg_smash) >2}
 		and {Energy() - SpellData(spinning_crane_kick energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
 	{
 		# Only SCK if we'll have enough energy to Keg Smash when it comes off cooldown.
