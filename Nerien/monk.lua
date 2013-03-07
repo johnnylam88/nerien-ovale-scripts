@@ -364,6 +364,16 @@ AddFunction StaggerTickDamage
 	if DebuffPresent(heavy_stagger)		TickValue(heavy_stagger)
 }
 
+AddFunction BrewmasterPurifyingBrew
+{
+	# Purify Stagger if it ticks for more than half of my remaining health (urgent!).
+	if StaggerTickDamage() / Health() >0.5 Spell(purifying_brew)
+	# Purify Stagger > 40% of my health.
+	if StaggerDamageRemaining() / MaxHealth() >0.40 Spell(purifying_brew)
+	# Purify Medium Stagger if below 70% health.
+	if DebuffPresent(moderate_stagger) and HealthPercent() <70 Spell(purifying_brew)
+}
+
 AddFunction BrewmasterShuffle
 {
 	Spell(blackout_kick)
@@ -393,14 +403,11 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 AddIcon mastery=1 help=cd
 {
 	# Cast Purifying Brew only if Heavy Stagger (urgent!) or if Shuffle uptime won't suffer.
-	if DebuffPresent(heavy_stagger) or BuffPresent(shuffle 6) or Chi() >=2
+	# Avoid Purifying while Elusive Brew is up unless under Heavy Stagger.
+	if DebuffPresent(heavy_stagger)
+		or {BuffExpires(elusive_brew) and {BuffPresent(shuffle 6) or Chi() >=2}}
 	{
-		# Purify Stagger if it ticks for more than half of my remaining health (urgent!).
-		if StaggerTickDamage() / Health() >0.5 Spell(purifying_brew)
-		# Purify Stagger > 40% of my health.
-		if StaggerDamageRemaining() / MaxHealth() >0.40 Spell(purifying_brew)
-		# Purify Medium Stagger if below 70% health.
-		if DebuffPresent(moderate_stagger) and HealthPercent() <70 Spell(purifying_brew)
+		BrewmasterPurifyingBrew()
 	}
 	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
