@@ -8,7 +8,7 @@ NerienOvaleScripts.script.SHAMAN.Nerien = {
 #
 # Elemental
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#Wa!...2.2
-#	glyphs=chain_lightning/flame_shock
+#	glyphs=chain_lightning
 
 Define(ancestral_guidance 108281)
 	SpellInfo(ancestral_guidance cd=120 duration=10)
@@ -444,6 +444,8 @@ AddFunction ElementalFullRotation
 		if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
 		#unleash_elements,if=talent.unleashed_fury.enabled&!buff.ascendance.up
 		if TalentPoints(unleashed_fury_talent) and BuffExpires(ascendance_fire) Spell(unleash_elements)
+		#spiritwalkers_grace,moving=1,if=buff.ascendance.up
+		if Speed() >0 and BuffPresent(ascendance_fire) Spell(spiritwalkers_grace)
 		#lava_burst,if=dot.flame_shock.remains>cast_time&(buff.ascendance.up|cooldown_react)
 		if target.DebuffRemains(flame_shock) > CastTime(lava_burst) and {BuffPresent(ascendance_fire) or Spell(lava_burst)} Spell(lava_burst)
 		#flame_shock,if=ticks_remain<2
@@ -466,9 +468,9 @@ AddFunction ElementalFullRotation
 		{
 			Spell(flame_shock)
 		}
-		#earth_elemental_totem,if=!active&cooldown.fire_elemental_totem.remains>=50
-		if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=50 Spell(earth_elemental_totem)
-		#searing_totem,if=cooldown.fire_elemental_totem.remains>15&!totem.fire.active
+		#earth_elemental_totem,if=!active&cooldown.fire_elemental_totem.remains>=60
+		if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=60 Spell(earth_elemental_totem)
+		#searing_totem,if=cooldown.fire_elemental_totem.remains>20&!totem.fire.active
 		if TotemExpires(fire) Spell(searing_totem)
 		if Speed() >0
 		{
@@ -483,6 +485,8 @@ AddFunction ElementalFullRotation
 				Spell(spiritwalkers_grace)
 				#unleash_elements,moving=1,if=!glyph.unleashed_lightning.enabled
 				Spell(unleash_elements)
+				#earth_shock,moving=1,if=!glyph.unleashed_lightning.enabled&dot.flame_shock.remains>cooldown
+				if target.DebuffRemains(flame_shock) >SpellData(earth_shock cd) Spell(earth_shock)
 			}
 		}
 		#lightning_bolt
@@ -529,7 +533,7 @@ AddFunction ElementalMainActions
 	{
 		Spell(flame_shock)
 	}
-	#searing_totem,if=cooldown.fire_elemental_totem.remains>15&!totem.fire.active
+	#searing_totem,if=cooldown.fire_elemental_totem.remains>20&!totem.fire.active
 	if TotemExpires(fire) Spell(searing_totem)
 	if Speed() >0
 	{
@@ -537,6 +541,8 @@ AddFunction ElementalMainActions
 		{
 			#unleash_elements,moving=1,if=!glyph.unleashed_lightning.enabled
 			Spell(unleash_elements)
+			#earth_shock,moving=1,if=!glyph.unleashed_lightning.enabled&dot.flame_shock.remains>cooldown
+			if target.DebuffRemains(flame_shock) >SpellData(earth_shock cd) Spell(earth_shock)
 		}
 	}
 }
@@ -625,8 +631,10 @@ AddFunction ElementalCooldownActions
 		if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() or TotemPresent(fire totem=fire_elemental_totem) Item(HandSlot usable=1)
 		#ancestral_swiftness,if=talent.ancestral_swiftness.enabled&!buff.ascendance.up
 		if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
-		#earth_elemental_totem,if=!active&cooldown.fire_elemental_totem.remains>=50
-		if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=50 Spell(earth_elemental_totem)
+		#spiritwalkers_grace,moving=1,if=buff.ascendance.up
+		if Speed() >0 and BuffPresent(ascendance_fire) Spell(spiritwalkers_grace)
+		#earth_elemental_totem,if=!active&cooldown.fire_elemental_totem.remains>=60
+		if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=60 Spell(earth_elemental_totem)
 		if Speed() >0
 		{
 			#spiritwalkers_grace,moving=1,if=glyph.unleashed_lightning.enabled&((talent.elemental_blast.enabled&cooldown.elemental_blast.remains=0)|(cooldown.lava_burst.remains=0&!buff.lava_surge.react))|(buff.raid_movement.duration>=action.unleash_elements.gcd+action.earth_shock.gcd)
