@@ -199,6 +199,16 @@ Define(jade_serpent_potion 76093)
 Define(jade_serpent_potion_buff 105702)
 	SpellInfo(jade_serpent_potion_buff duration=25)
 
+# Rune of Re-Origination
+ItemList(rune_of_reorigination 94532 95802 96546)
+Define(rune_of_reorigination_crit_buff 139117)
+	SpellInfo(rune_of_reorigination_crit_buff duration=10)
+Define(rune_of_reorigination_haste_buff 139121)
+	SpellInfo(rune_of_reorigination_haste_buff duration=10)
+Define(rune_of_reorigination_mastery_buff 139120)
+	SpellInfo(rune_of_reorigination_mastery_buff duration=10)
+SpellList(rune_of_reorigination_buff rune_of_reorigination_crit_buff rune_of_reorigination_haste_buff rune_of_reorigination_mastery_buff)
+
 # Racials
 Define(arcane_torrent_chi 129597)
 	SpellInfo(arcane_torrent_chi cd=120 chi=1)
@@ -520,8 +530,18 @@ AddFunction WindwalkerFullRotation
 	if target.DebuffExpires(rising_sun_kick_aura 3) Spell(rising_sun_kick)
 	#tiger_palm,if=buff.tiger_power.remains<=3
 	if BuffExpires(tiger_power 3) Spell(tiger_palm)
-	#tigereye_brew,if=!buff.tigereye_brew_use.up
-	if BuffExpires(tigereye_brew_use) Spell(tigereye_brew_use)
+	if HasTrinket(rune_of_reorigination)
+	{
+		#tigereye_brew,if=!buff.tigereye_brew_use.up&(buff.tigereye_brew.react>19|target.time_to_die<20)
+		if BuffExpires(tigereye_brew_use) and {BuffStacks(tigereye_brew) >19 or target.TimeToDie() <20} Spell(tigereye_brew_use)
+		#tigereye_brew,line_cd=15,if=buff.rune_of_reorigination.react&(!buff.tigereye_brew_use.up|buff.rune_of_reorigination.remains<4)
+		if BuffPresent(rune_of_reorigination_buff) and {BuffExpires(tigereye_brew_use) or BuffRemains(rune_of_reorigination_buff) <4} Spell(tigereye_brew_use)
+	}
+	if not HasTrinket(rune_of_reorigination)
+	{
+		#tigereye_brew,if=!buff.tigereye_brew_use.up
+		if BuffExpires(tigereye_brew_use) Spell(tigereye_brew_use)
+	}
 	#energizing_brew,if=energy.time_to_max>5
 	if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 	#invoke_xuen,if=talent.invoke_xuen.enabled
