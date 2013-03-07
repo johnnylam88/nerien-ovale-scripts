@@ -364,6 +364,17 @@ AddFunction StaggerTickDamage
 	if DebuffPresent(heavy_stagger)		TickValue(heavy_stagger)
 }
 
+AddFunction BrewmasterShuffle
+{
+	Spell(blackout_kick)
+}
+
+AddFunction BrewmasterAoEShuffle
+{
+	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+	Spell(blackout_kick)
+}
+
 # Tier 5 damage reduction cooldown
 AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 {
@@ -407,14 +418,14 @@ AddIcon mastery=1 help=main
 
 	if BuffExpires(shuffle 2)
 	{
-		Spell(blackout_kick)
+		BrewmasterShuffle()
 	}
 	if NumberToMaxChi() >=2 Spell(keg_smash)
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
 		if BuffPresent(shuffle 6) Tier2TalentActions()
-		Spell(blackout_kick)
+		BrewmasterShuffle()
 	}
 	if {Energy() >= SpellData(jab energy)} and {SpellCooldown(keg_smash) > GCD()}
 		and {Energy() - SpellData(jab energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
@@ -425,7 +436,7 @@ AddIcon mastery=1 help=main
 	if NumberToMaxChi() <2
 	{
 		if BuffPresent(shuffle 6) Tier2TalentActions()
-		Spell(blackout_kick)
+		BrewmasterShuffle()
 	}
 	BrewmasterFillerActions()
 }
@@ -437,16 +448,14 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 
 	if BuffExpires(shuffle 2)
 	{
-		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-		Spell(blackout_kick)
+		BrewmasterAoEShuffle()
 	}
 	if NumberToMaxChi() >=2 Spell(keg_smash)
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
 		if BuffPresent(shuffle 6) Spell(breath_of_fire)
-		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-		Spell(blackout_kick)
+		BrewmasterAoEShuffle()
 	}
 	if {Energy() >= SpellData(spinning_crane_kick energy)} and {SpellCooldown(keg_smash) >2}
 		and {Energy() - SpellData(spinning_crane_kick energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
@@ -458,8 +467,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 	if NumberToMaxChi() <2
 	{
 		if BuffPresent(shuffle 6) Spell(breath_of_fire)
-		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-		Spell(blackout_kick)
+		BrewmasterAoEShuffle()
 	}
 	BrewmasterFillerActions()
 }
