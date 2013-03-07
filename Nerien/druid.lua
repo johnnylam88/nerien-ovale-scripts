@@ -741,7 +741,7 @@ AddFunction FeralDreamOfCenariusFullRotation
 		{
 			#virmens_bite_potion,if=(combo_points>=5&target.health.pct<=25&buff.dream_of_cenarius_damage.up)|target.time_to_die<=40
 			if ComboPoints() >=5 and BuffPresent(dream_of_cenarius_damage) FeralUsePotion()
-			#natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
+			#natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
 			if BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 Spell(natures_swiftness)
 			#rip,line_cd=30,if=combo_points>=5&buff.virmens_bite_potion.up&buff.dream_of_cenarius_damage.up&target.health.pct<=25&target.time_to_die>30
 			if FeralExecuteRange() and ComboPoints() >=5 and target.TimeToDie() >30
@@ -846,7 +846,7 @@ AddFunction FeralDreamOfCenariusMainActions
 	{
 		if FeralExecuteRange()
 		{
-			#natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
+			#natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
 			if BuffExpires(dream_of_cenarius_damage) and BuffExpires(predatory_swiftness) and ComboPoints() >=5 Spell(natures_swiftness)
 			#rip,line_cd=30,if=combo_points>=5&buff.virmens_bite_potion.up&buff.dream_of_cenarius_damage.up&target.health.pct<=25&target.time_to_die>30
 			if FeralExecuteRange() and ComboPoints() >=5 and target.TimeToDie() >30
