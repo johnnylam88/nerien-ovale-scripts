@@ -595,23 +595,26 @@ AddFunction WindwalkerFullRotation
 		Spell(spinning_crane_kick)
 	}
 
-	#blackout_kick,if=buff.combo_breaker_bok.react&energy.time_to_max<2
-	if BuffPresent(combo_breaker_bok) and TimeToMaxEnergy() <2 Spell(blackout_kick)
+	#blackout_kick,if=buff.combo_breaker_bok.react&energy.time_to_max<=2
+	if BuffPresent(combo_breaker_bok) and TimeToMaxEnergy() <=2 Spell(blackout_kick)
 	#rising_sun_kick
 	Spell(rising_sun_kick)
-	#blackout_kick,if=(chi>=3&energy.time_to_max<=2&!talent.ascension.enabled)|(chi>=4&energy.time_to_max<=2&talent.ascension.enabled)
-	if NumberToMaxChi() <2 and TimeToMaxEnergy() <2 Spell(blackout_kick)
 	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(4)&buff.tiger_power.remains>(4)
 	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
 	#blackout_kick,if=buff.combo_breaker_bok.react
 	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
-	#tiger_palm,if=buff.combo_breaker_tp.react
-	if BuffPresent(combo_breaker_tp) Spell(tiger_palm)
+	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
+	if BuffPresent(combo_breaker_tp)
+	{
+		if BuffRemains(combo_breaker_tp) <=2 or TimeToMaxEnergy() >=2 Spell(tiger_palm)
+	}
+	#chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
+	if TalentPoints(chi_wave_talent) and TimeToMaxEnergy() >2 Spell(chi_wave)
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
 	if NumberToMaxChi() >2 WindwalkerGenerateChi()
-	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
-	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
+	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
+	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
 }
 
 AddFunction WindwalkerPreCombatActions
@@ -641,23 +644,26 @@ AddFunction WindwalkerMaintenanceActions
 
 AddFunction WindwalkerMainActions
 {
-	#blackout_kick,if=buff.combo_breaker_bok.react&energy.time_to_max<2
-	if BuffPresent(combo_breaker_bok) and TimeToMaxEnergy() <2 Spell(blackout_kick)
+	#blackout_kick,if=buff.combo_breaker_bok.react&energy.time_to_max<=2
+	if BuffPresent(combo_breaker_bok) and TimeToMaxEnergy() <=2 Spell(blackout_kick)
 	#rising_sun_kick
 	Spell(rising_sun_kick)
-	#blackout_kick,if=(chi>=3&energy.time_to_max<=2&!talent.ascension.enabled)|(chi>=4&energy.time_to_max<=2&talent.ascension.enabled)
-	if NumberToMaxChi() <2 and TimeToMaxEnergy() <2 Spell(blackout_kick)
 	#blackout_kick,if=buff.combo_breaker_bok.react
 	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
-	#tiger_palm,if=buff.combo_breaker_tp.react
-	if BuffPresent(combo_breaker_tp) Spell(tiger_palm)
+	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
+	if BuffPresent(combo_breaker_tp)
+	{
+		if BuffRemains(combo_breaker_tp) <=2 or TimeToMaxEnergy() >=2 Spell(tiger_palm)
+	}
+	#chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
+	if TalentPoints(chi_wave_talent) and TimeToMaxEnergy() >2 Spell(chi_wave)
 	if NumberToMaxChi() >=1 and HealthPercent() <90 Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
 	if TalentPoints(ascension_talent) and Chi() <=3 Jab()
 	#jab,if=!talent.ascension.enabled&chi<=2
 	if not TalentPoints(ascension_talent) and Chi() <=2 Jab()
-	#blackout_kick,if=((energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40)|(chi=4&!talent.ascension.enabled)|(chi=5&talent.ascension.enabled)
-	if {{Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40} or NumberToMaxChi() ==0 Spell(blackout_kick)
+	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
+	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
 }
 
 AddFunction WindwalkerAoEActions
@@ -680,10 +686,9 @@ AddFunction WindwalkerShortCooldownActions
 		#energizing_brew,if=energy.time_to_max>5
 		if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
 
-		#blackout_kick,if=buff.combo_breaker_bok.react&energy.time_to_max<2
-		unless {BuffPresent(combo_breaker_bok) and TimeToMaxEnergy() <2}
+		#blackout_kick,if=buff.combo_breaker_bok.react&energy.time_to_max<=2
+		unless {BuffPresent(combo_breaker_bok) and TimeToMaxEnergy() <=2}
 			or Spell(rising_sun_kick)
-			or {NumberToMaxChi() <2 and TimeToMaxEnergy() <2}
 		{
 			#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>(4)&buff.tiger_power.remains>(4)
 			if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
