@@ -17,16 +17,13 @@ Each class script may also have additional icons for other class-specific inform
 
 ### Status ###
 
-There are user-contributed scripts for the following classes and specializations.
+There are user-contributed scripts for Patch 5.2 for the following classes and specializations.
 
-- Death Knight: Blood, Frost, Unholy
 - Druid: Feral, Guardian
 - Hunter: Beast Mastery, Survival
-- Mage: Arcane, Fire, Frost
+- Mage: Frost
 - Monk: Brewmaster, Windwalker
-- Paladin: Protection, Retribution
-- Priest: Shadow
-- Rogue: Assassination, Combat, Subtlety
+- Rogue: Assassination, Subtlety
 - Shaman: Elemental, Restoration
 
 Contributors: Leafkiller, Nerien (jlam), Opisthobranch, Tinderhoof, aggixx
