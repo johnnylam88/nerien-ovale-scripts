@@ -176,7 +176,7 @@ Define(STAMPEDE 81022)
 Define(SKULL_BASH_CAT 80965) #cat interrupt
     SpellInfo(SKULL_BASH_CAT cd=15 energy=15)
 Define(THRASH_CAT 106830)
-    #SpellInfo(THRASH_CAT duration=15 energy=50 tick=3)
+    SpellInfo(THRASH_CAT duration=15 energy=50 tick=3)
     SpellAddTargetDebuff(THRASH_CAT THRASH_CAT=1 WEAKENED_BLOWS=1)
     SpellDamageBuff(THRASH_CAT DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(TIGERS_FURY 5217) #cat buff
@@ -727,7 +727,7 @@ AddIcon help=extraCD size=small mastery=2 checkboxon=altpredictive {
 # Main rotation
 AddIcon help=main mastery=2 {
     NotInCombat()
-    if Stance(3) and InCombat() {
+    if Stance(3) {
         if TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsDoC()
