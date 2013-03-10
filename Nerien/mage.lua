@@ -10,6 +10,10 @@ NerienOvaleScripts.script.MAGE.Nerien = {
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#ea!0...01
 #	glyphs=mana_gem/mirror_image/arcane_power
 #
+# Fire:
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#eZ!0...11
+#	glyphs=combustion/counterspell/mirror_image
+#
 # Frost:
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#eb!0...20
 #	glyphs=evocation/icy_veins/ice_lance
@@ -43,6 +47,8 @@ Define(blazing_speed 108843)
 Define(blazing_speed_talent 2)
 Define(blink 1953)
 	SpellInfo(blink cd=15)
+Define(blizzard 10)
+	SpellInfo(blizzard canStopChannelling=8 duration=8 tick=1)
 Define(brain_freeze_aura 57761)
 	SpellInfo(brain_freeze_aura duration=15)
 Define(cold_snap 11958)
@@ -70,6 +76,7 @@ Define(fingers_of_frost_aura 44544)
 Define(fire_blast 2136)
 	SpellInfo(fire_blast cd=8)
 Define(fireball 133)
+	SpellInfo(fireball base=1561 bonussp=1.5)
 Define(flamestrike 2120)
 	SpellInfo(flamestrike cd=12 duration=8 tick=2)
 Define(frost_armor 7302)
@@ -130,7 +137,8 @@ Define(incanters_ward 1463)
 	SpellAddBuff(incanters_ward incanters_ward=1)
 Define(incanters_ward_talent 18)
 Define(inferno_blast 108853)
-	SpellInfo(inferno_blast cd=8 )
+	SpellInfo(inferno_blast cd=8)
+	SpellInfo(inferno_blast base=624.5 bonussp=0.6)
 Define(invocation_talent 16)
 Define(invokers_energy 116257)
 	SpellInfo(invokers_energy duration=60)
@@ -151,9 +159,10 @@ Define(presence_of_mind 12043)
 Define(presence_of_mind_talent 1)
 Define(pyroblast 11366)
 	SpellInfo(pyroblast duration=18 tick=3)
+	SpellInfo(pyroblast base=2290 bonussp=2.2)
 	SpellAddTargetDebuff(pyroblast pyroblast=1)
 Define(pyroblast_aura 48108)
-	SpellInfo(pyroblast_aura duration=15 )
+	SpellInfo(pyroblast_aura duration=15)
 Define(rune_of_power 116011)
 Define(rune_of_power_aura 116014)
 Define(rune_of_power_talent 17)
@@ -647,6 +656,338 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 }
 
 AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+}
+
+###
+### Fire
+###
+
+AddFunction FireFullRotation
+{
+	if InCombat(no)
+	{
+		#flask,type=warm_sun
+		#food,type=mogu_fish_stew
+		#arcane_brilliance
+		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
+		#molten_armor
+		if BuffExpires(molten_armor) Spell(molten_armor)
+		#snapshot_stats
+		if TalentPoints(invocation_talent)
+		{
+			#evocation
+			Spell(evocation)
+		}
+		if TalentPoints(rune_of_power_talent)
+		{
+			#rune_of_power
+			Spell(rune_of_power)
+		}
+		#jade_serpent_potion
+		UsePotion()
+		#mirror_image
+		Spell(mirror_image)
+	}
+
+	#counterspell,if=target.debuff.casting.react
+	Interrupt()
+	#cancel_buff,name=alter_time,moving=1
+	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
+	if InCombat(no) ConjureManaGem()
+	#time_warp,if=target.health.pct<25|time>5
+	if InCombat() and {target.HealthPercent() <25 or TimeInCombat() >5}
+	{
+		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+	}
+	if TalentPoints(rune_of_power_talent)
+	{
+		#rune_of_power,if=buff.rune_of_power.remains<cast_time&buff.alter_time.down
+		if BuffPresent(rune_of_power_aura) and BuffExpires(alter_time) Spell(rune_of_power)
+		#rune_of_power,if=cooldown.alter_time_activate.remains=0&buff.rune_of_power.remains<6
+		if {CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate)} and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
+	}
+	if TalentPoints(invocation_talent)
+	{
+		#evocation,if=(buff.invokers_energy.down|mana.pct<20)&buff.alter_time.down
+		if {BuffExpires(invokers_energy) or ManaPercent() <20} and BuffExpires(alter_time) Spell(evocation)
+		#evocation,if=cooldown.alter_time_activate.remains=0&buff.invokers_energy.remains<6
+		if {CheckBoxOff(opt_alter_time) or Spell(alter_time_activate)} and BuffRemains(invokers_energy) <6 Spell(evocation)
+	}
+	if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent)
+	{
+		#evocation,if=buff.alter_time.down&mana.pct<20,interrupt_if=mana.pct>95
+		if BuffExpires(alter_time) and ManaPercent() <20 and not {Casting(evocation) and ManaPercent() >95} Spell(evocation)
+	}
+	#blood_fury,if=buff.alter_time.down&(cooldown.alter_time_activate.remains>30|target.time_to_die<18)
+	if BuffExpires(alter_time) and {CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <18} Spell(berserking)
+	#berserking,if=buff.alter_time.down&target.time_to_die<18
+	if BuffExpires(alter_time) and target.TimeToDie() <18 Spell(berserking)
+	#jade_serpent_potion,if=buff.alter_time.down&target.time_to_die<45
+	if BuffExpires(alter_time) and target.TimeToDie() <45 UsePotion()
+	#combustion,if=target.time_to_die<22
+	if target.TimeToDie() <22 Spell(combustion)
+	#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking
+	if target.TickValue(ignite) >={{CritDamage(fireball) +CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
+		and target.DebuffPresent(pyroblast)
+	{
+		Spell(combustion)
+	}
+	if CheckBoxOn(opt_alter_time) and Spell(alter_time_activate) and BuffExpires(alter_time)
+	{
+		#blood_fury,sync=alter_time_activate,if=buff.alter_time.down
+		Spell(blood_fury)
+		#berserking,sync=alter_time_activate,if=buff.alter_time.down
+		Spell(berserking)
+		if TalentPoints(presence_of_mind_talent)
+		{
+			#presence_of_mind,sync=alter_time_activate,if=buff.alter_time.down
+			Spell(presence_of_mind)
+		}
+		#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
+		UsePotion()
+	}
+	#alter_time,if=buff.alter_time.down&buff.pyroblast.react
+	if CheckBoxOn(opt_alter_time) and BuffExpires(alter_time) and BuffPresent(pyroblast_aura) Spell(alter_time_activate)
+	#pyroblast,if=buff.pyroblast.react|buff.presence_of_mind.up
+	if BuffPresent(pyroblast_aura) or BuffPresent(presence_of_mind) Spell(pyroblast)
+	#inferno_blast,if=buff.heating_up.react&buff.pyroblast.down
+	if BuffPresent(heating_up) and BuffExpires(pyroblast_aura) Spell(inferno_blast)
+	#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
+	MageBomb()
+	#presence_of_mind,if=cooldown.alter_time.remains>30|target.time_to_die<15
+	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
+	#pyroblast,if=!dot.pyroblast.ticking
+	if target.DebuffExpires(pyroblast) Spell(pyroblast)
+	#fireball
+	Spell(fireball)
+	if Speed() >0
+	{
+		if TalentPoints(ice_floes_talent)
+		{
+			Spell(ice_floes)
+		}
+		#scorch,moving=1
+		Spell(scorch)
+	}
+}
+
+AddFunction FireMainActions
+{
+	if InCombat(no)
+	{
+		#flask,type=warm_sun
+		#food,type=mogu_fish_stew
+		#arcane_brilliance
+		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
+		#molten_armor
+		if BuffExpires(molten_armor) Spell(molten_armor)
+		#snapshot_stats
+	}
+
+	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
+	if InCombat(no) ConjureManaGem()
+	#pyroblast,if=buff.pyroblast.react|buff.presence_of_mind.up
+	if BuffPresent(pyroblast_aura) or BuffPresent(presence_of_mind) Spell(pyroblast)
+	#inferno_blast,if=buff.heating_up.react&buff.pyroblast.down
+	if BuffPresent(heating_up) and BuffExpires(pyroblast_aura) Spell(inferno_blast)
+	#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
+	MageBomb()
+	#presence_of_mind,if=cooldown.alter_time.remains>30|target.time_to_die<15
+	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
+	#pyroblast,if=!dot.pyroblast.ticking
+	if target.DebuffExpires(pyroblast) Spell(pyroblast)
+	#fireball
+	Spell(fireball)
+}
+
+AddFunction FireShortCooldownActions
+{
+	if InCombat(no)
+	{
+		if TalentPoints(invocation_talent)
+		{
+			#evocation
+			Spell(evocation)
+		}
+		if TalentPoints(rune_of_power_talent)
+		{
+			#rune_of_power
+			Spell(rune_of_power)
+		}
+	}
+
+	if TalentPoints(rune_of_power_talent)
+	{
+		#rune_of_power,if=buff.rune_of_power.remains<cast_time&buff.alter_time.down
+		if BuffPresent(rune_of_power_aura) and BuffExpires(alter_time) Spell(rune_of_power)
+		#rune_of_power,if=cooldown.alter_time_activate.remains=0&buff.rune_of_power.remains<6
+		if {CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate)} and BuffExpires(rune_of_power_aura) Spell(rune_of_power)
+	}
+	if TalentPoints(invocation_talent)
+	{
+		#evocation,if=(buff.invokers_energy.down|mana.pct<20)&buff.alter_time.down
+		if {BuffExpires(invokers_energy) or ManaPercent() <20} and BuffExpires(alter_time) Spell(evocation)
+		#evocation,if=cooldown.alter_time_activate.remains=0&buff.invokers_energy.remains<6
+		if {CheckBoxOff(opt_alter_time) or Spell(alter_time_activate)} and BuffRemains(invokers_energy) <6 Spell(evocation)
+	}
+	if not TalentPoints(rune_of_power_talent) or not TalentPoints(invocation_talent)
+	{
+		#evocation,if=buff.alter_time.down&mana.pct<20,interrupt_if=mana.pct>95
+		if BuffExpires(alter_time) and ManaPercent() <20 and not {Casting(evocation) and ManaPercent() >95} Spell(evocation)
+	}
+}
+
+AddFunction FireCooldownActions
+{
+	if InCombat(no)
+	{
+		#jade_serpent_potion
+		UsePotion()
+		#mirror_image
+		Spell(mirror_image)
+	}
+
+	#counterspell,if=target.debuff.casting.react
+	Interrupt()
+
+	unless {TalentPoints(rune_of_power_talent)
+			and {{BuffPresent(rune_of_power_aura) and BuffExpires(alter_time)}
+				or {{CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate)} and BuffExpires(rune_of_power_aura)}}}
+		or {TalentPoints(invocation_talent)
+			and {{{BuffExpires(invokers_energy) or ManaPercent() <20} and BuffExpires(alter_time)}
+				or {{CheckBoxOff(opt_alter_time) or Spell(alter_time_activate)} and BuffRemains(invokers_energy) <6}}}
+		or {not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent)
+			and	{BuffExpires(alter_time) and ManaPercent() <20 and not {Casting(evocation) and ManaPercent() >95} and Spell(evocation)}}
+	{
+		#blood_fury,if=buff.alter_time.down&(cooldown.alter_time_activate.remains>30|target.time_to_die<18)
+		if BuffExpires(alter_time) and {CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <18} Spell(berserking)
+		#berserking,if=buff.alter_time.down&target.time_to_die<18
+		if BuffExpires(alter_time) and target.TimeToDie() <18 Spell(berserking)
+		#jade_serpent_potion,if=buff.alter_time.down&target.time_to_die<45
+		if BuffExpires(alter_time) and target.TimeToDie() <45 UsePotion()
+		#combustion,if=target.time_to_die<22
+		#if target.TimeToDie() <22 Spell(combustion)
+		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking
+		if target.TickValue(ignite) >={{CritDamage(fireball) +CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
+			and target.DebuffPresent(pyroblast)
+		{
+			Spell(combustion)
+		}
+		if CheckBoxOn(opt_alter_time) and Spell(alter_time_activate) and BuffExpires(alter_time)
+		{
+			#blood_fury,sync=alter_time_activate,if=buff.alter_time.down
+			Spell(blood_fury)
+			#berserking,sync=alter_time_activate,if=buff.alter_time.down
+			Spell(berserking)
+			if TalentPoints(presence_of_mind_talent)
+			{
+				#presence_of_mind,sync=alter_time_activate,if=buff.alter_time.down
+				Spell(presence_of_mind)
+			}
+			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
+			UsePotion()
+		}
+		#alter_time,if=buff.alter_time.down&buff.pyroblast.react
+		if CheckBoxOn(opt_alter_time) and BuffExpires(alter_time) and BuffPresent(pyroblast_aura) Spell(alter_time_activate)
+	}
+}
+
+AddFunction FireMovingActions
+{
+	if TalentPoints(ice_floes_talent)
+	{
+		Spell(ice_floes)
+	}
+	#scorch,moving=1
+	Spell(scorch)
+}
+
+# AoE rotation from Elitist Jerks "MoP Fire Mage Compendium 5.1 - Pyros'R'Us" forum thread:
+#	http://elitistjerks.com/f75/t131186-mop_fire_mage_compendium_5_1_pyrosrus/#AOE
+#
+AddFunction FireAoEActions
+{
+	# Cast Flamestrike on cooldown.
+	Spell(flamestrike)
+
+	# Apply Pyroblast DoT.
+	if TalentPoints(presence_of_mind_talent) and not target.DebuffPresent(pyroblast) and BuffExpires(pyroblast_aura) Spell(presence_of_mind)
+	if BuffPresent(pyroblast_aura) or BuffPresent(presence_of_mind) Spell(pyroblast)
+	if target.DebuffExpires(pyroblast) Spell(pyroblast)
+
+	# Cast Mage Bomb on at least one target.
+	{
+		if TalentPoints(nether_tempest_talent)
+		{
+			if target.DebuffExpires(nether_tempest)
+				or {target.DebuffRemains(nether_tempest) < target.NextTick(nether_tempest)}
+			{
+				Spell(nether_tempest)
+			}
+		}
+		if TalentPoints(living_bomb_talent) and target.DebuffExpires(living_bomb) Spell(living_bomb)
+		if TalentPoints(frost_bomb_talent) and target.DebuffExpires(frost_bomb) Spell(frost_bomb)
+	}
+
+	# Spread DoTs using Inferno Blast
+	if {TalentPoints(living_bomb_talent) and target.DebuffPresent(living_bomb)} and target.DebuffPresent(pyroblast) and target.DebuffPresent(ignite)
+	{
+		Spell(inferno_blast)
+	}
+
+	# Apply Combustion on a reasonable Ignite value.
+	if target.TickValue(ignite) >={{CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
+		and target.DebuffPresent(pyroblast)
+	{
+		Spell(combustion)
+	}
+
+	# Blizzard as filler.
+	Spell(blizzard)
+}
+
+AddIcon mastery=2 help=Blink size=small checkboxon=opt_icons_left
+{
+	Spell(blink)
+}
+
+AddIcon mastery=2 help=moving size=small checkboxon=opt_icons_left
+{
+	FireMovingActions()
+}
+
+AddIcon mastery=2 help=shortcd
+{
+	FireShortCooldownActions()
+}
+
+AddIcon mastery=2 help=main
+{
+	FireMainActions()
+}
+
+AddIcon mastery=2 help=aoe checkboxon=aoe
+{
+	FireAoEActions()
+}
+
+AddIcon mastery=2 help=cd
+{
+	FireCooldownActions()
+}
+
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
+{
+	if TalentPoints(cold_snap_talent)
+	{
+		#cold_snap,if=health.pct<30
+		Spell(cold_snap)
+	}
+}
+
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 {
 	if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
 }
