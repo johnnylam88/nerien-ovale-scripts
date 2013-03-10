@@ -21,7 +21,7 @@ There are user-contributed scripts for Patch 5.2 for the following classes and s
 
 - Druid: Feral, Guardian
 - Hunter: Beast Mastery, Survival
-- Mage: Frost
+- Mage: Arcane, Fire, Frost
 - Monk: Brewmaster, Windwalker
 - Rogue: Assassination, Subtlety
 - Shaman: Elemental, Restoration
