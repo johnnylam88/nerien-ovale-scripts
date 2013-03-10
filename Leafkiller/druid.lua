@@ -291,11 +291,6 @@ AddFunction FaerieFire
     if TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_SWARM)
     if not TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_FERAL)
 }
-AddFunction FaerieFireReady
-{
-    {TalentPoints(FAERIE_SWARM_TALENT) and Spell(faerie_swarm)}
-        or {TalentPoints(FAERIE_SWARM_TALENT) and Spell(faerie_fire)}
-}
 AddFunction SavageRoar
 {
     if Glyph(GLYPH_OF_SAVAGERY) Spell(SAVAGE_ROAR_GLYPHED)
