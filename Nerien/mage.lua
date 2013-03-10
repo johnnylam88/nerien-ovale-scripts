@@ -1,10 +1,14 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MAGE.Nerien = {
-	desc = "[5.2] Nerien: Frost",
+	desc = "[5.2] Nerien: Arcane, Frost",
 	code =
 [[
 # Nerien's mage script based on SimulationCraft.
+#
+# Arcane:
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#ea!0...01
+#	glyphs=mana_gem/mirror_image/arcane_power
 #
 # Frost:
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#eb!0...20
@@ -278,6 +282,373 @@ AddFunction MageBomb
 		#frost_bomb,if=target.time_to_die>cast_time+tick_time
 		if target.TimeToDie() > CastTime(frost_bomb) + target.TickTime(frost_bomb) Spell(frost_bomb)
 	}
+}
+
+###
+### Arcane
+###
+
+AddFunction ArcaneFullRotation
+{
+	if InCombat(no)
+	{
+		#flask,type=warm_sun
+		#food,type=mogu_fish_stew
+		#arcane_brilliance
+		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
+		#mage_armor
+		if BuffExpires(mage_armor) Spell(mage_armor)
+		#snapshot_stats
+		if TalentPoints(invocation_talent)
+		{
+			#evocation
+			Spell(evocation)
+		}
+		if TalentPoints(rune_of_power_talent)
+		{
+			#rune_of_power
+			Spell(rune_of_power)
+		}
+		#jade_serpent_potion
+		UsePotion()
+		#mirror_image
+		Spell(mirror_image)
+	}
+
+	#counterspell,if=target.debuff.casting.react
+	Interrupt()
+	#cancel_buff,name=alter_time,moving=1
+	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
+	if InCombat(no) ConjureManaGem()
+	#time_warp,if=target.health.pct<25|time>5
+	if InCombat() and {target.HealthPercent() <25 or TimeInCombat() >5}
+	{
+		if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
+	}
+	if TalentPoints(rune_of_power_talent)
+	{
+		#rune_of_power,if=buff.rune_of_power.remains<cast_time
+		#rune_of_power,if=cooldown.arcane_power.remains=0&buff.rune_of_power.remains<buff.arcane_power.duration
+		if BuffExpires(rune_of_power_aura) Spell(rune_of_power)
+	}
+	if TalentPoints(invocation_talent)
+	{
+		#evocation,if=buff.invokers_energy.down
+		if BuffExpires(invokers_energy) Spell(evocation)
+		#evocation,if=cooldown.arcane_power.remains=0&buff.invokers_energy.remains<buff.arcane_power.duration
+		if Spell(arcane_power) and BuffRemains(invokers_energy) < SpellData(arcane_power duration) Spell(evocation)
+		#evocation,if=mana.pct<50,interrupt_if=mana.pct>95&buff.invokers_energy.remains>10
+		if ManaPercent() <50 and not {Casting(evocation) and ManaPercent() >95 and BuffRemains(invokers_energy) >10} Spell(evocation)
+	}
+	if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent)
+	{
+		#evocation,if=mana.pct<50,interrupt_if=mana.pct>95
+		if ManaPercent() <50 and not {Casting(evocation) and ManaPercent() >95} Spell(evocation)
+	}
+	#mirror_image
+	Spell(mirror_image)
+	#mana_gem,if=mana.pct<80&buff.alter_time.down
+	if ManaPercent() <80 and BuffExpires(alter_time) UseManaGem()
+	{
+		#arcane_power,if=(buff.rune_of_power.remains>=buff.arcane_power.duration&buff.arcane_missiles.stack=2&buff.arcane_charge.stack>2)|target.time_to_die<buff.arcane_power.duration+5,moving=0
+		#arcane_power,if=(buff.invokers_energy.remains>=buff.arcane_power.duration&buff.arcane_missiles.stack=2&buff.arcane_charge.stack>2)|target.time_to_die<buff.arcane_power.duration+5,moving=0
+		#arcane_power,if=(buff.arcane_missiles.stack=2&buff.arcane_charge.stack>2)|target.time_to_die<buff.arcane_power.duration+5,moving=0
+		if BuffStacks(arcane_missiles_aura) ==2 and DebuffStacks(arcane_charge) >2
+		{
+			if TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power_aura) Spell(arcane_power)
+			if TalentPoints(invocation_talent) and BuffRemains(invokers_energy) >=SpellData(arcane_power duration) Spell(arcane_power)
+			if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent) Spell(arcane_power)
+		}
+		if target.TimeToDie() < SpellData(arcane_power duration) +5 Spell(arcane_power)
+	}
+	#blood_fury,if=buff.alter_time.down&(buff.arcane_power.up|cooldown.arcane_power.remains>15|target.time_to_die<18)
+	if BuffExpires(alter_time) and {BuffPresent(arcane_power) or SpellCooldown(arcane_power) >15 or target.TimeToDie() <18} Spell(berserking)
+	#berserking,if=buff.alter_time.down&(buff.arcane_power.up|target.time_to_die<18)
+	if BuffExpires(alter_time) and {BuffPresent(arcane_power) or target.TimeToDie() <18} Spell(berserking)
+	#jade_serpent_potion,if=buff.alter_time.down&(buff.arcane_power.up|target.time_to_die<50)
+	if BuffExpires(alter_time) and {BuffPresent(arcane_power) or target.TimeToDie() <50} UsePotion()
+	#use_item,name=gloves_of_the_chromatic_hydra,sync=alter_time_activate,if=buff.alter_time.down
+	if Spell(alter_time_activate) and BuffExpires(alter_time) UseItemActions()
+	#alter_time,if=buff.alter_time.down&buff.arcane_power.up
+	if CheckBoxOn(opt_alter_time) and BuffExpires(alter_time) and BuffPresent(arcane_power) Spell(alter_time_activate)
+	{
+		#use_item,name=gloves_of_the_chromatic_hydra,if=(cooldown.alter_time_activate.remains>45|target.time_to_die<25)&buff.rune_of_power.remains>20
+		#use_item,name=gloves_of_the_chromatic_hydra,if=(cooldown.alter_time_activate.remains>45|target.time_to_die<25)&buff.invokers_energy.remains>20
+		#use_item,name=gloves_of_the_chromatic_hydra,if=(cooldown.alter_time_activate.remains>45|target.time_to_die<25)
+		if SpellCooldown(alter_time_activate) >45 or target.TimeToDie() <25
+		{
+			if TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power) UseItemActions()
+			if TalentPoints(invocation_talent) and BuffRemains(invokers_energy) >20 UseItemActions()
+			if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent) UseItemActions()
+		}
+	}
+	if BuffPresent(alter_time)
+	{
+		#arcane_barrage,if=buff.alter_time.up&buff.alter_time.remains<2
+		if BuffRemains(alter_time) <2 Spell(arcane_barrage)
+		#arcane_missiles,if=buff.alter_time.up
+		Spell(arcane_missiles usable=1)
+		#arcane_blast,if=buff.alter_time.up
+		Spell(arcane_blast)
+	}
+	#arcane_missiles,if=(buff.arcane_missiles.stack=2&cooldown.arcane_power.remains>0)|(buff.arcane_charge.stack>=4&cooldown.arcane_power.remains>8)
+	if BuffStacks(arcane_missiles_aura) ==2
+		or {DebuffStacks(arcane_charge) >=4 and {Spell(arcane_power) or SpellCooldown(arcane_power) >8}}
+	{
+		Spell(arcane_missiles usable=1)
+	}
+	#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
+	MageBomb()
+	#arcane_barrage,if=buff.arcane_charge.stack>=4&mana.pct<95
+	if DebuffStacks(arcane_charge) >=4 and ManaPercent() <95 Spell(arcane_barrage)
+	if TalentPoints(presence_of_mind_talent)
+	{
+		#presence_of_mind
+		Spell(presence_of_mind)
+	}
+	#arcane_blast
+	Spell(arcane_blast)
+	if Speed() >0
+	{
+		if TalentPoints(ice_floes_talent)
+		{
+			#ice_floes,moving=1
+			Spell(ice_floes)
+		}
+		#arcane_barrage,moving=1
+		Spell(arcane_barrage)
+		#fire_blast,moving=1
+		Spell(fire_blast)
+		#ice_lance,moving=1
+		Spell(ice_lance)
+	}
+}
+
+AddFunction ArcaneMainActions
+{
+	if InCombat(no)
+	{
+		#flask,type=warm_sun
+		#food,type=mogu_fish_stew
+		#arcane_brilliance
+		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
+		#mage_armor
+		if BuffExpires(mage_armor) Spell(mage_armor)
+		#snapshot_stats
+	}
+
+	#conjure_mana_gem,if=mana_gem_charges<3&target.debuff.invulnerable.react
+	if InCombat(no) ConjureManaGem()
+	#mana_gem,if=mana.pct<80&buff.alter_time.down
+	if ManaPercent() <80 and BuffExpires(alter_time) UseManaGem()
+	if BuffPresent(alter_time)
+	{
+		#arcane_barrage,if=buff.alter_time.up&buff.alter_time.remains<2
+		if BuffRemains(alter_time) <2 Spell(arcane_barrage)
+		#arcane_missiles,if=buff.alter_time.up
+		Spell(arcane_missiles usable=1)
+		#arcane_blast,if=buff.alter_time.up
+		Spell(arcane_blast)
+	}
+	#arcane_missiles,if=(buff.arcane_missiles.stack=2&cooldown.arcane_power.remains>0)|(buff.arcane_charge.stack>=4&cooldown.arcane_power.remains>8)
+	if BuffStacks(arcane_missiles_aura) ==2
+		or {DebuffStacks(arcane_charge) >=4 and {Spell(arcane_power) or SpellCooldown(arcane_power) >8}}
+	{
+		Spell(arcane_missiles usable=1)
+	}
+	#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
+	MageBomb()
+	#arcane_barrage,if=buff.arcane_charge.stack>=4&mana.pct<95
+	if DebuffStacks(arcane_charge) >=4 and ManaPercent() <95 Spell(arcane_barrage)
+	if TalentPoints(presence_of_mind_talent)
+	{
+		#presence_of_mind
+		Spell(presence_of_mind)
+	}
+	#arcane_blast
+	Spell(arcane_blast)
+}
+
+AddFunction ArcaneShortCooldownActions
+{
+	if InCombat(no)
+	{
+		if TalentPoints(invocation_talent)
+		{
+			#evocation
+			Spell(evocation)
+		}
+		if TalentPoints(rune_of_power_talent)
+		{
+			#rune_of_power
+			Spell(rune_of_power)
+		}
+	}
+
+	if TalentPoints(rune_of_power_talent)
+	{
+		#rune_of_power,if=buff.rune_of_power.remains<cast_time
+		#rune_of_power,if=cooldown.arcane_power.remains=0&buff.rune_of_power.remains<buff.arcane_power.duration
+		if BuffExpires(rune_of_power_aura) Spell(rune_of_power)
+	}
+	if TalentPoints(invocation_talent)
+	{
+		#evocation,if=buff.invokers_energy.down
+		if BuffExpires(invokers_energy) Spell(evocation)
+		#evocation,if=cooldown.arcane_power.remains=0&buff.invokers_energy.remains<buff.arcane_power.duration
+		if Spell(arcane_power) and BuffRemains(invokers_energy) < SpellData(arcane_power duration) Spell(evocation)
+		#evocation,if=mana.pct<50,interrupt_if=mana.pct>95&buff.invokers_energy.remains>10
+		if ManaPercent() <50 and not {Casting(evocation) and ManaPercent() >95 and BuffRemains(invokers_energy) >10} Spell(evocation)
+	}
+	if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent)
+	{
+		#evocation,if=mana.pct<50,interrupt_if=mana.pct>95
+		if ManaPercent() <50 and not {Casting(evocation) and ManaPercent() >95} Spell(evocation)
+	}
+}
+
+AddFunction ArcaneCooldownActions
+{
+	if InCombat(no)
+	{
+		#jade_serpent_potion
+		UsePotion()
+		#mirror_image
+		Spell(mirror_image)
+	}
+
+	#counterspell,if=target.debuff.casting.react
+	Interrupt()
+
+	unless {TalentPoints(rune_of_power_talent) and BuffExpires(rune_of_power_aura)}
+		or {TalentPoints(invocation_talent)
+			and {BuffExpires(invokers_energy)
+				or {Spell(arcane_power) and BuffRemains(invokers_energy) < SpellData(arcane_power duration)}
+				or {ManaPercent() <50 and not {Casting(evocation) and ManaPercent() >95 and BuffRemains(invokers_energy) >10}}}}
+		or {not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent)
+			and {ManaPercent() <50 and not {Casting(evocation) and ManaPercent() >95} and Spell(evocation)}}
+	{
+		#mirror_image
+		Spell(mirror_image)
+		{
+			#arcane_power,if=(buff.rune_of_power.remains>=buff.arcane_power.duration&buff.arcane_missiles.stack=2&buff.arcane_charge.stack>2)|target.time_to_die<buff.arcane_power.duration+5,moving=0
+			#arcane_power,if=(buff.invokers_energy.remains>=buff.arcane_power.duration&buff.arcane_missiles.stack=2&buff.arcane_charge.stack>2)|target.time_to_die<buff.arcane_power.duration+5,moving=0
+			#arcane_power,if=(buff.arcane_missiles.stack=2&buff.arcane_charge.stack>2)|target.time_to_die<buff.arcane_power.duration+5,moving=0
+			if BuffStacks(arcane_missiles_aura) ==2 and DebuffStacks(arcane_charge) >2
+			{
+				if TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power_aura) Spell(arcane_power)
+				if TalentPoints(invocation_talent) and BuffRemains(invokers_energy) >=SpellData(arcane_power duration) Spell(arcane_power)
+				if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent) Spell(arcane_power)
+			}
+			if target.TimeToDie() < SpellData(arcane_power duration) +5 Spell(arcane_power)
+		}
+		#blood_fury,if=buff.alter_time.down&(buff.arcane_power.up|cooldown.arcane_power.remains>15|target.time_to_die<18)
+		if BuffExpires(alter_time) and {BuffPresent(arcane_power) or SpellCooldown(arcane_power) >15 or target.TimeToDie() <18} Spell(berserking)
+		#berserking,if=buff.alter_time.down&(buff.arcane_power.up|target.time_to_die<18)
+		if BuffExpires(alter_time) and {BuffPresent(arcane_power) or target.TimeToDie() <18} Spell(berserking)
+		#jade_serpent_potion,if=buff.alter_time.down&(buff.arcane_power.up|target.time_to_die<50)
+		if BuffExpires(alter_time) and {BuffPresent(arcane_power) or target.TimeToDie() <50} UsePotion()
+		#use_item,name=gloves_of_the_chromatic_hydra,sync=alter_time_activate,if=buff.alter_time.down
+		if Spell(alter_time_activate) and BuffExpires(alter_time) UseItemActions()
+		#alter_time,if=buff.alter_time.down&buff.arcane_power.up
+		if CheckBoxOn(opt_alter_time) and BuffExpires(alter_time) and BuffPresent(arcane_power) Spell(alter_time_activate)
+		{
+			#use_item,name=gloves_of_the_chromatic_hydra,if=(cooldown.alter_time_activate.remains>45|target.time_to_die<25)&buff.rune_of_power.remains>20
+			#use_item,name=gloves_of_the_chromatic_hydra,if=(cooldown.alter_time_activate.remains>45|target.time_to_die<25)&buff.invokers_energy.remains>20
+			#use_item,name=gloves_of_the_chromatic_hydra,if=(cooldown.alter_time_activate.remains>45|target.time_to_die<25)
+			if SpellCooldown(alter_time_activate) >45 or target.TimeToDie() <25
+			{
+				if TalentPoints(rune_of_power_talent) and BuffPresent(rune_of_power) UseItemActions()
+				if TalentPoints(invocation_talent) and BuffRemains(invokers_energy) >20 UseItemActions()
+				if not TalentPoints(rune_of_power_talent) and not TalentPoints(invocation_talent) UseItemActions()
+			}
+		}
+	}
+}
+
+AddFunction ArcaneMovingActions
+{
+	if TalentPoints(ice_floes_talent)
+	{
+		#ice_floes,moving=1
+		Spell(ice_floes)
+	}
+	#arcane_barrage,moving=1
+	Spell(arcane_barrage)
+	#fire_blast,moving=1
+	Spell(fire_blast)
+	#ice_lance,moving=1
+	Spell(ice_lance)
+}
+
+# Arcane AoE rotation from Icy Veins Arcane Mage Class Guide:
+#	http://www.icy-veins.com/arcane-mage-wow-pve-dps-rotation-cooldowns-abilities#sec-2
+#
+AddFunction ArcaneAoEActions
+{
+	# Cast Flamestrike on cooldown.
+	Spell(flamestrike)
+
+	# Cast Mage Bomb on at least one target.
+	{
+		if TalentPoints(nether_tempest_talent)
+		{
+			if target.DebuffExpires(nether_tempest)
+				or {target.DebuffRemains(nether_tempest) < target.NextTick(nether_tempest)}
+			{
+				Spell(nether_tempest)
+			}
+		}
+		if TalentPoints(living_bomb_talent) and target.DebuffExpires(living_bomb) Spell(living_bomb)
+		if TalentPoints(frost_bomb_talent) and target.DebuffExpires(frost_bomb) Spell(frost_bomb)
+	}
+
+	# Arcane Explosion as filler.
+	Spell(arcane_explosion)
+}
+
+AddIcon mastery=1 help=Blink size=small checkboxon=opt_icons_left
+{
+	Spell(blink)
+}
+
+AddIcon mastery=1 help=moving size=small checkboxon=opt_icons_left
+{
+	ArcaneMovingActions()
+}
+
+AddIcon mastery=1 help=shortcd
+{
+	ArcaneShortCooldownActions()
+}
+
+AddIcon mastery=1 help=main
+{
+	ArcaneMainActions()
+}
+
+AddIcon mastery=1 help=aoe checkboxon=aoe
+{
+	ArcaneAoEActions()
+}
+
+AddIcon mastery=1 help=cd
+{
+	ArcaneCooldownActions()
+}
+
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	if TalentPoints(cold_snap_talent)
+	{
+		#cold_snap,if=health.pct<30
+		Spell(cold_snap)
+	}
+}
+
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
 }
 
 ###
