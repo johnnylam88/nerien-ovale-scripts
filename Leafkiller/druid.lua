@@ -11,7 +11,8 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
-# 5.1.9 02/25/2013 Support for 5.2 changes, rough support for Rune of Reorigination (ASSUMES MASTERY PROC!).
+# 5.2.2 03/09/2013 Smarter FB logic, fix Faerie Fire, fix mastery assumption for RoR, better Thrash logic, better precombat SR logic
+# 5.2.1 02/25/2013 Support for 5.2 changes, rough support for Rune of Reorigination
 # 5.1.8 02/16/2013 Fix TF not displaying with berserk checked and TF displaying while Berserk is active, fix lookahead issue with Ravage.
 # 5.1.7 02/12/2013 Fix FF option, fix WEAKENED_ARMOR.
 # 5.1.6 02/10/2013 Fix frontal attack and talent conditional in main button (dream_of_cenarius_talent should be DREAM_OF_CENARIUS_TALENT)
@@ -37,9 +38,9 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # 5.05.2 09/20/2012 Level 90 script - WiP
 # 5.05.1 09/08/2012 First version in Nerien's addon
 
-########################
-## Define Spells, Buffs, Talents ##
-########################
+############################
+## Define Spells, Buffs, Items, Talents ##
+############################
 
 # Shared spells
 Define(BARKSKIN 22812)
@@ -70,19 +71,22 @@ Define(WEAKENED_ARMOR 113746)
 Define(WEAKENED_BLOWS 115798)
     SpellInfo(WEAKENED_BLOWS duration=30)
 Define(CLEARCASTING 135700)
-Define(RUNE1 139121)
-    SpellInfo(RUNE1 duration=10)
-Define(RUNE2 139117)
-    SpellInfo(RUNE2 duration=10)
-Define(RUNE3 139120)
-    SpellInfo(RUNE3 duration=10)
-SpellList(RUNE_OF_REORIGINATION RUNE1 RUNE2 RUNE3)
+Define(ROR_CRIT 139117)
+    SpellInfo(ROR_CRIT duration=10)
+Define(ROR_MASTERY 139120)
+    SpellInfo(ROR_MASTERY duration=10)
+Define(ROR_HASTE 139121)
+    SpellInfo(ROR_HASTE duration=10)
+SpellList(ROR ROR_CRIT ROR_MASTERY ROR_HASTE)
+
+# Shared items
+ItemList(ROR_ITEM 94532 95802 96546)
 
 # Talents
 Define(NATURES_SWIFTNESS_TALENT 4)
 Define(RENEWAL_TALENT 5)
 Define(CENARION_WARD_TALENT 6)
-Define(FAERIE_SWARM 7)
+Define(FAERIE_SWARM_TALENT 7)
 Define(TYPHOON_TALENT 9)
 Define(SOUL_OF_THE_FOREST 10)
 Define(INCARNATION_TALENT 11)
@@ -118,8 +122,8 @@ Define(GLYPH_OF_SAVAGERY 127540)
 
 # Cat spells
 Define(BERSERK_CAT 106951) #cat cd buff
-    SpellInfo(BERSERK_CAT duration=15 cd=180 )
-    SpellAddBuff(BERSERK_CAT BERSERK_CAT=1 )
+    SpellInfo(BERSERK_CAT duration=15 cd=180)
+    SpellAddBuff(BERSERK_CAT BERSERK_CAT=1)
 Define(CAT_FORM 768)
     SpellAddBuff(CAT_FORM CAT_FORM=1)
 Define(FAERIE_FERAL 770) #bear+cat
@@ -284,23 +288,13 @@ AddFunction ExistingRipDamageTillDead
 # Misc functions
 AddFunction FaerieFire
 {
-    if TalentPoints(FAERIE_SWARM) Spell(FAERIE_SWARM)
-    if not TalentPoints(FAERIE_SWARM) Spell(FAERIE_FERAL)
-}
-AddFunction FaerieFireReady
-{
-    {TalentPoints(faerie_swarm_talent) and Spell(faerie_swarm)}
-        or {TalentPoints(faerie_swarm_talent) and Spell(faerie_fire)}
+    if TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_SWARM)
+    if not TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_FERAL)
 }
 AddFunction SavageRoar
 {
     if Glyph(GLYPH_OF_SAVAGERY) Spell(SAVAGE_ROAR_GLYPHED)
     if Glyph(GLYPH_OF_SAVAGERY no) and ComboPoints(more 0) Spell(SAVAGE_ROAR_OLD)
-}
-AddFunction SavageRoarReady
-{
-    {Glyph(glyph_of_savagery) and Spell(savage_roar_glyphed)}
-        or {Glyph(glyph_of_savagery no) and ComboPoints() >0 and Spell(savage_roar)}
 }
 AddFunction BITWRange
 {
@@ -311,6 +305,25 @@ AddFunction UsePotion
 {
     #virmens_bite_potion
     if CheckBoxOn(potions) and target.Classification(worldboss) Item(virmens_bite_potion)
+}
+AddFunction TimeTilEnergyForThrash
+{
+    if BuffExpires(BERSERK_CAT) {
+        if Energy() <= 50 {
+            { 50 - Energy() } / EnergyRegen()
+        }
+        unless Energy() <= 50 {
+            0
+        }
+    }
+    if BuffPresent(BERSERK_CAT) {
+        if Energy() <= 25 {
+            { 25 - Energy() } / EnergyRegen()
+        }
+        unless Energy() <= 25 {
+            0
+        }
+    }
 }
 
 #############################
@@ -323,7 +336,15 @@ AddFunction NotInCombat
         if BuffExpires(str_agi_int 400 any=1) Spell(MARK_OF_THE_WILD)
         if BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and TalentPoints(DREAM_OF_CENARIUS_TALENT) Spell(HEALING_TOUCH)
         unless Stance(3) Spell(CAT_FORM)
-        if BuffRemains(SAVAGE_ROAR) <12 SavageRoar()
+        if Glyph(GLYPH_OF_SAVAGERY) {
+	    if TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-11.5
+	    or BuffRemains(SAVAGE_ROAR_GLYPHED) <9 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-8.5
+	    or BuffRemains(SAVAGE_ROAR_GLYPHED) <6 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-5.5
+	    or BuffRemains(SAVAGE_ROAR_GLYPHED) <3 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-2.5
+            or BuffExpires(SAVAGE_ROAR_GLYPHED) {
+	        SavageRoar()
+	    }
+	}
         if TalentPoints(FORCE_OF_NATURE_TALENT) Spell(FORCE_OF_NATURE)
     }
 }
@@ -364,8 +385,8 @@ AddFunction FillerActions {
 AddFunction SpareGcdCooldowns {
     if TalentPoints(FORCE_OF_NATURE_TALENT)
     {
-    #treants
-    Spell(FORCE_OF_NATURE)
+        #treants
+        Spell(FORCE_OF_NATURE)
     }
     # Spirit Wolves goes here when symbiosis is supported appropriately.
 }
@@ -457,7 +478,7 @@ AddFunction MainActionsDoC
 	if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS)
 	and ComboPoints() >=5 and RipTickDamageRatio() >=92 and target.TimeToDie() >30 Spell(NATURES_SWIFTNESS)
 	#actions.doc+=/rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
-	if ComboPoints() >=5 and BuffPresent(RUNE_OF_REORIGINATION) and target.TimeToDie() >30 Spell(RIP)
+	if HasTrinket(ROR_ITEM) and ComboPoints() >=5 and BuffPresent(ROR_MASTERY) and target.TimeToDie() >30 Spell(RIP)
     }
     #rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
     if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(RIP) <2 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) Spell(RIP)
@@ -483,31 +504,23 @@ AddFunction MainActionsDoC
     if BuffRemains(SAVAGE_ROAR) <=3 and ComboPoints() >0 and {BuffRemains(SAVAGE_ROAR) +2 > target.DebuffRemains(RIP)} SavageRoar()
     #savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
     if BuffRemains(SAVAGE_ROAR) <=6 and ComboPoints() >=5 and {BuffRemains(SAVAGE_ROAR) +2 <= target.DebuffRemains(RIP)} SavageRoar()
-    #pool_resource,wait=0.1,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&buff.savage_roar.remains-6>=$(rip_remains)&$(rip_remains)>=4.5
-    #ferocious_bite,if=combo_points>=5&buff.savage_roar.remains-6>=$(rip_remains)&$(rip_remains)>=4
-    if ComboPoints() >=5 and BuffRemains(SAVAGE_ROAR)-6 >= target.DebuffRemains(RIP) and target.DebuffRemains(RIP) >=4
+    #actions.doc+=/pool_resource,wait=0.1,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&dot.rip.ticking&!(dot.rip.remains-2<=energy.time_to_max-1)&!(buff.savage_roar.remains-3<=energy.time_to_max-1)
+    #actions.doc+=/ferocious_bite,if=combo_points>=5&dot.rip.ticking&!(dot.rip.remains-2<=energy.time_to_max-1)&!(buff.savage_roar.remains-3<=energy.time_to_max-1)&!((buff.savage_roar.remains-6<=energy.time_to_max-1)&buff.savage_roar.remains+2<=$(rip_remains))
+    if ComboPoints() >=5 and target.DebuffPresent(RIP) and BuffPresent(SAVAGE_ROAR)
+    and not target.DebuffRemains(RIP)-2 <= TimeToMaxEnergy()-1
+    and not BuffRemains(SAVAGE_ROAR)-3 <= TimeToMaxEnergy()-1
+    and not {BuffRemains(SAVAGE_ROAR)-6 <= TimeToMaxEnergy()-1
+          and BuffRemains(SAVAGE_ROAR)+2 <= target.DebuffRemains(RIP)}
     {
         unless {{BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25}} SpareGcdCooldowns()
         wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(FEROCIOUS_BITE)
     }
-    #pool_resource,wait=0.1,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&buff.savage_roar.remains+6>=$(rip_remains)&$(rip_remains)>=6.5
-    #ferocious_bite,if=combo_points>=5&buff.savage_roar.remains+6>=$(rip_remains)&$(rip_remains)>=6
-    if ComboPoints() >=5 and BuffRemains(SAVAGE_ROAR)+6 >= target.DebuffRemains(RIP) and target.DebuffRemains(RIP) >=6
-    {
-        unless {{BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25}} SpareGcdCooldowns()
-        wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(FEROCIOUS_BITE)
+    if HasTrinket(ROR_ITEM) {
+        #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+        if BuffPresent(ROR_MASTERY) and RakeTickDamageRatio() >=100 Spell(RAKE)
+        #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+        if BuffPresent(ROR_MASTERY) and target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
     }
-    #pool_resource,wait=0.1,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&$(rip_remains)>=10.5
-    #ferocious_bite,if=combo_points>=5&$(rip_remains)>=10
-    if ComboPoints() >=5 and target.DebuffRemains(RIP) >10
-    {
-        unless {{BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25}} SpareGcdCooldowns()
-        wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(FEROCIOUS_BITE)
-    }
-    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
-    if BuffPresent(RUNE_OF_REORIGINATION) and RakeTickDamageRatio() >=100 Spell(RAKE)
-    #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
-    if BuffPresent(RUNE_OF_REORIGINATION) and target.DebuffRemains(RAKE) <9 and BuffRemains(RUNE_OF_REORIGINATION) <=1.5 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
     if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeTickDamageRatio() >=100 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
@@ -518,9 +531,12 @@ AddFunction MainActionsDoC
         Spell(RAKE)
     #pool_resource,wait=0.25,for_next=1
     #thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
-    if target.DebuffRemains(THRASH_CAT) <3 and target.TimeToDie() >=9 and {target.DebuffRemains(RIP) >=4 or BuffPresent(BERSERK_CAT)}
+    if target.DebuffRemains(THRASH_CAT) < {3 + TimeTilEnergyForThrash()} 
+    and target.TimeToDie() - TimeTilEnergyForThrash() >=9
+    and {target.DebuffRemains(RIP) - TimeTilEnergyForThrash() >=4
+          or BuffPresent(BERSERK_CAT)}
     {
-        unless {{BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25}} SpareGcdCooldowns()
+        if TimeTilEnergyForThrash() >=1.5 SpareGcdCooldowns()
         wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(THRASH_CAT)
     }
 }
@@ -590,7 +606,7 @@ AddFunction MainActionsNonDoC
     if not BITWRange()
     {
 	#actions.doc+=/rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
-	if ComboPoints() >=5 and BuffPresent(RUNE_OF_REORIGINATION) and target.TimeToDie() >30 Spell(RIP)
+	if HasTrinket(ROR_ITEM) and ComboPoints() >=5 and BuffPresent(ROR_MASTERY) and target.TimeToDie() >30 Spell(RIP)
     }
     #rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
     if target.TimeToDie() >=6 and ComboPoints() >=5 and target.DebuffRemains(RIP) <2
@@ -602,16 +618,21 @@ AddFunction MainActionsNonDoC
     if BuffRemains(SAVAGE_ROAR) <=3 and ComboPoints() >0 and BuffRemains(SAVAGE_ROAR) +2 > target.DebuffRemains(RIP) SavageRoar()
     #savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
     if BuffRemains(SAVAGE_ROAR) <=6 and ComboPoints() >=5 and {BuffRemains(SAVAGE_ROAR) +2 <= target.DebuffRemains(RIP)} SavageRoar()
-    #ferocious_bite,if=combo_points>=5&(dot.rip.remains>10|(dot.rip.remains>6&buff.berserk.up))&dot.rip.ticking
-    if ComboPoints() >=5 and target.DebuffPresent(RIP)
+    #actions.doc+=/ferocious_bite,if=combo_points>=5&dot.rip.ticking&!(dot.rip.remains-2<=energy.time_to_max-1)&!(buff.savage_roar.remains-3<=energy.time_to_max-1)&!((buff.savage_roar.remains-6<=energy.time_to_max-1)&buff.savage_roar.remains+2<=$(rip_remains))
+    if ComboPoints() >=5 and target.DebuffPresent(RIP) and BuffPresent(SAVAGE_ROAR)
+    and not target.DebuffRemains(RIP)-2 <= TimeToMaxEnergy()-1
+    and not BuffRemains(SAVAGE_ROAR)-3 <= TimeToMaxEnergy()-1
+    and not {BuffRemains(SAVAGE_ROAR)-6 <= TimeToMaxEnergy()-1
+          and BuffRemains(SAVAGE_ROAR)+2 <= target.DebuffRemains(RIP)}
     {
-        if target.DebuffRemains(RIP) >10 Spell(FEROCIOUS_BITE)
-        if target.DebuffRemains(RIP) >6 and BuffPresent(BERSERK_CAT) Spell(FEROCIOUS_BITE)
+	Spell(FEROCIOUS_BITE)
     }
-    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
-    if BuffPresent(RUNE_OF_REORIGINATION) and RakeTickDamageRatio() >=100 Spell(RAKE)
-    #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
-    if BuffPresent(RUNE_OF_REORIGINATION) and target.DebuffRemains(RAKE) <9 and BuffRemains(RUNE_OF_REORIGINATION) <=1.5 Spell(RAKE)
+    if HasTrinket(ROR_ITEM) {
+        #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+        if BuffPresent(ROR_MASTERY) and RakeTickDamageRatio() >=100 Spell(RAKE)
+        #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+        if BuffPresent(ROR_MASTERY) and target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
+    }
     #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
     if target.TimeToDie()-target.DebuffRemains(RAKE) >3 and RakeTickDamageRatio() >=112 Spell(RAKE)
     #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<3.0&(buff.berserk.up|(cooldown.tigers_fury.remains+0.8)>=dot.rake.remains|energy>60)
@@ -620,9 +641,13 @@ AddFunction MainActionsNonDoC
         Spell(RAKE)
     #pool_resource,wait=0.1,for_next=1
     #thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
-    if target.DebuffRemains(THRASH_CAT) <3 and target.TimeToDie() >=9 and {target.DebuffRemains(RIP) >=4 or BuffPresent(BERSERK_CAT)}
+    if target.DebuffRemains(THRASH_CAT) < {3 + TimeTilEnergyForThrash()}
+    and target.TimeToDie() - TimeTilEnergyForThrash() >=9
+    and {target.DebuffRemains(RIP) - TimeTilEnergyForThrash() >=4
+          or BuffPresent(BERSERK_CAT)}
     {
-        wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(THRASH_CAT)
+        if TimeTilEnergyForThrash() >=1.5 SpareGcdCooldowns()
+        wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(THRASH_CAT)    
     }
 }
 
