@@ -279,12 +279,12 @@ AddFunction MageBomb
 	if TalentPoints(nether_tempest_talent)
 	{
 		#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
-		if {target.DebuffExpires(nether_tempest) or target.TicksRemain(nether_tempest) <1} and target.TimeToDie() >6 Spell(nether_tempest)
+		if {target.DebuffExpires(nether_tempest) or target.TicksRemain(nether_tempest) <2} and target.TimeToDie() >6 Spell(nether_tempest)
 	}
 	if TalentPoints(living_bomb_talent)
 	{
 		#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
-		if {target.DebuffExpires(living_bomb) or target.TicksRemain(living_bomb) <1} and target.TimeToDie() >{target.TickTime(living_bomb) * 3} Spell(living_bomb)
+		if {target.DebuffExpires(living_bomb) or target.TicksRemain(living_bomb) <2} and target.TimeToDie() >{target.TickTime(living_bomb) * 3} Spell(living_bomb)
 	}
 	if TalentPoints(frost_bomb_talent)
 	{
