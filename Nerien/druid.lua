@@ -1386,7 +1386,7 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 # Main rotation (rage-consuming abilities).
 AddIcon mastery=3 help=shortcd
 {
-	if BuffPresent(tooth_and_claw) or target.IsAggroed(no)
+	if {BuffPresent(tooth_and_claw) and BuffPresent(savage_defense_buff)} or target.IsAggroed(no)
 	{
 		if Rage() >90 Spell(maul)
 	}
