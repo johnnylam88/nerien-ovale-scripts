@@ -366,6 +366,9 @@ AddFunction UsePotion
 ### Assassination
 ###
 
+# Use Elitist Jerks Assassination rotation: 4CP+ Envenoms when >35% health and 5CP Envenomns <35% health.
+AddCheckBox(opt_ej_assassination "EJ rotation")
+
 AddFunction AssassinationFullRotation
 {
 	if InCombat(no)
@@ -414,7 +417,17 @@ AddFunction AssassinationFullRotation
 	#vendetta
 	Spell(vendetta)
 	#envenom,if=combo_points>4
-	if ComboPoints() >4 Spell(envenom)
+	{
+		if CheckBoxOn(opt_ej_assassination)
+		{
+			if target.HealthPercent() >35 and ComboPoints() >=4 Spell(envenom)
+			if target.HealthPercent() <=35 and ComboPoints() ==5 Spell(envenom)
+		}
+		if CheckBoxOff(opt_ej_assassination)
+		{
+			if ComboPoints() >4 Spell(envenom)
+		}
+	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 	ExposeArmor()
@@ -458,7 +471,17 @@ AddFunction AssassinationMainPlusFillerActions
 	if target.TicksRemain(rupture) <2 Spell(rupture)
 	if ComboPoints() ==5 and target.TicksRemain(rupture) <3 Spell(rupture)
 	#envenom,if=combo_points>4
-	if ComboPoints() >4 Spell(envenom)
+	{
+		if CheckBoxOn(opt_ej_assassination)
+		{
+			if target.HealthPercent() >35 and ComboPoints() >=4 Spell(envenom)
+			if target.HealthPercent() <=35 and ComboPoints() ==5 Spell(envenom)
+		}
+		if CheckBoxOff(opt_ej_assassination)
+		{
+			if ComboPoints() >4 Spell(envenom)
+		}
+	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 	ExposeArmor()
@@ -478,7 +501,17 @@ AddFunction AssassinationMainActions
 	if target.TicksRemain(rupture) <2 Spell(rupture)
 	if ComboPoints() ==5 and target.TicksRemain(rupture) <3 Spell(rupture)
 	#envenom,if=combo_points>4
-	if ComboPoints() >4 Spell(envenom)
+	{
+		if CheckBoxOn(opt_ej_assassination)
+		{
+			if target.HealthPercent() >35 and ComboPoints() >=4 Spell(envenom)
+			if target.HealthPercent() <=35 and ComboPoints() ==5 Spell(envenom)
+		}
+		if CheckBoxOff(opt_ej_assassination)
+		{
+			if ComboPoints() >4 Spell(envenom)
+		}
+	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 }
