@@ -279,8 +279,8 @@ AddFunction UseRacialSurvivalActions
 
 AddCheckBox(potions "Use potions" default)
 
-AddCheckBox(opt_icons_left "Left icons" default)
-AddCheckBox(opt_icons_right "Right icons" default)
+AddCheckBox(opt_icons_left "Left icons")
+AddCheckBox(opt_icons_right "Right icons")
 
 # Trinket CDs
 AddListItem(trinketcd0 000s "Trinket 0 CD - none" default)
