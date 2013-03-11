@@ -1002,6 +1002,8 @@ AddFunction SubtletyFillerActions
 	#tricks_of_the_trade
 	#backstab,if=combo_points<5&energy>80&cooldown.shadow_dance.remains>=2
 	if ComboPoints() <5 and Energy() >80 and SpellCooldown(shadow_dance) >=2 Spell(backstab)
+	# Extra filler to prevent energy-capping if Shadow Dance is delayed.
+	if TimeToMaxEnergy() <1.5 Spell(backstab)
 }
 
 AddFunction SubtletyShortCooldownActions
