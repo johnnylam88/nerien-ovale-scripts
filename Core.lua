@@ -15,11 +15,14 @@ module.script = {
 	WARRIOR = { },
 }
 
+local Ovale = LibStub("AceAddon-3.0"):GetAddon("Ovale")
+module.OvaleScripts = Ovale:GetModule("OvaleScripts")
+
 function module:OnEnable()
 	playerClass = select(2, UnitClass("player"))
 	for class, tbl in pairs(self.script) do
 		for source, srcTbl in pairs(tbl) do
-			OvaleScripts:RegisterScript(class, source, srcTbl.desc, srcTbl.code)
+			self.OvaleScripts:RegisterScript(class, source, srcTbl.desc, srcTbl.code)
 		end
 	end
 end
@@ -27,11 +30,9 @@ end
 function module:OnDisable()
 	for class, tbl in pairs(self.script) do
 		for source in pairs(tbl) do
-			OvaleScripts:UnregisterScript(class, source)
+			self.OvaleScripts:UnregisterScript(class, source)
 		end
 	end
 end
 
-local Ovale = LibStub("AceAddon-3.0"):GetAddon("Ovale")
-local OvaleScripts = Ovale:GetModule("OvaleScripts")
-local NerienOvaleScripts = OvaleScripts:NewModule("NerienOvaleScripts", module)
+local NerienOvaleScripts = module.OvaleScripts:NewModule("NerienOvaleScripts", module)
