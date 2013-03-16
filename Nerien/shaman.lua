@@ -439,7 +439,7 @@ AddFunction ElementalFullRotation
 	#run_action_list,name=single,if=active_enemies=1
 	{
 		#use_item,name=gloves_of_the_witch_doctor,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
-		if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() or TotemPresent(fire totem=fire_elemental_totem) Item(HandSlot usable=1)
+		if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() or TotemPresent(fire totem=fire_elemental_totem) Item(HandsSlot usable=1)
 		#ancestral_swiftness,if=talent.ancestral_swiftness.enabled&!buff.ascendance.up
 		if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
 		#unleash_elements,if=talent.unleashed_fury.enabled&!buff.ascendance.up
@@ -590,8 +590,6 @@ AddFunction ElementalCooldownActions
 
 	#wind_shear
 	Interrupt()
-	#bloodlust,if=target.health.pct<25|time>5
-	if not ElementalHasteBuffPresent() and target.HealthPercent() <25 or TimeInCombat() >5 Bloodlust()
 	UseItemActions()
 	#stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
 	if BuffExpires(stormlash any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
@@ -628,7 +626,7 @@ AddFunction ElementalCooldownActions
 	#run_action_list,name=single,if=active_enemies=1
 	{
 		#use_item,name=gloves_of_the_witch_doctor,if=((cooldown.ascendance.remains>10|level<87)&cooldown.fire_elemental_totem.remains>10)|buff.ascendance.up|buff.bloodlust.up|totem.fire_elemental_totem.active
-		if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() or TotemPresent(fire totem=fire_elemental_totem) Item(HandSlot usable=1)
+		if BuffPresent(burst_haste any=1) or ElementalAscendanceOrFireElementalReady() or TotemPresent(fire totem=fire_elemental_totem) Item(HandsSlot usable=1)
 		#ancestral_swiftness,if=talent.ancestral_swiftness.enabled&!buff.ascendance.up
 		if TalentPoints(ancestral_swiftness) and BuffExpires(ascendance_fire) Spell(ancestral_swiftness)
 		#spiritwalkers_grace,moving=1,if=buff.ascendance.up
