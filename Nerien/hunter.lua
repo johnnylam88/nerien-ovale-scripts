@@ -401,7 +401,7 @@ AddFunction BeastMasteryFullRotation
 	#stampede,if=buff.rapid_fire.up|buff.bloodlust.react|target.time_to_die<=25
 	if BuffPresent(rapid_fire) or BuffPresent(burst_haste any=1) or target.TimeToDie() <=25 Spell(stampede)
 	#kill_shot
-	Spell(kill_shot usable=1)
+	if target.HealthPercent() <20 Spell(kill_shot)
 	#kill_command
 	Spell(kill_command)
 	#a_murder_of_crows,if=enabled&!ticking
@@ -449,7 +449,7 @@ AddFunction BeastMasteryMainActions
 	#fervor,if=enabled&!ticking&focus<=65
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=65 Spell(fervor)
 	#kill_shot
-	Spell(kill_shot usable=1)
+	if target.HealthPercent() <20 Spell(kill_shot)
 	#kill_command
 	Spell(kill_command)
 	#glaive_toss,if=enabled
@@ -628,7 +628,7 @@ AddFunction SurvivalFullRotation
 	#explosive_shot,if=cooldown_react
 	Spell(explosive_shot)
 	#kill_shot
-	Spell(kill_shot usable=1)
+	if target.HealthPercent() <20 Spell(kill_shot)
 	#black_arrow,if=!ticking&target.time_to_die>=8
 	if target.DebuffExpires(black_arrow) and target.TimeToDie() >=8 Spell(black_arrow)
 	#multi_shot,if=buff.thrill_of_the_hunt.react&dot.serpent_sting.remains<2
@@ -667,7 +667,7 @@ AddFunction SurvivalMainActions
 	#explosive_shot,if=cooldown_react
 	Spell(explosive_shot)
 	#kill_shot
-	Spell(kill_shot usable=1)
+	if target.HealthPercent() <20 Spell(kill_shot)
 	#black_arrow,if=!ticking&target.time_to_die>=8
 	if target.DebuffExpires(black_arrow) and target.TimeToDie() >=8 Spell(black_arrow)
 	#multi_shot,if=buff.thrill_of_the_hunt.react&dot.serpent_sting.remains<2

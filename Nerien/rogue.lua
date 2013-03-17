@@ -407,7 +407,7 @@ AddFunction AssassinationFullRotation
 	{
 		ExposeArmor()
 		#dispatch,if=dot.rupture.ticks_remain<2&energy>90
-		Spell(dispatch usable=1)
+		if target.HealthPercent() <35 Spell(dispatch)
 		#mutilate,if=dot.rupture.ticks_remain<2&energy>90
 		Spell(mutilate)
 	}
@@ -432,7 +432,7 @@ AddFunction AssassinationFullRotation
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 	ExposeArmor()
 	#dispatch,if=combo_points<5
-	if ComboPoints() <5 Spell(dispatch usable=1)
+	if ComboPoints() <5 and target.HealthPercent() <35 Spell(dispatch)
 	#tricks_of_the_trade
 	#mutilate
 	Spell(mutilate)
@@ -463,7 +463,7 @@ AddFunction AssassinationMainPlusFillerActions
 	{
 		ExposeArmor()
 		#dispatch,if=dot.rupture.ticks_remain<2&energy>90
-		Spell(dispatch usable=1)
+		if target.HealthPercent() <35 Spell(dispatch)
 		#mutilate,if=dot.rupture.ticks_remain<2&energy>90
 		Spell(mutilate)
 	}
@@ -486,7 +486,7 @@ AddFunction AssassinationMainPlusFillerActions
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 	ExposeArmor()
 	#dispatch,if=combo_points<5
-	if ComboPoints() <5 Spell(dispatch usable=1)
+	if ComboPoints() <5 and target.HealthPercent() <35 Spell(dispatch)
 	#tricks_of_the_trade
 	#mutilate
 	Spell(mutilate)
