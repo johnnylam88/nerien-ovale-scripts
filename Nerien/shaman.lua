@@ -555,7 +555,6 @@ AddFunction ElementalFillerActions
 
 AddFunction ElementalAoEActions
 {
-	Spell(ascendance_fire)
 	#run_action_list,name=aoe,if=active_enemies>1
 	#lava_beam
 	Spell(lava_beam)
