@@ -11,6 +11,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
+# 5.2.3 03/18/2013 Use Mangle to generate combo points except for high energy situations. (Hopefully) fix issue with misplaced NSs.
 # 5.2.2 03/09/2013 Smarter FB logic, fix Faerie Fire, fix mastery assumption for RoR, better Thrash logic, better precombat SR logic
 # 5.2.1 02/25/2013 Support for 5.2 changes, rough support for Rune of Reorigination
 # 5.1.8 02/16/2013 Fix TF not displaying with berserk checked and TF displaying while Berserk is active, fix lookahead issue with Ravage.
@@ -115,10 +116,20 @@ Define(RENEWAL 108238)
     SpellInfo(RENEWAL cd=120)
 Define(TYPHOON 132469)
     SpellInfo(TYPHOON cd=20)
+Define(WILD_CHARGE 102401)
+    SpellInfo(WILD_CHARGE cd=15)
 
 #Glyphs
 Define(GLYPH_OF_SHRED 114234)
 Define(GLYPH_OF_SAVAGERY 127540)
+
+# Shared spells
+Define(FAERIE_FERAL 770)
+    SpellInfo(FAERIE_FERAL duration=300 cd=6)
+    SpellAddTargetDebuff(FAERIE_FERAL FAERIE_FERAL=1 WEAKENED_ARMOR=1)
+Define(FAERIE_SWARM 102355)
+    SpellInfo(FAERIE_SWARM duration=300 cd=6)
+    SpellAddTargetDebuff(FAERIE_SWARM FAERIE_SWARM=1 WEAKENED_ARMOR=1)
 
 # Cat spells
 Define(BERSERK_CAT 106951) #cat cd buff
@@ -126,12 +137,6 @@ Define(BERSERK_CAT 106951) #cat cd buff
     SpellAddBuff(BERSERK_CAT BERSERK_CAT=1)
 Define(CAT_FORM 768)
     SpellAddBuff(CAT_FORM CAT_FORM=1)
-Define(FAERIE_FERAL 770) #bear+cat
-    SpellInfo(FAERIE_FERAL duration=300 cd=6)
-    SpellAddTargetDebuff(FAERIE_FERAL FAERIE_FERAL=1 WEAKENED_ARMOR=1)
-Define(FAERIE_SWARM 102355) #bear+cat
-    SpellInfo(FAERIE_SWARM duration=300 cd=6)
-    SpellAddTargetDebuff(FAERIE_SWARM FAERIE_SWARM=1 WEAKENED_ARMOR=1)
 Define(FEROCIOUS_BITE 22568) #cat finish 25-50 energy
     SpellInfo(FEROCIOUS_BITE energy=25 combo=0)
 Define(INCARNATION_CAT 102543)
@@ -182,8 +187,6 @@ Define(THRASH_CAT 106830)
 Define(TIGERS_FURY 5217) #cat buff
     SpellInfo(TIGERS_FURY duration=6 energy=-60 cd=30)
     SpellAddBuff(TIGERS_FURY TIGERS_FURY=1)
-Define(WILD_CHARGE 49376)
-    SpellInfo(WILD_CHARGE cd=15)
 
 # Bear spells
 Define(BEAR_FORM 5487)
@@ -208,8 +211,6 @@ Define(TOOTH_AND_CLAW 135286)
     SpellAddBuff(TOOTH_AND_CLAW TOOTH_AND_CLAW=1)
 Define(TOOTH_AND_CLAW_DEBUFF 135601)
     SpellAddTargetDebuff(TOOTH_AND_CLAW_DEBUFF TOOTH_AND_CLAW_DEBUFF=1)
-Define(WILD_CHARGE_BEAR 102401)
-    SpellInfo(WILD_CHARGE_BEAR cd=15)
 
 ###############
 ## Define Settings ##
@@ -336,8 +337,8 @@ AddFunction NotInCombat
         if BuffExpires(str_agi_int 400 any=1) Spell(MARK_OF_THE_WILD)
         if BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and TalentPoints(DREAM_OF_CENARIUS_TALENT) Spell(HEALING_TOUCH)
         unless Stance(3) Spell(CAT_FORM)
-        if Glyph(GLYPH_OF_SAVAGERY) {
-	    if TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-11.5
+        if Glyph(GLYPH_OF_SAVAGERY) and ComboPoints() ==0 {
+	    if BuffRemains(SAVAGE_ROAR_GLYPHED) <15 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-11.5
 	    or BuffRemains(SAVAGE_ROAR_GLYPHED) <9 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-8.5
 	    or BuffRemains(SAVAGE_ROAR_GLYPHED) <6 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-5.5
 	    or BuffRemains(SAVAGE_ROAR_GLYPHED) <3 and TimeToMaxEnergy() < BuffRemains(SAVAGE_ROAR_GLYPHED)-2.5
@@ -359,26 +360,13 @@ AddFunction FillerActions {
     }
     if not TalentPoints(INCARNATION_TALENT) or BuffExpires(INCARNATION_CAT)
     {
-	if CheckBoxOn(infront)
-	{
-            #mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
-            if {ComboPoints() <5 and target.DebuffRemains(RIP) <3} or {ComboPoints() ==0 and BuffRemains(SAVAGE_ROAR) <2} Spell(MANGLE_CAT)
-	    #shred,if=position.front&(buff.tigers_fury.up|buff.berserk.up)
-	    if Glyph(GLYPH_OF_SHRED) and {BuffPresent(TIGERS_FURY) or BuffPresent(BERSERK_CAT)} Spell(SHRED)
-	    #mangle_cat
-	    Spell(MANGLE_CAT)
-	}
-	if not CheckBoxOn(infront)
-	{
-	    #shred,if=buff.omen_of_clarity.react&buff.king_of_the_jungle.down
-            if BuffPresent(CLEARCASTING) Spell(SHRED)
-            #shred,if=buff.berserk.up&buff.king_of_the_jungle.down
-            if BuffPresent(BERSERK_CAT) Spell(SHRED)
-            #mangle_cat,if=((combo_points<5&dot.rip.remains<3.0)|(combo_points=0&buff.savage_roar.remains<2))&buff.king_of_the_jungle.down
-            if {ComboPoints() <5 and target.DebuffRemains(RIP) <3} or {ComboPoints() ==0 and BuffRemains(SAVAGE_ROAR) <2} Spell(MANGLE_CAT)
-            #shred,if=buff.king_of_the_jungle.down
-	    Spell(SHRED)
-	}
+        #actions.filler+=/shred,if=(buff.omen_of_clarity.react|buff.berserk.up|energy.regen>=15)&buff.king_of_the_jungle.down
+        if BuffPresent(CLEARCASTING) or BuffPresent(BERSERK_CAT) or EnergyRegen() >=15
+	   and {not CheckBoxOn(infront)
+	          or {Glyph(GLYPH_OF_SHRED) and {BuffPresent(TIGERS_FURY) or BuffPresent(BERSERK_CAT)}}}
+	Spell(SHRED)
+        #actions.filler+=/mangle_cat,if=buff.king_of_the_jungle.down
+	Spell(MANGLE_CAT)
     }
 }
 
@@ -453,7 +441,7 @@ AddFunction MainActionsDoC
         if ComboPoints() >=5
         {
             #natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
-            if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) Spell(NATURES_SWIFTNESS)
+            if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) and BuffRemains(SAVAGE_ROAR) >5 Spell(NATURES_SWIFTNESS)
             #virmens_bite_potion,if=(combo_points>=5&target.health.pct<=25&buff.dream_of_cenarius_damage.up)arget.time_to_die<=40
             if ComboPoints() >=5 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) UsePotion()
             if target.TimeToDie() <=40 UsePotion()
