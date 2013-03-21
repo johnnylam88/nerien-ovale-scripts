@@ -366,9 +366,6 @@ AddFunction UsePotion
 ### Assassination
 ###
 
-# Use Elitist Jerks Assassination rotation: 4CP+ Envenoms when >35% health and 5CP Envenomns <35% health.
-AddCheckBox(opt_ej_assassination "EJ rotation")
-
 AddFunction AssassinationFullRotation
 {
 	if InCombat(no)
@@ -407,7 +404,7 @@ AddFunction AssassinationFullRotation
 	{
 		ExposeArmor()
 		#dispatch,if=dot.rupture.ticks_remain<2&energy>90
-		if target.HealthPercent() <35 Spell(dispatch)
+		if BuffPresent(blindside) or target.HealthPercent() <35 Spell(dispatch)
 		#mutilate,if=dot.rupture.ticks_remain<2&energy>90
 		Spell(mutilate)
 	}
@@ -418,22 +415,18 @@ AddFunction AssassinationFullRotation
 	Spell(vendetta)
 	#envenom,if=combo_points>4
 	{
-		if CheckBoxOn(opt_ej_assassination)
-		{
-			if target.HealthPercent() >35 and ComboPoints() >=4 Spell(envenom)
-			if target.HealthPercent() <=35 and ComboPoints() ==5 Spell(envenom)
-		}
-		if CheckBoxOff(opt_ej_assassination)
-		{
-			if ComboPoints() >4 Spell(envenom)
-		}
+		# Refinement from EJ: if not talented into Anticipation, Envenom at 4+CP unless
+		# the target is below 35% health.
+		if not TalentPoints(anticipation_talent) and ComboPoints() >=4 and target.HealthPercent() >35 Spell(envenom)
+		if ComboPoints() >4 or target.HealthPercent() <=35 Spell(envenom)
 	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 	ExposeArmor()
 	#dispatch,if=combo_points<5
-	if ComboPoints() <5 and target.HealthPercent() <35 Spell(dispatch)
+	if ComboPoints() <5 and {BuffPresent(blindside) or target.HealthPercent() <35} Spell(dispatch)
 	#tricks_of_the_trade
+	TricksOfTheTrade()
 	#mutilate
 	Spell(mutilate)
 }
@@ -463,7 +456,7 @@ AddFunction AssassinationMainPlusFillerActions
 	{
 		ExposeArmor()
 		#dispatch,if=dot.rupture.ticks_remain<2&energy>90
-		if target.HealthPercent() <35 Spell(dispatch)
+		if BuffPresent(blindside) or target.HealthPercent() <35 Spell(dispatch)
 		#mutilate,if=dot.rupture.ticks_remain<2&energy>90
 		Spell(mutilate)
 	}
@@ -472,22 +465,18 @@ AddFunction AssassinationMainPlusFillerActions
 	if ComboPoints() ==5 and target.TicksRemain(rupture) <3 Spell(rupture)
 	#envenom,if=combo_points>4
 	{
-		if CheckBoxOn(opt_ej_assassination)
-		{
-			if target.HealthPercent() >35 and ComboPoints() >=4 Spell(envenom)
-			if target.HealthPercent() <=35 and ComboPoints() ==5 Spell(envenom)
-		}
-		if CheckBoxOff(opt_ej_assassination)
-		{
-			if ComboPoints() >4 Spell(envenom)
-		}
+		# Refinement from EJ: if not talented into Anticipation, Envenom at 4+CP unless
+		# the target is below 35% health.
+		if not TalentPoints(anticipation_talent) and ComboPoints() >=4 and target.HealthPercent() >35 Spell(envenom)
+		if ComboPoints() >4 or target.HealthPercent() <=35 Spell(envenom)
 	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
 	ExposeArmor()
 	#dispatch,if=combo_points<5
-	if ComboPoints() <5 and target.HealthPercent() <35 Spell(dispatch)
+	if ComboPoints() <5 and {BuffPresent(blindside) or target.HealthPercent() <35} Spell(dispatch)
 	#tricks_of_the_trade
+	TricksOfTheTrade()
 	#mutilate
 	Spell(mutilate)
 }
@@ -502,15 +491,10 @@ AddFunction AssassinationMainActions
 	if ComboPoints() ==5 and target.TicksRemain(rupture) <3 Spell(rupture)
 	#envenom,if=combo_points>4
 	{
-		if CheckBoxOn(opt_ej_assassination)
-		{
-			if target.HealthPercent() >35 and ComboPoints() >=4 Spell(envenom)
-			if target.HealthPercent() <=35 and ComboPoints() ==5 Spell(envenom)
-		}
-		if CheckBoxOff(opt_ej_assassination)
-		{
-			if ComboPoints() >4 Spell(envenom)
-		}
+		# Refinement from EJ: if not talented into Anticipation, Envenom at 4+CP unless
+		# the target is below 35% health.
+		if not TalentPoints(anticipation_talent) and ComboPoints() >=4 and target.HealthPercent() >35 Spell(envenom)
+		if ComboPoints() >4 or target.HealthPercent() <=35 Spell(envenom)
 	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
