@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.ROGUE.Nerien = {
-	desc = "[5.2] Nerien: Assassination, Subtlety",
+	desc = "[5.2] Nerien: Assassination, Combat, Subtlety",
 	code =
 [[
 # Nerien's rogue script based on SimulationCraft
@@ -674,7 +674,7 @@ AddFunction CombatFullRotation
 		if BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4 Spell(slice_and_dice)
 	}
 	#run_action_list,name=generator,if=combo_points<5|!dot.revealing_strike.ticking
-	if ComboPoints() <5 and target.DebuffExpires(revealing_strike) CombatGeneratorActions()
+	if ComboPoints() <5 or target.DebuffExpires(revealing_strike) CombatGeneratorActions()
 	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
@@ -711,7 +711,7 @@ AddFunction CombatMainPlusFillerActions
 		if BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4 Spell(slice_and_dice)
 	}
 	#run_action_list,name=generator,if=combo_points<5|!dot.revealing_strike.ticking
-	if ComboPoints() <5 and target.DebuffExpires(revealing_strike) CombatGeneratorActions()
+	if ComboPoints() <5 or target.DebuffExpires(revealing_strike) CombatGeneratorActions()
 	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
