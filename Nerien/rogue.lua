@@ -418,7 +418,7 @@ AddFunction AssassinationFullRotation
 		# Refinement from EJ: if not talented into Anticipation, Envenom at 4+CP unless
 		# the target is below 35% health.
 		if not TalentPoints(anticipation_talent) and ComboPoints() >=4 and target.HealthPercent() >35 Spell(envenom)
-		if ComboPoints() >4 or target.HealthPercent() <=35 Spell(envenom)
+		if ComboPoints() >4 and target.HealthPercent() <=35 Spell(envenom)
 	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
