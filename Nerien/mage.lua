@@ -305,8 +305,8 @@ AddFunction ArcaneFullRotation
 		#food,type=mogu_fish_stew
 		#arcane_brilliance
 		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
-		#mage_armor
-		if BuffExpires(mage_armor) Spell(mage_armor)
+		#frost_armor
+		if BuffExpires(frost_armor) Spell(frost_armor)
 		#snapshot_stats
 		if TalentPoints(invocation_talent)
 		{
@@ -441,8 +441,8 @@ AddFunction ArcaneMainActions
 		#food,type=mogu_fish_stew
 		#arcane_brilliance
 		if BuffExpires(spell_power_multiplier 400 any=1) or BuffExpires(critical_strike 400 any=1) Spell(arcane_brilliance)
-		#mage_armor
-		if BuffExpires(mage_armor) Spell(mage_armor)
+		#frost_armor
+		if BuffExpires(frost_armor) Spell(frost_armor)
 		#snapshot_stats
 	}
 
@@ -758,8 +758,6 @@ AddFunction FireFullRotation
 	MageBomb()
 	#presence_of_mind,if=cooldown.alter_time.remains>30|target.time_to_die<15
 	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
-	#pyroblast,if=!dot.pyroblast.ticking
-	if target.DebuffExpires(pyroblast) Spell(pyroblast)
 	#fireball
 	Spell(fireball)
 	if Speed() >0
@@ -796,8 +794,6 @@ AddFunction FireMainActions
 	MageBomb()
 	#presence_of_mind,if=cooldown.alter_time.remains>30|target.time_to_die<15
 	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
-	#pyroblast,if=!dot.pyroblast.ticking
-	if target.DebuffExpires(pyroblast) Spell(pyroblast)
 	#fireball
 	Spell(fireball)
 }
