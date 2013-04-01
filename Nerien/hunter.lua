@@ -605,6 +605,8 @@ AddFunction SurvivalFullRotation
 	#auto_shot
 	#explosive_trap,if=target.adds>0
 	if CheckBoxOn(aoe) Spell(explosive_trap)
+	#fervor,if=enabled&focus<=50
+	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#a_murder_of_crows,if=enabled&!ticking
 	if TalentPoints(a_murder_of_crows_talent) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
 	#blink_strike,if=enabled
@@ -643,8 +645,6 @@ AddFunction SurvivalFullRotation
 	if BuffPresent(rapid_fire) or BuffPresent(burst_haste any=1) or target.TimeToDie() <=25 Spell(stampede)
 	#readiness,wait_for_rapid_fire=1
 	if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
-	#fervor,if=enabled&focus<=50
-	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#cobra_shot,if=dot.serpent_sting.remains<6
 	if target.DebuffPresent(serpent_sting_dot) and target.DebuffRemains(serpent_sting_dot) <6 Spell(cobra_shot)
 	#arcane_shot,if=focus>=67
@@ -656,6 +656,8 @@ AddFunction SurvivalMainActions
 {
 	SummonPet()
 	#auto_shot
+	#fervor,if=enabled&focus<=50
+	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#blink_strike,if=enabled
 	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#explosive_shot,if=buff.lock_and_load.react
@@ -676,8 +678,6 @@ AddFunction SurvivalMainActions
 	if BuffPresent(thrill_of_the_hunt) Spell(arcane_shot)
 	#dire_beast,if=enabled
 	if TalentPoints(dire_beast_talent) Spell(dire_beast)
-	#fervor,if=enabled&focus<=50
-	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#cobra_shot,if=dot.serpent_sting.remains<6
 	if target.DebuffPresent(serpent_sting_dot) and target.DebuffRemains(serpent_sting_dot) <6 Spell(cobra_shot)
 	#arcane_shot,if=focus>=67
@@ -690,14 +690,14 @@ AddFunction SurvivalAoEActions
 	#auto_shot
 	#explosive_trap,if=target.adds>0
 	Spell(explosive_trap)
+	#fervor,if=enabled&focus<=50
+	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#blink_strike,if=enabled
 	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#explosive_shot,if=buff.lock_and_load.react
 	if BuffPresent(lock_and_load) Spell(explosive_shot)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
-	#fervor,if=enabled&focus<=50
-	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#multi_shot,if=target.adds>2
 	Spell(multi_shot)
 }
@@ -728,21 +728,23 @@ AddFunction SurvivalCooldownActions
 	#blood_fury
 	UseRacialActions()
 	UseItemActions()
-	#a_murder_of_crows,if=enabled&!ticking
-	if TalentPoints(a_murder_of_crows_talent) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
-	#lynx_rush,if=enabled&!dot.lynx_rush.ticking
-	if TalentPoints(lynx_rush_talent) Spell(lynx_rush)
-
-	unless target.DebuffExpires(serpent_sting_dot)
-		or {target.DebuffExpires(black_arrow) and Spell(black_arrow)}
-		or BuffPresent(thrill_of_the_hunt)
+	unless TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 and Spell(fervor)
 	{
-		#rapid_fire,if=!buff.rapid_fire.up
-		if BuffExpires(rapid_fire) Spell(rapid_fire)
-		#stampede,if=buff.rapid_fire.up|buff.bloodlust.react|target.time_to_die<=25
-		if BuffPresent(rapid_fire) or BuffPresent(burst_haste any=1) or target.TimeToDie() <=25 Spell(stampede)
-		#readiness,wait_for_rapid_fire=1
-		if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
+		#a_murder_of_crows,if=enabled&!ticking
+		if TalentPoints(a_murder_of_crows_talent) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
+		#lynx_rush,if=enabled&!dot.lynx_rush.ticking
+		if TalentPoints(lynx_rush_talent) Spell(lynx_rush)
+
+		unless target.DebuffExpires(serpent_sting_dot)
+			or {target.DebuffExpires(black_arrow) and Spell(black_arrow)}
+		{
+			#rapid_fire,if=!buff.rapid_fire.up
+			if BuffExpires(rapid_fire) Spell(rapid_fire)
+			#stampede,if=buff.rapid_fire.up|buff.bloodlust.react|target.time_to_die<=25
+			if BuffPresent(rapid_fire) or BuffPresent(burst_haste any=1) or target.TimeToDie() <=25 Spell(stampede)
+			#readiness,wait_for_rapid_fire=1
+			if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
+		}
 	}
 }
 
