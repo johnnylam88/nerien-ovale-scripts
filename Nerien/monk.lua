@@ -345,6 +345,7 @@ AddFunction BrewmasterMaintenanceActions
 
 AddFunction BrewmasterFillerActions
 {
+	Tier2TalentActions()
 	# Use Tiger Palm as a filler only if it costs no Chi.
 	if SpellData(tiger_palm chi) ==0 Spell(tiger_palm)
 	Jab()
@@ -448,7 +449,6 @@ AddIcon mastery=1 help=main
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
-		if BuffPresent(shuffle 6) Tier2TalentActions()
 		BrewmasterShuffle()
 	}
 	if BrewmasterEnergyPoolingCondition()
@@ -460,7 +460,6 @@ AddIcon mastery=1 help=main
 	}
 	if NumberToMaxChi() <2
 	{
-		if BuffPresent(shuffle 6) Tier2TalentActions()
 		BrewmasterShuffle()
 	}
 	BrewmasterFillerActions()
