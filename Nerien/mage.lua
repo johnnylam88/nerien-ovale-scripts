@@ -11,8 +11,8 @@ NerienOvaleScripts.script.MAGE.Nerien = {
 #	glyphs=mana_gem/mirror_image/arcane_power
 #
 # Fire:
-#	talents=http://us.battle.net/wow/en/tool/talent-calculator#eZ!0...11
-#	glyphs=combustion/counterspell/mirror_image
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#eZ!0...01
+#	glyphs=combustion/counterspell
 #
 # Frost:
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#eb!0...20
@@ -728,11 +728,13 @@ AddFunction FireFullRotation
 	if BuffExpires(alter_time) and target.TimeToDie() <45 UsePotion()
 	#combustion,if=target.time_to_die<22
 	if target.TimeToDie() <22 Spell(combustion)
-	#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking
 	if target.TickValue(ignite) >={{CritDamage(fireball) +CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
-		and target.DebuffPresent(pyroblast)
+		and target.DebuffPresent(pyroblast) and BuffExpires(alter_time) and BuffExpires(pyroblast_aura)
 	{
-		Spell(combustion)
+		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down&buff.presence_of_mind.down
+		if TalentPoints(presence_of_mind_talent) and BuffExpires(presence_of_mind) Spell(combustion)
+		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down
+		if not TalentPoints(presence_of_mind_talent) Spell(combustion)
 	}
 	if CheckBoxOn(opt_alter_time) and Spell(alter_time_activate) and BuffExpires(alter_time)
 	{
@@ -756,7 +758,7 @@ AddFunction FireFullRotation
 	if BuffPresent(heating_up) and BuffExpires(pyroblast_aura) Spell(inferno_blast)
 	#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
 	MageBomb()
-	#presence_of_mind,if=cooldown.alter_time.remains>30|target.time_to_die<15
+	#presence_of_mind,if=cooldown.alter_time_activate.remains>30|target.time_to_die<15
 	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
 	#fireball
 	Spell(fireball)
@@ -792,7 +794,7 @@ AddFunction FireMainActions
 	if BuffPresent(heating_up) and BuffExpires(pyroblast_aura) Spell(inferno_blast)
 	#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
 	MageBomb()
-	#presence_of_mind,if=cooldown.alter_time.remains>30|target.time_to_die<15
+	#presence_of_mind,if=cooldown.alter_time_activate.remains>30|target.time_to_die<15
 	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
 	#fireball
 	Spell(fireball)
@@ -865,11 +867,13 @@ AddFunction FireCooldownActions
 		if BuffExpires(alter_time) and target.TimeToDie() <45 UsePotion()
 		#combustion,if=target.time_to_die<22
 		#if target.TimeToDie() <22 Spell(combustion)
-		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking
 		if target.TickValue(ignite) >={{CritDamage(fireball) +CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
-			and target.DebuffPresent(pyroblast)
+			and target.DebuffPresent(pyroblast) and BuffExpires(alter_time) and BuffExpires(pyroblast_aura)
 		{
-			Spell(combustion)
+			#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down&buff.presence_of_mind.down
+			if TalentPoints(presence_of_mind_talent) and BuffExpires(presence_of_mind) Spell(combustion)
+			#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down
+			if not TalentPoints(presence_of_mind_talent) Spell(combustion)
 		}
 		if CheckBoxOn(opt_alter_time) and Spell(alter_time_activate) and BuffExpires(alter_time)
 		{
