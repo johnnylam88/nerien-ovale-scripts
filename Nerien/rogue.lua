@@ -325,14 +325,14 @@ AddFunction ApplyPoisons
 
 AddFunction IsStealthed
 {
-	Stealthed() or BuffPresent(vanish_buff)
+	Stealthed() or BuffPresent(vanish_buff) or BuffPresent(shadow_dance)
 }
 
 AddFunction Interrupt
 {
 	if not target.IsFriend() and target.IsInterruptible()
 	{
-		if {IsStealthed() or BuffPresent(shadow_dance)} and target.InRange(cheap_shot) Spell(cheap_shot)
+		if IsStealthed() and target.InRange(cheap_shot) Spell(cheap_shot)
 		if target.InRange(kick) Spell(kick)
 		if not target.Classification(worldboss) and target.InRange(kidney_shot) Spell(kidney_shot)
 	}
@@ -377,6 +377,13 @@ AddFunction AssassinationFullRotation
 		#snapshot_stats
 		#virmens_bite_potion
 		UsePotion()
+		if TalentPoints(marked_for_death_talent)
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled
+			Spell(marked_for_death)
+			#slice_and_dice,if=talent.marked_for_death.enabled
+			Spell(slice_and_dice)
+		}
 		#stealth
 		if not IsStealthed() Spell(stealth)
 	}
@@ -408,6 +415,8 @@ AddFunction AssassinationFullRotation
 		#mutilate,if=dot.rupture.ticks_remain<2&energy>90
 		Spell(mutilate)
 	}
+	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
 	#rupture,if=ticks_remain<2|(combo_points=5&ticks_remain<3)
 	if target.TicksRemain(rupture) <2 Spell(rupture)
 	if ComboPoints() ==5 and target.TicksRemain(rupture) <3 Spell(rupture)
@@ -440,6 +449,11 @@ AddFunction AssassinationPreCombatActions
 		#apply_poison,lethal=deadly
 		ApplyPoisons()
 		#snapshot_stats
+		if TalentPoints(marked_for_death_talent)
+		{
+			#slice_and_dice,if=talent.marked_for_death.enabled
+			Spell(slice_and_dice)
+		}
 		#stealth
 		if not IsStealthed() Spell(stealth)
 	}
@@ -502,10 +516,27 @@ AddFunction AssassinationMainActions
 
 AddFunction AssassinationShortCooldownActions
 {
+	if InCombat(no)
+	{
+		if TalentPoints(marked_for_death_talent)
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled
+			Spell(marked_for_death)
+		}
+	}
+
 	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
 	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
 	#vanish,if=time>10&!buff.stealthed.up&!buff.shadow_blades.up
 	if InCombat() and TimeInCombat() >10 and not IsStealthed() and BuffExpires(shadow_blades) Spell(vanish)
+
+	unless Spell(ambush usable=1)
+		or {BuffRemains(slice_and_dice) <2 and ComboPoints() >0}
+		or {target.TicksRemain(rupture) <2 and Energy() >90}
+	{
+		#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+		if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
+	}
 }
 
 AddFunction AssassinationCooldownActions
@@ -617,6 +648,13 @@ AddFunction CombatFullRotation
 		#snapshot_stats
 		#virmens_bite_potion
 		UsePotion()
+		if TalentPoints(marked_for_death_talent)
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled
+			Spell(marked_for_death)
+			#slice_and_dice,if=talent.marked_for_death.enabled
+			Spell(slice_and_dice)
+		}
 		#stealth
 		if not IsStealthed() Spell(stealth)
 	}
@@ -673,8 +711,15 @@ AddFunction CombatFullRotation
 		if BuffRemains(slice_and_dice) <2 Spell(slice_and_dice)
 		if BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4 Spell(slice_and_dice)
 	}
-	#run_action_list,name=generator,if=combo_points<5|!dot.revealing_strike.ticking
-	if ComboPoints() <5 or target.DebuffExpires(revealing_strike) CombatGeneratorActions()
+	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0&dot.revealing_strike.ticking
+	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 and target.DebuffPresent(revealing_strike) Spell(marked_for_death)
+	#run_action_list,name=generator,if=combo_points<5|(talent.anticipation.enabled&anticipation_charges<=4&!dot.revealing_strike.ticking)
+	if ComboPoints() <5
+		or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <=4}
+		or target.DebuffExpires(revealing_strike)
+	{
+		CombatGeneratorActions()
+	}
 	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
@@ -683,7 +728,12 @@ AddFunction CombatFullRotation
 		CombatFinisherActions()
 	}
 	#run_action_list,name=generator,if=energy>60|buff.deep_insight.down|buff.deep_insight.remains>5-combo_points
-	if Energy() >60 or BuffExpires(deep_insight) or BuffRemains(deep_insight) > {5 - ComboPoints()} CombatGeneratorActions()
+	if Energy() >60
+		or BuffExpires(deep_insight)
+		or BuffRemains(deep_insight) > {5 - ComboPoints()}
+	{
+		CombatGeneratorActions()
+	}
 }
 
 AddFunction CombatPreCombatActions
@@ -695,6 +745,11 @@ AddFunction CombatPreCombatActions
 		#apply_poison,lethal=deadly
 		ApplyPoisons()
 		#snapshot_stats
+		if TalentPoints(marked_for_death_talent)
+		{
+			#slice_and_dice,if=talent.marked_for_death.enabled
+			Spell(slice_and_dice)
+		}
 		#stealth
 		if not IsStealthed() Spell(stealth)
 	}
@@ -710,8 +765,13 @@ AddFunction CombatMainPlusFillerActions
 		if BuffRemains(slice_and_dice) <2 Spell(slice_and_dice)
 		if BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4 Spell(slice_and_dice)
 	}
-	#run_action_list,name=generator,if=combo_points<5|!dot.revealing_strike.ticking
-	if ComboPoints() <5 or target.DebuffExpires(revealing_strike) CombatGeneratorActions()
+	#run_action_list,name=generator,if=combo_points<5|(talent.anticipation.enabled&anticipation_charges<=4&!dot.revealing_strike.ticking)
+	if ComboPoints() <5
+		or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <=4}
+		or target.DebuffExpires(revealing_strike)
+	{
+		CombatGeneratorActions()
+	}
 	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
@@ -720,7 +780,12 @@ AddFunction CombatMainPlusFillerActions
 		CombatFinisherActions()
 	}
 	#run_action_list,name=generator,if=energy>60|buff.deep_insight.down|buff.deep_insight.remains>5-combo_points
-	if Energy() >60 or BuffExpires(deep_insight) or BuffRemains(deep_insight) > {5 - ComboPoints()} CombatGeneratorActions()
+	if Energy() >60
+		or BuffExpires(deep_insight)
+		or BuffRemains(deep_insight) > {5 - ComboPoints()}
+	{
+		CombatGeneratorActions()
+	}
 }
 
 AddFunction CombatMainActions
@@ -744,6 +809,15 @@ AddFunction CombatMainActions
 
 AddFunction CombatShortCooldownActions
 {
+	if InCombat(no)
+	{
+		if TalentPoints(marked_for_death_talent)
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled
+			Spell(marked_for_death)
+		}
+	}
+
 	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
 	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
 	#vanish,if=time>10&(combo_points<3|(talent.anticipation.enabled&anticipation_charges<3)|(buff.shadow_blades.down&(combo_points<4|(talent.anticipation.enabled&anticipation_charges<4))))&((talent.shadow_focus.enabled&buff.adrenaline_rush.down&energy<20)|(talent.subterfuge.enabled&energy>=90)|(!talent.shadow_focus.enabled&!talent.subterfuge.enabled&energy>=60))
@@ -755,6 +829,13 @@ AddFunction CombatShortCooldownActions
 			or {not TalentPoints(shadow_focus_talent) and not TalentPoints(subterfuge_talent) and Energy() >=60}}
 	{
 		Spell(vanish)
+
+		unless {ComboPoints() >0 and BuffRemains(slice_and_dice) <2}
+			or {BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4}
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0&dot.revealing_strike.ticking
+			if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 and target.DebuffPresent(revealing_strike) Spell(marked_for_death)
+		}
 	}
 }
 
@@ -877,6 +958,13 @@ AddFunction SubtletyFullRotation
 		#snapshot_stats
 		#virmens_bite_potion
 		UsePotion()
+		if TalentPoints(marked_for_death_talent)
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled
+			Spell(marked_for_death)
+			#slice_and_dice,if=talent.marked_for_death.enabled
+			Spell(slice_and_dice)
+		}
 		#stealth
 		if not IsStealthed() Spell(stealth)
 		#premeditation
@@ -925,6 +1013,8 @@ AddFunction SubtletyFullRotation
 	{
 		if ComboPoints() <4 Spell(ambush usable=1)
 	}
+	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
 	#slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
 	if ComboPoints() ==5 and BuffRemains(slice_and_dice) <3 Spell(slice_and_dice)
 	#rupture,if=combo_points=5&dot.rupture.remains<5
@@ -964,6 +1054,11 @@ AddFunction SubtletyPreCombatActions
 		#apply_poison,lethal=deadly
 		ApplyPoisons()
 		#snapshot_stats
+		if TalentPoints(marked_for_death_talent)
+		{
+			#slice_and_dice,if=talent.marked_for_death.enabled
+			Spell(slice_and_dice)
+		}
 		#stealth
 		if not IsStealthed() Spell(stealth)
 		#premeditation
@@ -1025,6 +1120,15 @@ AddFunction SubtletyFillerActions
 
 AddFunction SubtletyShortCooldownActions
 {
+	if InCombat(no)
+	{
+		if TalentPoints(marked_for_death_talent)
+		{
+			#marked_for_death,if=talent.marked_for_death.enabled
+			Spell(marked_for_death)
+		}
+	}
+
 	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
 	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
 	#pool_resource,for_next=1,extra_amount=75
@@ -1039,6 +1143,12 @@ AddFunction SubtletyShortCooldownActions
 		and not SubtletyIsStealthed() and BuffExpires(master_of_subtlety) and target.DebuffExpires(find_weakness)
 	{
 		wait if Energy() >=45 and Energy() <=75 Spell(vanish)
+	}
+	unless {TalentPoints(anticipation_talent) and ComboPoints() <=5 and BuffStacks(anticipation) ==0 and IsStealthed()}
+		or {not TalentPoints(anticipation_talent) and ComboPoints() <4 and IsStealthed()}
+	{
+		#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+		if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
 	}
 }
 
