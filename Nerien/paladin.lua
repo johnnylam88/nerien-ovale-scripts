@@ -401,7 +401,8 @@ AddFunction RetributionFullRotation
 			if SpellKnown(guardian_of_ancient_kings_retribution) and not TalentPoints(sanctified_wrath_talent)
 			{
 				#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
-				if SpellCooldown(guardian_of_ancient_kings_retribution) <291 Spell(avenging_wrath)
+				if BuffStacks(ancient_power) >=20 Spell(avenging_wrath)
+				if SpellCooldown(guardian_of_ancient_kings_retribution) <{SpellData(avenging_wrath duration) -1} Spell(avenging_wrath)
 			}
 		}
 	}
@@ -422,7 +423,11 @@ AddFunction RetributionFullRotation
 		if BuffPresent(inquisition) and HolyPower() <=2
 		{
 			if not SpellKnown(guardian_of_ancient_kings_retribution) Spell(holy_avenger)
-			if SpellKnown(guardian_of_ancient_kings_retribution) and SpellCooldown(guardian_of_ancient_kings_retribution) <289 Spell(holy_avenger)
+			if SpellKnown(guardian_of_ancient_kings_retribution)
+			{
+				if BuffStacks(ancient_power) >=20 Spell(holy_avenger)
+				if SpellCooldown(guardian_of_ancient_kings_retribution) <{SpellData(holy_avenger duration) -1} Spell(holy_avenger)
+			}
 		}
 	}
 	#use_item,name=reinbinders_fists,if=buff.inquisition.up
