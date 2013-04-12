@@ -733,12 +733,13 @@ AddFunction FireFullRotation
 	if BuffExpires(alter_time) and target.TimeToDie() <45 UsePotion()
 	#combustion,if=target.time_to_die<22
 	if target.TimeToDie() <22 Spell(combustion)
+	#combustion,if=dot.ignite.tick_dmg>=((3*action.pyroblast.crit_damage)*mastery_value*0.5)
+	if target.TickValue(ignite) >={3 *CritDamage(pyroblast) *{Mastery() /100} *0.5} Spell(combustion)
+	#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down
 	if target.TickValue(ignite) >={{CritDamage(fireball) +CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
 		and target.DebuffPresent(pyroblast) and BuffExpires(alter_time) and BuffExpires(pyroblast_aura)
 	{
-		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down&buff.presence_of_mind.down
 		if TalentPoints(presence_of_mind_talent) and BuffExpires(presence_of_mind) Spell(combustion)
-		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down
 		if not TalentPoints(presence_of_mind_talent) Spell(combustion)
 	}
 	if CheckBoxOn(opt_alter_time) and Spell(alter_time_activate) and BuffExpires(alter_time)
@@ -755,16 +756,25 @@ AddFunction FireFullRotation
 		#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
 		UsePotion()
 	}
+	#use_item,sync=alter_time_activate
+	if CheckBoxOff(opt_alter_time) or Spell(alter_time_activate) UseItemActions()
 	#alter_time,if=buff.alter_time.down&buff.pyroblast.react
 	if CheckBoxOn(opt_alter_time) and BuffExpires(alter_time) and BuffPresent(pyroblast_aura) Spell(alter_time_activate)
+	#use_item,if=cooldown.alter_time_activate.remains>40|target.time_to_die<12
+	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >40 or target.TimeToDie() <12 UseItemActions()
+	if TalentPoints(presence_of_mind_talent)
+	{
+		#presence_of_mind,if=cooldown.alter_time_activate.remains>60|target.time_to_die<5
+		if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >60 or target.TimeToDie() <5 Spell(presence_of_mind)
+	}
+	#flamestrike,if=active_enemies>=5
+	if Enemies() >=5 Spell(flamestrike)
 	#pyroblast,if=buff.pyroblast.react|buff.presence_of_mind.up
 	if BuffPresent(pyroblast_aura) or BuffPresent(presence_of_mind) Spell(pyroblast)
 	#inferno_blast,if=buff.heating_up.react&buff.pyroblast.down
 	if BuffPresent(heating_up) and BuffExpires(pyroblast_aura) Spell(inferno_blast)
 	#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
 	MageBomb()
-	#presence_of_mind,if=cooldown.alter_time_activate.remains>30|target.time_to_die<15
-	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
 	#fireball
 	Spell(fireball)
 	if Speed() >0
@@ -799,8 +809,6 @@ AddFunction FireMainActions
 	if BuffPresent(heating_up) and BuffExpires(pyroblast_aura) Spell(inferno_blast)
 	#living_bomb,if=(!ticking|remains<tick_time)&target.time_to_die>tick_time*3
 	MageBomb()
-	#presence_of_mind,if=cooldown.alter_time_activate.remains>30|target.time_to_die<15
-	if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >30 or target.TimeToDie() <15 Spell(presence_of_mind)
 	#fireball
 	Spell(fireball)
 }
@@ -871,13 +879,14 @@ AddFunction FireCooldownActions
 		#jade_serpent_potion,if=buff.alter_time.down&target.time_to_die<45
 		if BuffExpires(alter_time) and target.TimeToDie() <45 UsePotion()
 		#combustion,if=target.time_to_die<22
-		#if target.TimeToDie() <22 Spell(combustion)
+		if target.TimeToDie() <22 Spell(combustion)
+		#combustion,if=dot.ignite.tick_dmg>=((3*action.pyroblast.crit_damage)*mastery_value*0.5)
+		if target.TickValue(ignite) >={3 *CritDamage(pyroblast) *{Mastery() /100} *0.5} Spell(combustion)
+		#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down
 		if target.TickValue(ignite) >={{CritDamage(fireball) +CritDamage(inferno_blast) +{Damage(pyroblast) *1.25}} *{Mastery() /100} *0.5}
 			and target.DebuffPresent(pyroblast) and BuffExpires(alter_time) and BuffExpires(pyroblast_aura)
 		{
-			#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down&buff.presence_of_mind.down
 			if TalentPoints(presence_of_mind_talent) and BuffExpires(presence_of_mind) Spell(combustion)
-			#combustion,if=dot.ignite.tick_dmg>=((action.fireball.crit_damage+action.inferno_blast.crit_damage+action.pyroblast.hit_damage)*mastery_value*0.5)&dot.pyroblast.ticking&buff.alter_time.down&buff.pyroblast.down
 			if not TalentPoints(presence_of_mind_talent) Spell(combustion)
 		}
 		if CheckBoxOn(opt_alter_time) and Spell(alter_time_activate) and BuffExpires(alter_time)
@@ -894,8 +903,17 @@ AddFunction FireCooldownActions
 			#jade_serpent_potion,sync=alter_time_activate,if=buff.alter_time.down
 			UsePotion()
 		}
+		#use_item,sync=alter_time_activate
+		if CheckBoxOff(opt_alter_time) or Spell(alter_time_activate) UseItemActions()
 		#alter_time,if=buff.alter_time.down&buff.pyroblast.react
 		if CheckBoxOn(opt_alter_time) and BuffExpires(alter_time) and BuffPresent(pyroblast_aura) Spell(alter_time_activate)
+		#use_item,if=cooldown.alter_time_activate.remains>40|target.time_to_die<12
+		if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >40 or target.TimeToDie() <12 UseItemActions()
+		if TalentPoints(presence_of_mind_talent)
+		{
+			#presence_of_mind,if=cooldown.alter_time_activate.remains>60|target.time_to_die<5
+			if CheckBoxOff(opt_alter_time) or SpellCooldown(alter_time_activate) >60 or target.TimeToDie() <5 Spell(presence_of_mind)
+		}
 	}
 }
 
