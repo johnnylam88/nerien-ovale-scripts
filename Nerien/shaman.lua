@@ -806,9 +806,6 @@ AddIcon mastery=3 help=main
 	RestorationHealingStreamTotemRecall()
 	if TotemExpires(water) Spell(healing_stream_totem)
 	if Glyph(glyph_of_riptide no) Spell(riptide)
-	if BuffPresent(tidal_waves) Spell(healing_wave)
-	if Glyph(glyph_of_riptide) Spell(riptide)
-	Spell(healing_wave)
 }
 
 # AoE.
@@ -818,7 +815,6 @@ AddIcon mastery=3 help=aoe checkboxon=aoe
 	if TotemExpires(water) Spell(healing_stream_totem)
 	Spell(healing_rain)
 	Spell(chain_heal)
-	Spell(healing_wave)
 }
 
 # Cooldowns.
