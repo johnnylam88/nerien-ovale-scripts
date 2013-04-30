@@ -378,7 +378,7 @@ AddFunction ElementalFullRotation
 	if not ElementalHasteBuffPresent() and target.HealthPercent() <25 or TimeInCombat() >5 Bloodlust()
 	UseItemActions()
 	#stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
-	if BuffExpires(stormlash any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
+	if BuffExpires(stormlash_totem_buff any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
 	#jade_serpent_potion,if=time>60&(pet.primal_fire_elemental.active|pet.greater_fire_elemental.active|target.time_to_die<=60)
 	if TimeInCombat() >60 and {TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60}
 	{
@@ -590,7 +590,7 @@ AddFunction ElementalCooldownActions
 	Interrupt()
 	UseItemActions()
 	#stormlash_totem,if=!active&!buff.stormlash.up&(buff.bloodlust.up|time>=60)
-	if BuffExpires(stormlash any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
+	if BuffExpires(stormlash_totem_buff any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
 	#jade_serpent_potion,if=time>60&(pet.primal_fire_elemental.active|pet.greater_fire_elemental.active|target.time_to_die<=60)
 	if TimeInCombat() >60 and {TotemPresent(fire totem=fire_elemental_totem) or target.TimeToDie() <=60}
 	{
@@ -830,6 +830,7 @@ AddIcon mastery=3 help=cd
 # Bloodlust.
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
+	if BuffExpires(stormlash_totem_buff any=1) and {BuffPresent(burst_haste any=1) or TimeInCombat() >60} Spell(stormlash_totem)
 	if BuffExpires(burst_haste any=1) Bloodlust()
 }
 
