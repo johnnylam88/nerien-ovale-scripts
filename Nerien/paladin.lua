@@ -229,6 +229,7 @@ Define(repentance_talent 5)
 Define(righteous_fury 25780)
 Define(sacred_shield 20925)
 	SpellInfo(sacred_shield cd=6 duration=30 tick=6)
+	SpellAddBuff(sacred_shield sacred_shield=1)
 Define(sacred_shield_aura 65148)
 	SpellInfo(sacred_shield_aura duration=6)
 Define(sacred_shield_talent 9)
@@ -247,7 +248,9 @@ Define(selfless_healer_talent 7)
 Define(shield_of_the_righteous 53600)
 	SpellInfo(shield_of_the_righteous cd=1.5 holy=3)
 	SpellInfo(shield_of_the_righteous cd_haste=melee haste=melee if_spell=sanctity_of_battle)
-	SpellAddBuff(shield_of_the_righteous alabaster_shield=0 bastion_of_glory=1 divine_purpose=0)
+	SpellAddBuff(shield_of_the_righteous alabaster_shield=0 bastion_of_glory=1 divine_purpose=0 shield_of_the_righteous_buff=1)
+Define(shield_of_the_righteous_buff 132403)
+	SpellInfo(shield_of_the_righteous_buff duration=3)
 Define(speed_of_light 85499)
 	SpellInfo(speed_of_light cd=45 duration=8)
 Define(speed_of_light_talent 1)
@@ -356,6 +359,11 @@ AddFunction Interrupt
 		}
 		UseRacialInterruptActions()
 	}
+}
+
+AddFunction HasMaxHolyPower
+{
+	BuffPresent(divine_purpose) or HolyPower() ==5 or {Level() <85 and HolyPower() >=3}
 }
 
 AddFunction Tier6TalentActions
@@ -473,13 +481,13 @@ AddIcon mastery=2 help=shortcd
 		# EF[buffEF<2.5]
 		if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffRemains(eternal_flame) <2.5 Spell(eternal_flame)
 		# SotR5
-		if BuffPresent(divine_purpose) or HolyPower() >=5 Spell(shield_of_the_righteous)
+		if BuffExpires(shield_of_the_righteous_buff) and HasMaxHolyPower() Spell(shield_of_the_righteous)
 	}
 	if not TalentPoints(eternal_flame_talent)
 	{
 		# SotR
-		if BuffPresent(divine_purpose) or HolyPower() >=3 Spell(shield_of_the_righteous)
-		if {BuffPresent(divine_purpose) or HolyPower() >=1} and HealthPercent() <70 Spell(word_of_glory)
+		if BuffPresent(divine_purpose) or HolyPower() >=3 and BuffExpires(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
+		if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffStacks(bastion_of_glory) ==5 and HealthPercent() <60 Spell(word_of_glory)
 	}
 }
 
@@ -623,7 +631,7 @@ AddFunction RetributionFullRotation
 		#lights_hammer,if=buff.inquisition.up
 		if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
 	}
-	if HolyPower() ==5 or BuffPresent(divine_purpose) or {BuffPresent(holy_avenger) and HolyPower() >=3}
+	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
 	{
 		#divine_storm,if=active_enemies>=2&(holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3))
 		if Enemies() >=2 Spell(divine_storm)
@@ -703,7 +711,7 @@ AddFunction RetributionMainActions
 	}
 	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
 	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
-	if HolyPower() ==5 or BuffPresent(divine_purpose) or {BuffPresent(holy_avenger) and HolyPower() >=3}
+	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
 	{
 		#templars_verdict,if=holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3)
 		Spell(templars_verdict)
@@ -775,7 +783,7 @@ AddFunction RetributionAoEActions
 	}
 	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
 	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
-	if HolyPower() ==5 or BuffPresent(divine_purpose) or {BuffPresent(holy_avenger) and HolyPower() >=3}
+	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
 	{
 		#divine_storm,if=active_enemies>=2&(holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3))
 		Spell(divine_storm)
