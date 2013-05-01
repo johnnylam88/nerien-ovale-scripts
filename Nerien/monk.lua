@@ -22,6 +22,7 @@ Define(charging_ox_wave_talent 11)
 Define(chi_brew 115399)
 	SpellInfo(chi_brew cd=90 chi=-4)
 	SpellInfo(chi_brew chi=-5 talent=ascension_talent)
+	SpellAddBuff(chi_brew healing_elixirs=0)
 Define(chi_brew_talent 9)
 Define(chi_burst 123986)
 	SpellInfo(chi_burst cd=30)
@@ -59,11 +60,11 @@ Define(elusive_brew 128939)
 	SpellInfo(elusive_brew duration=30)
 Define(elusive_brew_use 115308)
 	SpellInfo(elusive_brew_use cd=9 duration=1)
-	SpellAddBuff(elusive_brew_use elusive_brew=0 elusive_brew_use=1)
+	SpellAddBuff(elusive_brew_use elusive_brew=0 elusive_brew_use=1 healing_elixirs=0)
 Define(energizing_brew 115288)
 	SpellInfo(energizing_brew cd=60 duration=6 tick=1)
 	SpellInfo(energizing_brew addduration=5 itemset=T14_melee itemcount=4)
-	SpellAddBuff(energizing_brew energizing_brew=1)
+	SpellAddBuff(energizing_brew energizing_brew=1 healing_elixirs=0)
 Define(expel_harm 115072)
 	SpellInfo(expel_harm cd=15 chi=-2 energy=40)
 	SpellInfo(expel_harm chi=-1 if_stance=monk_stance_of_the_sturdy_ox)
@@ -76,6 +77,9 @@ Define(flying_serpent_kick 101545)
 	SpellInfo(flying_serpent_kick cd=25)
 Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=180)
+	SpellAddBuff(fortifying_brew healing_elixirs=0)
+#Define(fortifying_brew_glyphed 120954)
+#	SpellInfo(fortifying_brew_glyphed duration=20)
 Define(glyph_of_guard 123401)
 Define(glyph_of_retreat 124969)
 Define(guard 115295)
@@ -97,6 +101,8 @@ Define(jab 100780)
 Define(keg_smash 121253)
 	SpellInfo(keg_smash cd=8 chi=-2 energy=40)
 	SpellAddTargetDebuff(keg_smash dizzying_haze_aura=1 weakened_blows=1)
+Define(healing_elixirs 134563)
+Define(healing_elixirs_talent 13)
 Define(legacy_of_the_emperor 115921)
 	SpellInfo(legacy_of_the_emperor energy=20)
 	SpellAddBuff(legacy_of_the_emperor legacy_of_the_emperor_aura=1)
@@ -113,18 +119,17 @@ Define(muscle_memory 139597)
 	SpellInfo(muscle_memory duration=15)
 Define(nimble_brew 137562)
 	SpellInfo(nimble_brew cd=120 duration=6)
-	SpellAddBuff(nimble_brew nimble_brew=1)
+	SpellAddBuff(nimble_brew healing_elixirs=0 nimble_brew=1)
 Define(paralysis 115078)
 	SpellInfo(paralysis cd=15 duration=40 energy=20)
 	SpellAddTargetDebuff(paralysis paraylsis=1)
 Define(power_guard 118636)
 	SpellInfo(power_guard duration=30)
 Define(power_strikes 129914)
-	SpellInfo(power_strikes duration=3600)
 Define(power_strikes_talent 7)
 Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 chi=1)
-	SpellAddDebuff(purifying_brew heavy_stagger=0 light_stagger=0 moderate_stagger=0)
+	SpellAddDebuff(purifying_brew healing_elixirs=0 heavy_stagger=0 light_stagger=0 moderate_stagger=0)
 Define(retreat 124968)
 	SpellInfo(retreat duration=10)
 Define(ring_of_peace 116844)
@@ -175,7 +180,7 @@ Define(tigereye_brew 125195)
 	SpellInfo(tigereye_brew duration=120)
 Define(tigereye_brew_use 116740)
 	SpellInfo(tigereye_brew_use cd=1 duration=15)
-	SpellAddBuff(tigereye_brew_use tigereye_brew=-10 tigereye_brew_use=1)
+	SpellAddBuff(tigereye_brew_use healing_elixirs=0 tigereye_brew=-10 tigereye_brew_use=1)
 Define(tigers_lust 116841)
 	SpellInfo(tigers_lust cd=30 duration=6)
 	SpellAddBuff(tigers_lust tigers_lust=1)
@@ -271,6 +276,20 @@ AddFunction UseItemActions
 ###
 ### Monk (all specializations)
 ###
+
+# Player health threshold to trigger casting Expel Harm instead of Jab.
+AddListItem(opt_expel_harm_threshold 90percent "Expel Harm at 90% health")
+AddListItem(opt_expel_harm_threshold 80percent "Expel Harm at 80% health" default)
+AddListItem(opt_expel_harm_threshold 70percent "Expel Harm at 70% health")
+AddListItem(opt_expel_harm_threshold 60percent "Expel Harm at 60% health")
+
+AddFunction ExpelHarm
+{
+	if List(opt_expel_harm_threshold 90percent) and HealthPercent() <90 Spell(expel_harm)
+	if List(opt_expel_harm_threshold 80percent) and HealthPercent() <80 Spell(expel_harm)
+	if List(opt_expel_harm_threshold 70percent) and HealthPercent() <70 Spell(expel_harm)
+	if List(opt_expel_harm_threshold 60percent) and HealthPercent() <60 Spell(expel_harm)
+}
 
 AddFunction Interrupt
 {
@@ -427,7 +446,6 @@ AddIcon mastery=1 help=cd
 	{
 		BrewmasterPurifyingBrew()
 	}
-	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
 	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
 	if BuffPresent(power_guard)
 	{
@@ -446,6 +464,7 @@ AddIcon mastery=1 help=main
 		BrewmasterShuffle()
 	}
 	if NumberToMaxChi() >=2 Spell(keg_smash)
+	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
@@ -455,7 +474,8 @@ AddIcon mastery=1 help=main
 		and {SpellCooldown(keg_smash) > GCD()}
 		and {Energy() - SpellData(jab energy) + SpellCooldown(keg_smash) * EnergyRegen() > SpellData(keg_smash energy)}
 	{
-		# Only Jab if we'll have enough energy to Keg Smash when it comes off cooldown.
+		# Only Jab or Expel Harm if we'll have enough energy to Keg Smash when it comes off cooldown.
+		ExpelHarm()
 		Jab()
 	}
 	if NumberToMaxChi() <2
@@ -528,7 +548,7 @@ AddFunction WindwalkerUsePotion
 
 AddFunction WindwalkerGenerateChi
 {
-	if HealthPercent() <80 Spell(expel_harm)
+	ExpelHarm()
 	Jab()
 }
 
@@ -664,11 +684,9 @@ AddFunction WindwalkerMainActions
 	{
 		if BuffRemains(combo_breaker_tp) <=2 or TimeToMaxEnergy() >=2 Spell(tiger_palm)
 	}
-	if NumberToMaxChi() >=1 and HealthPercent() <90 Spell(expel_harm)
 	#jab,if=talent.ascension.enabled&chi<=3
-	if TalentPoints(ascension_talent) and Chi() <=3 Jab()
 	#jab,if=!talent.ascension.enabled&chi<=2
-	if not TalentPoints(ascension_talent) and Chi() <=2 Jab()
+	if NumberToMaxChi() >2 WindwalkerGenerateChi()
 	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
 	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
 }
