@@ -210,7 +210,7 @@ Define(shiv 5938)
 Define(shroud_of_concealment 114018)
 	SpellInfo(shroud_of_concealment cd=300 duration=15)
 	SpellAddBuff(shroud_of_concealment shroud_of_concealment=1)
-Define(shuriken_toss 16)
+Define(shuriken_toss 114014)
 	SpellInfo(shuriken_toss combo=1 energy=20)
 Define(shuriken_toss_talent 16)
 Define(sinister_strike 1752)
@@ -947,104 +947,6 @@ AddFunction SubtletyIsStealthed
 	IsStealthed() or BuffPresent(shadow_dance)
 }
 
-AddFunction SubtletyFullRotation
-{
-	if InCombat(no)
-	{
-		#flask,type=spring_blossoms
-		#food,type=sea_mist_rice_noodles
-		#apply_poison,lethal=deadly
-		ApplyPoisons()
-		#snapshot_stats
-		#virmens_bite_potion
-		UsePotion()
-		if TalentPoints(marked_for_death_talent)
-		{
-			#marked_for_death,if=talent.marked_for_death.enabled
-			Spell(marked_for_death)
-			#slice_and_dice,if=talent.marked_for_death.enabled
-			Spell(slice_and_dice)
-		}
-		#stealth
-		if not IsStealthed() Spell(stealth)
-		#premeditation
-		if SubtletyIsStealthed() Spell(premeditation)
-		#slice_and_dice
-		Spell(slice_and_dice)
-	}
-
-	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
-	if BuffPresent(burst_haste any=1) or target.TimeToDie() <40 UsePotion()
-	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
-	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
-	#auto_attack
-	#kick
-	Interrupt()
-	#shadow_blades
-	Spell(shadow_blades)
-	#pool_resource,for_next=1,extra_amount=75
-	#shadow_dance,if=energy>=75&buff.stealthed.down&!target.debuff.find_weakness.up
-	if Spell(shadow_dance) and not IsStealthed() and target.DebuffExpires(find_weakness)
-	{
-		wait if Energy() >=75 Spell(shadow_dance)
-	}
-	if BuffPresent(shadow_dance)
-	{
-		#use_item,name=ninetailed_gloves,if=buff.shadow_dance.up
-		UseItemActions()
-		#berserking,if=buff.shadow_dance.up
-		UseRacialActions()
-	}
-	#pool_resource,for_next=1,extra_amount=30
-	#vanish,if=time>10&energy>=45&energy<=75&combo_points<=3&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!target.debuff.find_weakness.up
-	if Spell(vanish) and TimeInCombat() >10 and ComboPoints() <=3
-		and not SubtletyIsStealthed() and BuffExpires(master_of_subtlety) and target.DebuffExpires(find_weakness)
-	{
-		wait if Energy() >=45 and Energy() <=75 Spell(vanish)
-	}
-	#premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
-	if SubtletyIsStealthed() and ComboPoints() <=2 Spell(premeditation)
-	#ambush,if=combo_points<=5&anticipation_charges=0
-	if TalentPoints(anticipation_talent)
-	{
-		if ComboPoints() <=5 and BuffStacks(anticipation) ==0 Spell(ambush usable=1)
-	}
-	if not TalentPoints(anticipation_talent)
-	{
-		if ComboPoints() <4 Spell(ambush usable=1)
-	}
-	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
-	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
-	#slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
-	if ComboPoints() ==5 and BuffRemains(slice_and_dice) <3 Spell(slice_and_dice)
-	#rupture,if=combo_points=5&dot.rupture.remains<5
-	if ComboPoints() ==5 and target.DebuffRemains(rupture) <5 Spell(rupture)
-	#ambush,if=anticipation_charges<3&buff.shadow_dance.remains<=2
-	if TalentPoints(anticipation_talent)
-	{
-		if BuffStacks(anticipation) <3 and BuffRemains(shadow_dance) <=2 Spell(ambush usable=1)
-	}
-	#eviscerate,if=combo_points=5
-	if ComboPoints() ==5 Spell(eviscerate)
-	if target.DebuffRemains(hemorrhage_dot) <4
-	{
-		#hemorrhage,if=combo_points<4&(dot.hemorrhage.remains<4|position_front)
-		if ComboPoints() <4 Spell(hemorrhage)
-		#hemorrhage,if=combo_points<5&energy>80&(dot.hemorrhage.remains<4|position_front)
-		if ComboPoints() <5 and Energy() >80 Spell(hemorrhage)
-	}
-	if ComboPoints() <4 ExposeArmor()
-	#backstab,if=combo_points<4&(cooldown.shadow_dance.remains>7|(cooldown.shadow_dance.remains=0&time<=9))
-	if ComboPoints() <4
-	{
-		if SpellCooldown(shadow_dance) >7 Spell(backstab)
-		if Spell(shadow_dance) and TimeInCombat() <=9 Spell(backstab)
-	}
-	#tricks_of_the_trade
-	#backstab,if=combo_points<5&energy>80&cooldown.shadow_dance.remains>=2
-	if ComboPoints() <5 and Energy() >80 and SpellCooldown(shadow_dance) >=2 Spell(backstab)
-}
-
 AddFunction SubtletyPreCombatActions
 {
 	if InCombat(no)
@@ -1054,129 +956,180 @@ AddFunction SubtletyPreCombatActions
 		#apply_poison,lethal=deadly
 		ApplyPoisons()
 		#snapshot_stats
-		if TalentPoints(marked_for_death_talent)
-		{
-			#slice_and_dice,if=talent.marked_for_death.enabled
-			Spell(slice_and_dice)
-		}
+		#virmens_bite_potion
+		UsePotion()
 		#stealth
 		if not IsStealthed() Spell(stealth)
 		#premeditation
-		if SubtletyIsStealthed() Spell(premeditation)
+		if IsStealthed() Spell(premeditation)
 		#slice_and_dice
 		Spell(slice_and_dice)
 	}
 }
 
-AddFunction SubtletyMainActions
+AddFunction SubtletyPoolActions
 {
-	#auto_attack
-	#premeditation,if=(combo_points<=3&cooldown.honor_among_thieves.remains>1.75)|combo_points<=2
-	if SubtletyIsStealthed() and ComboPoints() <=2 Spell(premeditation)
-	#ambush,if=combo_points<=5&anticipation_charges=0
-	if TalentPoints(anticipation_talent)
-	{
-		if ComboPoints() <=5 and BuffStacks(anticipation) ==0 Spell(ambush usable=1)
-	}
-	if not TalentPoints(anticipation_talent)
-	{
-		if ComboPoints() <4 Spell(ambush usable=1)
-	}
-	#slice_and_dice,if=buff.slice_and_dice.remains<3&combo_points=5
-	if ComboPoints() ==5 and BuffRemains(slice_and_dice) <3 Spell(slice_and_dice)
-	#rupture,if=combo_points=5&dot.rupture.remains<5
-	if ComboPoints() ==5 and target.DebuffRemains(rupture) <5 Spell(rupture)
-	#ambush,if=anticipation_charges<3&buff.shadow_dance.remains<=2
-	if TalentPoints(anticipation_talent)
-	{
-		if BuffStacks(anticipation) <3 and BuffRemains(shadow_dance) <=2 Spell(ambush usable=1)
-	}
-	#eviscerate,if=combo_points=5
-	if ComboPoints() ==5 Spell(eviscerate)
-	if target.DebuffRemains(hemorrhage_dot) <4
-	{
-		#hemorrhage,if=combo_points<4&(dot.hemorrhage.remains<4|position_front)
-		if ComboPoints() <4 Spell(hemorrhage)
-		#hemorrhage,if=combo_points<5&energy>80&(dot.hemorrhage.remains<4|position_front)
-		if ComboPoints() <5 and Energy() >80 Spell(hemorrhage)
-	}
-	if ComboPoints() <4 ExposeArmor()
-}
-
-AddFunction SubtletyFillerActions
-{
-	#backstab,if=combo_points<4&(cooldown.shadow_dance.remains>7|(cooldown.shadow_dance.remains=0&time<=9))
-	if ComboPoints() <4
-	{
-		if SpellCooldown(shadow_dance) >7 Spell(backstab)
-		if Spell(shadow_dance) and TimeInCombat() <=9 Spell(backstab)
-	}
-	#tricks_of_the_trade
-	#backstab,if=combo_points<5&energy>80&cooldown.shadow_dance.remains>=2
-	if ComboPoints() <5 and Energy() >80 and SpellCooldown(shadow_dance) >=2 Spell(backstab)
-	# Extra filler to prevent energy-capping if Shadow Dance is delayed.
-	if TimeToMaxEnergy() <1.5 Spell(backstab)
-}
-
-AddFunction SubtletyShortCooldownActions
-{
-	if InCombat(no)
-	{
-		if TalentPoints(marked_for_death_talent)
-		{
-			#marked_for_death,if=talent.marked_for_death.enabled
-			Spell(marked_for_death)
-		}
-	}
-
 	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
 	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
+}
+
+AddFunction SubtletyGeneratorActions
+{
+	#run_action_list,name=pool,if=buff.master_of_subtlety.down&buff.shadow_dance.down&debuff.find_weakness.down&\
+	#	(energy+cooldown.shadow_dance.remains*energy.regen<80|energy+cooldown.vanish.remains*energy.regen<60)
+	if BuffExpires(master_of_subtlety) and not IsStealthed() and target.DebuffExpires(find_weakness)
+		and {{Energy() + SpellCooldown(shadow_dance) * EnergyRegen() <80} or {Energy() + SpellCooldown(vanish) * EnergyRegen() <60}}
+	{
+		SubtletyPoolActions()
+	}
+	unless BuffExpires(master_of_subtlety) and BuffExpires(shadow_dance) and target.DebuffExpires(find_weakness)
+		and {{Energy() + SpellCooldown(shadow_dance) * EnergyRegen() <80} or {Energy() + SpellCooldown(vanish) * EnergyRegen() <60}}
+	{
+		#hemorrhage,if=remains<3|position_front
+		if target.DebuffRemains(hemorrhage_dot) <3 Spell(hemorrhage)
+		#shuriken_toss,if=talent.shuriken_toss.enabled&(energy<65&energy.regen<16)
+		if TalentPoints(shuriken_toss) and Energy() <65 and EnergyRegen() <16 Spell(shuriken_toss)
+		#backstab
+		Spell(backstab)
+		#run_action_list,name=pool
+		SubtletyPoolActions()
+	}
+}
+
+AddFunction SubtletyFinisherActions
+{
+	#slice_and_dice,if=buff.slice_and_dice.remains<4
+	if BuffRemains(slice_and_dice) <4 Spell(slice_and_dice)
+	#rupture,if=remains<4
+	if target.DebuffRemains(rupture) <4 Spell(rupture)
+	#eviscerate
+	Spell(eviscerate)
+	#run_action_list,name=pool
+	SubtletyPoolActions()
+}
+
+AddFunction SubtletyFullRotation
+{
+	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
+	if BuffPresent(burst_haste any=1) or target.TimeToDie() <40 UsePotion()
+	#auto_attack
+	#kick
+	Interrupt()
+	if BuffPresent(shadow_dance)
+	{
+		#use_item,slot=hands,if=buff.shadow_dance.up
+		UseItemActions()
+		#berserking,if=buff.shadow_dance.up
+		UseRacialActions()
+	}
+	#shadow_blades
+	Spell(shadow_blades)
+	#premeditation,if=combo_points<3|(talent.anticipation.enabled&anticipation_charges<3)
+	if ComboPoints() <3 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3} Spell(premeditation)
+	#pool_resource,for_next=1
+	#ambush,if=combo_points<5|(talent.anticipation.enabled&anticipation_charges<3)
+	if IsStealthed() and ComboPoints() <5 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3}
+	{
+		wait Spell(ambush)
+	}
 	#pool_resource,for_next=1,extra_amount=75
-	#shadow_dance,if=energy>=75&buff.stealthed.down&!target.debuff.find_weakness.up
+	#shadow_dance,if=energy>=75&buff.stealthed.down&buff.vanish.down&debuff.find_weakness.down
 	if Spell(shadow_dance) and not IsStealthed() and target.DebuffExpires(find_weakness)
 	{
 		wait if Energy() >=75 Spell(shadow_dance)
 	}
-	#pool_resource,for_next=1,extra_amount=30
-	#vanish,if=time>10&energy>=45&energy<=75&combo_points<=3&!buff.shadow_dance.up&!buff.master_of_subtlety.up&!target.debuff.find_weakness.up
-	if Spell(vanish) and TimeInCombat() >10 and ComboPoints() <=3
-		and not SubtletyIsStealthed() and BuffExpires(master_of_subtlety) and target.DebuffExpires(find_weakness)
+	#pool_resource,for_next=1,extra_amount=45
+	#vanish,if=energy>=45&energy<=75&combo_points<=3&buff.shadow_dance.down&buff.master_of_subtlety.down&debuff.find_weakness.down
+	if Spell(vanish) and Energy() <=75 and ComboPoints() <=3 and not IsStealthed() and
+		BuffExpires(master_of_subtlety) and target.DebuffExpires(find_weakness)
 	{
-		wait if Energy() >=45 and Energy() <=75 Spell(vanish)
+		wait if Energy() >=45 Spell(vanish)
 	}
-	unless {TalentPoints(anticipation_talent) and ComboPoints() <=5 and BuffStacks(anticipation) ==0 and IsStealthed()}
-		or {not TalentPoints(anticipation_talent) and ComboPoints() <4 and IsStealthed()}
+	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
+	#run_action_list,name=generator,if=talent.anticipation.enabled&anticipation_charges<4&buff.slice_and_dice.up&dot.rupture.remains>2&\
+	#	(buff.slice_and_dice.remains<6|dot.rupture.remains<4)
+	if TalentPoints(anticipation_talent) and BuffStacks(anticipation) <4 and BuffPresent(slice_and_dice) and target.DebuffRemains(rupture) >2
+		and {BuffRemains(slice_and_dice) <6 or target.DebuffRemains(rupture) <4}
 	{
-		#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
-		if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
+		SubtletyGeneratorActions()
 	}
+	#run_action_list,name=finisher,if=combo_points=5
+	if ComboPoints() ==5 SubtletyFinisherActions()
+	#run_action_list,name=generator,if=combo_points<4|energy>80|talent.anticipation.enabled
+	if ComboPoints() <4 or Energy() >80 or TalentPoints(anticipation_talent) SubtletyGeneratorActions()
+	#run_action_list,name=pool
+	SubtletyPoolActions()
+}
+
+AddFunction SubtletyFillerActions
+{
+	#run_action_list,name=generator,if=combo_points<4|energy>80|talent.anticipation.enabled
+	if ComboPoints() <4 or Energy() >80 or TalentPoints(anticipation_talent) SubtletyGeneratorActions()
+	#run_action_list,name=pool
+	SubtletyPoolActions()
+	# Extra filler to prevent energy-capping.
+	if TimeToMaxEnergy() <1.5 Spell(backstab)
+}
+
+AddFunction SubtletyMainActions
+{
+	#auto_attack
+	#premeditation,if=combo_points<3|(talent.anticipation.enabled&anticipation_charges<3)
+	if ComboPoints() <3 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3} Spell(premeditation)
+	#pool_resource,for_next=1
+	#ambush,if=combo_points<5|(talent.anticipation.enabled&anticipation_charges<3)
+	if IsStealthed() and ComboPoints() <5 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3}
+	{
+		wait Spell(ambush)
+	}
+	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
+	#run_action_list,name=generator,if=talent.anticipation.enabled&anticipation_charges<4&buff.slice_and_dice.up&dot.rupture.remains>2&\
+	#	(buff.slice_and_dice.remains<6|dot.rupture.remains<4)
+	if TalentPoints(anticipation_talent) and BuffStacks(anticipation) <4 and BuffPresent(slice_and_dice) and target.DebuffRemains(rupture) >2
+		and {BuffRemains(slice_and_dice) <6 or target.DebuffRemains(rupture) <4}
+	{
+		SubtletyGeneratorActions()
+	}
+	#run_action_list,name=finisher,if=combo_points=5
+	if ComboPoints() ==5 SubtletyFinisherActions()
+}
+
+AddFunction SubtletyShortCooldownActions
+{
+	#pool_resource,for_next=1,extra_amount=75
+	#shadow_dance,if=energy>=75&buff.stealthed.down&buff.vanish.down&debuff.find_weakness.down
+	if Spell(shadow_dance) and not IsStealthed() and target.DebuffExpires(find_weakness)
+	{
+		wait if Energy() >=75 Spell(shadow_dance)
+	}
+	#pool_resource,for_next=1,extra_amount=45
+	#vanish,if=energy>=45&energy<=75&combo_points<=3&buff.shadow_dance.down&buff.master_of_subtlety.down&debuff.find_weakness.down
+	if Spell(vanish) and Energy() <=75 and ComboPoints() <=3 and not IsStealthed() and
+		BuffExpires(master_of_subtlety) and target.DebuffExpires(find_weakness)
+	{
+		wait if Energy() >=45 Spell(vanish)
+	}
+	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0
+	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 Spell(marked_for_death)
 }
 
 AddFunction SubtletyCooldownActions
 {
-	if InCombat(no)
-	{
-		#virmens_bite_potion
-		UsePotion()
-	}
-
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
 	if BuffPresent(burst_haste any=1) or target.TimeToDie() <40 UsePotion()
 	#kick
 	Interrupt()
-
-	unless {BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 and Spell(preparation)}
+	if BuffPresent(shadow_dance)
 	{
-		#shadow_blades
-		Spell(shadow_blades)
-		if BuffPresent(shadow_dance)
-		{
-			#use_item,name=ninetailed_gloves,if=buff.shadow_dance.up
-			UseItemActions()
-			#berserking,if=buff.shadow_dance.up
-			UseRacialActions()
-		}
+		#use_item,slot=hands,if=buff.shadow_dance.up
+		UseItemActions()
+		#berserking,if=buff.shadow_dance.up
+		UseRacialActions()
 	}
+	#shadow_blades
+	Spell(shadow_blades)
 }
 
 AddIcon mastery=3 size=small checkboxon=opt_icons_left
