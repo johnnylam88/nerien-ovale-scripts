@@ -552,22 +552,33 @@ AddFunction WindwalkerGenerateChi
 	Jab()
 }
 
+# TeB usage style: "consistent" is geared toward a crit build, "burst" is geared toward a mastery build.
+AddListItem(opt_tigereye_brew_usage consistent "TeB usage: Consistent" default mastery=3)
+AddListItem(opt_tigereye_brew_usage burst "TeB usage: Burst" mastery=3)
+
 AddFunction WindwalkerTigereyeBrewConditions
 {
 	#if ( find_item( "rune_of_reorigination" ) )
-	#	tigereye_brew,line_cd=15,if=buff.rune_of_reorigination.react&(buff.rune_of_reorigination.remains<=1|(buff.tigereye_brew_use.down&cooldown.rising_sun_kick.remains=0&chi>=2&target.debuff.rising_sun_kick.remains&buff.tiger_power.remains))
+	#	tigereye_brew,line_cd=15,if=buff.rune_of_reorigination.react&\
+	#		(buff.rune_of_reorigination.remains<=1|\
+	#		(buff.tigereye_brew_use.down&cooldown.rising_sun_kick.remains=0&\
+	#			chi>=2&target.debuff.rising_sun_kick.remains&buff.tiger_power.remains))
 	#	tigereye_brew,if=!buff.tigereye_brew_use.up&(buff.tigereye_brew.react>19|target.time_to_die<20)
 	#else
-	#	tigereye_brew,if=buff.tigereye_brew_use.down&cooldown.rising_sun_kick.remains=0&chi>=2&target.debuff.rising_sun_kick.remains&buff.tiger_power.remains
+	#	tigereye_brew,if=buff.tigereye_brew_use.down&cooldown.rising_sun_kick.remains=0&\
+	#			chi>=2&target.debuff.rising_sun_kick.remains&buff.tiger_power.remains
 	#
 	{BuffPresent(rune_of_reorigination_buff) and BuffRemains(rune_of_reorigination_buff) <=1}
-		or {{not HasTrinket(rune_of_reorigination) or BuffPresent(rune_of_reorigination_buff)}
-			and BuffExpires(tigereye_brew_use) and Spell(rising_sun_kick) and Chi() >=2
-			and target.DebuffPresent(rising_sun_kick_aura) and BuffPresent(tiger_power)}
-		or {HasTrinket(rune_of_reorigination)
-			and BuffExpires(tigereye_brew_use) and {BuffStacks(tigereye_brew) >19 or target.TimeToDie() <20}}
+	or {{not HasTrinket(rune_of_reorigination) or BuffPresent(rune_of_reorigination_buff)}
+		and BuffExpires(tigereye_brew_use) and Spell(rising_sun_kick) and Chi() >=2
+		and {{List(opt_tigereye_brew_usage consistent)
+				and target.DebuffPresent(rising_sun_kick_aura) and BuffPresent(tiger_power)}
+			or {List(opt_tigereye_brew_usage burst)
+				and {{LastSpellAttackPower(rising_sun_kick) >0 and {AttackPower() /LastSpellAttackPower(rising_sun_kick) >1.4}}
+					or BuffStacks(tigereye_brew) >=16}}}}
+	or {HasTrinket(rune_of_reorigination)
+		and BuffExpires(tigereye_brew_use) and {BuffStacks(tigereye_brew) >19 or target.TimeToDie() <20}}
 }
-
 
 AddFunction WindwalkerFullRotation
 {
@@ -642,6 +653,7 @@ AddFunction WindwalkerFullRotation
 	if NumberToMaxChi() >2 WindwalkerGenerateChi()
 	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
 	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
+	if List(opt_tigereye_brew_usage burst) and Chi() >=3 Spell(blackout_kick)
 }
 
 AddFunction WindwalkerPreCombatActions
@@ -689,6 +701,7 @@ AddFunction WindwalkerMainActions
 	if NumberToMaxChi() >2 WindwalkerGenerateChi()
 	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
 	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
+	if List(opt_tigereye_brew_usage burst) and Chi() >=3 Spell(blackout_kick)
 }
 
 AddFunction WindwalkerAoEActions
