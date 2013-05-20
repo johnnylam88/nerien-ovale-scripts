@@ -228,7 +228,7 @@ Define(repentance 20066)
 Define(repentance_talent 5)
 Define(righteous_fury 25780)
 Define(sacred_shield 20925)
-	SpellInfo(sacred_shield cd=6 duration=30 tick=6)
+	SpellInfo(sacred_shield cd=6 duration=30 haste=spell tick=6)
 	SpellAddBuff(sacred_shield sacred_shield=1)
 Define(sacred_shield_aura 65148)
 	SpellInfo(sacred_shield_aura duration=6)
@@ -402,7 +402,7 @@ AddFunction ProtectionPreCombatActions
 		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
 		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
 		if not Stance(paladin_seal_of_insight) Spell(seal_of_insight)
-		if BuffExpires(sacred_shield) Spell(sacred_shield)
+		if BuffRemains(sacred_shield) <12 Spell(sacred_shield)
 	}
 }
 
