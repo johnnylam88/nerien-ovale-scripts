@@ -739,11 +739,11 @@ AddFunction RestorationPetChannel
 	{
 		if TotemPresent(fire totem=fire_elemental_totem)
 		{
-			if BuffExpires(pet_empower) Spell(pet_empower)
+			if BuffExpires(pet_empower any=1) Spell(pet_empower)
 		}
 		if TotemPresent(earth totem=earth_elemental_totem)
 		{
-			if BuffExpires(pet_reinforce) Spell(pet_reinforce)
+			if BuffExpires(pet_reinforce any=1) Spell(pet_reinforce)
 		}
 	}
 }
