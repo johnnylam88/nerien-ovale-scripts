@@ -117,7 +117,6 @@ Define(glyph_of_spiritwalkers_grace 55446)
 Define(glyph_of_totemic_recall 55438)
 Define(glyph_of_the_lakestrider 55448)
 Define(glyph_of_thunder 63270)
-Define(glyph_of_unleashed_lightning 101052)
 Define(glyph_of_wind_shear 55451)
 Define(greater_healing_wave 77472)
 	SpellAddBuff(greater_healing_wave ancestral_swiftness=0 tidal_waves=-1 unleash_life=0)
@@ -473,20 +472,8 @@ AddFunction ElementalFullRotation
 		if TotemExpires(fire) Spell(searing_totem)
 		if Speed() >0
 		{
-			#spiritwalkers_grace,moving=1,if=glyph.unleashed_lightning.enabled&((talent.elemental_blast.enabled&cooldown.elemental_blast.remains=0)|(cooldown.lava_burst.remains=0&!buff.lava_surge.react))|(buff.raid_movement.duration>=action.unleash_elements.gcd+action.earth_shock.gcd)
-			if Glyph(glyph_of_unleashed_lightning)
-			{
-				if {TalentPoints(elemental_blast_talent) and Spell(elemental_blast)} or {Spell(lava_burst) and BuffExpires(lava_surge)} Spell(spiritwalkers_grace)
-			}
-			if Glyph(glyph_of_unleashed_lightning no)
-			{
-				#spiritwalkers_grace,moving=1
-				Spell(spiritwalkers_grace)
-				#unleash_elements,moving=1,if=!glyph.unleashed_lightning.enabled
-				Spell(unleash_elements)
-				#earth_shock,moving=1,if=!glyph.unleashed_lightning.enabled&dot.flame_shock.remains>cooldown
-				if target.DebuffRemains(flame_shock) >SpellData(earth_shock cd) Spell(earth_shock)
-			}
+			#spiritwalkers_grace,moving=1,if=((talent.elemental_blast.enabled&cooldown.elemental_blast.remains=0)|(cooldown.lava_burst.remains=0&!buff.lava_surge.react))|(buff.raid_movement.duration>=action.unleash_elements.gcd+action.earth_shock.gcd)
+			if {TalentPoints(elemental_blast_talent) and Spell(elemental_blast)} or {Spell(lava_burst) and BuffExpires(lava_surge)} Spell(spiritwalkers_grace)
 		}
 		#lightning_bolt
 		Spell(lightning_bolt)
@@ -534,16 +521,6 @@ AddFunction ElementalMainActions
 	}
 	#searing_totem,if=cooldown.fire_elemental_totem.remains>20&!totem.fire.active
 	if TotemExpires(fire) Spell(searing_totem)
-	if Speed() >0
-	{
-		if Glyph(glyph_of_unleashed_lightning no)
-		{
-			#unleash_elements,moving=1,if=!glyph.unleashed_lightning.enabled
-			Spell(unleash_elements)
-			#earth_shock,moving=1,if=!glyph.unleashed_lightning.enabled&dot.flame_shock.remains>cooldown
-			if target.DebuffRemains(flame_shock) >SpellData(earth_shock cd) Spell(earth_shock)
-		}
-	}
 }
 
 AddFunction ElementalFillerActions
@@ -633,16 +610,8 @@ AddFunction ElementalCooldownActions
 		if TotemExpires(earth totem=earth_elemental_totem) and SpellCooldown(fire_elemental_totem) >=60 Spell(earth_elemental_totem)
 		if Speed() >0
 		{
-			#spiritwalkers_grace,moving=1,if=glyph.unleashed_lightning.enabled&((talent.elemental_blast.enabled&cooldown.elemental_blast.remains=0)|(cooldown.lava_burst.remains=0&!buff.lava_surge.react))|(buff.raid_movement.duration>=action.unleash_elements.gcd+action.earth_shock.gcd)
-			if Glyph(glyph_of_unleashed_lightning)
-			{
-				if {TalentPoints(elemental_blast_talent) and Spell(elemental_blast)} or {Spell(lava_burst) and BuffExpires(lava_surge)} Spell(spiritwalkers_grace)
-			}
-			if Glyph(glyph_of_unleashed_lightning no)
-			{
-				#spiritwalkers_grace,moving=1
-				Spell(spiritwalkers_grace)
-			}
+			#spiritwalkers_grace,moving=1,if=((talent.elemental_blast.enabled&cooldown.elemental_blast.remains=0)|(cooldown.lava_burst.remains=0&!buff.lava_surge.react))|(buff.raid_movement.duration>=action.unleash_elements.gcd+action.earth_shock.gcd)
+			if {TalentPoints(elemental_blast_talent) and Spell(elemental_blast)} or {Spell(lava_burst) and BuffExpires(lava_surge)} Spell(spiritwalkers_grace)
 		}
 	}
 }

@@ -51,14 +51,11 @@ Define(bestial_wrath 19574)
 Define(binding_shot 109248)
 	SpellInfo(binding_shot cd=45)
 	SpellInfo(binding_shot if_spell=steady_focus resetcounter=ss)
-Define(binding_shot_talent 6)
 Define(black_arrow 3674)
 	SpellInfo(black_arrow cd=30 duration=20 focus=35 sharedcd=firetrap tick=2)
 	SpellInfo(black_arrow addcd=-6 if_spell=trap_mastery)
 	SpellAddTargetDebuff(black_arrow black_arrow=1)
-Define(blink_strike 130392)
-	SpellInfo(blink_strike cd=20)
-Define(blink_strike_talent 14)
+Define(blink_strikes_talent 14)
 Define(bombardment 82921)
 	SpellInfo(bombardment duration=5)
 Define(call_pet_1 883)
@@ -142,6 +139,7 @@ Define(intimidation 19577)
 	SpellInfo(intimidation cd=60)
 Define(intimidation_debuff 24394)
 	SpellInfo(intimidation_debuff duration=3)
+Define(intimidation_talent 6)
 Define(kill_command 34026)
 	SpellInfo(kill_command cd=6 focus=40)
 	SpellAddTargetDebuff(kill_command hunters_mark=1)
@@ -416,8 +414,6 @@ AddFunction BeastMasteryFullRotation
 	if TalentPoints(barrage_talent) Spell(barrage)
 	#powershot,if=enabled
 	if TalentPoints(powershot_talent) Spell(powershot)
-	#blink_strike,if=enabled
-	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#readiness,wait_for_rapid_fire=1
 	if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
 	#arcane_shot,if=buff.thrill_of_the_hunt.react
@@ -454,8 +450,6 @@ AddFunction BeastMasteryMainActions
 	Spell(kill_command)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
-	#blink_strike,if=enabled
-	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#arcane_shot,if=buff.thrill_of_the_hunt.react
 	if BuffPresent(thrill_of_the_hunt) Spell(arcane_shot)
 	#focus_fire,five_stacks=1,if=!ticking&!buff.beast_within.up
@@ -609,8 +603,6 @@ AddFunction SurvivalFullRotation
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
 	#a_murder_of_crows,if=enabled&!ticking
 	if TalentPoints(a_murder_of_crows_talent) and target.DebuffExpires(a_murder_of_crows) Spell(a_murder_of_crows)
-	#blink_strike,if=enabled
-	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#lynx_rush,if=enabled&!dot.lynx_rush.ticking
 	if TalentPoints(lynx_rush_talent) Spell(lynx_rush)
 	#explosive_shot,if=buff.lock_and_load.react
@@ -658,8 +650,6 @@ AddFunction SurvivalMainActions
 	#auto_shot
 	#fervor,if=enabled&focus<=50
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
-	#blink_strike,if=enabled
-	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#explosive_shot,if=buff.lock_and_load.react
 	if BuffPresent(lock_and_load) Spell(explosive_shot)
 	#glaive_toss,if=enabled
@@ -692,8 +682,6 @@ AddFunction SurvivalAoEActions
 	Spell(explosive_trap)
 	#fervor,if=enabled&focus<=50
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
-	#blink_strike,if=enabled
-	if TalentPoints(blink_strike_talent) Spell(blink_strike)
 	#explosive_shot,if=buff.lock_and_load.react
 	if BuffPresent(lock_and_load) Spell(explosive_shot)
 	#glaive_toss,if=enabled
