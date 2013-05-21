@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.DRUID.Nerien = {
-	desc = "[5.2] Nerien: Feral, Guardian",
+	desc = "[5.3] Nerien: Feral, Guardian",
 	code =
 [[
 # Nerien's druid script based on SimulationCraft

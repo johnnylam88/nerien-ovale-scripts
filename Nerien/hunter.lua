@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.HUNTER.Nerien = {
-	desc = "[5.2] Nerien: Beast Mastery, Survival",
+	desc = "[5.3] Nerien: Beast Mastery, Survival",
 	code =
 [[
 # Nerien's hunter script based on SimulationCraft

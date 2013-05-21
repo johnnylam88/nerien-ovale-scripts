@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "[5.2] Nerien: Brewmaster, Windwalker",
+	desc = "[5.3] Nerien: Brewmaster, Windwalker",
 	code =
 [[
 # Nerien's monk script based on SimulationCraft

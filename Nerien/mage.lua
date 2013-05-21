@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MAGE.Nerien = {
-	desc = "[5.2] Nerien: Arcane, Fire, Frost",
+	desc = "[5.3] Nerien: Arcane, Fire, Frost",
 	code =
 [[
 # Nerien's mage script based on SimulationCraft.

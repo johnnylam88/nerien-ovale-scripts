@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.SHAMAN.Nerien = {
-	desc = "[5.2] Nerien: Elemental, Restoration",
+	desc = "[5.3] Nerien: Elemental, Restoration",
 	code =
 [[
 # Nerien's shaman script based on SimulationCraft
