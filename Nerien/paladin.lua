@@ -153,7 +153,6 @@ Define(hammer_of_wrath 24275)
 	SpellInfo(hammer_of_wrath cd=6)
 	SpellInfo(hammer_of_wrath cd_haste=melee haste=melee if_spell=sanctity_of_battle)
 	SpellInfo(hammer_of_wrath holy=-1 mastery=3)
-	SpellInfo(hammer_of_wrath addcd=-3 mastery=3 talent=sanctified_wrath_talent)
 Define(hand_of_freedom 1044)
 	SpellInfo(hand_of_freedom cd=25 duration=6)
 Define(hand_of_protection 1022)
@@ -182,8 +181,6 @@ Define(holy_radiance 82327)
 Define(holy_shock 20473)
 	SpellInfo(holy_shock cd=6 holy=-1)
 	SpellInfo(holy_shock cd=5 itemset=T14_heal itemcount=4)
-	SpellInfo(holy_shock cd=3 talent=sanctified_wrath_talent)
-	SpellInfo(holy_shock cd=2.5 itemset=T14_heal itemcount=4 talent=sanctified_wrath_talent)
 	SpellAddBuff(holy_shock daybreak=0)
 Define(holy_wrath 119072)
 	SpellInfo(holy_wrath cd=9 duration=3)
@@ -196,7 +193,6 @@ Define(inquisition 84963)
 Define(judgment 20271)
 	SpellInfo(judgment cd=6)
 	SpellInfo(judgment cd_haste=melee haste=melee if_spell=sanctity_of_battle)
-	SpellInfo(judgment addcd=-3 mastery=2 talent=sanctified_wrath_talent)
 	SpellInfo(judgment holy=-1 if_spell=judgments_of_the_bold)
 	SpellInfo(judgment holy=-1 if_spell=judgments_of_the_wise)
 Define(judgments_of_the_bold 111529)
@@ -233,6 +229,8 @@ Define(sacred_shield 20925)
 Define(sacred_shield_aura 65148)
 	SpellInfo(sacred_shield_aura duration=6)
 Define(sacred_shield_talent 9)
+Define(sanctified_wrath 114232)
+	SpellInfo(sanctified_wrath duration=30)
 Define(sanctified_wrath_talent 14)
 Define(sanctity_of_battle 25956)
 Define(seal_of_command 105361)
@@ -249,6 +247,9 @@ Define(shield_of_the_righteous 53600)
 	SpellInfo(shield_of_the_righteous cd=1.5 holy=3)
 	SpellInfo(shield_of_the_righteous cd_haste=melee haste=melee if_spell=sanctity_of_battle)
 	SpellAddBuff(shield_of_the_righteous alabaster_shield=0 bastion_of_glory=1 divine_purpose=0 shield_of_the_righteous_buff=1)
+Define(shield_of_the_righteous_divine_purpose 132403)
+	SpellInfo(shield_of_the_righteous_divine_purpose cd_haste=melee haste=melee if_spell=sanctity_of_battle)
+	SpellAddBuff(shield_of_the_righteous_divine_purpose alabaster_shield=0 bastion_of_glory=1 divine_purpose=0 shield_of_the_righteous_buff=1)
 Define(shield_of_the_righteous_buff 132403)
 	SpellInfo(shield_of_the_righteous_buff duration=3)
 Define(speed_of_light 85499)
@@ -270,6 +271,8 @@ Define(weakened_blows 115798)
 Define(word_of_glory 85673)
 	SpellInfo(word_of_glory holy=1)
 	SpellAddBuff(word_of_glory bastion_of_glory=0 divine_purpose=0)
+Define(word_of_glory_divine_purpose 130551)
+	SpellAddBuff(word_of_glory_divine_purpose bastion_of_glory=0 divine_purpose=0)
 Define(word_of_glory_glyphed 136494)
 	SpellInfo(word_of_glory_glyphed holy=1)
 	SpellAddBuff(word_of_glory_glyphed bastion_of_glory=0 divine_purpose=0)
@@ -346,6 +349,16 @@ AddFunction UseItemActions
 ### Paladin (all specializations)
 ###
 
+AddFunction HasMaxHolyPower
+{
+	BuffPresent(divine_purpose) or HolyPower() ==5 or {Level() <85 and HolyPower() >=3}
+}
+
+AddFunction HasThreeHolyPower
+{
+	BuffPresent(divine_purpose) or HolyPower() >=3
+}
+
 AddFunction Interrupt
 {
 	if not target.IsFriend() and target.IsInterruptible()
@@ -361,16 +374,17 @@ AddFunction Interrupt
 	}
 }
 
-AddFunction HasMaxHolyPower
-{
-	BuffPresent(divine_purpose) or HolyPower() ==5 or {Level() <85 and HolyPower() >=3}
-}
-
 AddFunction Tier6TalentActions
 {
 	if TalentPoints(holy_prism_talent) Spell(holy_prism)
 	if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
 	if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
+}
+
+AddFunction WordOfGlory
+{
+	if BuffPresent(divine_purpose) Spell(word_of_glory_divine_purpose)
+	if BuffExpires(divine_purpose) Spell(word_of_glory)
 }
 
 ###
@@ -395,6 +409,12 @@ AddFunction Consecration
 	if Glyph(glyph_of_consecration no) Spell(consecration)
 }
 
+AddFunction ShieldOfTheRighteous
+{
+	if BuffPresent(divine_purpose) Spell(shield_of_the_righteous_divine_purpose)
+	if BuffExpires(divine_purpose) Spell(shield_of_the_righteous)
+}
+
 AddFunction ProtectionPreCombatActions
 {
 	if InCombat(no)
@@ -416,12 +436,12 @@ AddFunction ProtectionHolyPowerGeneratorActions
 {
 	# ^WB > CS > J > AS+
 	if target.DebuffExpires(weakened_blows) Spell(hammer_of_the_righteous)
-	if TalentPoints(sanctified_wrath_talent)
+	if BuffPresent(sanctified_wrath)
 	{
 		Spell(judgment)
 		Spell(crusader_strike)
 	}
-	if not TalentPoints(sanctified_wrath_talent)
+	if BuffExpires(sanctified_wrath)
 	{
 		Spell(crusader_strike)
 		Spell(judgment)
@@ -431,9 +451,9 @@ AddFunction ProtectionHolyPowerGeneratorActions
 
 AddFunction ProtectionFillerActions
 {
-	# AS > L90[health_pct<20] > (MaxSurv: SS[buffSS<5]) > HW > HoW > Cons > SS
+	# AS > L90 > (MaxSurv: SS[buffSS<5]) > HW > HoW > Cons > SS
 	Spell(avengers_shield)
-	if target.HealthPercent() <20 Tier6TalentActions()
+	#Tier6TalentActions()
 	if List(opt_prot_rotation max_survival) and TalentPoints(sacred_shield_talent) and BuffRemains(sacred_shield) <5 Spell(sacred_shield)
 	Spell(holy_wrath)
 	Spell(hammer_of_wrath usable=1)
@@ -445,10 +465,24 @@ AddFunction ProtectionFillerActions
 AddFunction ProtectionTruckActions
 {
 	# L90[health_pct<20] > HoW > AS
-	if target.HealthPercent() <20 Tier6TalentActions()
+	#if target.HealthPercent() <20 Tier6TalentActions()
 	if Glyph(glyph_of_focused_shield) Spell(avengers_shield)
 	Spell(hammer_of_wrath usable=1)
 	Spell(avengers_shield)
+}
+
+AddFunction ProtectionTier6TalentActions
+{
+	# Truck actions.
+	if List(opt_prot_rotation max_dps) and target.HealthPercent() <20 Tier6TalentActions()
+	# Filler actions (after holy power generator actions).
+	unless {target.DebuffExpires(weakened_blows) and Spell(hammer_of_the_righteous)}
+		or Spell(judgment)
+		or Spell(crusader_strike)
+		or Spell(avengers_shield)
+	{
+		Tier6TalentActions()
+	}
 }
 
 ### Protection Icons
@@ -481,14 +515,18 @@ AddIcon mastery=2 help=shortcd
 		# EF[buffEF<2.5]
 		if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffRemains(eternal_flame) <2.5 Spell(eternal_flame)
 		# SotR5
-		if BuffExpires(shield_of_the_righteous_buff) and HasMaxHolyPower() Spell(shield_of_the_righteous)
+		if BuffExpires(shield_of_the_righteous_buff) and HasMaxHolyPower() ShieldOfTheRighteous()
 	}
 	if not TalentPoints(eternal_flame_talent)
 	{
 		# SotR
-		if BuffPresent(divine_purpose) or HolyPower() >=3 and BuffExpires(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
-		if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffStacks(bastion_of_glory) ==5 and HealthPercent() <60 Spell(word_of_glory)
+		if HasThreeHolyPower()
+		{
+			if BuffPresent(shield_of_the_righteous_buff) and HealthPercent() <60 WordOfGlory()
+			ShieldOfTheRighteous()
+		}
 	}
+	ProtectionTier6TalentActions()
 }
 
 AddIcon mastery=2 help=main
