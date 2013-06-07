@@ -127,6 +127,8 @@ Define(power_guard 118636)
 	SpellInfo(power_guard duration=30)
 Define(power_strikes 129914)
 Define(power_strikes_talent 7)
+Define(purifier 138237) # 4pT15 tank bonus
+	SpellInfo(purifier duration=15)
 Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 chi=1)
 	SpellAddDebuff(purifying_brew healing_elixirs=0 heavy_stagger=0 light_stagger=0 moderate_stagger=0)
@@ -156,6 +158,8 @@ Define(spinning_crane_kick 101546)
 	SpellAddBuff(spinning_crane_kick spinning_crane_kick=1)
 Define(spinning_fire_blossom 115073)
 	SpellInfo(spinning_fire_blossom chi=1)
+SpellList(stagger heavy_stagger light_stagger moderate_stagger)
+Define(staggering 138233) # 2pT15 tank bonus
 Define(stance_of_the_fierce_tiger 103985)
 Define(stance_of_the_sturdy_ox 115069)
 Define(storm_earth_and_fire 137639)
@@ -446,7 +450,12 @@ AddIcon mastery=1 help=cd
 	{
 		BrewmasterPurifyingBrew()
 	}
-	if BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
+	if BuffPresent(purifier) and DebuffPresent(stagger) Spell(purifying_brew)
+	if ArmorSetParts(T15_tank) <2 and BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
+	if ArmorSetParts(T15_tank) >=2 and BuffStacks(elusive_brew) >5
+	{
+		if BuffRemains(staggering) < BuffStacks(elusive_brew) Spell(elusive_brew_use)
+	}
 	if BuffPresent(power_guard)
 	{
 		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
