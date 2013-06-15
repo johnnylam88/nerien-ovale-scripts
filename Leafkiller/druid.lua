@@ -555,7 +555,7 @@ AddFunction MainActionsDoC
     }
     
     #rake,if=action.rake.tick_damage>action.mangle_cat.hit_damage&action.rake.tick_damage>=dot.rake.tick_dmg
-    if RakeTickDamage() >MangleDamage() and RakeRatio() >=100 Spell(RAKE)
+    if RakeTickDamage() >Damage(SHRED) and RakeRatio() >=100 Spell(RAKE)
     
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
@@ -689,7 +689,7 @@ AddFunction MainActionsNonDoC
     }
     
     #rake,if=action.rake.tick_damage>action.mangle_cat.hit_damage&action.rake.tick_damage>=dot.rake.tick_dmg
-    if RakeTickDamage() >MangleDamage() and RakeRatio() >=100 Spell(RAKE)
+    if RakeTickDamage() >Damage(SHRED) and RakeRatio() >=100 Spell(RAKE)
     
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
@@ -750,15 +750,12 @@ AddFunction Prediction
 
 AddIcon help=Rake size=small mastery=2 checkboxon=cooldownsRatio 
 {
-    #RakeRatio()
-    RipTickDamage()
+    RakeRatio()
 }
 
 AddIcon help=Rip size=small mastery=2 checkboxon=cooldownsRatio 
 {
-    #RipRatio()
-    #MangleDamage()
-    LastRipTickDamage()
+    RipRatio()
 }
 
 AddIcon help=cd size=small mastery=2 checkboxon=cooldownsL {
