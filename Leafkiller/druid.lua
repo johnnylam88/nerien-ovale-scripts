@@ -1,4 +1,4 @@
-if NerienOvaleScripts.class == "DRUID" then
+local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.DRUID.Leafkiller = {
 	desc = "[5.3] Leafkiller: Feral, Guardian",
@@ -914,5 +914,3 @@ AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
 }
 ]]
 }
-
-end
