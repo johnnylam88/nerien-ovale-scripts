@@ -850,6 +850,16 @@ AddFunction BearMainAOE {
 ## Guardian icons (Mastery=3) ##
 #######################
 
+AddIcon help=Rake size=small mastery=3 checkboxon=cooldownsRatio 
+{
+    # Offset the guardian icons if the user has bleed ratios enabled
+}
+
+AddIcon help=Rip size=small mastery=3 checkboxon=cooldownsRatio 
+{
+    # Offset the guardian icons if the user has bleed ratios enabled
+}
+
 AddIcon help=cd size=small mastery=3 checkboxon=cooldownsL {
     Spell(BARKSKIN)
 }
