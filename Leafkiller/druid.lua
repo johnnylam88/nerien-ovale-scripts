@@ -140,7 +140,6 @@ Define(CAT_FORM 768)
     SpellAddBuff(CAT_FORM CAT_FORM=1)
 Define(FEROCIOUS_BITE 22568) #cat finish 25-50 energy
     SpellInfo(FEROCIOUS_BITE energy=25 combo=0)
-    SpellDamageBuff(FEROCIOUS_BITE DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(INCARNATION_CAT 102543)
     SpellInfo(INCARNATION_CAT duration=30 cd=180)
 Define(MAIM 22570) #cat interrupt
@@ -148,23 +147,18 @@ Define(MAIM 22570) #cat interrupt
 Define(MANGLE_CAT 33876) #cat bleed+debuff
     SpellInfo(MANGLE_CAT inccounter=ripshreds energy=35 combo=1)
     SpellInfo(MANGLE_CAT critcombo=1 if_spell=PRIMAL_FURY)
-    #SpellInfo(MANGLE_CAT base=77.7265)
-    SpellInfo(MANGLE_CAT base=32207.7265 bonusap=0.3571)
-    SpellDamageBuff(MANGLE_CAT DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(RAKE 1822) #cat bleed
     SpellInfo(RAKE combo=1 duration=15 energy=35 tick=3)
-    SpellInfo(RAKE base=98.5266 bonusap=0.3)
+    SpellInfo(RAKE base=98.13 bonusap=0.31453)
     SpellInfo(RAKE critcombo=1 if_spell=PRIMAL_FURY)
     SpellAddTargetDebuff(RAKE RAKE=1)
     SpellDamageBuff(RAKE DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(RAVAGE 6785)
     SpellInfo(RAVAGE inccounter=ripshreds energy=45 combo=1)
     SpellInfo(RAVAGE critcombo=1 if_spell=PRIMAL_FURY)
-    SpellDamageBuff(RAVAGE DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(RAVAGE_BANG 102545)
     SpellInfo(RAVAGE_BANG inccounter=ripshreds energy=0 combo=1)
     SpellInfo(RAVAGE_BANG critcombo=1 if_spell=PRIMAL_FURY)
-    SpellDamageBuff(RAVAGE_BANG DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(RIP 1079) #cat bleed
     SpellInfo(RIP resetcounter=ripshreds duration=16 energy=30 tick=2 combo=0)
     SpellInfo(RIP base=112.76 bonuscp=320 bonusapcp=0.0484) # damage coefficients
@@ -180,11 +174,9 @@ Define(SAVAGE_ROAR_GLYPHED 127538)
 Define(SHRED 5221) #cat behind
     SpellInfo(SHRED inccounter=ripshreds energy=40 combo=1)
     SpellInfo(SHRED critcombo=1 if_spell=PRIMAL_FURY)
-    SpellDamageBuff(SHRED DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(SHRED_BANG 114236)
     SpellInfo(SHRED_BANG inccounter=ripshreds energy=40 combo=1)
     SpellInfo(SHRED_BANG critcombo=1 if_spell=PRIMAL_FURY)
-    SpellDamageBuff(SHRED_BANG DREAM_OF_CENARIUS_DAMAGE=1.25)
 Define(STAMPEDE 81022)
     SpellAddBuff(STAMPEDE STAMPEDE=1)
 Define(SKULL_BASH_CAT 80965) #cat interrupt
@@ -255,23 +247,6 @@ AddFunction RakeRatio
 {
     if TargetDebuffPresent(RAKE) {100 * RakeTickDamage()/LastRakeTickDamage()}
     unless TargetDebuffPresent(RAKE) 100.0
-}
-AddFunction MangleDamage
-{
-    if TargetRelativeLevel() == 3
-    {
-        if TargetDebuffPresent(WEAKENED_ARMOR 3 any=1) Damage(MANGLE_CAT)*0.6798
-    #unless TargetDebuffPresent(WEAKENED_ARMOR 3 any=1)
-    #{
-    #   if TargetDebuffPresent(WEAKENED_ARMOR 2 any=1) Damage(MANGLE_CAT)*0.6652
-    #    unless TargetDebuffPresent(WEAKENED_ARMOR 2 any=1)
-    #    {
-    #        TargetDebuffPresent(WEAKENED_ARMOR any=1) Damage(MANGLE_CAT)*0.6506
-        unless TargetDebuffPresent(WEAKENED_ARMOR 3 any=1) Damage(MANGLE_CAT)*0.6361
-    #    }
-    #}
-    }
-    unless TargetRelativeLevel() == 3 Damage(MANGLE_CAT)
 }
 
 # Rip functions
@@ -874,6 +849,16 @@ AddFunction BearMainAOE {
 #######################
 ## Guardian icons (Mastery=3) ##
 #######################
+
+AddIcon help=Rake size=small mastery=3 checkboxon=cooldownsRatio 
+{
+    # Offset the guardian icons if the user has bleed ratios enabled
+}
+
+AddIcon help=Rip size=small mastery=3 checkboxon=cooldownsRatio 
+{
+    # Offset the guardian icons if the user has bleed ratios enabled
+}
 
 AddIcon help=cd size=small mastery=3 checkboxon=cooldownsL {
     Spell(BARKSKIN)
