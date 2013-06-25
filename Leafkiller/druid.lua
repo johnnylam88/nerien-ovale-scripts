@@ -282,7 +282,7 @@ AddFunction ExistingRipDamageTillDead
         # XXX Should factor in crit somehow.
         LastSpellEstimatedDamage(RIP) * {1 + LastSpellMastery(RIP) / 100} * {target.TimeToDie() / 2}
     }
-    if not target.DebuffPresent(RIP)
+    unless target.DebuffPresent(RIP)
     {
         0
     }
@@ -292,17 +292,12 @@ AddFunction ExistingRipDamageTillDead
 AddFunction FaerieFire
 {
     if TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_SWARM)
-    if not TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_FERAL)
+    unless TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_FERAL)
 }
 AddFunction SavageRoar
 {
     if Glyph(GLYPH_OF_SAVAGERY) Spell(SAVAGE_ROAR_GLYPHED)
     if Glyph(GLYPH_OF_SAVAGERY no) and ComboPoints(more 0) Spell(SAVAGE_ROAR_OLD)
-}
-AddFunction BITWRange
-{
-    # At this target health percent, Ferocious Bite will automatically refresh Rip on the target.
-    target.HealthPercent() <=25
 }
 AddFunction UsePotion
 {
@@ -335,7 +330,7 @@ AddFunction TimeTilEnergyForThrash
 
 AddFunction NotInCombat
 {
-    if not InCombat() {
+    unless InCombat() {
         if BuffExpires(str_agi_int 400 any=1) Spell(MARK_OF_THE_WILD)
         if BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and TalentPoints(DREAM_OF_CENARIUS_TALENT) Spell(HEALING_TOUCH)
         unless Stance(3) Spell(CAT_FORM)
@@ -420,7 +415,7 @@ AddFunction MainActionsDoC
     #healing_touch,if=buff.natures_swiftness.up
     if BuffPresent(NATURES_SWIFTNESS) Spell(HEALING_TOUCH)
     
-    if not target.InRange(MANGLE_CAT) Texture(ability_druid_catformattack)
+    unless target.InRange(MANGLE_CAT) Texture(ability_druid_catformattack)
     
     #incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
     #use_item,name=eternal_blossom_grips,sync=tigers_fury
@@ -433,12 +428,12 @@ AddFunction MainActionsDoC
             if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION)
             if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
         }
-        if not BuffPresent(BERSERK_CAT) Spell(TIGERS_FURY)
+        unless BuffPresent(BERSERK_CAT) Spell(TIGERS_FURY)
     }
     if CheckBoxOn(berserk) and TalentPoints(INCARNATION_TALENT) and BuffPresent(BERSERK_CAT) Spell(INCARNATION_CAT)
     
     #ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
-    if BITWRange() and ComboPoints() >=1 and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=4 Spell(FEROCIOUS_BITE)
+    if target.HealthPercent() <=25 and ComboPoints() >=1 and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=4 Spell(FEROCIOUS_BITE)
     
     #thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
     if target.TimeToDie() >=9 and BuffPresent(CLEARCASTING) and target.DebuffRemains(THRASH_CAT) <3 Spell(THRASH_CAT)
@@ -447,7 +442,7 @@ AddFunction MainActionsDoC
     if target.TimeToDie() <=4 and ComboPoints() >=5 Spell(FEROCIOUS_BITE)
     if target.TimeToDie() <=1 and ComboPoints() >=3 Spell(FEROCIOUS_BITE)
     
-    if BITWRange()
+    if target.HealthPercent() <=25
     {
         #savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&target.health.pct<25
         if BuffRemains(SAVAGE_ROAR) <=3 and ComboPoints() >0 SavageRoar()
@@ -480,12 +475,11 @@ AddFunction MainActionsDoC
         }
     }
     
-    if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY) and not BITWRange() and ComboPoints() >=5 and target.TimeToDie() >30
+    if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY) and target.HealthPercent() >25 and ComboPoints() >=5 and target.TimeToDie() >30 and RipRatio() >=92
     {
         #natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92&target.time_to_die>30
-        if BuffRemains(ROR_MASTERY) >1.5 and TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS)
-        and RipRatio() >=92 Spell(NATURES_SWIFTNESS)
-        
+        if BuffRemains(ROR_MASTERY) >1.5 and TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) Spell(NATURES_SWIFTNESS)
+	    
         #rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
         if RipRatio() >=115 Spell(RIP)
     }
@@ -530,13 +524,16 @@ AddFunction MainActionsDoC
         wait if {BuffExpires(BERSERK_CAT) and Energy() >=50} or {BuffPresent(BERSERK_CAT) and Energy() >=25} Spell(FEROCIOUS_BITE)
     }
     
-    #rake,if=action.rake.tick_damage>action.mangle_cat.hit_damage&action.rake.tick_damage>=dot.rake.tick_dmg
-    if RakeTickDamage() >Damage(SHRED) and RakeRatio() >=100 Spell(RAKE)
-    
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
-        #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
-        if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY) and target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
+	if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY)
+	{
+	    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+            if RakeRatio() >=100 Spell(RAKE)
+    
+            #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+            if target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
+	}
         
         #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
         if target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeRatio() >=100 Spell(RAKE)
@@ -595,7 +592,7 @@ AddFunction MainActionsNonDoC
     #faerie_fire,if=debuff.weakened_armor.stack<3
     if target.DebuffStacks(WEAKENED_ARMOR any=1) <3 and CheckBoxOn(lucioles) FaerieFire()
     
-    if not target.InRange(MANGLE_CAT) Texture(ability_druid_catformattack)
+    unless target.InRange(MANGLE_CAT) Texture(ability_druid_catformattack)
     
     #incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
     #use_item,name=eternal_blossom_grips,sync=tigers_fury
@@ -608,7 +605,7 @@ AddFunction MainActionsNonDoC
             if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION)
             if not TalentPoints(INCARNATION_TALENT) or BuffPresent(INCARNATION_CAT) Spell(BERSERK_CAT)
         }
-        if not BuffPresent(BERSERK_CAT) Spell(TIGERS_FURY)
+        unless BuffPresent(BERSERK_CAT) Spell(TIGERS_FURY)
     }
     if CheckBoxOn(berserk) and BuffPresent(BERSERK_CAT)
     {
@@ -617,7 +614,7 @@ AddFunction MainActionsNonDoC
     }
     
     #ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
-    if BITWRange() and ComboPoints() >=1 and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=3 Spell(FEROCIOUS_BITE)
+    if target.HealthPercent() <=25 and ComboPoints() >=1 and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=3 Spell(FEROCIOUS_BITE)
     
     #thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
     if target.TimeToDie() >=9 and BuffPresent(CLEARCASTING) and target.DebuffRemains(THRASH_CAT) <3 Spell(THRASH_CAT)
@@ -626,7 +623,7 @@ AddFunction MainActionsNonDoC
     if target.TimeToDie() <=4 and ComboPoints() >=5 Spell(FEROCIOUS_BITE)
     if target.TimeToDie() <=1 and ComboPoints() >=3 Spell(FEROCIOUS_BITE)
     
-    if BITWRange()
+    if target.HealthPercent() <=25
     {
         #savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&target.health.pct<25
         if BuffRemains(SAVAGE_ROAR) <=3 and ComboPoints() >0 SavageRoar()
@@ -635,7 +632,7 @@ AddFunction MainActionsNonDoC
         if ComboPoints() >=5 and target.DebuffPresent(RIP) Spell(FEROCIOUS_BITE)
     }
     
-    if not BITWRange()
+    if target.HealthPercent() >25
     {
         #actions.doc+=/rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
         if HasTrinket(ROR_ITEM) and ComboPoints() >=5 and BuffPresent(ROR_MASTERY) and target.TimeToDie() >30 Spell(RIP)
@@ -664,13 +661,16 @@ AddFunction MainActionsNonDoC
         Spell(FEROCIOUS_BITE)
     }
     
-    #rake,if=action.rake.tick_damage>action.mangle_cat.hit_damage&action.rake.tick_damage>=dot.rake.tick_dmg
-    if RakeTickDamage() >Damage(SHRED) and RakeRatio() >=100 Spell(RAKE)
-    
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
-        #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
-        if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY) and target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
+	if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY)
+	{
+    	    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+            if RakeRatio() >=100 Spell(RAKE)
+
+            #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+	    if target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
+	}
         
         #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
         if RakeRatio() >=112 Spell(RAKE)
@@ -702,20 +702,20 @@ AddFunction Prediction
         {
             MainActionsDoC()
         }
-        if not TalentPoints(DREAM_OF_CENARIUS_TALENT)
+        unless TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsNonDoC()
         }
     }
     if Stance(1) {
         if BuffPresent(HEART_OF_THE_WILD) Spell(FRENZIED_REGEN)
-        if not BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
+        unless BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
     }
     if Stance(0) {
         if BuffPresent(HEART_OF_THE_WILD) {
             if BuffExpires(HEART_OF_THE_WILD) Texture(spell_holy_blessingofagility)
         }
-        if not BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
+        unless BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
     }
     if Stance(4) or Stance(2) Spell(CAT_FORM)
 }
@@ -736,7 +736,7 @@ AddIcon help=Rip size=small mastery=2 checkboxon=cooldownsRatio
 
 AddIcon help=cd size=small mastery=2 checkboxon=cooldownsL {
     if target.InRange(SKULL_BASH_CAT) Spell(SKULL_BASH_CAT)
-    if not target.Classification(worldboss)
+    unless target.Classification(worldboss)
     {
         if TalentPoints(MIGHTY_BASH_TALENT) and target.InRange(MIGHTY_BASH) Spell(MIGHTY_BASH)
         if TalentPoints(TYPHOON_TALENT) and target.InRange(SKULL_BASH_CAT) Spell(TYPHOON)
@@ -776,7 +776,7 @@ AddIcon help=main mastery=2 {
             FillerConditionsDoC()
             SpareGcdCooldowns()
         }
-        if not TalentPoints(DREAM_OF_CENARIUS_TALENT)
+        unless TalentPoints(DREAM_OF_CENARIUS_TALENT)
         {
             MainActionsNonDoC()
             FillerConditionsNonDoC()
@@ -788,14 +788,14 @@ AddIcon help=main mastery=2 {
             if CheckBoxOff(bearaoe) BearMain()
             if CheckBoxOn(bearaoe) BearMainAOE()
         }
-        if not BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
+        unless BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
     }
     if Stance(0) {
         if BuffPresent(HEART_OF_THE_WILD) {
             if CastTime(WRATH) <BuffRemains(HEART_OF_THE_WILD) Spell(WRATH)
             Spell(CAT_FORM)
         }
-        if not BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
+        unless BuffPresent(HEART_OF_THE_WILD) Spell(CAT_FORM)
     }
     if Stance(4) or Stance(2) Spell(CAT_FORM)
 }
@@ -885,7 +885,7 @@ AddIcon mastery=3 size=small checkboxon=altpredictive checkboxoff=cooldownsL {
 # Main rotation
 AddIcon help=main mastery=3 {
     if InCombat(no) and BuffRemains(str_agi_int any=1) <400 Spell(MARK_OF_THE_WILD)
-    if not Stance(1) Spell(BEAR_FORM)
+    unless Stance(1) Spell(BEAR_FORM)
     
     if CheckBoxOff(bearaoe) BearMain()
     if CheckBoxOn(bearaoe) BearMainAOE()
