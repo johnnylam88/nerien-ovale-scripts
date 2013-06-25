@@ -11,7 +11,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
-# 5.3.1 04/18/2013 Update RoR item list to include TF versions.
+# 5.3.1 06/24/2013 Update RoR item list to include TF versions.
 # 5.2.4 04/18/2013 Better RoR code, better rake code, some DPS oriented changes for Guardian while not tanking
 # 5.2.3 03/18/2013 Use Mangle to generate combo points except for high energy situations. Fix issue with misplaced NSs.
 # 5.2.2 03/09/2013 Smarter FB logic, fix Faerie Fire, fix mastery assumption for RoR, better Thrash logic, better precombat SR logic
