@@ -11,6 +11,7 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 # Lots of input and constructs from jlam aka Nerien
 # Currently maintained by aggixx and Tinderhoof
 # Revision History
+# 5.3.2 06/26/2013 Add support for crit chance snapshotting.
 # 5.3.1 06/24/2013 Update RoR item list to include TF versions, fix Rip not clipping during Rune.
 # 5.2.4 04/18/2013 Better RoR code, better rake code, some DPS oriented changes for Guardian while not tanking
 # 5.2.3 03/18/2013 Use Mangle to generate combo points except for high energy situations. Fix issue with misplaced NSs.
@@ -237,12 +238,12 @@ AddCheckBox(nvbounce "Use healing CDs for damage" mastery=2)
 AddFunction RakeTickDamage
 {
     # rake_tick_damage = (tick_damage + coeff * AP) * damage_multiplier * bleed_multiplier
-    Damage(RAKE) * {1 + Mastery()/100}
+    Damage(RAKE) * {1 + Mastery()/100} * {1 + MeleeCritChance()/100}
 }
 AddFunction LastRakeTickDamage
 {
     # rake_tick_damage = (tick_damage + coeff * AP) * damage_multiplier * bleed_multiplier
-    LastSpellEstimatedDamage(RAKE) * {1 + LastSpellMastery(RAKE)/100}
+    LastSpellEstimatedDamage(RAKE) * {1 + LastSpellMastery(RAKE)/100} * {1 + LastSpellMeleeCritChance(RAKE)/100}
 }
 AddFunction RakeRatio
 {
@@ -254,12 +255,12 @@ AddFunction RakeRatio
 AddFunction RipTickDamage
 {
     # Damage(rip) == { 113 + (320 * CP) + (0.3872 * AP * CP) } * DamageMultiplier(rip)
-    Damage(RIP) * {1 + Mastery()/100}
+    Damage(RIP) * {1 + Mastery()/100} * {1 + MeleeCritChance()/100}
 }
 AddFunction LastRipTickDamage
 {
     # Damage(rip) == { 113 + (320 * CP) + (0.3872 * AP * CP) } * DamageMultiplier(rip)
-    LastSpellEstimatedDamage(RIP) * {1 + LastSpellMastery(RIP)/100}
+    LastSpellEstimatedDamage(RIP) * {1 + LastSpellMastery(RIP)/100} * {1 + LastSpellMeleeCritChance(RIP)/100}
 }
 AddFunction RipRatio
 {
@@ -271,7 +272,7 @@ AddFunction RipDamageTillDead
     # The damage from Rip that is cast under the current conditions and lasting till target is dead.
     # Multiply the damage per tick with the number of ticks that can fit into the time to die.
     # XXX Should factor in crit somehow.
-    Damage(RIP) * {1 + Mastery() / 100} * {target.TimeToDie() / 2}
+    Damage(RIP) * {1 + Mastery() / 100} * MeleeCritChance() * {target.TimeToDie() / 2}
 }
 AddFunction ExistingRipDamageTillDead
 {
@@ -280,7 +281,7 @@ AddFunction ExistingRipDamageTillDead
     {
         # Multiply the damage per tick with the number of ticks that can fit into the time to die.
         # XXX Should factor in crit somehow.
-        LastSpellEstimatedDamage(RIP) * {1 + LastSpellMastery(RIP) / 100} * {target.TimeToDie() / 2}
+        LastSpellEstimatedDamage(RIP) * {1 + LastSpellMastery(RIP) / 100} * {1 + LastSpellMeleeCritChance(RIP)/100} * {target.TimeToDie() / 2}
     }
     unless target.DebuffPresent(RIP)
     {
@@ -479,7 +480,7 @@ AddFunction MainActionsDoC
     {
         #natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92&target.time_to_die>30
         if BuffRemains(ROR_MASTERY) >1.5 and TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) Spell(NATURES_SWIFTNESS)
-	    
+        
         #rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.time_to_die>30
         if RipRatio() >=115 Spell(RIP)
     }
@@ -526,14 +527,14 @@ AddFunction MainActionsDoC
     
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
-	if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY)
-	{
-	    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+    if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY)
+    {
+        #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
             if RakeRatio() >=100 Spell(RAKE)
     
             #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
             if target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
-	}
+    }
         
         #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
         if target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeRatio() >=100 Spell(RAKE)
@@ -663,14 +664,14 @@ AddFunction MainActionsNonDoC
     
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
-	if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY)
-	{
-    	    #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
+    if HasTrinket(ROR_ITEM) and BuffPresent(ROR_MASTERY)
+    {
+            #rake,if=buff.rune_of_reorigination.up&$(rake_ratio)>=1
             if RakeRatio() >=100 Spell(RAKE)
 
             #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
-	    if target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
-	}
+        if target.DebuffRemains(RAKE) <9 and BuffRemains(ROR_MASTERY) <=1.5 Spell(RAKE)
+    }
         
         #rake,if=target.time_to_die-dot.rake.remains>3&tick_multiplier%dot.rake.multiplier>1.12
         if RakeRatio() >=112 Spell(RAKE)
@@ -724,14 +725,18 @@ AddFunction Prediction
 ## Feral icons (Mastery=2) ##
 #####################
 
-AddIcon help=Rake size=small mastery=2 checkboxon=cooldownsRatio 
+#AddIcon help=Rake size=small mastery=2 checkboxon=cooldownsRatio 
+AddIcon help=critChance size=small mastery=2 checkboxon=cooldownsRatio 
 {
-    RakeRatio()
+    #RakeRatio()
+    MeleeCritChance()
 }
 
-AddIcon help=Rip size=small mastery=2 checkboxon=cooldownsRatio 
+#AddIcon help=Rip size=small mastery=2 checkboxon=cooldownsRatio 
+AddIcon help=lastRakeCritChance size=small mastery=2 checkboxon=cooldownsRatio 
 {
-    RipRatio()
+    #RipRatio()
+    LastSpellMeleeCritChance(RAKE)
 }
 
 AddIcon help=cd size=small mastery=2 checkboxon=cooldownsL {
