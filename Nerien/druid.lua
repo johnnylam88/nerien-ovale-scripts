@@ -1,10 +1,14 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.DRUID.Nerien = {
-	desc = "[5.3] Nerien: Feral, Guardian",
+	desc = "[5.3] Nerien: Balance, Feral, Guardian",
 	code =
 [[
 # Nerien's druid script based on SimulationCraft
+#
+# Balance:
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#Ua!.0.1.0
+#	glyphs=moonbeast
 #
 # Feral:
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#UZ!.0.0.1
@@ -150,6 +154,7 @@ Define(lifebloom 33763)
 	SpellInfo(lifebloom addduration=-5 glyph=glyph_of_blooming)
 Define(living_seed 48504)
 	SpellInfo(living_seed duration=15)
+Define(lunar_eclipse 48518)
 Define(lunar_shower 81192)
 	SpellInfo(lunar_shower duration=3)
 Define(maim 22570)
@@ -184,12 +189,14 @@ Define(mighty_bash_talent 15)
 Define(moonfire 8921)
 	SpellInfo(moonfire duration=14 haste=spell tick=2)
 	SpellInfo(moonfire addduration=2 itemset=T14_caster itemcount=4)
-	SpellAddTargetDebuff(moonfire moonfire=1)
+	SpellAddTargetDebuff(moonfire lunar_shower=1 moonfire=1)
 Define(moonkin_form 24858)
 	SpellInfo(moonkin_form duration=86400)
 	SpellAddBuff(moonkin_form moonkin_form=1)
 Define(natures_cure 88423)
 	SpellInfo(natures_cure cd=8)
+Define(natures_grace 16886)
+	SpellInfo(natures_grace duration=15)
 Define(natures_grasp 16689)
 	SpellInfo(natures_grasp cd=60 duration=45)
 	SpellInfo(natures_grasp addcd=-30 glyph=glyph_of_natures_grasp)
@@ -292,6 +299,7 @@ Define(skull_bash_cat 80965)
 	SpellInfo(skull_bash_cat addcd=10 glyph=glyph_of_skull_bash)
 Define(solar_beam 78675)
 	SpellInfo(solar_beam cd=60)
+Define(solar_eclipse 48518)
 Define(son_of_ursoc 102558)
 	SpellInfo(son_of_ursoc cd=180 duration=30)
 Define(soothe 2908)
@@ -312,7 +320,7 @@ Define(starsurge 78674)
 Define(sunfire 93402)
 	SpellInfo(sunfire duration=14 haste=spell tick=2)
 	SpellInfo(sunfire addduration=2 itemset=T14_caster itemcount=4)
-	SpellAddTargetDebuff(sunfire sunfire=1)
+	SpellAddTargetDebuff(sunfire lunar_shower=1 sunfire=1)
 Define(survival_instincts 61336)
 	SpellInfo(survival_instincts cd=180 duration=12)
 	SpellInfo(survival_instincts addcd=-60 duration=6 glyph=glyph_of_survival_instincts)
@@ -584,6 +592,333 @@ AddFunction ExistingRipDamageTillDead
 	{
 		0
 	}
+}
+
+###
+### Balance
+###
+
+AddFunction BalanceUsePotion
+{
+	#jade_serpent_potion
+	if CheckBoxOn(potions) and target.Classification(worldboss) Item(jade_serpent_potion)
+}
+
+AddFunction BalanceInterrupt
+{
+	if not target.IsFriend() and target.IsInterruptible()
+	{
+		if not target.Classification(worldboss)
+		{
+			if TalentPoints(mighty_bash_talent) and target.InRange(mighty_bash) Spell(mighty_bash)
+			if TalentPoints(typhoon_talent) Spell(typhoon)
+			Spell(solar_beam)
+		}
+	}
+}
+
+AddFunction BalancePreCombatActions
+{
+	if InCombat(no)
+	{
+		#flask,type=warm_sun
+		#food,type=mogu_fish_stew
+		#mark_of_the_wild,if=!aura.str_agi_int.up
+		if BuffExpires(str_agi_int 400 any=1) Spell(mark_of_the_wild)
+		#healing_touch,if=!buff.dream_of_cenarius.up&talent.dream_of_cenarius.enabled
+		if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) Spell(healing_touch)
+		#moonkin_form
+		if BuffExpires(moonkin_form) Spell(moonkin_form)
+		#snapshot_stats
+	}
+}
+
+AddFunction BalanceBuffActions
+{
+	if BuffExpires(str_agi_int any=1) Spell(mark_of_the_wild)
+	if BuffExpires(moonkin_form) Spell(moonkin_form)
+}
+
+AddFunction BalanceNaturesGraceRemains
+{
+	if ArmorSetParts(T14_caster) <4
+	{
+		BuffRemains(natures_grace) -2
+	}
+	if ArmorSetParts(T14_caster) >=4
+	{
+		BuffRemains(natures_grace)
+	}
+}
+
+AddFunction BalanceFullRotation
+{
+	#jade_serpent_potion,if=buff.bloodlust.react|target.time_to_die<=40|buff.celestial_alignment.up
+	if BuffPresent(burst_haste any=1) or target.TimeToDie() <=40 or BuffPresent(celestial_alignment) BalanceUsePotion()
+	#starfall,if=!buff.starfall.up
+	if BuffExpires(starfall) Spell(starfall)
+	#force_of_nature,if=talent.force_of_nature.enabled
+	#if TalentPoints(force_of_nature_talent) Spell(force_of_nature)
+	#berserking,if=buff.celestial_alignment.up
+	if BuffPresent(celestial_alignment) UseRacialActions()
+	#use_item,slot=hands,if=buff.celestial_alignment.up|cooldown.celestial_alignment.remains>30
+	if BuffPresent(celestial_alignment) or SpellCooldown(celestial_alignment) >30 UseItemActions()
+	#wild_mushroom_detonate,moving=0,if=buff.wild_mushroom.stack>0&buff.solar_eclipse.up
+	#natures_swiftness,if=talent.natures_swiftness.enabled&talent.dream_of_cenarius.enabled
+	if TalentPoints(natures_swiftness_talent) and TalentPoints(dream_of_cenarius_talent) Spell(natures_swiftness)
+	#healing_touch,if=talent.dream_of_cenarius.enabled&!buff.dream_of_cenarius.up&mana.pct>25
+	if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25 Spell(healing_touch)
+	#incarnation,if=talent.incarnation.enabled&(buff.lunar_eclipse.up|buff.solar_eclipse.up)
+	if TalentPoints(incarnation_talent) and {BuffPresent(lunar_eclipse) or BuffPresent(solar_eclipse)} Spell(chosen_of_elune)
+	#celestial_alignment,if=(!buff.lunar_eclipse.up&!buff.solar_eclipse.up)&(buff.chosen_of_elune.up|!talent.incarnation.enabled|cooldown.incarnation.remains>10)
+	if BuffExpires(lunar_eclipse) and BuffExpires(solar_eclipse) and
+		{BuffPresent(chosen_of_elune) or not TalentPoints(incarnation_talent) or SpellCooldown(chosen_of_elune) >10}
+	{
+		Spell(celestial_alignment)
+	}
+	#natures_vigil,if=talent.natures_vigil.enabled
+	if TalentPoints(natures_vigil_talent) Spell(natures_vigil)
+	#starsurge,if=buff.shooting_stars.react&(active_enemies<5|!buff.solar_eclipse.up)
+	if BuffPresent(shooting_stars) and {Enemies() <5 or BuffExpires(solar_eclipse)} Spell(starsurge)
+	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if BuffPresent(lunar_eclipse) and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if BuffPresent(solar_eclipse) and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&buff.natures_grace.up
+	#moonfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if Enemies() <5 and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	#sunfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if Enemies() <5 and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	#hurricane,if=active_enemies>5&buff.solar_eclipse.up&mana.pct>25
+	if Enemies() >5 and BuffPresent(solar_eclipse) and ManaPercent() >25 Spell(hurricane)
+	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&ticks_remain<2
+	if BuffPresent(lunar_eclipse) and target.TicksRemain(moonfire) <2 Spell(moonfire)
+	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&ticks_remain<2
+	if BuffPresent(solar_eclipse) and target.TicksRemain(sunfire) <2 Spell(sunfire)
+	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&mana.pct>25
+	if Enemies() >4 and BuffPresent(solar_eclipse) and ManaPercent() >25 Spell(hurricane)
+	#starsurge,if=cooldown_react
+	Spell(starsurge)
+	#starfire,if=buff.celestial_alignment.up&cast_time<buff.celestial_alignment.remains
+	if BuffPresent(celestial_alignment) and CastTime(starfire) <BuffRemains(celestial_alignment) Spell(starfire)
+	#wrath,if=buff.celestial_alignment.up&cast_time<buff.celestial_alignment.remains
+	if BuffPresent(celestial_alignment) and CastTime(wrath) <BuffRemains(celestial_alignment) Spell(wrath)
+	#starfire,if=eclipse_dir=1|(eclipse_dir=0&eclipse>0)
+	if EclipseDir() >0 or {EclipseDir() ==0 and Eclipse() >0} Spell(starfire)
+	#wrath,if=eclipse_dir=-1|(eclipse_dir=0&eclipse<=0)
+	if EclipseDir() <0 or {EclipseDir() ==0 and Eclipse() <=0} Spell(wrath)
+	#moonfire,moving=1,cycle_targets=1,if=ticks_remain<2
+	if target.TicksRemain(moonfire) <2 Spell(moonfire)
+	#sunfire,moving=1,cycle_targets=1,if=ticks_remain<2
+	if target.TicksRemain(sunfire) <2 Spell(sunfire)
+	#wild_mushroom,moving=1,if=buff.wild_mushroom.stack<buff.wild_mushroom.max_stack
+	#starsurge,moving=1,if=buff.shooting_stars.react
+	#moonfire,moving=1,if=buff.lunar_eclipse.up
+	#sunfire,moving=1
+}
+
+AddFunction BalanceMainActions
+{
+	#healing_touch,if=talent.dream_of_cenarius.enabled&!buff.dream_of_cenarius.up&mana.pct>25
+	if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25 Spell(healing_touch)
+	#starsurge,if=buff.shooting_stars.react&(active_enemies<5|!buff.solar_eclipse.up)
+	if BuffPresent(shooting_stars) and {Enemies() <5 or BuffExpires(solar_eclipse)} Spell(starsurge)
+	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if BuffPresent(lunar_eclipse) and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if BuffPresent(solar_eclipse) and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&buff.natures_grace.up
+	#moonfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if Enemies() <5 and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	#sunfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if Enemies() <5 and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	#hurricane,if=active_enemies>5&buff.solar_eclipse.up&mana.pct>25
+	if Enemies() >5 and BuffPresent(solar_eclipse) and ManaPercent() >25 Spell(hurricane)
+	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&ticks_remain<2
+	if BuffPresent(lunar_eclipse) and target.TicksRemain(moonfire) <2 Spell(moonfire)
+	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&ticks_remain<2
+	if BuffPresent(solar_eclipse) and target.TicksRemain(sunfire) <2 Spell(sunfire)
+	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&mana.pct>25
+	if Enemies() >4 and BuffPresent(solar_eclipse) and ManaPercent() >25 Spell(hurricane)
+	#starsurge,if=cooldown_react
+	Spell(starsurge)
+	#starfire,if=buff.celestial_alignment.up&cast_time<buff.celestial_alignment.remains
+	if BuffPresent(celestial_alignment) and CastTime(starfire) <BuffRemains(celestial_alignment) Spell(starfire)
+	#wrath,if=buff.celestial_alignment.up&cast_time<buff.celestial_alignment.remains
+	if BuffPresent(celestial_alignment) and CastTime(wrath) <BuffRemains(celestial_alignment) Spell(wrath)
+	#starfire,if=eclipse_dir=1|(eclipse_dir=0&eclipse>0)
+	if EclipseDir() >0 or {EclipseDir() ==0 and Eclipse() >0} Spell(starfire)
+	#wrath,if=eclipse_dir=-1|(eclipse_dir=0&eclipse<=0)
+	if EclipseDir() <0 or {EclipseDir() ==0 and Eclipse() <=0} Spell(wrath)
+	#moonfire,moving=1,cycle_targets=1,if=ticks_remain<2
+	if target.TicksRemain(moonfire) <2 Spell(moonfire)
+	#sunfire,moving=1,cycle_targets=1,if=ticks_remain<2
+	if target.TicksRemain(sunfire) <2 Spell(sunfire)
+	#wild_mushroom,moving=1,if=buff.wild_mushroom.stack<buff.wild_mushroom.max_stack
+	#starsurge,moving=1,if=buff.shooting_stars.react
+	#moonfire,moving=1,if=buff.lunar_eclipse.up
+	#sunfire,moving=1
+}
+
+AddFunction BalanceMovingActions
+{
+	if BuffPresent(natures_swiftness)
+	{
+		#healing_touch,if=talent.dream_of_cenarius.enabled&!buff.dream_of_cenarius.up&mana.pct>25
+		if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25 Spell(healing_touch)
+	}
+	#starsurge,if=buff.shooting_stars.react&(active_enemies<5|!buff.solar_eclipse.up)
+	if BuffPresent(shooting_stars) and {Enemies() <5 or BuffExpires(solar_eclipse)} Spell(starsurge)
+	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if BuffPresent(lunar_eclipse) and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if BuffPresent(solar_eclipse) and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	#moonfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if Enemies() <5 and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	#sunfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
+	if Enemies() <5 and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&ticks_remain<2
+	if BuffPresent(lunar_eclipse) and target.TicksRemain(moonfire) <2 Spell(moonfire)
+	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&ticks_remain<2
+	if BuffPresent(solar_eclipse) and target.TicksRemain(sunfire) <2 Spell(sunfire)
+	#moonfire,moving=1,cycle_targets=1,if=ticks_remain<2
+	if target.TicksRemain(moonfire) <2 Spell(moonfire)
+	#sunfire,moving=1,cycle_targets=1,if=ticks_remain<2
+	if target.TicksRemain(sunfire) <2 Spell(sunfire)
+	#wild_mushroom,moving=1,if=buff.wild_mushroom.stack<buff.wild_mushroom.max_stack
+	#starsurge,moving=1,if=buff.shooting_stars.react
+	if BuffPresent(shooting_stars) Spell(starsurge)
+	#moonfire,moving=1,if=buff.lunar_eclipse.up
+	if BuffPresent(lunar_eclipse) Spell(moonfire)
+	#sunfire,moving=1
+	Spell(sunfire)
+}
+
+AddFunction BalanceShortCooldownActions
+{
+	#starfall,if=!buff.starfall.up
+	if BuffExpires(starfall) Spell(starfall)
+	#force_of_nature,if=talent.force_of_nature.enabled
+	#if TalentPoints(force_of_nature_talent) Spell(force_of_nature)
+	#natures_swiftness,if=talent.natures_swiftness.enabled&talent.dream_of_cenarius.enabled
+	if TalentPoints(natures_swiftness_talent) and TalentPoints(dream_of_cenarius_talent) Spell(natures_swiftness)
+
+	unless TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25
+	{
+		#natures_vigil,if=talent.natures_vigil.enabled
+		if TalentPoints(natures_vigil_talent) Spell(natures_vigil)
+	}
+}
+
+AddFunction BalanceCooldownActions
+{
+	if InCombat(no)
+	{
+		#jade_serpent_potion
+		BalanceUsePotion()
+	}
+
+	#jade_serpent_potion,if=buff.bloodlust.react|target.time_to_die<=40|buff.celestial_alignment.up
+	if BuffPresent(burst_haste any=1) or target.TimeToDie() <=40 or BuffPresent(celestial_alignment) BalanceUsePotion()
+
+	unless {BuffExpires(starfall) and Spell(starfall)}
+	{
+		#force_of_nature,if=talent.force_of_nature.enabled
+		#if TalentPoints(force_of_nature_talent) Spell(force_of_nature)
+		#berserking,if=buff.celestial_alignment.up
+		if BuffPresent(celestial_alignment) UseRacialActions()
+		#use_item,slot=hands,if=buff.celestial_alignment.up|cooldown.celestial_alignment.remains>30
+		if BuffPresent(celestial_alignment) or SpellCooldown(celestial_alignment) >30 UseItemActions()
+		#wild_mushroom_detonate,moving=0,if=buff.wild_mushroom.stack>0&buff.solar_eclipse.up
+
+		unless {TalentPoints(natures_swiftness_talent) and TalentPoints(dream_of_cenarius_talent) and Spell(natures_swiftness)}
+			or {TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25}
+		{
+			#incarnation,if=talent.incarnation.enabled&(buff.lunar_eclipse.up|buff.solar_eclipse.up)
+			if TalentPoints(incarnation_talent) and {BuffPresent(lunar_eclipse) or BuffPresent(solar_eclipse)} Spell(chosen_of_elune)
+			#celestial_alignment,if=(!buff.lunar_eclipse.up&!buff.solar_eclipse.up)&(buff.chosen_of_elune.up|!talent.incarnation.enabled|cooldown.incarnation.remains>10)
+			if BuffExpires(lunar_eclipse) and BuffExpires(solar_eclipse) and
+				{BuffPresent(chosen_of_elune) or not TalentPoints(incarnation_talent) or SpellCooldown(chosen_of_elune) >10}
+			{
+				Spell(celestial_alignment)
+			}
+		}
+	}
+}
+
+### Balance Icons
+
+# Healing cooldowns.
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+{
+	Spell(barkskin)
+	Spell(survival_instincts)
+	if TalentPoints(renewal_talent) Spell(renewal)
+	if TalentPoints(cenarion_ward_talent) Spell(cenarion_ward)
+	Spell(tranquility)
+}
+
+AddIcon mastery=1 size=small checkboxon=opt_icons_left
+{
+	if TalentPoints(displacer_beast_talent)
+	{
+		Spell(displacer_beast)
+	}
+	if TalentPoints(wild_charge_talent)
+	{
+		if BuffPresent(bear_form)
+		{
+			if target.InRange(wild_charge_bear) and not target.InRange(mangle_bear) Spell(wild_charge_bear)
+		}
+		if BuffPresent(cat_form)
+		{
+			if target.InRange(wild_charge_cat) and not target.InRange(mangle_cat) Spell(wild_charge_cat)
+		}
+		if target.InRange(wild_charge) Spell(wild_charge)
+	}
+	if BuffPresent(cat_form) Spell(dash)
+}
+
+# Short cooldowns.
+AddIcon mastery=1 help=shortcd
+{
+	BalanceShortCooldownActions()
+}
+
+# Main rotation.
+AddIcon mastery=1 help=main
+{
+	BalancePreCombatActions()
+	BalanceBuffActions()
+	BalanceMainActions()
+}
+
+# Movement rotation.
+AddIcon mastery=1 help=moving
+{
+	BalanceBuffActions()
+	BalanceMovingActions()
+}
+
+# Cooldowns.
+AddIcon mastery=1 help=cd
+{
+	BalanceCooldownActions()
+}
+
+# Tier 6 talent cooldown.
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	if TalentPoints(heart_of_the_wild_talent) Spell(heart_of_the_wild)
+	if TalentPoints(dream_of_cenarius_talent) and TalentPoints(natures_swiftness_talent) Spell(natures_swiftness)
+	if TalentPoints(natures_vigil_talent) Spell(natures_vigil)
+}
+
+# Trinkets.
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
 ###
