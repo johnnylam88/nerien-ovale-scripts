@@ -17,9 +17,9 @@ Each class script may also have additional icons for other class-specific inform
 
 ### Status ###
 
-There are user-contributed scripts for Patch 5.2 for the following classes and specializations.
+There are user-contributed scripts for Patch 5.3 for the following classes and specializations.
 
-- Druid: Feral, Guardian
+- Druid: Balance, Feral, Guardian
 - Hunter: Beast Mastery, Survival
 - Mage: Arcane, Fire, Frost
 - Monk: Brewmaster, Windwalker
