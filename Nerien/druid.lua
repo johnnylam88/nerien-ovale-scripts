@@ -720,29 +720,35 @@ AddFunction BalanceFullRotation
 	#sunfire,moving=1
 }
 
+AddFunction BalanceHurricaneActions
+{
+	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&buff.natures_grace.up
+	#hurricane,if=active_enemies>5&buff.solar_eclipse.up&mana.pct>25
+	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&mana.pct>25
+	if Enemies() >4 and BuffPresent(solar_eclipse)
+	{
+		if BuffPresent(natures_grace) or ManaPercent() >25 Spell(hurricane)
+	}
+}
+
 AddFunction BalanceMainActions
 {
 	#healing_touch,if=talent.dream_of_cenarius.enabled&!buff.dream_of_cenarius.up&mana.pct>25
 	if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25 Spell(healing_touch)
 	#starsurge,if=buff.shooting_stars.react&(active_enemies<5|!buff.solar_eclipse.up)
-	if BuffPresent(shooting_stars) and {Enemies() <5 or BuffExpires(solar_eclipse)} Spell(starsurge)
+	if BuffPresent(shooting_stars) and BuffExpires(solar_eclipse) Spell(starsurge)
 	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
 	if BuffPresent(lunar_eclipse) and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
 	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
 	if BuffPresent(solar_eclipse) and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
-	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&buff.natures_grace.up
 	#moonfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
-	if Enemies() <5 and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	if target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
 	#sunfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
-	if Enemies() <5 and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
-	#hurricane,if=active_enemies>5&buff.solar_eclipse.up&mana.pct>25
-	if Enemies() >5 and BuffPresent(solar_eclipse) and ManaPercent() >25 Spell(hurricane)
+	if target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
 	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&ticks_remain<2
 	if BuffPresent(lunar_eclipse) and target.TicksRemain(moonfire) <2 Spell(moonfire)
 	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&ticks_remain<2
 	if BuffPresent(solar_eclipse) and target.TicksRemain(sunfire) <2 Spell(sunfire)
-	#hurricane,if=active_enemies>4&buff.solar_eclipse.up&mana.pct>25
-	if Enemies() >4 and BuffPresent(solar_eclipse) and ManaPercent() >25 Spell(hurricane)
 	#starsurge,if=cooldown_react
 	Spell(starsurge)
 	#starfire,if=buff.celestial_alignment.up&cast_time<buff.celestial_alignment.remains
@@ -771,15 +777,15 @@ AddFunction BalanceMovingActions
 		if TalentPoints(dream_of_cenarius_talent) and BuffExpires(dream_of_cenarius_damage) and ManaPercent() >25 Spell(healing_touch)
 	}
 	#starsurge,if=buff.shooting_stars.react&(active_enemies<5|!buff.solar_eclipse.up)
-	if BuffPresent(shooting_stars) and {Enemies() <5 or BuffExpires(solar_eclipse)} Spell(starsurge)
+	if BuffPresent(shooting_stars) and BuffExpires(solar_eclipse) Spell(starsurge)
 	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
 	if BuffPresent(lunar_eclipse) and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
 	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
 	if BuffPresent(solar_eclipse) and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
 	#moonfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
-	if Enemies() <5 and target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
+	if target.DebuffRemains(moonfire) <BalanceNaturesGraceRemains() Spell(moonfire)
 	#sunfire,cycle_targets=1,if=active_enemies<5&(remains<(buff.natures_grace.remains-2+2*set_bonus.tier14_4pc_caster))
-	if Enemies() <5 and target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
+	if target.DebuffRemains(sunfire) <BalanceNaturesGraceRemains() Spell(sunfire)
 	#moonfire,cycle_targets=1,if=buff.lunar_eclipse.up&ticks_remain<2
 	if BuffPresent(lunar_eclipse) and target.TicksRemain(moonfire) <2 Spell(moonfire)
 	#sunfire,cycle_targets=1,if=buff.solar_eclipse.up&ticks_remain<2
@@ -863,23 +869,15 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 
 AddIcon mastery=1 size=small checkboxon=opt_icons_left
 {
+	BalanceHurricaneActions()
 	if TalentPoints(displacer_beast_talent)
 	{
 		Spell(displacer_beast)
 	}
 	if TalentPoints(wild_charge_talent)
 	{
-		if BuffPresent(bear_form)
-		{
-			if target.InRange(wild_charge_bear) and not target.InRange(mangle_bear) Spell(wild_charge_bear)
-		}
-		if BuffPresent(cat_form)
-		{
-			if target.InRange(wild_charge_cat) and not target.InRange(mangle_cat) Spell(wild_charge_cat)
-		}
 		if target.InRange(wild_charge) Spell(wild_charge)
 	}
-	if BuffPresent(cat_form) Spell(dash)
 }
 
 # Short cooldowns.
