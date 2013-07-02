@@ -287,8 +287,8 @@ Define(mogu_power_potion_buff 105706)
 	SpellInfo(mogu_power_potion_buff duration=25)
 
 # Racials
-Define(arcane_torrent_chi 129597)
-	SpellInfo(arcane_torrent_chi cd=120 chi=1)
+Define(arcane_torrent_mana 28730)
+	SpellInfo(arcane_torrent_mana cd=120)
 Define(berserking 26297)
 	SpellInfo(berserking cd=180 duration=10)
 	SpellAddBuff(berserking berserking=1)
@@ -351,6 +351,7 @@ AddFunction UseItemActions
 
 AddFunction HasMaxHolyPower
 {
+	# Boundless Conviction is a level 85 ability.
 	BuffPresent(divine_purpose) or HolyPower() ==5 or {Level() <85 and HolyPower() >=3}
 }
 
@@ -385,6 +386,96 @@ AddFunction WordOfGlory
 {
 	if BuffPresent(divine_purpose) Spell(word_of_glory_divine_purpose)
 	if BuffExpires(divine_purpose) Spell(word_of_glory)
+}
+
+###
+### Holy
+###
+
+AddFunction HolyPreCombatActions
+{
+	if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
+	if BuffExpires(mastery 400 any=1) and BuffPresent(str_agi_int 400 any=1) Spell(blessing_of_might)
+}
+
+AddFunction HolyBuffActions
+{
+	if BuffExpires(str_agi_int any=1) Spell(blessing_of_kings)
+	if BuffExpires(mastery any=1) and BuffPresent(str_agi_int any=1) Spell(blessing_of_might)
+	if not Stance(paladin_seal_of_insight) Spell(seal_of_insight)
+}
+
+### Holy Icons
+
+# Damage reduction cooldowns.
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+{
+	Spell(divine_protection)
+	Spell(devotion_aura)
+	UseRacialSurvivalActions()
+}
+
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+{
+	if ManaPercent() <98 Spell(arcane_torrent_mana)
+	if ManaPercent() <88 Spell(divine_plea)
+	# Show "dash" icon if not in melee range.
+	if target.IsFriend(no) and not target.InRange(crusader_strike) Texture(ability_druid_dash)
+}
+
+AddIcon mastery=1 help=shortcd
+{
+	Tier6TalentActions()
+}
+
+AddIcon mastery=1 help=main
+{
+	HolyPreCombatActions()
+	HolyBuffActions()
+	if HasMaxHolyPower()
+	{
+		if TalentPoints(eternal_flame_talent) Spell(eternal_flame)
+		WordOfGlory()
+	}
+	if target.IsFriend(no) and target.InRange(crusader_strike) Spell(crusader_strike)
+	Spell(holy_shock)
+	Spell(divine_light)
+}
+
+AddIcon mastery=1 help=aoe checkboxon=aoe
+{
+	HolyPreCombatActions()
+	HolyBuffActions()
+	if HasMaxHolyPower()
+	{
+		if TalentPoints(eternal_flame_talent) Spell(eternal_flame)
+		Spell(light_of_dawn)
+	}
+	if target.IsFriend(no) and target.InRange(crusader_strike) Spell(crusader_strike)
+	Spell(holy_shock)
+	Spell(holy_radiance)
+}
+
+AddIcon mastery=1 help=cd
+{
+	Interrupt()
+	if IsRooted() Spell(hand_of_freedom)
+	if TalentPoints(holy_avenger_talent) Spell(holy_avenger)
+	Spell(avenging_wrath)
+	Spell(divine_favor)
+	Spell(guardian_of_ancient_kings_holy)
+}
+
+# Righteous Fury indicator.
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	if BuffPresent(righteous_fury) Texture(spell_holy_sealoffury)
+}
+
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 
 ###

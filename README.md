@@ -23,7 +23,7 @@ There are user-contributed scripts for Patch 5.3 for the following classes and s
 - Hunter: Beast Mastery, Survival
 - Mage: Arcane, Fire, Frost
 - Monk: Brewmaster, Windwalker
-- Paladin: Protection, Retribution
+- Paladin: Holy, Protection, Retribution
 - Rogue: Assassination, Combat
 - Shaman: Elemental, Restoration
 
