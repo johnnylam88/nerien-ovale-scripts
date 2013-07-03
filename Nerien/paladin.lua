@@ -290,31 +290,15 @@ Define(mogu_power_potion_buff 105706)
 # Racials
 Define(arcane_torrent_mana 28730)
 	SpellInfo(arcane_torrent_mana cd=120)
-Define(berserking 26297)
-	SpellInfo(berserking cd=180 duration=10)
-	SpellAddBuff(berserking berserking=1)
-Define(blood_fury 20572)
-	SpellInfo(blood_fury cd=120 duration=15)
-	SpellAddBuff(blood_fury blood_fury=1)
-Define(quaking_palm 107079)
-	SpellInfo(quaking_palm cd=120 duration=4)
-	SpellAddTargetDebuff(quaking_palm quaking_palm=1)
 Define(stoneform 20594)
 	SpellInfo(stoneform cd=120 duration=8)
 	SpellAddBuff(stoneform stoneform=1)
-
-AddFunction UseRacialActions
-{
-	Spell(berserking)
-	Spell(blood_fury)
-}
 
 AddFunction UseRacialInterruptActions
 {
 	if target.Classification(worldboss no)
 	{
-		Spell(arcane_torrent_chi)
-		if target.InRange(quaking_palm) Spell(quaking_palm)
+		Spell(arcane_torrent_mana)
 	}
 }
 
@@ -754,7 +738,6 @@ AddFunction RetributionFullRotation
 	}
 	#use_item,name=reinbinders_fists,if=buff.inquisition.up
 	if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=14} UseItemActions()
-	UseRacialActions()
 	if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=15}
 	{
 		#execution_sentence,if=buff.inquisition.up
@@ -1019,7 +1002,6 @@ AddFunction RetributionCooldownActions
 		}
 		#use_item,name=reinbinders_fists,if=buff.inquisition.up
 		if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=14} UseItemActions()
-		UseRacialActions()
 	}
 }
 
