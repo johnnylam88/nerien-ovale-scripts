@@ -177,6 +177,7 @@ Define(holy_prism 114165)
 	SpellInfo(holy_prism cd=20)
 Define(holy_prism_talent 16)
 Define(holy_radiance 82327)
+	SpellInfo(holy_radiance holy=-1)
 	SpellAddBuff(holy_radiance daybreak=1 infusion_of_light=0)
 Define(holy_shock 20473)
 	SpellInfo(holy_shock cd=6 holy=-1)
@@ -349,6 +350,21 @@ AddFunction UseItemActions
 ### Paladin (all specializations)
 ###
 
+AddFunction PreCombatBuffActions
+{
+	if InCombat(no)
+	{
+		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
+		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
+	}
+}
+
+AddFunction BuffActions
+{
+	if BuffExpires(str_agi_int any=1) Spell(blessing_of_kings)
+	if BuffExpires(mastery any=1) and BuffExpires(str_agi_int any=1) Spell(blessing_of_might)
+}
+
 AddFunction HasMaxHolyPower
 {
 	# Boundless Conviction is a level 85 ability.
@@ -394,14 +410,7 @@ AddFunction WordOfGlory
 
 AddFunction HolyPreCombatActions
 {
-	if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
-	if BuffExpires(mastery 400 any=1) and BuffPresent(str_agi_int 400 any=1) Spell(blessing_of_might)
-}
-
-AddFunction HolyBuffActions
-{
-	if BuffExpires(str_agi_int any=1) Spell(blessing_of_kings)
-	if BuffExpires(mastery any=1) and BuffPresent(str_agi_int any=1) Spell(blessing_of_might)
+	PreCombatBuffActions()
 	if not Stance(paladin_seal_of_insight) Spell(seal_of_insight)
 }
 
@@ -431,7 +440,7 @@ AddIcon mastery=1 help=shortcd
 AddIcon mastery=1 help=main
 {
 	HolyPreCombatActions()
-	HolyBuffActions()
+	BuffActions()
 	if HasMaxHolyPower()
 	{
 		if TalentPoints(eternal_flame_talent) Spell(eternal_flame)
@@ -445,7 +454,7 @@ AddIcon mastery=1 help=main
 AddIcon mastery=1 help=aoe checkboxon=aoe
 {
 	HolyPreCombatActions()
-	HolyBuffActions()
+	BuffActions()
 	if HasMaxHolyPower()
 	{
 		if TalentPoints(eternal_flame_talent) Spell(eternal_flame)
@@ -508,19 +517,12 @@ AddFunction ShieldOfTheRighteous
 
 AddFunction ProtectionPreCombatActions
 {
+	PreCombatBuffActions()
 	if InCombat(no)
 	{
-		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
-		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
 		if not Stance(paladin_seal_of_insight) Spell(seal_of_insight)
 		if BuffRemains(sacred_shield) <12 Spell(sacred_shield)
 	}
-}
-
-AddFunction ProtectionBuffActions
-{
-	if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
-	if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
 }
 
 AddFunction ProtectionHolyPowerGeneratorActions
@@ -623,7 +625,7 @@ AddIcon mastery=2 help=shortcd
 AddIcon mastery=2 help=main
 {
 	ProtectionPreCombatActions()
-	ProtectionBuffActions()
+	BuffActions()
 
 	if List(opt_prot_rotation max_dps) ProtectionTruckActions()
 	ProtectionHolyPowerGeneratorActions()
@@ -633,7 +635,7 @@ AddIcon mastery=2 help=main
 AddIcon mastery=2 help=aoe
 {
 	ProtectionPreCombatActions()
-	ProtectionBuffActions()
+	BuffActions()
 
 	# HotR > AS > Cons > J > HW
 	Spell(hammer_of_the_righteous)
@@ -813,23 +815,21 @@ AddFunction RetributionFullRotation
 	}
 }
 
-AddFunction RetributionMainActions
+AddFunction RetributionPreCombatActions
 {
 	if InCombat(no)
 	{
 		#flask,type=winters_bite
 		#food,type=black_pepper_ribs_and_shrimp
-		#blessing_of_kings,if=!aura.str_agi_int.up
-		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
-		#blessing_of_might,if=!aura.mastery.up&!aura.str_agi_int.up
-		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
+		PreCombatBuffActions()
 		#seal_of_truth,if=active_enemies<4
 		if not Stance(paladin_seal_of_truth) Spell(seal_of_truth)
 		#snapshot_stats
 	}
+}
 
-	#rebuke
-	Interrupt()
+AddFunction RetributionMainActions
+{
 	#auto_attack
 	#judgment,if=!target.debuff.physical_vulnerability.up|target.debuff.physical_vulnerability.remains<6
 	if target.DebuffRemains(physical_vulnerability any=1) <6 Spell(judgment)
@@ -887,21 +887,6 @@ AddFunction RetributionMainActions
 
 AddFunction RetributionAoEActions
 {
-	if InCombat(no)
-	{
-		#flask,type=winters_bite
-		#food,type=black_pepper_ribs_and_shrimp
-		#blessing_of_kings,if=!aura.str_agi_int.up
-		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
-		#blessing_of_might,if=!aura.mastery.up&!aura.str_agi_int.up
-		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
-		#seal_of_righteousness,if=active_enemies>=4
-		if not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
-		#snapshot_stats
-	}
-
-	#rebuke
-	Interrupt()
 	#auto_attack
 	#judgment,if=!target.debuff.physical_vulnerability.up|target.debuff.physical_vulnerability.remains<6
 	if target.DebuffRemains(physical_vulnerability any=1) <6 Spell(judgment)
@@ -1063,11 +1048,15 @@ AddIcon mastery=3 help=shortcd
 
 AddIcon mastery=3 help=main
 {
+	RetributionPreCombatActions()
+	BuffActions()
 	RetributionMainActions()
 }
 
 AddIcon mastery=3 help=aoe checkboxon=aoe
 {
+	RetributionPreCombatActions()
+	BuffActions()
 	RetributionAoEActions()
 }
 
