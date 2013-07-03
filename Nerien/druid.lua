@@ -502,6 +502,9 @@ Define(wrath 5176)
 	SpellInfo(wrath eclipse=-15)
 
 # Items
+Define(jade_serpent_potion 76093)
+Define(jade_serpent_potion_buff 105702)
+	SpellInfo(jade_serpent_potion_buff duration=25)
 Define(virmens_bite_potion 76089)
 Define(virmens_bite_potion_buff 105697)
 	SpellInfo(virmens_bite_potion_buff duration=25)
