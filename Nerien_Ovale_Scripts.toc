@@ -2,7 +2,7 @@
 ## Notes: Ovale script manager that allows choosing between scripts contributed by various authors.
 ##
 ## Version: @project-version@
-## Author: Johnny C. Lam (jlam), Leafkiller
+## Author: Johnny C. Lam (jlam), Leafkiller, aggixx
 ## X-Contributer: Opisthobranch
 ##
 ## Interface: 50300
@@ -10,21 +10,40 @@
 
 Core.lua
 
-Leafkiller\druid.lua
+# Death Knight
+class\deathknight\Nerien.lua
+class\deathknight\Opisthobranch.lua
 
-Nerien\deathknight.lua
-Nerien\druid.lua
-Nerien\hunter.lua
-Nerien\mage.lua
-Nerien\monk.lua
-Nerien\paladin.lua
-Nerien\priest.lua
-Nerien\rogue.lua
-Nerien\shaman.lua
-Nerien\warlock.lua
-Nerien\warrior.lua
+# Druid
+class\druid\Leafkiller.lua
+class\druid\Nerien.lua
 
-Opisthobranch\deathknight.lua
-Opisthobranch\mage.lua
-Opisthobranch\paladin.lua
-Opisthobranch\priest.lua
+# Hunter
+class\hunter\Nerien.lua
+
+# Mage
+class\mage\Nerien.lua
+class\deathknight\Opisthobranch.lua
+
+# Monk
+class\monk\Nerien.lua
+
+# Paladin
+class\paladin\Nerien.lua
+class\deathknight\Opisthobranch.lua
+
+# Priest
+class\priest\Nerien.lua
+class\deathknight\Opisthobranch.lua
+
+# Rogue
+class\rogue\Nerien.lua
+
+# Shaman
+class\shaman\Nerien.lua
+
+# Warlock
+class\warlock\Nerien.lua
+
+# Warrior
+class\warrior\Nerien.lua
