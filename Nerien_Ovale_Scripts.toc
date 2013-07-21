@@ -2,8 +2,8 @@
 ## Notes: Ovale script manager that allows choosing between scripts contributed by various authors.
 ##
 ## Version: @project-version@
-## Author: Johnny C. Lam (jlam), Leafkiller, aggixx
-## X-Contributer: Opisthobranch
+## Author: Johnny C. Lam (jlam), Leafkiller
+## X-Contributer: aggixx, Opisthobranch, ShmooDude
 ##
 ## Interface: 50300
 ## Dependencies: Ovale
@@ -17,6 +17,7 @@ class\deathknight\Opisthobranch.lua
 # Druid
 class\druid\Leafkiller.lua
 class\druid\Nerien.lua
+class\druid\ShmooDude.lua
 
 # Hunter
 class\hunter\Nerien.lua
