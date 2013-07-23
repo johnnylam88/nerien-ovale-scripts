@@ -436,12 +436,18 @@ AddFunction BeastMasteryMainActions
 	if target.DebuffExpires(serpent_sting_dot) Spell(serpent_sting)
 	#fervor,if=enabled&!ticking&focus<=65
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=65 Spell(fervor)
+	#bestial_wrath,if=focus>60&!buff.beast_within.up
+	if Focus() >60 and BuffExpires(beast_within) Spell(bestial_wrath)
 	#kill_shot
 	if target.HealthPercent() <20 Spell(kill_shot)
 	#kill_command
 	Spell(kill_command)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
+	#barrage,if=enabled
+	if TalentPoints(barrage_talent) Spell(barrage)
+	#powershot,if=enabled
+	if TalentPoints(powershot_talent) Spell(powershot)
 	#arcane_shot,if=buff.thrill_of_the_hunt.react
 	if BuffPresent(thrill_of_the_hunt) Spell(arcane_shot)
 	#focus_fire,five_stacks=1,if=!ticking&!buff.beast_within.up
@@ -463,32 +469,17 @@ AddFunction BeastMasteryAoEActions
 	if target.DebuffExpires(serpent_sting_dot) Spell(serpent_sting)
 	#fervor,if=enabled&!ticking&focus<=65
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=65 Spell(fervor)
+	#barrage,if=enabled
+	if TalentPoints(barrage_talent) Spell(barrage)
 	#multi_shot,if=target.adds>5
 	Spell(multi_shot)
 	#cobra_shot,if=target.adds>5
 }
 
-AddFunction BeastMasteryShortCooldownActions
+AddFunction BeastMasteryCooldownActions
 {
 	HuntersMark()
 
-	#focus_fire,five_stacks=1
-	if BuffStacks(pet_frenzy any=1) ==5 Spell(focus_fire)
-
-	unless target.DebuffExpires(serpent_sting_dot)
-		or {TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=65 and Spell(fervor)}
-	{
-		#bestial_wrath,if=focus>60&!buff.beast_within.up
-		if Focus() >60 and BuffExpires(beast_within) Spell(bestial_wrath)
-		#barrage,if=enabled
-		if TalentPoints(barrage_talent) Spell(barrage)
-		#powershot,if=enabled
-		if TalentPoints(powershot_talent) Spell(powershot)
-	}
-}
-
-AddFunction BeastMasteryCooldownActions
-{
 	if InCombat(no)
 	{
 		#virmens_bite_potion
@@ -531,11 +522,6 @@ AddIcon mastery=1 size=small checkboxon=opt_icons_left
 AddIcon mastery=1 size=small checkboxon=opt_icons_left
 {
 	Spell(disengage)
-}
-
-AddIcon mastery=1 help=shortcd
-{
-	BeastMasteryShortCooldownActions()
 }
 
 AddIcon mastery=1 help=main
@@ -656,6 +642,10 @@ AddFunction SurvivalMainActions
 	if target.DebuffExpires(black_arrow) and target.TimeToDie() >=8 Spell(black_arrow)
 	#multi_shot,if=buff.thrill_of_the_hunt.react&dot.serpent_sting.remains<2
 	if BuffPresent(thrill_of_the_hunt) and target.DebuffExpires(serpent_sting_dot) <2 Spell(multi_shot)
+	#powershot,if=enabled
+	if TalentPoints(powershot_talent) Spell(powershot)
+	#barrage,if=enabled
+	if TalentPoints(barrage_talent) Spell(barrage)
 	#arcane_shot,if=buff.thrill_of_the_hunt.react
 	if BuffPresent(thrill_of_the_hunt) Spell(arcane_shot)
 	#dire_beast,if=enabled
@@ -678,24 +668,16 @@ AddFunction SurvivalAoEActions
 	if BuffPresent(lock_and_load) Spell(explosive_shot)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
+	#barrage,if=enabled
+	if TalentPoints(barrage_talent) Spell(barrage)
 	#multi_shot,if=target.adds>2
 	Spell(multi_shot)
 }
 
-AddFunction SurvivalShortCooldownActions
-{
-	HuntersMark()
-
-	#explosive_shot,if=buff.lock_and_load.react
-	if BuffPresent(lock_and_load) Spell(explosive_shot)
-	#powershot,if=enabled
-	if TalentPoints(powershot_talent) Spell(powershot)
-	#barrage,if=enabled
-	if TalentPoints(barrage_talent) Spell(barrage)
-}
-
 AddFunction SurvivalCooldownActions
 {
+   HuntersMark()
+
 	if InCombat(no)
 	{
 		#virmens_bite_potion
@@ -736,11 +718,6 @@ AddIcon mastery=3 size=small checkboxon=opt_icons_left
 AddIcon mastery=3 size=small checkboxon=opt_icons_left
 {
 	Spell(disengage)
-}
-
-AddIcon mastery=3 help=shortcd
-{
-	SurvivalShortCooldownActions()
 }
 
 AddIcon mastery=3 help=main
