@@ -9,42 +9,4 @@
 ## Dependencies: Ovale
 
 Core.lua
-
-# Death Knight
-class\deathknight\Nerien.lua
-class\deathknight\Opisthobranch.lua
-
-# Druid
-class\druid\Leafkiller.lua
-class\druid\Nerien.lua
-class\druid\ShmooDude.lua
-
-# Hunter
-class\hunter\Nerien.lua
-
-# Mage
-class\mage\Nerien.lua
-class\deathknight\Opisthobranch.lua
-
-# Monk
-class\monk\Nerien.lua
-
-# Paladin
-class\paladin\Nerien.lua
-class\deathknight\Opisthobranch.lua
-
-# Priest
-class\priest\Nerien.lua
-class\deathknight\Opisthobranch.lua
-
-# Rogue
-class\rogue\Nerien.lua
-
-# Shaman
-class\shaman\Nerien.lua
-
-# Warlock
-class\warlock\Nerien.lua
-
-# Warrior
-class\warrior\Nerien.lua
+class\class.xml
