@@ -27,7 +27,7 @@ There are user-contributed scripts for Patch 5.3 for the following classes and s
 - Rogue: Assassination, Combat
 - Shaman: Elemental, Restoration
 
-Contributors: Leafkiller, Nerien (jlam), Opisthobranch, aggixx
+Contributors: aggixx, Leafkillr, Nerien (jlam), Opisthobranch, ShmooDude
 
 ### How to Use ###
 
