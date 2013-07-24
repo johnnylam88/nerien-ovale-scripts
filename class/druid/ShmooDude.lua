@@ -6,16 +6,22 @@ NerienOvaleScripts.script.DRUID.ShmooDude = {
 [[
 # ShmooDude's modified Leafkiller's Feral/Guardian druid script.
 # Support/Discussion thread: http://fluiddruid.net/forum/viewtopic.php?f=3&t=857
+# 7/23/13 version 5.3.8.3
+#	Fixed Rake ratios
+#	Fixed double tanking icons
+# 7/23/13 version 5.3.8.2
+#	Changed Rake logic back to strict damage and ratio based.
+#	Fixed Non-doc predictive box
 # 7/20/13 version 5.3.8.1 
-#   Switched from berserk testing to the new built in EnergyCost(ability) function for determining the energy for abilities.
-#   Switched from (EnergyCost - CurrentEnergy) / EnergyRegen to the new built in function TimeToEnergyFor(ability).
-#   Slight code reorganization to make it easier to browse.
-#   More things in functions for better efficiency.
-#   Allowed the user to customize the safety margin around expiring buffs via a list item.
-#   Removed the "Use Healing CDs for damage" checkbox as its not currently used.
-#   Rake will now compare with ravage instead of mangle if incarnation is up (modified by the difference in energy cost).
-#   Added bug catching code for target based rip damage.
-#   Added a "Debug Mode" checkbox for testing the target.Debuff data vs the LastSpell data.
+#	Switched from berserk testing to the new built in EnergyCost(ability) function for determining the energy for abilities.
+#	Switched from (EnergyCost - CurrentEnergy) / EnergyRegen to the new built in function TimeToEnergyFor(ability).
+#	Slight code reorganization to make it easier to browse.
+#	More things in functions for better efficiency.
+#	Allowed the user to customize the safety margin around expiring buffs via a list item.
+#	Removed the "Use Healing CDs for damage" checkbox as its not currently used.
+#	Rake will now compare with ravage instead of mangle if incarnation is up (modified by the difference in energy cost).
+#	Added bug catching code for target based rip damage.
+#	Added a "Debug Mode" checkbox for testing the target.Debuff data vs the LastSpell data.
 # 7/19/13 Version 5.3.7.3
 
 
@@ -27,7 +33,7 @@ NerienOvaleScripts.script.DRUID.ShmooDude = {
 Define(BARKSKIN 22812)
     SpellInfo(BARKSKIN cd=60)
 Define(FERAL_SPIRIT 110807)
-   SpellInfo(FERAL_SPIRIT cd=120)
+	SpellInfo(FERAL_SPIRIT cd=120)
 Define(HEALING_TOUCH 5185)
 Define(MARK_OF_THE_WILD 1126)
     SpellInfo(MARK_OF_THE_WILD duration=3600)
@@ -63,14 +69,14 @@ Define(ROR_HASTE 139121)
     SpellInfo(ROR_HASTE duration=10)
     SpellList(ROR ROR_CRIT ROR_MASTERY ROR_HASTE)
 Define(DANCING_STEEL 120032)
-   SpellInfo(DANCING_STEEL duration=12)
+	SpellInfo(DANCING_STEEL duration=12)
 Define(SOUL_CHARM 138756)
-   SpellInfo(SOUL_CHARM duration=20)
+	SpellInfo(SOUL_CHARM duration=20)
 Define(BLADES 138737)
 Define(BAD_JUJU 138939)
-   SpellInfo(BAD_JUJU duration=20)
+	SpellInfo(BAD_JUJU duration=20)
 Define(VICIOUS_TALISMAN 138700)
-   SpellInfo(VICIOUS_TALISMAN duration=20)
+	SpellInfo(VICIOUS_TALISMAN duration=20)
 
 # Shared items
 ItemList(ROR_ITEM 94532 95802 96174 96546 96918)
@@ -252,13 +258,13 @@ AddFunction RavageCritChanceBonus { 50 }
 AddFunction CritPerAttackPower { 2519.04 }
 AddFunction ExpiringBuffSafetyMargin 
 { 
-   if List(expbuffsafetymargin point0) 0.0
-   if List(expbuffsafetymargin point1) 0.1
-   if List(expbuffsafetymargin point2) 0.2
-   if List(expbuffsafetymargin point3) 0.3
-   if List(expbuffsafetymargin point4) 0.4
-   if List(expbuffsafetymargin point5) 0.5
-   0.3
+	if List(expbuffsafetymargin point0) 0.0
+	if List(expbuffsafetymargin point1) 0.1
+	if List(expbuffsafetymargin point2) 0.2
+	if List(expbuffsafetymargin point3) 0.3
+	if List(expbuffsafetymargin point4) 0.4
+	if List(expbuffsafetymargin point5) 0.5
+	0.3
 }
 
 ################
@@ -269,23 +275,23 @@ AddFunction RuneMultiplier { 2 } # Not the actual amount like the rest, but give
 AddFunction DancingSteelAttackPower { 3300 }
 AddFunction SoulCharmAttackPower 
 { 
-   if HasTrinket(96741) 3430 # Heroic TF 2/2 upgrade
-   if HasTrinket(96369) 3244 # Heroic 2/2 upgrade
-   if HasTrinket(95997) 3038 # Normal TF 2/2 upgrade
-   if HasTrinket(94512) 2874 # Normal 2/2 upgrade
-   if HasTrinket(95625) 2384 # LFR 2/2 upgrade
+	if HasTrinket(96741) 3430 # Heroic TF 2/2 upgrade
+	if HasTrinket(96369) 3244 # Heroic 2/2 upgrade
+	if HasTrinket(95997) 3038 # Normal TF 2/2 upgrade
+	if HasTrinket(94512) 2874 # Normal 2/2 upgrade
+	if HasTrinket(95625) 2384 # LFR 2/2 upgrade
 }
 AddFunction BadJujuAttackPower 
 { 
-   if HasTrinket(96781) 18864 # Heroic TF 2/2 upgrade
-   if HasTrinket(96409) 17840 # Heroic 2/2 upgrade
-   if HasTrinket(96037) 16712 # Normal TF 2/2 upgrade
-   if HasTrinket(94523) 15806 # Normal 2/2 upgrade
-   if HasTrinket(95665) 13118 # LFR 2/2 upgrade
+	if HasTrinket(96781) 18864 # Heroic TF 2/2 upgrade
+	if HasTrinket(96409) 17840 # Heroic 2/2 upgrade
+	if HasTrinket(96037) 16712 # Normal TF 2/2 upgrade
+	if HasTrinket(94523) 15806 # Normal 2/2 upgrade
+	if HasTrinket(95665) 13118 # LFR 2/2 upgrade
 }
 AddFunction ViciousTalismanAttackPower
 {
-   17600 # 2/2 upgrade
+	17600 # 2/2 upgrade
 }
 
 ################
@@ -335,21 +341,21 @@ AddFunction ArmorReduction
 AddFunction TigersFuryCooldown { if SpellCooldown(TIGERS_FURY) >= 0 SpellCooldown(TIGERS_FURY) 0 }
 AddFunction TimeTilEnergyForThrash
 {
-   if TimeToEnergyFor(THRASH_CAT) < TigersFuryCooldown()
-      TimeToEnergyFor(THRASH_CAT)
-   TigersFuryCooldown()
+	if TimeToEnergyFor(THRASH_CAT) < TigersFuryCooldown()
+		TimeToEnergyFor(THRASH_CAT)
+	TigersFuryCooldown()
 }
 AddFunction TimeTilEnergyForRake
 {
-   if TimeToEnergyFor(RAKE) < TigersFuryCooldown()
-      TimeToEnergyFor(RAKE)
-   TigersFuryCooldown()
+	if TimeToEnergyFor(RAKE) < TigersFuryCooldown()
+		TimeToEnergyFor(RAKE)
+	TigersFuryCooldown()
 }
 AddFunction TimeTilEnergyForRip
 {
-   if TimeToEnergyFor(RIP) < TigersFuryCooldown()
-      TimeToEnergyFor(RIP)
-   TigersFuryCooldown()
+	if TimeToEnergyFor(RIP) < TigersFuryCooldown()
+		TimeToEnergyFor(RIP)
+	TigersFuryCooldown()
 }
 
 ################
@@ -359,9 +365,9 @@ AddFunction AttackPowerToCrit { 1/CritPerAttackPower()/{1+0.1*BuffStacks(attack_
 AddFunction PrimordiusStats { {1 + 0.05 * DebuffStacks(136184)} * {1 - 0.1 * DebuffStacks(136185)} } # Thick and Fragile bones
 AddFunction StatsMultiplier # Leatherwearer, Heart of the Wild, Mark of the Wild/Blessing of Kings, Primordius Buffs
 {
-   if TalentPoints(HEART_OF_THE_WILD)
-      LeatherSpecAgiModifier() * HeartOfTheWildAgiModifier() * {1 + StatsBuffBonus() * BuffStacks(str_agi_int any=1)} * PrimordiusStats()
-   LeatherSpecAgiModifier() * {1 + StatsBuffBonus() * BuffStacks(str_agi_int any=1)} * PrimordiusStats()
+	if TalentPoints(HEART_OF_THE_WILD)
+		LeatherSpecAgiModifier() * HeartOfTheWildAgiModifier() * {1 + StatsBuffBonus() * BuffStacks(str_agi_int any=1)} * PrimordiusStats()
+	LeatherSpecAgiModifier() * {1 + StatsBuffBonus() * BuffStacks(str_agi_int any=1)} * PrimordiusStats()
 }
 AddFunction DancingSteelAttackPowerIncrease { DancingSteelAttackPower()*StatsMultiplier() }
 AddFunction SoulCharmAttackPowerIncrease { SoulCharmAttackPower()*BuffStacks(BLADES)*StatsMultiplier() }
@@ -375,111 +381,111 @@ AddFunction RakeCooldownSafetyMargin { SpellCooldown(RAKE)+ExpiringBuffSafetyMar
 AddFunction RakeEnergySafetyMargin { TimeTilEnergyForRake()+ExpiringBuffSafetyMargin() }
 AddFunction RuneRakeUsableBeforeExpire
 {
-   if BuffRemains(ROR_MASTERY) > RakeCooldownSafetyMargin()
-   {
-      if HasEnergyForRake()
-         BuffRemains(ROR_MASTERY) > ExpiringBuffSafetyMargin()
-      BuffRemains(ROR_MASTERY) > RakeEnergySafetyMargin()
-   }
+	if BuffRemains(ROR_MASTERY) > RakeCooldownSafetyMargin()
+	{
+		if HasEnergyForRake()
+			BuffRemains(ROR_MASTERY) > ExpiringBuffSafetyMargin()
+		BuffRemains(ROR_MASTERY) > RakeEnergySafetyMargin()
+	}
 }
 AddFunction RuneExpiresRakeMultiplier
 {
     if BuffPresent(ROR_MASTERY)
-   {
-      if RuneRakeUsableBeforeExpire() 1
-      RuneMultiplier()
-   }
-      1
+	{
+		if RuneRakeUsableBeforeExpire() 1
+		RuneMultiplier()
+	}
+		1
 }
 AddFunction TigersFuryRakeUsableBeforeExpire
 {
-   if BuffRemains(TIGERS_FURY) > RakeCooldownSafetyMargin()
-   {
-      if HasEnergyForRake()
-         BuffRemains(TIGERS_FURY) > ExpiringBuffSafetyMargin()
-      BuffRemains(TIGERS_FURY) > RakeEnergySafetyMargin()
-   }
+	if BuffRemains(TIGERS_FURY) > RakeCooldownSafetyMargin()
+	{
+		if HasEnergyForRake()
+			BuffRemains(TIGERS_FURY) > ExpiringBuffSafetyMargin()
+		BuffRemains(TIGERS_FURY) > RakeEnergySafetyMargin()
+	}
 }
 AddFunction TigersFuryExpiresRakeMultiplier
 {
     if BuffPresent(TIGERS_FURY)
-   {
-      if TigersFuryRakeUsableBeforeExpire() 1
-      TigersFuryMultiplier()
-   }
-      1
+	{
+		if TigersFuryRakeUsableBeforeExpire() 1
+		TigersFuryMultiplier()
+	}
+		1
 }
 AddFunction DancingSteelRakeUsableBeforeExpire
 {
-   if BuffRemains(DANCING_STEEL any=1) > RakeCooldownSafetyMargin()
-   {
-      if HasEnergyForRake()
-         BuffRemains(DANCING_STEEL any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(DANCING_STEEL any=1) > RakeEnergySafetyMargin()
-   }
+	if BuffRemains(DANCING_STEEL any=1) > RakeCooldownSafetyMargin()
+	{
+		if HasEnergyForRake()
+			BuffRemains(DANCING_STEEL any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(DANCING_STEEL any=1) > RakeEnergySafetyMargin()
+	}
 }
 AddFunction DancingSteelExpiresRakeAttackPower
 {
     if BuffPresent(DANCING_STEEL any=1)
-   {
-      if DancingSteelRakeUsableBeforeExpire() 0
-      DancingSteelAttackPowerIncrease()
-   }
-      0
+	{
+		if DancingSteelRakeUsableBeforeExpire() 0
+		DancingSteelAttackPowerIncrease()
+	}
+		0
 }
 AddFunction SoulCharmRakeUsableBeforeExpire
 {
-   if BuffRemains(SOUL_CHARM any=1) > RakeCooldownSafetyMargin()
-   {
-      if HasEnergyForRake()
-         BuffRemains(SOUL_CHARM any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(SOUL_CHARM any=1) > RakeEnergySafetyMargin()
-   }
+	if BuffRemains(SOUL_CHARM any=1) > RakeCooldownSafetyMargin()
+	{
+		if HasEnergyForRake()
+			BuffRemains(SOUL_CHARM any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(SOUL_CHARM any=1) > RakeEnergySafetyMargin()
+	}
 }
 AddFunction SoulCharmExpiresRakeAttackPower
 {
-   if BuffPresent(SOUL_CHARM any=1)
-   {
-      if SoulCharmRakeUsableBeforeExpire() 0
-      SoulCharmAttackPowerIncrease()
-   }
-      0
+	if BuffPresent(SOUL_CHARM any=1)
+	{
+		if SoulCharmRakeUsableBeforeExpire() 0
+		SoulCharmAttackPowerIncrease()
+	}
+		0
 }
 AddFunction BadJujuRakeUsableBeforeExpire
 {
-   if BuffRemains(BAD_JUJU any=1) > RakeCooldownSafetyMargin()
-   {
-      if HasEnergyForRake()
-         BuffRemains(BAD_JUJU any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(BAD_JUJU any=1) > RakeEnergySafetyMargin()
-   }
+	if BuffRemains(BAD_JUJU any=1) > RakeCooldownSafetyMargin()
+	{
+		if HasEnergyForRake()
+			BuffRemains(BAD_JUJU any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(BAD_JUJU any=1) > RakeEnergySafetyMargin()
+	}
 }
 AddFunction BadJujuExpiresRakeAttackPower
 {
-   if BuffPresent(BAD_JUJU any=1)
-   {
-      if BadJujuRakeUsableBeforeExpire() 0
-      BadJujuAttackPowerIncrease()
-   }
-      0
+	if BuffPresent(BAD_JUJU any=1)
+	{
+		if BadJujuRakeUsableBeforeExpire() 0
+		BadJujuAttackPowerIncrease()
+	}
+		0
 }
 AddFunction ViciousTalismanRakeUsableBeforeExpire
 {
-   if BuffRemains(VICIOUS_TALISMAN any=1) > RakeCooldownSafetyMargin()
-   {
-      if HasEnergyForRake()
-         BuffRemains(VICIOUS_TALISMAN any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(VICIOUS_TALISMAN any=1) > RakeEnergySafetyMargin()
-   }
+	if BuffRemains(VICIOUS_TALISMAN any=1) > RakeCooldownSafetyMargin()
+	{
+		if HasEnergyForRake()
+			BuffRemains(VICIOUS_TALISMAN any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(VICIOUS_TALISMAN any=1) > RakeEnergySafetyMargin()
+	}
 }
 AddFunction ViciousTalismanExpiresRakeAttackPower
 {
-   if BuffPresent(VICIOUS_TALISMAN any=1)
-   {
-      if ViciousTalismanRakeUsableBeforeExpire() 0
-      ViciousTalismanAttackPowerIncrease()
-   }
-      0
+	if BuffPresent(VICIOUS_TALISMAN any=1)
+	{
+		if ViciousTalismanRakeUsableBeforeExpire() 0
+		ViciousTalismanAttackPowerIncrease()
+	}
+		0
 }
 
 ################
@@ -489,111 +495,111 @@ AddFunction RipCooldownSafetyMargin { SpellCooldown(RIP)+ExpiringBuffSafetyMargi
 AddFunction RipEnergySafetyMargin { TimeTilEnergyForRip()+ExpiringBuffSafetyMargin() }
 AddFunction RuneRipUsableBeforeExpire
 {
-   if BuffRemains(ROR_MASTERY) > RipCooldownSafetyMargin()
-   {
-      if HasEnergyForRip()
-         BuffRemains(ROR_MASTERY) > ExpiringBuffSafetyMargin()
-      BuffRemains(ROR_MASTERY) > RipEnergySafetyMargin()
-   }
+	if BuffRemains(ROR_MASTERY) > RipCooldownSafetyMargin()
+	{
+		if HasEnergyForRip()
+			BuffRemains(ROR_MASTERY) > ExpiringBuffSafetyMargin()
+		BuffRemains(ROR_MASTERY) > RipEnergySafetyMargin()
+	}
 }
 AddFunction RuneExpiresRipMultiplier
 {
     if BuffPresent(ROR_MASTERY)
-   {
-      if RuneRipUsableBeforeExpire() 1
-      RuneMultiplier()
-   }
-      1
+	{
+		if RuneRipUsableBeforeExpire() 1
+		RuneMultiplier()
+	}
+		1
 }
 AddFunction TigersFuryRipUsableBeforeExpire 
 {
-   if BuffRemains(TIGERS_FURY) > RipCooldownSafetyMargin()
-   {
-      if HasEnergyForRip()
-         BuffRemains(TIGERS_FURY) > ExpiringBuffSafetyMargin()
-      BuffPresent(TIGERS_FURY) and BuffRemains(TIGERS_FURY) > RipEnergySafetyMargin()
-   }
+	if BuffRemains(TIGERS_FURY) > RipCooldownSafetyMargin()
+	{
+		if HasEnergyForRip()
+			BuffRemains(TIGERS_FURY) > ExpiringBuffSafetyMargin()
+		BuffPresent(TIGERS_FURY) and BuffRemains(TIGERS_FURY) > RipEnergySafetyMargin()
+	}
 }
 AddFunction TigersFuryExpiresRipMultiplier
 {
     if BuffPresent(TIGERS_FURY)
-   {
-      if TigersFuryRipUsableBeforeExpire() 1
-      TigersFuryMultiplier()
-   }
-      1
+	{
+		if TigersFuryRipUsableBeforeExpire() 1
+		TigersFuryMultiplier()
+	}
+		1
 }
 AddFunction DancingSteelRipUsableBeforeExpire
 {
-   if BuffRemains(DANCING_STEEL any=1) > RipCooldownSafetyMargin()
-   {
-      if HasEnergyForRip()
-         BuffRemains(DANCING_STEEL any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(DANCING_STEEL any=1) > RipEnergySafetyMargin()
-   }
+	if BuffRemains(DANCING_STEEL any=1) > RipCooldownSafetyMargin()
+	{
+		if HasEnergyForRip()
+			BuffRemains(DANCING_STEEL any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(DANCING_STEEL any=1) > RipEnergySafetyMargin()
+	}
 }
 AddFunction DancingSteelExpiresRipAttackPower
 {
     if BuffPresent(DANCING_STEEL any=1)
-   {
-      if DancingSteelRipUsableBeforeExpire() 0
-      DancingSteelAttackPowerIncrease()
-   }
-      0
+	{
+		if DancingSteelRipUsableBeforeExpire() 0
+		DancingSteelAttackPowerIncrease()
+	}
+		0
 }
 AddFunction SoulCharmRipUsableBeforeExpire
 {
-   if BuffRemains(SOUL_CHARM any=1) > RipCooldownSafetyMargin()
-   {
-      if HasEnergyForRip()
-         BuffRemains(SOUL_CHARM any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(SOUL_CHARM any=1) > RipEnergySafetyMargin()
-   }
+	if BuffRemains(SOUL_CHARM any=1) > RipCooldownSafetyMargin()
+	{
+		if HasEnergyForRip()
+			BuffRemains(SOUL_CHARM any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(SOUL_CHARM any=1) > RipEnergySafetyMargin()
+	}
 }
 AddFunction SoulCharmExpiresRipAttackPower
 {
-   if BuffPresent(SOUL_CHARM any=1)
-   {
-      if SoulCharmRipUsableBeforeExpire() 0
-      SoulCharmAttackPowerIncrease()
-   }
-      0
+	if BuffPresent(SOUL_CHARM any=1)
+	{
+		if SoulCharmRipUsableBeforeExpire() 0
+		SoulCharmAttackPowerIncrease()
+	}
+		0
 }
 AddFunction BadJujuRipUsableBeforeExpire
 {
-   if BuffRemains(BAD_JUJU any=1) > RipCooldownSafetyMargin()
-   {
-      if HasEnergyForRip()
-         BuffRemains(BAD_JUJU any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(BAD_JUJU any=1) > RipEnergySafetyMargin()
-   }
+	if BuffRemains(BAD_JUJU any=1) > RipCooldownSafetyMargin()
+	{
+		if HasEnergyForRip()
+			BuffRemains(BAD_JUJU any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(BAD_JUJU any=1) > RipEnergySafetyMargin()
+	}
 }
 AddFunction BadJujuExpiresRipAttackPower
 {
-   if BuffPresent(BAD_JUJU any=1)
-   {
-      if BadJujuRipUsableBeforeExpire() 0
-      BadJujuAttackPowerIncrease()
-   }
-      0
+	if BuffPresent(BAD_JUJU any=1)
+	{
+		if BadJujuRipUsableBeforeExpire() 0
+		BadJujuAttackPowerIncrease()
+	}
+		0
 }
 AddFunction ViciousTalismanRipUsableBeforeExpire
 {
-   if BuffRemains(VICIOUS_TALISMAN any=1) > RipCooldownSafetyMargin()
-   {
-      if HasEnergyForRip()
-         BuffRemains(VICIOUS_TALISMAN any=1) > ExpiringBuffSafetyMargin()
-      BuffRemains(VICIOUS_TALISMAN any=1) > RipEnergySafetyMargin()
-   }
+	if BuffRemains(VICIOUS_TALISMAN any=1) > RipCooldownSafetyMargin()
+	{
+		if HasEnergyForRip()
+			BuffRemains(VICIOUS_TALISMAN any=1) > ExpiringBuffSafetyMargin()
+		BuffRemains(VICIOUS_TALISMAN any=1) > RipEnergySafetyMargin()
+	}
 }
 AddFunction ViciousTalismanExpiresRipAttackPower
 {
-   if BuffPresent(VICIOUS_TALISMAN any=1)
-   {
-      if ViciousTalismanRipUsableBeforeExpire() 0
-      ViciousTalismanAttackPowerIncrease()
-   }
-      0
+	if BuffPresent(VICIOUS_TALISMAN any=1)
+	{
+		if ViciousTalismanRipUsableBeforeExpire() 0
+		ViciousTalismanAttackPowerIncrease()
+	}
+		0
 
 }
 
@@ -614,14 +620,14 @@ AddFunction TotalRakeMultiplier
 }
 AddFunction TotalRakeAttackPower
 {
-   DancingSteelExpiresRakeAttackPower() + SoulCharmExpiresRakeAttackPower() + BadJujuExpiresRakeAttackPower() + ViciousTalismanExpiresRakeAttackPower()
+	DancingSteelExpiresRakeAttackPower() + SoulCharmExpiresRakeAttackPower() + BadJujuExpiresRakeAttackPower() + ViciousTalismanExpiresRakeAttackPower()
 }
 AddFunction FutureRakeTickDamage
 {
     {RakeBaseDamage() + {AttackPower() - TotalRakeAttackPower()} * RakeDamagePerAttackPower()} 
-   * DamageMultiplier(RAKE) / TotalRakeMultiplier()
-   * {1 + {MeleeCritChance() - TotalRakeAttackPower()*AttackPowerToCrit()} / 100} 
-   * {1 + Mastery() / 100} 
+	* DamageMultiplier(RAKE) / TotalRakeMultiplier()
+	* {1 + {MeleeCritChance() - TotalRakeAttackPower()*AttackPowerToCrit()} / 100} 
+	* {1 + Mastery() / 100} 
 }
 AddFunction RakeRatio
 {
@@ -652,14 +658,14 @@ AddFunction TotalRipMultiplier
 }
 AddFunction TotalRipAttackPower
 {
-   DancingSteelExpiresRipAttackPower() + SoulCharmExpiresRipAttackPower() + BadJujuExpiresRipAttackPower() + ViciousTalismanExpiresRipAttackPower()
+	DancingSteelExpiresRipAttackPower() + SoulCharmExpiresRipAttackPower() + BadJujuExpiresRipAttackPower() + ViciousTalismanExpiresRipAttackPower()
 }
 AddFunction FutureRipTickDamage
 {
-   {RipBaseDamage() + {{RipDamagePerComboPoint() + {RipDamagePerComboPointAttackPower() * {AttackPower() - TotalRipAttackPower()}}} * ComboPoints()}}
-   * DamageMultiplier(RIP) / TotalRipMultiplier()
-   * {1 + {MeleeCritChance() - TotalRipAttackPower()*AttackPowerToCrit() }/100} 
-   * {1 + Mastery()/100}
+	{RipBaseDamage() + {{RipDamagePerComboPoint() + {RipDamagePerComboPointAttackPower() * {AttackPower() - TotalRipAttackPower()}}} * ComboPoints()}}
+	* DamageMultiplier(RIP) / TotalRipMultiplier()
+	* {1 + {MeleeCritChance() - TotalRipAttackPower()*AttackPowerToCrit() }/100} 
+	* {1 + Mastery()/100}
 }
 AddFunction RipDamageTillDead
 {
@@ -690,39 +696,39 @@ AddFunction FerociousBiteCritChanceRaw { FerociousBiteCritChanceBonus()+MeleeCri
 AddFunction FerociousBiteCritChance { if FerociousBiteCritChanceRaw() > 100 100 FerociousBiteCritChanceRaw() }
 AddFunction FerociousBiteDamage # Switched to raw numbers in place of Damage(FEROCIOUS_BITE) for 5.3.4+ compatibility
 {
-   {FerociousBiteBaseDamage() + {FerociousBiteDamagePerComboPoint() + FerociousBiteDamagePerComboPointAttackPower() * AttackPower()} * ComboPoints()} * DamageMultiplier(FEROCIOUS_BITE)  * {1+FerociousBiteCritChance()/100} * 2 * ArmorReduction()
+	{FerociousBiteBaseDamage() + {FerociousBiteDamagePerComboPoint() + FerociousBiteDamagePerComboPointAttackPower() * AttackPower()} * ComboPoints()} * DamageMultiplier(FEROCIOUS_BITE)  * {1+FerociousBiteCritChance()/100} * 2 * ArmorReduction()
 }
 AddFunction MangleCatDamage
 {
-   {{MangleCatBaseDamage() + WeaponDamage(MH)} * MangleCatWeaponDamageMultiplier()} * DamageMultiplier(MANGLE_CAT) * {1+MeleeCritChance()/100} * ArmorReduction()
+	{{MangleCatBaseDamage() + WeaponDamage(MH)} * MangleCatWeaponDamageMultiplier()} * DamageMultiplier(MANGLE_CAT) * {1+MeleeCritChance()/100} * ArmorReduction()
 }
 #AddFunction ThrashCatDamage # Currently unused
 #{
-#   {ThrashBaseDamage() + AttackPower()*ThrashDamagePerAttackPower()} * DamageMultiplier(THRASH_CAT) * {1+MeleeCritChance()/100} * {1+Mastery()/100}
+#	{ThrashBaseDamage() + AttackPower()*ThrashDamagePerAttackPower()} * DamageMultiplier(THRASH_CAT) * {1+MeleeCritChance()/100} * {1+Mastery()/100}
 #}
 AddFunction ShredDamage
 {
-   MangleCatDamage()*1.2
+	MangleCatDamage()*1.2
 }
 AddFunction RavageCritChanceRaw { RavageCritChanceBonus()+MeleeCritChance() }
 AddFunction RavageCritChance 
 { 
-   if target.HealthPercent() >=80
-   {
-      if RavageCritChanceRaw() > 100 100 
-   RavageCritChanceRaw()
-   }
-   MeleeCritChance()
+	if target.HealthPercent() >=80
+	{
+		if RavageCritChanceRaw() > 100 100 
+	RavageCritChanceRaw()
+	}
+	MeleeCritChance()
 }
 AddFunction RavageDamage
 {
-   {{RavageBaseDamage() + WeaponDamage(MH)} * RavageWeaponDamageMultiplier()} * DamageMultiplier(RAVAGE) * {1+RavageCritChance()/100} * ArmorReduction()
+	{{RavageBaseDamage() + WeaponDamage(MH)} * RavageWeaponDamageMultiplier()} * DamageMultiplier(RAVAGE) * {1+RavageCritChance()/100} * ArmorReduction()
 }
 AddFunction FillerActionDamagePerEnergyVsRake
 {
     if BuffPresent(INCARNATION_CAT)
-      RavageDamage() * EnergyForRake() / EnergyForRavage()
-   MangleCatDamage()
+		RavageDamage() * EnergyForRake() / EnergyForRavage()
+	MangleCatDamage()
 }
 
 ################
@@ -787,7 +793,7 @@ AddFunction SavageRoarOrWeakenedArmorMissing
 
 AddFunction RangeCheck
 {
-   #range check
+	#range check
     unless target.InRange(MANGLE_CAT) Texture(ability_druid_catformattack)
 }
 
@@ -813,17 +819,17 @@ AddFunction ExecuteRangeRipFerociousBiteLogic # Left one Doc line in here and ad
 {
     #ferocious_bite,if=combo_points>=1&dot.rip.ticking&dot.rip.remains<=3&target.health.pct<=25
     if target.HealthPercent() <=25 and HasAnyComboPoints()
-      and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=4 # is 4 instead of 3 because the remaining time on rip can be inaccurate upto 2 seconds
-   {
-      Spell(FEROCIOUS_BITE)
-   }
+		and target.DebuffPresent(RIP) and target.DebuffRemains(RIP) <=4 # is 4 instead of 3 because the remaining time on rip can be inaccurate upto 2 seconds
+	{
+		Spell(FEROCIOUS_BITE)
+	}
     
     #thrash_cat,if=target.time_to_die>=6&buff.omen_of_clarity.react&dot.thrash_cat.remains<3
     if target.TimeToDie() >=9 and BuffPresent(CLEARCASTING)
-      and target.DebuffRemains(THRASH_CAT) <3
-   {
-      Spell(THRASH_CAT)
-   }
+		and target.DebuffRemains(THRASH_CAT) <3
+	{
+		Spell(THRASH_CAT)
+	}
     
     #ferocious_bite,if=(target.time_to_die<=4&combo_points>=5)|(target.time_to_die<=1&combo_points>=3)
     if target.TimeToDie() <=4 and MaxComboPoints() Spell(FEROCIOUS_BITE)
@@ -833,19 +839,19 @@ AddFunction ExecuteRangeRipFerociousBiteLogic # Left one Doc line in here and ad
     {
         #savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&target.health.pct<25
         if BuffRemains(SAVAGE_ROAR) <=3 and HasAnyComboPoints()
-      {
-         SavageRoar()
-      }
+		{
+			SavageRoar()
+		}
         
         if MaxComboPoints()
         {
             #natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&target.health.pct<=25
             if TalentPoints(DREAM_OF_CENARIUS_TALENT) and TalentPoints(NATURES_SWIFTNESS_TALENT)
-            and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS)
-            and BuffRemains(SAVAGE_ROAR) >5
-         {
-            Spell(NATURES_SWIFTNESS)
-         }
+				and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS)
+				and BuffRemains(SAVAGE_ROAR) >5
+			{
+				Spell(NATURES_SWIFTNESS)
+			}
             
             #virmens_bite_potion,if=combo_points>=5&$(time_til_bitw)<15&$(rip_ratio)>=1.15&buff.dream_of_cenarius_damage.up
             # if not HasTrinket(ROR_ITEM) and MaxComboPoints() and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RipRatio() >=115 UsePotion()
@@ -856,12 +862,12 @@ AddFunction ExecuteRangeRipFerociousBiteLogic # Left one Doc line in here and ad
             #virmens_bite_potion,if=target.time_to_die<=40
             # if target.TimeToDie() <=40 UsePotion()
             
-            #rip,if=combo_points>=5&(tick_damage*(1+crit_pct_current)-tick_dmg*(1+crit_pct))*target.time_to_die%2>=action.ferocious_bite.hit_damage*(1+action.ferocious_bite.crit_pct_current)&target.health.pct<=25
+            #rip,if=combo_points>=5&(tick_damage*(1+crit_pct_current)-tick_dmg*(1+crit_pct))*target.time_to_die%2>=action.ferocious_bite.hit_damage*(1+action.ferocious_bite.crit_pct_current)*2&target.health.pct<=25
             if RipDamageTillDead() > {ExistingRipDamageTillDead() + FerociousBiteDamage()} 
-         {
-            Spell(RIP)
-         }
-         
+			{
+				Spell(RIP)
+			}
+			
             #pool_resource,wait=0.25,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))
             #ferocious_bite,if=combo_points>=5&dot.rip.ticking&target.health.pct<=25
             if target.DebuffPresent(RIP)
@@ -875,41 +881,41 @@ AddFunction ExecuteRangeRipFerociousBiteLogic # Left one Doc line in here and ad
 
 AddFunction DocRipLogic ##### If any changes are applicable to NonDoc logic, also make changes there!!!
 {
-   if target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >=92
-   {
-      #natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92
-      if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) 
-      {
-         Spell(NATURES_SWIFTNESS)
-      }
-        
-      #rip,if=combo_points>=5&$(rip_ratio)>=1.15
-      if RipRatio() >= 115 
-      {
-         Spell(RIP)
-      }
-   }
+	if target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >=92
+	{
+		#natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92
+		if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) 
+		{
+			Spell(NATURES_SWIFTNESS)
+		}
+		  
+		#rip,if=combo_points>=5&$(rip_ratio)>=1.15
+		if RipRatio() >= 115 
+		{
+			Spell(RIP)
+		}
+	}
     
-   #rip,if=combo_points>=5&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
-   if MaxComboPoints() and target.DebuffRemains(RIP) <2 
-      and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) 
-   {
-      Spell(RIP)
-   }
-   
-   #rip,if=combo_points>=5&dot.rip.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rip.multiplier<=tick_multiplier
-   if MaxComboPoints() and target.DebuffRemains(RIP) <6 
-      and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RipRatio() >=100 
-   {
-      Spell(RIP)
-   }
-   
-   #natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&dot.rip.remains<3
-   if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE)
-      and BuffExpires(PREDATORY_SWIFTNESS) and MaxComboPoints() and target.DebuffRemains(RIP) <3
-   {
-      Spell(NATURES_SWIFTNESS)
-   }
+	#rip,if=combo_points>=5&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
+	if MaxComboPoints() and target.DebuffRemains(RIP) <2 
+		and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) 
+	{
+		Spell(RIP)
+	}
+	
+	#rip,if=combo_points>=5&dot.rip.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rip.multiplier<=tick_multiplier
+	if MaxComboPoints() and target.DebuffRemains(RIP) <6 
+		and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RipRatio() >=100 
+	{
+		Spell(RIP)
+	}
+	
+	#natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&dot.rip.remains<3
+	if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE)
+		and BuffExpires(PREDATORY_SWIFTNESS) and MaxComboPoints() and target.DebuffRemains(RIP) <3
+	{
+		Spell(NATURES_SWIFTNESS)
+	}
     
     #rip,if=combo_points>=5&dot.rip.remains<2
     if MaxComboPoints() and target.DebuffRemains(RIP) <2
@@ -920,24 +926,24 @@ AddFunction DocRipLogic ##### If any changes are applicable to NonDoc logic, als
 
 AddFunction NonDocRipLogic ##### If any changes are applicable to Doc logic, also make changes there!!!
 {
-   #rip,if=combo_points>=5&$(rip_ratio)>=1.15
-   #rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2
-   if {target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >= 115} 
-      or {MaxComboPoints() and target.DebuffRemains(RIP) <2}
-   {
-      Spell(RIP)
-   }
+	#rip,if=combo_points>=5&$(rip_ratio)>=1.15
+	#rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2
+	if {target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >= 115} 
+		or {MaxComboPoints() and target.DebuffRemains(RIP) <2}
+	{
+		Spell(RIP)
+	}
 } ##### If any changes are applicable to Doc logic, also make changes there!!!
 
 AddFunction SavageRoarRefreshLogic
 {
     #savage_roar,if=buff.savage_roar.remains<=3&combo_points>0&buff.savage_roar.remains+2>dot.rip.remains
-   #savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
+	#savage_roar,if=buff.savage_roar.remains<=6&combo_points>=5&buff.savage_roar.remains+2<=dot.rip.remains
     if {BuffRemains(SAVAGE_ROAR) <=3 and HasAnyComboPoints()} or {BuffRemains(SAVAGE_ROAR) <=6 and MaxComboPoints()}
-      and {BuffRemains(SAVAGE_ROAR) +2 > target.DebuffRemains(RIP)} 
-   {
-      SavageRoar()
-   }
+		and {BuffRemains(SAVAGE_ROAR) +2 > target.DebuffRemains(RIP)} 
+	{
+		SavageRoar()
+	}
 }
 
 AddFunction NonExcuteRangeFerociousBiteLogic
@@ -945,11 +951,11 @@ AddFunction NonExcuteRangeFerociousBiteLogic
     #actions.doc+=/pool_resource,wait=0.1,if=combo_points>=5&((energy<50&buff.berserk.down)|(energy<25&buff.berserk.remains>1))&dot.rip.ticking&!(dot.rip.remains-2<=energy.time_to_max-1)&!(buff.savage_roar.remains-3<=energy.time_to_max-1)
     #actions.doc+=/ferocious_bite,if=combo_points>=5&dot.rip.ticking&!(dot.rip.remains-2<=energy.time_to_max-1)&!(buff.savage_roar.remains-3<=energy.time_to_max-1)&!((buff.savage_roar.remains-6<=energy.time_to_max-1)&buff.savage_roar.remains+2<=$(rip_remains))
     if MaxComboPoints() and target.DebuffPresent(RIP) and BuffPresent(SAVAGE_ROAR)
-      and not target.DebuffRemains(RIP)-2 <= TimeToMaxEnergy()-1
-      and not BuffRemains(SAVAGE_ROAR)-3 <= TimeToMaxEnergy()-1
-      and not {BuffRemains(SAVAGE_ROAR)-6 <= TimeToMaxEnergy()-1
-      and BuffRemains(SAVAGE_ROAR)+2 <= target.DebuffRemains(RIP)}
-      and target.DebuffRemains(RIP) >=5
+		and not target.DebuffRemains(RIP)-2 <= TimeToMaxEnergy()-1
+		and not BuffRemains(SAVAGE_ROAR)-3 <= TimeToMaxEnergy()-1
+		and not {BuffRemains(SAVAGE_ROAR)-6 <= TimeToMaxEnergy()-1
+		and BuffRemains(SAVAGE_ROAR)+2 <= target.DebuffRemains(RIP)}
+		and target.DebuffRemains(RIP) >=5
     {
         if not HasEnergyForFerociousBite() SpareGcdCooldowns()
         wait if HasEnergyForFerociousBite() Spell(FEROCIOUS_BITE)
@@ -958,59 +964,50 @@ AddFunction NonExcuteRangeFerociousBiteLogic
 
 AddFunction RakeLogic
 {
+    #rake,if=action.rake.tick_damage>action.mangle_cat.hit_damage&$(rake_ratio)>=0.99&buff.king_of_the_jungle.down
+    #rake,if=action.rake.tick_damage*(1+action.rake.crit_pct_current)>action.ravage.hit_damage*(1+action.ravage.crit_pct_current)&$(rake_ratio)>=0.99&buff.king_of_the_jungle.up
+	if FutureRakeTickDamage() >= FillerActionDamagePerEnergyVsRake() and RakeRatio() >= 99
+	{
+		Spell(RAKE)
+	}
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3
     {
-      #rake,if=buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
-      if BuffPresent(ROR_MASTERY) and target.DebuffRemains(RAKE) <9 
-         and BuffRemains(ROR_MASTERY) <=1.5 
-         and RakeEnergySafetyMargin() < BuffRemains(ROR_MASTERY)
-      {
-         Spell(RAKE)
-      }
-         
-      #rake,if=(action.rake.tick_damage*(1+action.rake.crit_pct_current)*6-dot.rake.tick_dmg*(1+dot.rake.crit_pct)*5)>action.mangle_cat.hit_damage*(1+action.mangle_cat.crit_pct_current)&buff.king_of_the_jungle.down&target.time_to_die-remains>3
-      #rake,if=(action.rake.tick_damage*(1+action.rake.crit_pct_current)*6-dot.rake.tick_dmg*(1+dot.rake.crit_pct)*5)>action.ravage.hit_damage*(1+action.ravage.crit_pct_current)*35%45&buff.king_of_the_jungle.up&target.time_to_die-remains>3
-      if FutureRakeTickDamage()*6 - LastRakeTickDamage()*5 >= FillerActionDamagePerEnergyVsRake()
-      {
-         Spell(RAKE)
-      }
-         
-      #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<3.0
-      if {HasEnergyForRake() and target.DebuffRemains(RAKE) < 3}
-         or {not HasEnergyForRake() and target.DebuffRemains(RAKE) < 3 + TimeTilEnergyForRake() and BuffExpires(CLEARCASTING)}
-      {
-         Spell(RAKE)
-      }
-   }
-   unless target.TimeToDie() - target.DebuffRemains(RAKE) >3
-   {
-      #rake,if=(action.rake.tick_damage*(1+action.rake.crit_pct_current)*(remains%3+1)-dot.rake.tick_dmg*(1+dot.rake.crit_pct)*remains%3)>(1+action.mangle_cat.crit_pct_current)*(1+action.mangle_cat.crit_pct_current)&buff.king_of_the_jungle.down&target.time_to_die-remains<=3
-      #rake,if=(action.rake.tick_damage*(1+action.rake.crit_pct_current)*(remains%3+1)-dot.rake.tick_dmg*(1+dot.rake.crit_pct)*remains%3)>action.ravage.hit_damage*(1+action.ravage.crit_pct_current)*35%45&buff.king_of_the_jungle.up&target.time_to_die-remains<=3
-      if FutureRakeTickDamage()*{target.TimeToDie()/3+1} - LastRakeTickDamage()*target.TimeToDie()/3 >= FillerActionDamagePerEnergyVsRake()
-      {
-         Spell(RAKE)
-      }
-   }
+		#rake,if=target.time_to_die-dot.rake.remains>3&buff.rune_of_reorigination.up&dot.rake.remains<9&(buff.rune_of_reorigination.remains<=1.5)
+		if BuffPresent(ROR_MASTERY) and target.DebuffRemains(RAKE) <9 
+			and BuffRemains(ROR_MASTERY) <=1.5 
+			and RakeEnergySafetyMargin() < BuffRemains(ROR_MASTERY)
+		{
+			Spell(RAKE)
+		}
+			
+		#rake,if=target.time_to_die-dot.rake.remains>3&($(rake_ratio)>1.12|dot.rake.remains<3)
+		if {HasEnergyForRake() and target.DebuffRemains(RAKE) < 3}
+			or {not HasEnergyForRake() and target.DebuffRemains(RAKE) < 3 + TimeTilEnergyForRake() and BuffExpires(CLEARCASTING)}
+			or RakeRatio() > 112
+		{
+			Spell(RAKE)
+		}
+	}
 }
 
 AddFunction ThrashLogic
 {
     #pool_resource,wait=0.25,for_next=1
     #thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
-   if {HasEnergyForThrash() 
-      and target.DebuffRemains(THRASH_CAT) < 3
-      and target.TimeToDie() >=9
-      and {target.DebuffRemains(RIP) >=4
-         or BuffPresent(BERSERK_CAT)}}
-   or {not HasEnergyForThrash()
-      and target.DebuffRemains(THRASH_CAT) < 3 + TimeTilEnergyForThrash() and BuffExpires(CLEARCASTING)
-      and target.TimeToDie() - TimeTilEnergyForThrash() >=9
-      and {target.DebuffRemains(RIP) - TimeTilEnergyForThrash() >=4
-         or BuffPresent(BERSERK_CAT)}}
-   {
-      if TimeTilEnergyForThrash() >=1.5 SpareGcdCooldowns()
-      Spell(THRASH_CAT)
-   }
+	if {HasEnergyForThrash() 
+		and target.DebuffRemains(THRASH_CAT) < 3
+		and target.TimeToDie() >=9
+		and {target.DebuffRemains(RIP) >=4
+			or BuffPresent(BERSERK_CAT)}}
+	or {not HasEnergyForThrash()
+		and target.DebuffRemains(THRASH_CAT) < 3 + TimeTilEnergyForThrash() and BuffExpires(CLEARCASTING)
+		and target.TimeToDie() - TimeTilEnergyForThrash() >=9
+		and {target.DebuffRemains(RIP) - TimeTilEnergyForThrash() >=4
+			or BuffPresent(BERSERK_CAT)}}
+	{
+		if TimeTilEnergyForThrash() >=1.5 SpareGcdCooldowns()
+		Spell(THRASH_CAT)
+	}
 }
 
 AddFunction FillerActions
@@ -1041,35 +1038,35 @@ AddFunction MainActionsDoC
     #healing_touch,if=buff.predatory_swiftness.up&buff.predatory_swiftness.remains<=1.5&buff.dream_of_cenarius_damage.down
     if BuffPresent(PREDATORY_SWIFTNESS) and BuffRemains(PREDATORY_SWIFTNESS) <=1.5 and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) Spell(HEALING_TOUCH)
     
-   SavageRoarOrWeakenedArmorMissing()
+	SavageRoarOrWeakenedArmorMissing()
     
-   #healing_touch,if=buff.predatory_swiftness.up&combo_points>=4&buff.dream_of_cenarius_damage.down
-   if BuffPresent(PREDATORY_SWIFTNESS) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and ComboPoints() >=4 Spell(HEALING_TOUCH)
+	#healing_touch,if=buff.predatory_swiftness.up&combo_points>=4&buff.dream_of_cenarius_damage.down
+	if BuffPresent(PREDATORY_SWIFTNESS) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and ComboPoints() >=4 Spell(HEALING_TOUCH)
     
-   #healing_touch,if=buff.natures_swiftness.up
-   if BuffPresent(NATURES_SWIFTNESS) Spell(HEALING_TOUCH)
+	#healing_touch,if=buff.natures_swiftness.up
+	if BuffPresent(NATURES_SWIFTNESS) Spell(HEALING_TOUCH)
 
-   RangeCheck()
-   
-   IncarnationBerserkTigersFuryLogic()
+	RangeCheck()
+	
+	IncarnationBerserkTigersFuryLogic()
     
-   #Also includes Clearcasting Thrash and end of fight Ferocious Bite
-   ExecuteRangeRipFerociousBiteLogic()
+	#Also includes Clearcasting Thrash and end of fight Ferocious Bite
+	ExecuteRangeRipFerociousBiteLogic()
     
-   DocRipLogic()
+	DocRipLogic()
     
-   SavageRoarRefreshLogic()
-   
-   NonExcuteRangeFerociousBiteLogic()
-   
-   #rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
+	SavageRoarRefreshLogic()
+	
+	NonExcuteRangeFerociousBiteLogic()
+	
+	#rake,if=target.time_to_die-dot.rake.remains>3&dot.rake.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rake.multiplier<=tick_multiplier
     if target.TimeToDie() - target.DebuffRemains(RAKE) >3 and target.DebuffRemains(RAKE) <6 and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RakeRatio() >=100 Spell(RAKE)
     
-   RakeLogic()
+	RakeLogic()
 
     ThrashLogic()
-   
-   #run_action_list,name=filler,if=buff.predatory_swiftness.remains>1
+	
+	#run_action_list,name=filler,if=buff.predatory_swiftness.remains>1
     if BuffRemains(PREDATORY_SWIFTNESS) >1 FillerActions()
 }
 
@@ -1089,31 +1086,30 @@ AddFunction FillerConditions
     if TigersFuryCooldown() <=3 FillerActions()
     #run_action_list,name=filler,if=energy.time_to_max<=1
     if TimeToMaxEnergy() <=1 FillerActions()
+	#run_action_list,name=filler,if=combo_points<5
+	if TalentPoints(HEART_OF_THE_WILD_TALENT) and TalentPoints(SOUL_OF_THE_FOREST_TALENT) and not MaxComboPoints() FillerActions()
 }
 
 AddFunction MainActionsNonDoC
 {
-   SavageRoarOrWeakenedArmorMissing()
+	SavageRoarOrWeakenedArmorMissing()
     
-   RangeCheck()
+	RangeCheck()
     
-   IncarnationBerserkTigersFuryLogic()
+	IncarnationBerserkTigersFuryLogic()
     
-   #Also includes Clearcasting Thrash and end of fight Ferocious Bite
-   ExecuteRangeRipFerociousBiteLogic()
+	#Also includes Clearcasting Thrash and end of fight Ferocious Bite
+	ExecuteRangeRipFerociousBiteLogic()
     
-   NonDocRipLogic()
+	NonDocRipLogic()
     
     SavageRoarRefreshLogic()
-   
-   NonExcuteRangeFerociousBiteLogic()
-   
-   RakeLogic()
+	
+	NonExcuteRangeFerociousBiteLogic()
+	
+	RakeLogic()
     
-   ThrashLogic()
-   
-   #run_action_list,name=filler,if=combo_points<5
-   if TalentPoints(SOUL_OF_THE_FOREST_TALENT) and not MaxComboPoints() FillerActions()
+	ThrashLogic()
 }
 
 AddFunction Prediction
@@ -1312,28 +1308,6 @@ AddIcon help=main mastery=3 {
     if CheckBoxOn(bearaoe) BearMainAOE()
 }
 
-AddIcon help=defense mastery=3 checkboxoff=altpredictive {
-    if Rage(less 11) Spell(ENRAGE useable=1)
-    Spell(SAVAGE_DEFENSE usable=1)
-    Spell(FRENZIED_REGEN)
-}
-
-AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
-    Spell(SURVIVAL_INSTINCTS)
-}
-
-AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
-    Spell(MIGHT_OF_URSOC)
-}
-
-AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
-    if TalentPoints(INCARNATION_TALENT) Spell(INCARNATION_BEAR)
-    if TalentPoints(FORCE_OF_NATURE_TALENT) Spell(FORCE_OF_NATURE)
-}
-
-AddIcon help=cd size=small mastery=3 checkboxon=cooldownsR {
-    Spell(BERSERK_BEAR)
-}
 AddIcon help=defense mastery=3 checkboxoff=altpredictive {
     if Rage(less 11) Spell(ENRAGE useable=1)
     Spell(SAVAGE_DEFENSE usable=1)
