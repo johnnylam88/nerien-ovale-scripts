@@ -6,6 +6,9 @@ NerienOvaleScripts.script.DRUID.ShmooDude = {
 [[
 # ShmooDude's modified Leafkiller's Feral/Guardian druid script.
 # Support/Discussion thread: http://fluiddruid.net/forum/viewtopic.php?f=3&t=857
+# 7/25/13 version 5.3.8.4
+#	Fixed Faerie Swarm asking for Faerie Fire's cooldown data
+#	Applied same fix to Savage Roar
 # 7/23/13 version 5.3.8.3
 #	Fixed Rake ratios
 #	Fixed double tanking icons
@@ -737,12 +740,12 @@ AddFunction FillerActionDamagePerEnergyVsRake
 AddFunction FaerieFire
 {
     if TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_SWARM)
-    Spell(FAERIE_FERAL)
+    unless TalentPoints(FAERIE_SWARM_TALENT) Spell(FAERIE_FERAL)
 }
 AddFunction SavageRoar
 {
     if Glyph(GLYPH_OF_SAVAGERY) Spell(SAVAGE_ROAR_GLYPHED)
-    if ComboPoints(more 0) Spell(SAVAGE_ROAR_OLD)
+    if Glyph(GLYPH_OF_SAVAGERY no) and ComboPoints(more 0) Spell(SAVAGE_ROAR_OLD)
 }
 AddFunction UsePotion
 {
