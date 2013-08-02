@@ -6,6 +6,10 @@ NerienOvaleScripts.script.DRUID.ShmooDude = {
 [[
 # ShmooDude's modified Leafkiller's Feral/Guardian druid script.
 # Support/Discussion thread: http://fluiddruid.net/forum/viewtopic.php?f=3&t=857
+# 8/02/13 version 5.3.8.5
+#	Added TimeToEnergy to end of rip refreshes and added back waiting on TF when the CD is close
+#	Will allow Rake to expire if the new rake will be significantly weaker than the current Rake
+#	Increased required duration of Rip/Savage Roar needed to apply Thrash
 # 7/25/13 version 5.3.8.4
 #	Fixed Faerie Swarm asking for Faerie Fire's cooldown data
 #	Applied same fix to Savage Roar
@@ -803,7 +807,7 @@ AddFunction RangeCheck
 AddFunction IncarnationBerserkTigersFuryLogic
 {
     #incarnation,if=energy<=35&!buff.omen_of_clarity.react&cooldown.tigers_fury.remains=0&cooldown.berserk.remains=0
-    #use_item,name=eternal_blossom_grips,sync=tigers_fury
+    #use_item,slot=hands,if=buff.tigers_fury.up
     #tigers_fury,if=(energy<=35&!buff.omen_of_clarity.react)|buff.king_of_the_jungle.up
     #berserk,if=buff.tigers_fury.up|(target.time_to_die<15&cooldown.tigers_fury.remains>6)
     if {{Energy() <=35 and BuffExpires(CLEARCASTING)} or BuffPresent(INCARNATION_CAT)} and Spell(TIGERS_FURY)
@@ -834,8 +838,7 @@ AddFunction ExecuteRangeRipFerociousBiteLogic # Left one Doc line in here and ad
 		Spell(THRASH_CAT)
 	}
     
-    #ferocious_bite,if=(target.time_to_die<=4&combo_points>=5)|(target.time_to_die<=1&combo_points>=3)
-    if target.TimeToDie() <=4 and MaxComboPoints() Spell(FEROCIOUS_BITE)
+    #ferocious_bite,if=target.time_to_die<=1&combo_points>=3
     if target.TimeToDie() <=1 and ComboPoints() >=3 Spell(FEROCIOUS_BITE)
     
     if target.HealthPercent() <=25
@@ -886,42 +889,31 @@ AddFunction DocRipLogic ##### If any changes are applicable to NonDoc logic, als
 {
 	if target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >=92
 	{
-		#natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92
+		#natures_swiftness,if=enabled&buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&$(rip_ratio)>=0.92&target.health.pct>25
 		if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE) and BuffExpires(PREDATORY_SWIFTNESS) 
 		{
 			Spell(NATURES_SWIFTNESS)
 		}
 		  
-		#rip,if=combo_points>=5&$(rip_ratio)>=1.15
+		#rip,if=combo_points>=5&$(rip_ratio)>=1.15&target.health.pct>25
 		if RipRatio() >= 115 
 		{
 			Spell(RIP)
 		}
 	}
     
-	#rip,if=combo_points>=5&dot.rip.remains<2&buff.dream_of_cenarius_damage.up
-	if MaxComboPoints() and target.DebuffRemains(RIP) <2 
-		and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) 
-	{
-		Spell(RIP)
-	}
-	
-	#rip,if=combo_points>=5&dot.rip.remains<6.0&buff.dream_of_cenarius_damage.up&dot.rip.multiplier<=tick_multiplier
-	if MaxComboPoints() and target.DebuffRemains(RIP) <6 
-		and BuffPresent(DREAM_OF_CENARIUS_DAMAGE) and RipRatio() >=100 
-	{
-		Spell(RIP)
-	}
-	
-	#natures_swiftness,if=buff.dream_of_cenarius_damage.down&buff.predatory_swiftness.down&combo_points>=5&dot.rip.remains<3
+	#natures_swiftness,if=talent.natures_swiftness.enabled&talent.dream_of_cenarius.enabled&buff.dream_of_cenarius.down&buff.predatory_swiftness.down&combo_points>=5&dot.rip.remains<3&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
 	if TalentPoints(NATURES_SWIFTNESS_TALENT) and BuffExpires(DREAM_OF_CENARIUS_DAMAGE)
-		and BuffExpires(PREDATORY_SWIFTNESS) and MaxComboPoints() and target.DebuffRemains(RIP) <3
+		and BuffExpires(PREDATORY_SWIFTNESS)
+		and {{HasEnergyForRip() and {MaxComboPoints() and target.DebuffRemains(RIP) <3 and {BuffPresent(BERSERK_CAT) or {target.DebuffRemains(RIP)+1.9} <=TigersFuryCooldown()}}}
+		or {not HasEnergyForRip() and {MaxComboPoints() and target.DebuffRemains(RIP) <3+TimeToEnergyFor(RIP) and {BuffPresent(BERSERK_CAT) or {target.DebuffRemains(RIP)+1.9} <=TigersFuryCooldown()+TimeToEnergyFor(RIP)}}}}
 	{
 		Spell(NATURES_SWIFTNESS)
 	}
     
-    #rip,if=combo_points>=5&dot.rip.remains<2
-    if MaxComboPoints() and target.DebuffRemains(RIP) <2
+    #rip,if=combo_points>=5&dot.rip.remains<2&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
+	if {HasEnergyForRip() and {MaxComboPoints() and target.DebuffRemains(RIP) <2 and {BuffPresent(BERSERK_CAT) or {target.DebuffRemains(RIP)+1.9} <=TigersFuryCooldown()}}}
+		or {not HasEnergyForRip() and {MaxComboPoints() and target.DebuffRemains(RIP) <2+TimeToEnergyFor(RIP) and {BuffPresent(BERSERK_CAT) or {target.DebuffRemains(RIP)+1.9} <=TigersFuryCooldown()+TimeToEnergyFor(RIP)}}}
     {
         Spell(RIP)
     }
@@ -930,9 +922,14 @@ AddFunction DocRipLogic ##### If any changes are applicable to NonDoc logic, als
 AddFunction NonDocRipLogic ##### If any changes are applicable to Doc logic, also make changes there!!!
 {
 	#rip,if=combo_points>=5&$(rip_ratio)>=1.15
-	#rip,if=combo_points>=5&target.time_to_die>=6&dot.rip.remains<2
-	if {target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >= 115} 
-		or {MaxComboPoints() and target.DebuffRemains(RIP) <2}
+	if target.HealthPercent() >25 and MaxComboPoints() and RipRatio() >= 115
+	{
+		Spell(RIP)
+	}
+	
+	#rip,if=combo_points>=5&dot.rip.remains<2&(buff.berserk.up|dot.rip.remains+1.9<=cooldown.tigers_fury.remains)
+	if {HasEnergyForRip() and {MaxComboPoints() and target.DebuffRemains(RIP) <2 and {BuffPresent(BERSERK_CAT) or {target.DebuffRemains(RIP)+1.9} <=TigersFuryCooldown()}}}
+		or {not HasEnergyForRip() and {MaxComboPoints() and target.DebuffRemains(RIP) <2+TimeTilEnergyForRip() and {BuffPresent(BERSERK_CAT) or {target.DebuffRemains(RIP)+1.9} <=TigersFuryCooldown()+TimeToEnergyFor(RIP)}}}
 	{
 		Spell(RIP)
 	}
@@ -983,10 +980,17 @@ AddFunction RakeLogic
 			Spell(RAKE)
 		}
 			
-		#rake,if=target.time_to_die-dot.rake.remains>3&($(rake_ratio)>1.12|dot.rake.remains<3)
-		if {HasEnergyForRake() and target.DebuffRemains(RAKE) < 3}
-			or {not HasEnergyForRake() and target.DebuffRemains(RAKE) < 3 + TimeTilEnergyForRake() and BuffExpires(CLEARCASTING)}
+		#rake,if=target.time_to_die-dot.rake.remains>3&($(rake_ratio)>1.12|dot.rake.remains<3&$(rake_ratio)>0.75)
+		if RakeRatio() > 75 and {{HasEnergyForRake() and target.DebuffRemains(RAKE) < 3}
+			or {not HasEnergyForRake() and target.DebuffRemains(RAKE) < 3 + TimeTilEnergyForRake() and BuffExpires(CLEARCASTING)}}
 			or RakeRatio() > 112
+		{
+			Spell(RAKE)
+		}
+		
+		#rake if its about to fall off.  Simcraft doesn't require this line but ovale does for the prediction box.
+		if {HasEnergyForRake() and target.DebuffRemains(RAKE) < 0.001}
+			or {not HasEnergyForRake() and target.DebuffRemains(RAKE) < 0.001 + TimeTilEnergyForRake() and BuffExpires(CLEARCASTING)}
 		{
 			Spell(RAKE)
 		}
@@ -996,16 +1000,16 @@ AddFunction RakeLogic
 AddFunction ThrashLogic
 {
     #pool_resource,wait=0.25,for_next=1
-    #thrash_cat,if=dot.thrash_cat.remains<3&target.time_to_die>=6&(dot.rip.remains>=4|buff.berserk.up)
+    #thrash_cat,if=target.time_to_die>=6&dot.thrash_cat.remains<3&(dot.rip.remains>=8&buff.savage_roar.remains>=12|buff.berserk.up)&dot.rip.ticking
 	if {HasEnergyForThrash() 
 		and target.DebuffRemains(THRASH_CAT) < 3
 		and target.TimeToDie() >=9
-		and {target.DebuffRemains(RIP) >=4
+		and {{target.DebuffRemains(RIP) >=8 and BuffRemains(SAVAGE_ROAR) >=12}
 			or BuffPresent(BERSERK_CAT)}}
 	or {not HasEnergyForThrash()
 		and target.DebuffRemains(THRASH_CAT) < 3 + TimeTilEnergyForThrash() and BuffExpires(CLEARCASTING)
 		and target.TimeToDie() - TimeTilEnergyForThrash() >=9
-		and {target.DebuffRemains(RIP) - TimeTilEnergyForThrash() >=4
+		and {{target.DebuffRemains(RIP) - TimeTilEnergyForThrash() >=8 and BuffRemains(SAVAGE_ROAR) - TimeTilEnergyForThrash() >=12}
 			or BuffPresent(BERSERK_CAT)}}
 	{
 		if TimeTilEnergyForThrash() >=1.5 SpareGcdCooldowns()
