@@ -587,6 +587,7 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 # Defensive abilities.
 AddIcon mastery=2 help=shortcd
 {
+	if BuffExpires(righteous_fury) Spell(righteous_fury)
 	if TalentPoints(eternal_flame_talent)
 	{
 		# EF[buffEF<2.5]
@@ -634,8 +635,8 @@ AddIcon mastery=2 help=cd
 {
 	Interrupt()
 	if IsRooted() Spell(hand_of_freedom)
-	if TalentPoints(holy_avenger_talent) Spell(holy_avenger)
 	Spell(avenging_wrath)
+	if TalentPoints(holy_avenger_talent) Spell(holy_avenger)
 }
 
 # Righteous Fury indicator.
