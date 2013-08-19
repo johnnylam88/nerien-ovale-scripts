@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "[5.3] Nerien: Brewmaster, Windwalker",
+	desc = "[5.3] Nerien: Brewmaster, Mistweaver, Windwalker",
 	code =
 [[
 # Nerien's monk script based on SimulationCraft
@@ -12,7 +12,7 @@ NerienOvaleScripts.script.MONK.Nerien = {
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
 	SpellInfo(blackout_kick chi=2)
-	SpellAddBuff(blackout_kick combo_breaker_bok=0 muscle_memory=0 shuffle=1)
+	SpellAddBuff(blackout_kick combo_breaker_bok=0 muscle_memory=0 serpents_zeal=1 shuffle=1)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
 Define(brewmaster_training 117967)
@@ -38,8 +38,8 @@ Define(combo_breaker_bok 116768)
 	SpellInfo(combo_breaker_bok duration=15)
 Define(combo_breaker_tp 118864)
 	SpellInfo(combo_breaker_tp duration=15)
-#Define(crackling_jade_lightning 117952)
-#	SpellAddBuff(crackling_jade_lightning power_strikes=0)
+Define(crackling_jade_lightning 117952)
+	SpellAddBuff(crackling_jade_lightning power_strikes=0)
 Define(dampen_harm 122278)
 	SpellInfo(dampen_harm cd=90 duration=45)
 	SpellAddBuff(dampen_harm dampen_harm=1)
@@ -64,6 +64,11 @@ Define(energizing_brew 115288)
 	SpellInfo(energizing_brew cd=60 duration=6 tick=1)
 	SpellInfo(energizing_brew addduration=5 itemset=T14_melee itemcount=4)
 	SpellAddBuff(energizing_brew energizing_brew=1 healing_elixirs=0)
+Define(enveloping_mist 124682)
+	SpellInfo(enveloping_mist chi=3)
+#	SpellAddTargetBuff(enveloping_mist enveloping_mist_aura=1)
+Define(enveloping_mist_aura 132120)
+	SpellInfo(enveloping_mist_aura duration=6 haste=spell tick=1)
 Define(expel_harm 115072)
 	SpellInfo(expel_harm cd=15 chi=-2)
 	SpellInfo(expel_harm chi=-1 if_stance=monk_stance_of_the_sturdy_ox)
@@ -80,7 +85,10 @@ Define(fortifying_brew 115203)
 #Define(fortifying_brew_glyphed 120954)
 #	SpellInfo(fortifying_brew_glyphed duration=20)
 Define(glyph_of_guard 123401)
+Define(glyph_of_mana_tea 123763)
 Define(glyph_of_retreat 124969)
+Define(glyph_of_surging_mist 120483)
+Define(glyph_of_uplift 125669)
 Define(guard 115295)
 	SpellInfo(guard cd=30 chi=2 duration=30)
 	SpellAddBuff(guard guard=1 power_guard=0)
@@ -109,8 +117,18 @@ Define(legacy_of_the_emperor_aura 117666)
 Define(legacy_of_the_white_tiger 116781)
 	SpellInfo(legacy_of_the_white_tiger duration=3600)
 	SpellAddBuff(legacy_of_the_white_tiger legacy_of_the_white_tiger=1)
+Define(life_cocoon 116849)
+	SpellInfo(life_cocoon cd=120 duration=12)
+#	SpellAddTargetBuff(life_cocoon life_cocoon=1)
 Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
+Define(mana_tea 115294)
+	SpellInfo(mana_tea duration=3 tick=1)
+Define(mana_tea_aura 115867)
+	SpellInfo(mana_tea_aura duration=120)
+Define(mana_tea_glyphed 123761)
+	SpellInfo(mana_tea_glyphed cd=10)
+	SpellAddBuff(mana_tea_glyphed mana_tea_aura=-2)
 Define(moderate_stagger 124274)
 	SpellInfo(moderate_stagger duration=10 tick=1)
 Define(muscle_memory 139597)
@@ -130,8 +148,16 @@ Define(purifier 138237) # 4pT15 tank bonus
 Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 chi=1)
 	SpellAddDebuff(purifying_brew healing_elixirs=0 heavy_stagger=0 light_stagger=0 moderate_stagger=0)
+Define(renewing_mist 115151)
+	SpellInfo(renewing_mist cd=8 chi=-1)
+#	SpellAddTargetBuff(renewing_mist renewing_mist_aura=1)
+Define(renewing_mist_aura 119611)
+	SpellInfo(renewing_mist_aura duration=18 haste=spell tick=2)
+Define(renewing_mist_spread_aura 119607)
 Define(retreat 124968)
 	SpellInfo(retreat duration=10)
+Define(revival 115310)
+	SpellInfo(revival cd=180)
 Define(ring_of_peace 116844)
 	SpellInfo(ring_of_peace cd=45 duration=8)
 Define(ring_of_peace_talent 10)
@@ -146,8 +172,13 @@ Define(rushing_jade_wind 116847)
 	SpellAddTargetDebuff(rushing_jade_wind rushing_jade_wind=1)
 Define(rushing_jade_wind_talent 16)
 Define(sanctuary_of_the_ox 126119)
+Define(serpents_zeal 127722)
+	SpellInfo(serpents_zeal duration=30 tick=3)
 Define(shuffle 115307)
 	SpellInfo(shuffle duration=6)
+Define(soothing_mist 115175)
+	SpellInfo(soothing_mist duration=8 haste=spell tick=1)
+	SpellAddBuff(soothing_mist soothing_mist=1)
 Define(spear_hand_strike 116705)
 	SpellInfo(spear_hand_strike cd=10)
 Define(spinning_crane_kick 101546)
@@ -158,10 +189,19 @@ SpellList(stagger heavy_stagger light_stagger moderate_stagger)
 Define(staggering 138233) # 2pT15 tank bonus
 Define(stance_of_the_fierce_tiger 103985)
 Define(stance_of_the_sturdy_ox 115069)
+Define(stance_of_the_wise_serpent 115070)
 Define(storm_earth_and_fire 137639)
 	SpellAddBuff(storm_earth_and_fire storm_earth_and_fire=1)
 Define(summon_black_ox_statue 115315)
 	SpellInfo(summon_black_ox_statue cd=30)
+Define(summon_jade_serpent_statue 115313)
+	SpellInfo(summon_jade_serpent_statue cd=30)
+Define(surging_mist 116694)
+	SpellInfo(surging_mist chi=-1)
+	SpellAddBuff(surging_mist thunder_focus_tea=0 vital_mists=0)
+Define(surging_mist_glyphed 123273)
+	SpellInfo(surging_mist_glyphed chi=-1)
+	SpellAddBuff(surging_mist_glyphed thunder_focus_tea=0 vital_mists=0)
 Define(symbiosis_bear_hug 127361)
 	SpellInfo(symbiosis_bear_hug cd=60 duration=3)
 	SpellAddTargetDebuff(symbiosis_bear_hug symbiosis_bear_hug=1)
@@ -169,12 +209,17 @@ Define(symbiosis_survival_instincts 113306)
 	SpellInfo(symbiosis_survival_instincts cd=180 duration=6)
 	SpellAddBuff(symbiosis_survival_instincts symbiosis_survival_instincts=1)
 Define(teachings_of_the_monastery 116645)
+Define(thunder_focus_tea 116680)
+	SpellInfo(thunder_focus_tea cd=45 chi=1 duration=30)
+	SpellInfo(thunder_focus_tea addcd=-5 itemset=T15_heal itemcount=4)
 Define(tiger_palm 100787)
 	SpellInfo(tiger_palm chi=1)
 	SpellInfo(tiger_palm chi=0 if_spell=brewmaster_training)
-	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory=0 power_guard=1 tiger_power=1)
+	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory=0 power_guard=1 tiger_power=1 vital_mists=1)
 Define(tiger_power 125359)
 	SpellInfo(tiger_power duration=20)
+Define(tiger_strikes 120273)
+	SpellInfo(tiger_strikes duration=15)
 Define(tigereye_brew 125195)
 	SpellInfo(tigereye_brew duration=120)
 Define(tigereye_brew_use 116740)
@@ -189,6 +234,13 @@ Define(touch_of_death 115080)
 Define(touch_of_karma 122470)
 	SpellInfo(touch_of_karma cd=90 duration=10)
 	SpellAddTargetDebuff(touch_of_karma touch_of_karma=1)
+Define(uplift 116670)
+	SpellInfo(uplift chi=2)
+	SpellAddBuff(uplift thunder_focus_tea=0)
+Define(uplift_glyphed 130316)
+	SpellAddBuff(uplift_glyphed thunder_focus_tea=0)
+Define(vital_mists 118674)
+	SpellInfo(vital_mists duration=30)
 Define(weakened_blows 115798)
 	SpellInfo(weakened_blows duration=30)
 Define(zen_sphere 124081)
@@ -524,8 +576,8 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 AddIcon mastery=1 help=cd
 {
 	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
-	Interrupt()
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
+	Interrupt()
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
@@ -535,6 +587,147 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 }
 
 AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+{
+	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
+	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
+}
+
+###
+### Mistweaver
+###
+
+AddFunction MistweaverPreCombatActions
+{
+	if InCombat(no)
+	{
+		if BuffExpires(str_agi_int 400 any=1) Spell(legacy_of_the_emperor)
+	}
+}
+
+AddFunction MistweaverBuffActions
+{
+	unless Stance(monk_stance_of_the_wise_serpent) Spell(stance_of_the_wise_serpent)
+	unless BuffPresent(str_agi_int any=1) Spell(legacy_of_the_emperor)
+}
+
+AddFunction MistweaverManaTeaInstant
+{
+	if Glyph(glyph_of_mana_tea) and ManaPercent() <92 and BuffPresent(mana_tea_aura stacks=2) Spell(mana_tea_glyphed)
+}
+
+AddFunction MistweaverManaTeaChanneled
+{
+	if not Glyph(glyph_of_mana_tea) and BuffPresent(mana_tea_aura) Spell(mana_tea)
+}
+
+AddFunction SurgingMist
+{
+	if Glyph(glyph_of_surging_mist) Spell(surging_mist_glyphed)
+	if Glyph(glyph_of_surging_mist no) Spell(surging_mist)
+}
+
+AddFunction Uplift
+{
+	if Glyph(glyph_of_uplift) Spell(uplift_glyphed)
+	if Glyph(glyph_of_uplift no) Spell(uplift)
+}
+
+AddFunction MistweaverMeleeActions
+{
+	MistweaverManaTeaInstant()
+
+	# Maintain 100% uptime on healing buffs as long as Muscle Memory is active.
+	if SpellKnown(teachings_of_the_monastery)
+	{
+		if BuffPresent(muscle_memory)
+		{
+			if BuffExpires(serpents_zeal 3) Spell(blackout_kick)
+			if BuffExpires(tiger_power 3) Spell(tiger_palm)
+		}
+	}
+
+	# Pool at least 3 Chi for emergency healing.
+	if Chi() >3 Spell(tiger_palm)
+
+	# Build Chi while not capped.
+	if NumberToMaxChi() >0
+	{
+		if not target.InRange(jab) Spell(crackling_jade_lightning)
+		ExpelHarm()
+		Jab()
+	}
+
+	MistweaverManaTeaChanneled()
+}
+
+AddFunction MistweaverAoEActions
+{
+	MistweaverManaTeaInstant()
+
+	if BuffPresent(thunder_focus_tea) Uplift()
+	if BuffPresent(rushing_jade_wind) Spell(spinning_crane_kick)
+	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+	Spell(renewing_mist)
+	Uplift()
+	Spell(spinning_crane_kick)
+
+	MistweaverManaTeaChanneled()
+}
+
+# Tier 5 damage reduction cooldown
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
+{
+	Tier5TalentActions()
+	Spell(fortifying_brew)
+	UseRacialSurvivalActions()
+}
+
+# Damage reduction cooldowns
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
+{
+	Spell(life_cocoon)
+	Spell(revival)
+}
+
+AddIcon mastery=2 help=shortcd
+{
+	if BuffStacks(vital_mists) ==5 SurgingMist()
+	if BuffPresent(soothing_mist) Spell(enveloping_mist)
+
+	if TalentPoints(chi_burst_talent) Spell(chi_burst)
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+	if TalentPoints(zen_sphere_talent) Spell(zen_sphere)
+}
+
+AddIcon mastery=2 help=main
+{
+	MistweaverPreCombatActions()
+	MistweaverBuffActions()
+	MistweaverMeleeActions()
+}
+
+AddIcon mastery=2 help=aoe checkboxon=aoe
+{
+	MistweaverPreCombatActions()
+	MistweaverBuffActions()
+	MistweaverAoEActions()
+}
+
+AddIcon mastery=2 help=cd
+{
+	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
+	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
+	Interrupt()
+	Spell(thunder_focus_tea)
+	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+}
+
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
+{
+	if TotemExpires(statue) Spell(summon_jade_serpent_statue)
+}
+
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
