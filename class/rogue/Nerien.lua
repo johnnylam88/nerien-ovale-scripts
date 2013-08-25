@@ -253,6 +253,8 @@ Define(virmens_bite_potion_buff 105697)
 	SpellInfo(virmens_bite_potion_buff duration=25)
 
 # Racials
+Define(arcane_torrent_energy 25046)
+	SpellInfo(arcane_torrent_energy cd=120 energy=-15)
 Define(berserking 26297)
 	SpellInfo(berserking cd=180 duration=10)
 	SpellAddBuff(berserking berserking=1)
@@ -645,6 +647,8 @@ AddFunction CombatFullRotation
 		#snapshot_stats
 		#virmens_bite_potion
 		UsePotion()
+		#stealth
+		if not IsStealthed() Spell(stealth)
 		if TalentPoints(marked_for_death_talent)
 		{
 			#marked_for_death,if=talent.marked_for_death.enabled
@@ -652,24 +656,34 @@ AddFunction CombatFullRotation
 			#slice_and_dice,if=talent.marked_for_death.enabled
 			Spell(slice_and_dice)
 		}
-		#stealth
-		if not IsStealthed() Spell(stealth)
 	}
 
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
 	if BuffPresent(burst_haste any=1) or target.TimeToDie() <40 UsePotion()
-	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
-	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
 	#auto_attack
 	#kick
 	Interrupt()
-	#use_item,name=ninetailed_gloves
-	UseItemActions()
-	#berserking
-	UseRacialActions()
+	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
+	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
+	#use_item,slot=hands,if=time=0|buff.shadow_blades.up
+	if BuffPresent(shadow_blades) UseItemActions()
+	#arcane_torrent,if=energy<60
+	if Energy() <60 Spell(arcane_torrent_energy)
+	if BuffPresent(shadow_blades) UseRacialActions()
+	#blade_flurry,if=active_enemies>=5
 	#ambush
 	Spell(ambush usable=1)
-	#vanish,if=time>10&(combo_points<3|(talent.anticipation.enabled&anticipation_charges<3)|(buff.shadow_blades.down&(combo_points<4|(talent.anticipation.enabled&anticipation_charges<4))))&((talent.shadow_focus.enabled&buff.adrenaline_rush.down&energy<20)|(talent.subterfuge.enabled&energy>=90)|(!talent.shadow_focus.enabled&!talent.subterfuge.enabled&energy>=60))
+	#vanish,if=time>10&\
+	#	(\
+	#		combo_points<3|\
+	#		(talent.anticipation.enabled&anticipation_charges<3)|\
+	#		(buff.shadow_blades.down&(combo_points<4|(talent.anticipation.enabled&anticipation_charges<4)))\
+	#	)&\
+	#	(\
+	#		(talent.shadow_focus.enabled&buff.adrenaline_rush.down&energy<20)|\
+	#		(talent.subterfuge.enabled&energy>=90)|\
+	#		(!talent.shadow_focus.enabled&!talent.subterfuge.enabled&energy>=60)\
+	#	)
 	if InCombat() and TimeInCombat() >10
 		and {ComboPoints() <3 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3}
 			or {BuffExpires(shadow_blades) and {ComboPoints() <4 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <4}}}}
@@ -679,23 +693,33 @@ AddFunction CombatFullRotation
 	{
 		Spell(vanish)
 	}
+	# Cooldowns (No Tier14)
 	if ArmorSetParts(T14) <4
 	{
 		#shadow_blades,if=!set_bonus.tier14_4pc_melee&time>5
 		if TimeInCombat() >5 Spell(shadow_blades)
 		#killing_spree,if=!set_bonus.tier14_4pc_melee&energy<35&buff.adrenaline_rush.down
-		if BuffExpires(adrenaline_rush) Spell(killing_spree)
+		if Energy() <35 and BuffExpires(adrenaline_rush) Spell(killing_spree)
 		#adrenaline_rush,if=!set_bonus.tier14_4pc_melee&(energy<35|buff.shadow_blades.up)
 		if Energy() <35 or BuffPresent(shadow_blades) Spell(adrenaline_rush)
 	}
+	# Cooldowns (With Tier14), Fit AR, and every-other KS, into each SB
 	if ArmorSetParts(T14) >=4
 	{
-		#shadow_blades,if=set_bonus.tier14_4pc_melee&((cooldown.killing_spree.remains>30.5&cooldown.adrenaline_rush.remains<=9)|(energy<35&(cooldown.killing_spree.remains=0|cooldown.adrenaline_rush.remains=0)))
+		#shadow_blades,if=set_bonus.tier14_4pc_melee&\
+		#	(
+		#		(cooldown.killing_spree.remains>30.5&cooldown.adrenaline_rush.remains<=9)|\
+		#		(energy<35&(cooldown.killing_spree.remains=0|cooldown.adrenaline_rush.remains=0))\
+		#	)
 		{
 			if SpellCooldown(killing_spree) >30.5 and SpellCooldown(adrenaline_rush) <=9 Spell(shadow_blades)
 			if Energy() <35 and {Spell(killing_spree) or Spell(adrenaline_rush)} Spell(shadow_blades)
 		}
-		#killing_spree,if=set_bonus.tier14_4pc_melee&((buff.shadow_blades.up&buff.adrenaline_rush.down&(energy<35|buff.shadow_blades.remains<=3.5))|(buff.shadow_blades.down&cooldown.shadow_blades.remains>30))
+		#killing_spree,if=set_bonus.tier14_4pc_melee&\
+		#	(\
+		#		(buff.shadow_blades.up&buff.adrenaline_rush.down&(energy<35|buff.shadow_blades.remains<=3.5))|\
+		#		(buff.shadow_blades.down&cooldown.shadow_blades.remains>30)\
+		#	)
 		{
 			if BuffPresent(shadow_blades) and BuffExpires(adrenaline_rush) and {Energy() <35 or BuffRemains(shadow_blades) <=3.5} Spell(killing_spree)
 			if BuffExpires(shadow_blades) and SpellCooldown(shadow_blades) >30 Spell(killing_spree)
@@ -711,13 +735,13 @@ AddFunction CombatFullRotation
 	#marked_for_death,if=talent.marked_for_death.enabled&combo_points=0&dot.revealing_strike.ticking
 	if TalentPoints(marked_for_death_talent) and ComboPoints() ==0 and target.DebuffPresent(revealing_strike) Spell(marked_for_death)
 	#run_action_list,name=generator,if=combo_points<5|(talent.anticipation.enabled&anticipation_charges<=4&!dot.revealing_strike.ticking)
-	if ComboPoints() <5
-		or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <=4}
-		or target.DebuffExpires(revealing_strike)
 	{
-		CombatGeneratorActions()
+		if ComboPoints() <5 CombatGeneratorActions()
+		if {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <=4} and target.DebuffExpires(revealing_strike) CombatGeneratorActions()
 	}
-	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
+	#run_action_list,name=finisher,if=!talent.anticipation.enabled|\
+	#	buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|\
+	#	(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
 		or BuffStacks(anticipation) >=4	or {BuffPresent(shadow_blades) and BuffStacks(anticipation) >=3}
@@ -725,11 +749,10 @@ AddFunction CombatFullRotation
 		CombatFinisherActions()
 	}
 	#run_action_list,name=generator,if=energy>60|buff.deep_insight.down|buff.deep_insight.remains>5-combo_points
-	if Energy() >60
-		or BuffExpires(deep_insight)
-		or BuffRemains(deep_insight) > {5 - ComboPoints()}
 	{
-		CombatGeneratorActions()
+		if Energy() >60 CombatGeneratorActions()
+		if BuffExpires(deep_insight) CombatGeneratorActions()
+		if BuffRemains(deep_insight) > {5 - ComboPoints()} CombatGeneratorActions()
 	}
 }
 
@@ -742,13 +765,13 @@ AddFunction CombatPreCombatActions
 		#apply_poison,lethal=deadly
 		ApplyPoisons()
 		#snapshot_stats
+		#stealth
+		if not IsStealthed() Spell(stealth)
 		if TalentPoints(marked_for_death_talent)
 		{
 			#slice_and_dice,if=talent.marked_for_death.enabled
 			Spell(slice_and_dice)
 		}
-		#stealth
-		if not IsStealthed() Spell(stealth)
 	}
 }
 
@@ -763,13 +786,13 @@ AddFunction CombatMainPlusFillerActions
 		if BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4 Spell(slice_and_dice)
 	}
 	#run_action_list,name=generator,if=combo_points<5|(talent.anticipation.enabled&anticipation_charges<=4&!dot.revealing_strike.ticking)
-	if ComboPoints() <5
-		or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <=4}
-		or target.DebuffExpires(revealing_strike)
 	{
-		CombatGeneratorActions()
+		if ComboPoints() <5 CombatGeneratorActions()
+		if {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <=4} and target.DebuffExpires(revealing_strike) CombatGeneratorActions()
 	}
-	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
+	#run_action_list,name=finisher,if=!talent.anticipation.enabled|\
+	#	buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|\
+	#	(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
 		or BuffStacks(anticipation) >=4	or {BuffPresent(shadow_blades) and BuffStacks(anticipation) >=3}
@@ -777,11 +800,10 @@ AddFunction CombatMainPlusFillerActions
 		CombatFinisherActions()
 	}
 	#run_action_list,name=generator,if=energy>60|buff.deep_insight.down|buff.deep_insight.remains>5-combo_points
-	if Energy() >60
-		or BuffExpires(deep_insight)
-		or BuffRemains(deep_insight) > {5 - ComboPoints()}
 	{
-		CombatGeneratorActions()
+		if Energy() >60 CombatGeneratorActions()
+		if BuffExpires(deep_insight) CombatGeneratorActions()
+		if BuffRemains(deep_insight) > {5 - ComboPoints()} CombatGeneratorActions()
 	}
 }
 
@@ -795,7 +817,9 @@ AddFunction CombatMainActions
 		if BuffRemains(slice_and_dice) <2 Spell(slice_and_dice)
 		if BuffRemains(slice_and_dice) <15 and BuffPresent(moderate_insight) and ComboPoints() >=4 Spell(slice_and_dice)
 	}
-	#run_action_list,name=finisher,if=!talent.anticipation.enabled|buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|(buff.shadow_blades.up&anticipation_charges>=3)
+	#run_action_list,name=finisher,if=!talent.anticipation.enabled|\
+	#	buff.deep_insight.up|cooldown.shadow_blades.remains<=11|anticipation_charges>=4|\
+	#	(buff.shadow_blades.up&anticipation_charges>=3)
 	if not TalentPoints(anticipation_talent)
 		or BuffPresent(deep_insight) or SpellCooldown(shadow_blades) <=11
 		or BuffStacks(anticipation) >=4	or {BuffPresent(shadow_blades) and BuffStacks(anticipation) >=3}
@@ -817,7 +841,17 @@ AddFunction CombatShortCooldownActions
 
 	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
 	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
-	#vanish,if=time>10&(combo_points<3|(talent.anticipation.enabled&anticipation_charges<3)|(buff.shadow_blades.down&(combo_points<4|(talent.anticipation.enabled&anticipation_charges<4))))&((talent.shadow_focus.enabled&buff.adrenaline_rush.down&energy<20)|(talent.subterfuge.enabled&energy>=90)|(!talent.shadow_focus.enabled&!talent.subterfuge.enabled&energy>=60))
+	#vanish,if=time>10&\
+	#	(\
+	#		combo_points<3|\
+	#		(talent.anticipation.enabled&anticipation_charges<3)|\
+	#		(buff.shadow_blades.down&(combo_points<4|(talent.anticipation.enabled&anticipation_charges<4)))\
+	#	)&\
+	#	(\
+	#		(talent.shadow_focus.enabled&buff.adrenaline_rush.down&energy<20)|\
+	#		(talent.subterfuge.enabled&energy>=90)|\
+	#		(!talent.shadow_focus.enabled&!talent.subterfuge.enabled&energy>=60)\
+	#	)
 	if InCombat() and TimeInCombat() >10
 		and {ComboPoints() <3 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3}
 			or {BuffExpires(shadow_blades) and {ComboPoints() <4 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <4}}}}
@@ -851,12 +885,12 @@ AddFunction CombatCooldownActions
 
 	unless {BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 and Spell(preparation)}
 	{
-		#use_item,name=ninetailed_gloves
-		UseItemActions()
-		#berserking
-		UseRacialActions()
+		#use_item,slot=hands,if=time=0|buff.shadow_blades.up
+		if BuffPresent(shadow_blades) UseItemActions()
+		#arcane_torrent,if=energy<60
+		if Energy() <60 Spell(arcane_torrent_energy)
+		if BuffPresent(shadow_blades) UseRacialActions()
 
-		#vanish,if=time>10&(combo_points<3|(talent.anticipation.enabled&anticipation_charges<3)|(buff.shadow_blades.down&(combo_points<4|(talent.anticipation.enabled&anticipation_charges<4))))&((talent.shadow_focus.enabled&buff.adrenaline_rush.down&energy<20)|(talent.subterfuge.enabled&energy>=90)|(!talent.shadow_focus.enabled&!talent.subterfuge.enabled&energy>=60))
 		unless {Spell(vanish) and InCombat() and TimeInCombat() >10
 			and {ComboPoints() <3 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <3}
 				or {BuffExpires(shadow_blades) and {ComboPoints() <4 or {TalentPoints(anticipation_talent) and BuffStacks(anticipation) <4}}}}
@@ -864,23 +898,33 @@ AddFunction CombatCooldownActions
 				or {TalentPoints(subterfuge_talent) and Energy() >=90}
 				or {not TalentPoints(shadow_focus_talent) and not TalentPoints(subterfuge_talent) and Energy() >=60}}}
 		{
+			# Cooldowns (No Tier14)
 			if ArmorSetParts(T14) <4
 			{
 				#shadow_blades,if=!set_bonus.tier14_4pc_melee&time>5
 				if TimeInCombat() >5 Spell(shadow_blades)
 				#killing_spree,if=!set_bonus.tier14_4pc_melee&energy<35&buff.adrenaline_rush.down
-				if BuffExpires(adrenaline_rush) Spell(killing_spree)
+				if Energy() <35 and BuffExpires(adrenaline_rush) Spell(killing_spree)
 				#adrenaline_rush,if=!set_bonus.tier14_4pc_melee&(energy<35|buff.shadow_blades.up)
 				if Energy() <35 or BuffPresent(shadow_blades) Spell(adrenaline_rush)
 			}
+			# Cooldowns (With Tier14), Fit AR, and every-other KS, into each SB
 			if ArmorSetParts(T14) >=4
 			{
-				#shadow_blades,if=set_bonus.tier14_4pc_melee&((cooldown.killing_spree.remains>30.5&cooldown.adrenaline_rush.remains<=9)|(energy<35&(cooldown.killing_spree.remains=0|cooldown.adrenaline_rush.remains=0)))
+				#shadow_blades,if=set_bonus.tier14_4pc_melee&\
+				#	(
+				#		(cooldown.killing_spree.remains>30.5&cooldown.adrenaline_rush.remains<=9)|\
+				#		(energy<35&(cooldown.killing_spree.remains=0|cooldown.adrenaline_rush.remains=0))\
+				#	)
 				{
 					if SpellCooldown(killing_spree) >30.5 and SpellCooldown(adrenaline_rush) <=9 Spell(shadow_blades)
 					if Energy() <35 and {Spell(killing_spree) or Spell(adrenaline_rush)} Spell(shadow_blades)
 				}
-				#killing_spree,if=set_bonus.tier14_4pc_melee&((buff.shadow_blades.up&buff.adrenaline_rush.down&(energy<35|buff.shadow_blades.remains<=3.5))|(buff.shadow_blades.down&cooldown.shadow_blades.remains>30))
+				#killing_spree,if=set_bonus.tier14_4pc_melee&\
+				#	(\
+				#		(buff.shadow_blades.up&buff.adrenaline_rush.down&(energy<35|buff.shadow_blades.remains<=3.5))|\
+				#		(buff.shadow_blades.down&cooldown.shadow_blades.remains>30)\
+				#	)
 				{
 					if BuffPresent(shadow_blades) and BuffExpires(adrenaline_rush) and {Energy() <35 or BuffRemains(shadow_blades) <=3.5} Spell(killing_spree)
 					if BuffExpires(shadow_blades) and SpellCooldown(shadow_blades) >30 Spell(killing_spree)
