@@ -376,6 +376,8 @@ AddFunction AssassinationFullRotation
 		#snapshot_stats
 		#virmens_bite_potion
 		UsePotion()
+		#stealth
+		if not IsStealthed() Spell(stealth)
 		if TalentPoints(marked_for_death_talent)
 		{
 			#marked_for_death,if=talent.marked_for_death.enabled
@@ -383,26 +385,28 @@ AddFunction AssassinationFullRotation
 			#slice_and_dice,if=talent.marked_for_death.enabled
 			Spell(slice_and_dice)
 		}
-		#stealth
-		if not IsStealthed() Spell(stealth)
 	}
 
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
 	if BuffPresent(burst_haste any=1) or target.TimeToDie() <40 UsePotion()
-	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
-	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
 	#auto_attack
 	#kick
 	Interrupt()
-	#use_item,name=ninetailed_gloves
-	UseItemActions()
-	#berserking
-	UseRacialActions()
-	#vanish,if=time>10&!buff.stealthed.up&!buff.shadow_blades.up
-	if InCombat() and TimeInCombat() >10 and not IsStealthed() and BuffExpires(shadow_blades) Spell(vanish)
+	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
+	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
+	#use_item,slot=hands,if=time=0|buff.shadow_blades.up
+	if BuffPresent(shadow_blades) UseItemActions()
+	#arcane_torrent,if=energy<60
+	if Energy() <60 Spell(arcane_torrent_energy)
+	if BuffPresent(shadow_blades) UseRacialActions()
+	if InCombat() and TimeInCombat() >10 and Stealthed(no) and BuffExpires(vanish_buff)
+		and {{SpellKnown(shadow_blades) and BuffExpires(shadow_blades)} or not SpellKnown(shadow_blades)}
+	{
+		Spell(vanish)
+	}
 	#ambush
 	Spell(ambush usable=1)
-	#shadow_blades,if=(buff.bloodlust.react|time>60)
+	#shadow_blades,if=buff.bloodlust.react|time>60
 	if BuffPresent(burst_haste any=1) or TimeInCombat() >60 Spell(shadow_blades)
 	#slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffRemains(slice_and_dice) <2 Spell(slice_and_dice)
@@ -430,13 +434,12 @@ AddFunction AssassinationFullRotation
 	}
 	#envenom,if=combo_points>=2&buff.slice_and_dice.remains<3
 	if ComboPoints() >=2 and BuffRemains(slice_and_dice) <3 Spell(envenom)
-	ExposeArmor()
 	#dispatch,if=combo_points<5
 	if ComboPoints() <5 and {BuffPresent(blindside) or target.HealthPercent() <35} Spell(dispatch)
-	#tricks_of_the_trade
-	TricksOfTheTrade()
 	#mutilate
 	Spell(mutilate)
+	#tricks_of_the_trade
+	TricksOfTheTrade()
 }
 
 AddFunction AssassinationPreCombatActions
@@ -448,17 +451,17 @@ AddFunction AssassinationPreCombatActions
 		#apply_poison,lethal=deadly
 		ApplyPoisons()
 		#snapshot_stats
+		#stealth
+		if not IsStealthed() Spell(stealth)
 		if TalentPoints(marked_for_death_talent)
 		{
 			#slice_and_dice,if=talent.marked_for_death.enabled
 			Spell(slice_and_dice)
 		}
-		#stealth
-		if not IsStealthed() Spell(stealth)
 	}
 }
 
-AddFunction AssassinationMainPlusFillerActions
+AddFunction AssassinationMainActions
 {
 	#auto_attack
 	#ambush
@@ -488,15 +491,17 @@ AddFunction AssassinationMainPlusFillerActions
 	ExposeArmor()
 	#dispatch,if=combo_points<5
 	if ComboPoints() <5 and {BuffPresent(blindside) or target.HealthPercent() <35} Spell(dispatch)
-	#tricks_of_the_trade
-	TricksOfTheTrade()
 	#mutilate
 	Spell(mutilate)
+	#tricks_of_the_trade
+	TricksOfTheTrade()
 }
 
-AddFunction AssassinationMainActions
+AddFunction AssassinationPredictiveActions
 {
 	#auto_attack
+	#ambush
+	Spell(ambush usable=1)
 	#slice_and_dice,if=buff.slice_and_dice.remains<2
 	if BuffRemains(slice_and_dice) <2 Spell(slice_and_dice)
 	#rupture,if=ticks_remain<2|(combo_points=5&ticks_remain<3)
@@ -526,8 +531,11 @@ AddFunction AssassinationShortCooldownActions
 
 	#preparation,if=!buff.vanish.up&cooldown.vanish.remains>60
 	if BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 Spell(preparation)
-	#vanish,if=time>10&!buff.stealthed.up&!buff.shadow_blades.up
-	if InCombat() and TimeInCombat() >10 and not IsStealthed() and BuffExpires(shadow_blades) Spell(vanish)
+	if InCombat() and TimeInCombat() >10 and Stealthed(no) and BuffExpires(vanish_buff)
+		and {{SpellKnown(shadow_blades) and BuffExpires(shadow_blades)} or not SpellKnown(shadow_blades)}
+	{
+		Spell(vanish)
+	}
 
 	unless Spell(ambush usable=1)
 		or {BuffRemains(slice_and_dice) <2 and ComboPoints() >0}
@@ -548,22 +556,28 @@ AddFunction AssassinationCooldownActions
 
 	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<40
 	if BuffPresent(burst_haste any=1) or target.TimeToDie() <40 UsePotion()
+	#auto_attack
 	#kick
 	Interrupt()
 
 	unless {BuffExpires(vanish_buff) and SpellCooldown(vanish) >60 and Spell(preparation)}
 	{
-		#use_item,name=ninetailed_gloves
-		UseItemActions()
-		#berserking
-		UseRacialActions()
+		#use_item,slot=hands,if=time=0|buff.shadow_blades.up
+		if BuffPresent(shadow_blades) UseItemActions()
+		#arcane_torrent,if=energy<60
+		if Energy() <60 Spell(arcane_torrent_energy)
+		if BuffPresent(shadow_blades) UseRacialActions()
 
-		unless {TimeInCombat() >10 and not IsStealthed() and BuffExpires(shadow_blades) and Spell(vanish)}
+		unless {Spell(vanish) and InCombat() and TimeInCombat() >10 and Stealthed(no) and BuffExpires(vanish_buff)
+			and {{SpellKnown(shadow_blades) and BuffExpires(shadow_blades)} or not SpellKnown(shadow_blades)}}
+			or Spell(ambush usable=1)
 		{
-			#shadow_blades,if=(buff.bloodlust.react|time>60)
+			#shadow_blades,if=buff.bloodlust.react|time>60
 			if BuffPresent(burst_haste any=1) or TimeInCombat() >60 Spell(shadow_blades)
 
-			unless BuffRemains(slice_and_dice) <2 or target.TicksRemain(rupture) <2
+			unless {BuffRemains(slice_and_dice) <2 and ComboPoints() >0}
+				or {target.TicksRemain(rupture) <2}
+				or {ComboPoints() ==5 and target.TicksRemain(rupture) <3}
 			{
 				#vendetta
 				Spell(vendetta)
@@ -590,13 +604,13 @@ AddIcon mastery=1 help=shortcd
 AddIcon mastery=1 help=main
 {
 	AssassinationPreCombatActions()
-	AssassinationMainPlusFillerActions()
+	AssassinationMainActions()
 }
 
 AddIcon mastery=1 help=main
 {
 	AssassinationPreCombatActions()
-	AssassinationMainActions()
+	AssassinationPredictiveActions()
 }
 
 AddIcon mastery=1 help=cd
@@ -775,7 +789,7 @@ AddFunction CombatPreCombatActions
 	}
 }
 
-AddFunction CombatMainPlusFillerActions
+AddFunction CombatMainActions
 {
 	#auto_attack
 	#ambush
@@ -807,7 +821,7 @@ AddFunction CombatMainPlusFillerActions
 	}
 }
 
-AddFunction CombatMainActions
+AddFunction CombatPredictiveActions
 {
 	#auto_attack
 	#ambush
@@ -954,13 +968,13 @@ AddIcon mastery=2 help=shortcd
 AddIcon mastery=2 help=main
 {
 	CombatPreCombatActions()
-	CombatMainPlusFillerActions()
+	CombatMainActions()
 }
 
 AddIcon mastery=2 help=main
 {
 	CombatPreCombatActions()
-	CombatMainActions()
+	CombatPredictiveActions()
 }
 
 AddIcon mastery=2 help=cd
