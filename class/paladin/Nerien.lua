@@ -279,10 +279,7 @@ Define(word_of_glory_glyphed 136494)
 	SpellAddBuff(word_of_glory_glyphed bastion_of_glory=0 divine_purpose=0)
 
 # Items
-ItemList(darkmist_vortex 86894 86336 87172)
-Define(darkmist_vortex_buff 126657)
-ItemList(lei_shens_final_orders 86802 86144 87072)
-Define(lei_shens_final_orders_buff 126582)
+Define(tier15_4pc_melee 138169)
 Define(mogu_power_potion 76095)
 Define(mogu_power_potion_buff 105706)
 	SpellInfo(mogu_power_potion_buff duration=25)
@@ -671,10 +668,10 @@ AddFunction RetributionFullRotation
 		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
 		#blessing_of_might,if=!aura.mastery.up&!aura.str_agi_int.up
 		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
-		#seal_of_righteousness,if=active_enemies>=4
-		if Enemies() >=4 and not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
 		#seal_of_truth,if=active_enemies<4
 		if Enemies() <4 and not Stance(paladin_seal_of_truth) Spell(seal_of_truth)
+		#seal_of_righteousness,if=active_enemies>=4
+		if Enemies() >=4 and not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
 		#snapshot_stats
 		#mogu_power_potion
 		RetributionUsePotion()
@@ -685,66 +682,55 @@ AddFunction RetributionFullRotation
 	#mogu_power_potion,if=(buff.bloodlust.react|(buff.ancient_power.up&buff.avenging_wrath.up)|target.time_to_die<=40)
 	if BuffPresent(burst_haste any=1) or {BuffPresent(ancient_power) and BuffPresent(avenging_wrath)} or target.TimeToDie() <=40 RetributionUsePotion()
 	#auto_attack
-	#judgment,if=!target.debuff.physical_vulnerability.up|target.debuff.physical_vulnerability.remains<6
-	if target.DebuffRemains(physical_vulnerability any=1) <6 Spell(judgment)
-	if TalentPoints(divine_purpose_talent)
-	{
-		#inquisition,if=buff.inquisition.down&(holy_power>=1|buff.divine_purpose.react)
-		if BuffExpires(inquisition) and {HolyPower() >=1 or BuffPresent(divine_purpose)} Spell(inquisition)
-	}
 	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
 	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
-	if BuffPresent(inquisition)
+	# // Avenging Wrath
 	{
-		if {HasTrinket(lei_shens_final_orders) and BuffPresent(lei_shens_final_orders_buff)}
-			or {HasTrinket(darkmist_vortex) and BuffPresent(darkmist_vortex_buff)}
-			or {HasTrinket(lei_shens_final_orders no) and HasTrinket(darkmist_vortex no)}
+		#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
+		#avenging_wrath,if=buff.inquisition.up
+		if BuffPresent(inquisition)
+			and {{not TalentPoints(sanctified_wrath_talent)
+					and SpellKnown(guardian_of_ancient_kings_retribution)
+					and SpellCooldown(guardian_of_ancient_kings_retribution) <291}
+				or TalentPoints(sanctified_wrath_talent)
+				or not SpellKnown(guardian_of_ancient_kings_retribution)}
 		{
-			if not SpellKnown(guardian_of_ancient_kings_retribution) or TalentPoints(sanctified_wrath_talent)
-			{
-				#avenging_wrath,if=buff.inquisition.up
-				Spell(avenging_wrath)
-			}
-			if SpellKnown(guardian_of_ancient_kings_retribution) and not TalentPoints(sanctified_wrath_talent)
-			{
-				#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
-				if BuffStacks(ancient_power) >=20 Spell(avenging_wrath)
-				if SpellCooldown(guardian_of_ancient_kings_retribution) <{SpellData(avenging_wrath duration) -1} Spell(avenging_wrath)
-			}
+			Spell(avenging_wrath)
 		}
 	}
-	if SpellKnown(avenging_wrath)
+	# // Guardian of Ancient Kings
 	{
-		#guardian_of_ancient_kings,if=buff.avenging_wrath.up
-		if TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath) Spell(guardian_of_ancient_kings_retribution)
-		#guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10
-		if not TalentPoints(sanctified_wrath_talent) and SpellCooldown(avenging_wrath) <10 Spell(guardian_of_ancient_kings_retribution)
+		#guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10|target.time_to_die<=60
+		#guardian_of_ancient_kings,if=buff.avenging_wrath.up|target.time_to_die<=60
+		if {not TalentPoints(sanctified_wrath_talent) and SpellKnown(avenging_wrath) and SpellCooldown(avenging_wrath) <10}
+			or {TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath)}
+			or not SpellKnown(avenging_wrath)
+			or target.TimeToDie() <=60
+		{
+			Spell(guardian_of_ancient_kings_retribution)
+		}
 	}
-	if not SpellKnown(avenging_wrath)
-	{
-		#guardian_of_ancient_kings
-		Spell(guardian_of_ancient_kings_retribution)
-	}
+	# // Holy Avenger
 	if TalentPoints(holy_avenger_talent)
 	{
-		if BuffPresent(inquisition) and HolyPower() <=2
-		{
-			if not SpellKnown(guardian_of_ancient_kings_retribution) Spell(holy_avenger)
-			if SpellKnown(guardian_of_ancient_kings_retribution)
-			{
-				if BuffStacks(ancient_power) >=20 Spell(holy_avenger)
-				if SpellCooldown(guardian_of_ancient_kings_retribution) <{SpellData(holy_avenger duration) -1} Spell(holy_avenger)
-			}
-		}
+		#holy_avenger,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<289)&holy_power<=2
+		if BuffPresent(inquisition) and HolyPower() <=2 and SpellCooldown(guardian_of_ancient_kings_retribution) <289 Spell(holy_avenger)
 	}
 	#use_item,name=reinbinders_fists,if=buff.inquisition.up
 	if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=14} UseItemActions()
-	if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=15}
+	# // Execution Sentence and Light's Hammer
 	{
-		#execution_sentence,if=buff.inquisition.up
-		if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
-		#lights_hammer,if=buff.inquisition.up
-		if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
+		#execution_sentence,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
+		#execution_sentence,if=buff.inquisition.up&time>=15
+		#lights_hammer,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
+		#lights_hammer,if=buff.inquisition.up&time>=15
+		if BuffPresent(inquisition)
+			and {{TalentPoints(sanctified_wrath_talent) and {BuffExpires(ancient_power) or BuffStacks(ancient_power) ==20}}
+				or {not TalentPoints(sanctified_wrath_talent) and TimeInCombat() >=15}}
+		{
+			if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
+			if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
+		}
 	}
 	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
 	{
@@ -753,38 +739,39 @@ AddFunction RetributionFullRotation
 		#templars_verdict,if=holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3)
 		Spell(templars_verdict)
 	}
-	if SpellKnown(hammer_of_wrath) and {BuffPresent(avenging_wrath) or target.HealthPercent() <20}
+	#hammer_of_wrath
 	{
-		#hammer_of_wrath
-		Spell(hammer_of_wrath)
 		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
-		if SpellCooldown(hammer_of_wrath) >0 and SpellCooldown(hammer_of_wrath) <=0.2
-			wait Spell(hammer_of_wrath)
+		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
+		if TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.2)
+		if not TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.1)
 	}
-	if SpellKnown(exorcism)
+	#crusader_strike
 	{
-		#exorcism
-		Spell(exorcism)
-		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
-		if SpellCooldown(exorcism) >0 and SpellCooldown(exorcism) <=0.2
-			wait Spell(exorcism)
+		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
+		Spell(crusader_strike wait=0.2)
 	}
-	#judgment,if=!(set_bonus.tier15_4pc_melee)&(target.health.pct<=20|buff.avenging_wrath.up)&active_enemies<2
-	if ArmorSetParts(T15_melee) <4 and {target.HealthPercent() <=20 or BuffPresent(avenging_wrath)} and Enemies() <2 Spell(judgment)
+	#exorcism,if=active_enemies>=2&active_enemies<=4&set_bonus.tier15_2pc_melee&glyph.mass_exorcism.enabled
+	if Enemies() >=2 and Enemies() <=4 and ArmorSetParts(T15_melee) >=2 and Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed)
 	#hammer_of_the_righteous,if=active_enemies>=4
 	if Enemies() >=4 Spell(hammer_of_the_righteous)
-	if SpellKnown(crusader_strike)
-	{
-		#crusader_strike
-		Spell(crusader_strike)
-		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
-		if SpellCooldown(crusader_strike) >0 and SpellCooldown(crusader_strike) <=0.2
-			wait Spell(crusader_strike)
-	}
+	#templars_verdict,if=buff.avenging_wrath.up
+	if BuffPresent(avenging_wrath) Spell(templars_verdict)
 	#judgment,target=2,if=active_enemies>=2&buff.glyph_double_jeopardy.up
 	if BuffPresent(glyph_of_double_jeopardy_aura) and Enemies() >=2 Spell(judgment)
 	#judgment
-	Spell(judgment)
+	{
+		#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
+		Spell(judgment wait=0.2)
+	}
+	#exorcism
+	{
+		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
+		if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
+		if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
+	}
+	#templars_verdict,if=buff.tier15_4pc_melee.up
+	if BuffPresent(tier15_4pc_melee) Spell(templars_verdict)
 	if BuffRemains(inquisition) >4
 	{
 		#divine_storm,if=active_enemies>=2&buff.inquisition.remains>4
@@ -792,11 +779,8 @@ AddFunction RetributionFullRotation
 		#templars_verdict,if=buff.inquisition.remains>4
 		Spell(templars_verdict)
 	}
-	if TalentPoints(holy_prism_talent)
-	{
-		#holy_prism
-		Spell(holy_prism)
-	}
+	#holy_prism
+	if TalentPoints(holy_prism_talent) Spell(holy_prism)
 }
 
 AddFunction RetributionPreCombatActions
@@ -815,13 +799,6 @@ AddFunction RetributionPreCombatActions
 AddFunction RetributionMainActions
 {
 	#auto_attack
-	#judgment,if=!target.debuff.physical_vulnerability.up|target.debuff.physical_vulnerability.remains<6
-	if target.DebuffRemains(physical_vulnerability any=1) <6 Spell(judgment)
-	if TalentPoints(divine_purpose_talent)
-	{
-		#inquisition,if=buff.inquisition.down&(holy_power>=1|buff.divine_purpose.react)
-		if BuffExpires(inquisition) and {HolyPower() >=1 or BuffPresent(divine_purpose)} Spell(inquisition)
-	}
 	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
 	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
 	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
@@ -829,56 +806,45 @@ AddFunction RetributionMainActions
 		#templars_verdict,if=holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3)
 		Spell(templars_verdict)
 	}
-	if SpellKnown(hammer_of_wrath) and {BuffPresent(avenging_wrath) or target.HealthPercent() <20}
+	#hammer_of_wrath
 	{
-		#hammer_of_wrath
-		Spell(hammer_of_wrath)
 		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
-		if SpellCooldown(hammer_of_wrath) >0 and SpellCooldown(hammer_of_wrath) <=0.2
-			wait Spell(hammer_of_wrath)
+		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
+		if TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.2)
+		if not TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.1)
 	}
-	if SpellKnown(exorcism)
+	#crusader_strike
 	{
-		#exorcism
-		Spell(exorcism)
-		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
-		if SpellCooldown(exorcism) >0 and SpellCooldown(exorcism) <=0.2
-			wait Spell(exorcism)
-	}
-	#judgment,if=!(set_bonus.tier15_4pc_melee)&(target.health.pct<=20|buff.avenging_wrath.up)&active_enemies<2
-	if ArmorSetParts(T15_melee) <4 and {target.HealthPercent() <=20 or BuffPresent(avenging_wrath)} Spell(judgment)
-	if SpellKnown(crusader_strike)
-	{
-		#crusader_strike
-		Spell(crusader_strike)
 		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
-		if SpellCooldown(crusader_strike) >0 and SpellCooldown(crusader_strike) <=0.2
-			wait Spell(crusader_strike)
+		Spell(crusader_strike wait=0.2)
 	}
+	#templars_verdict,if=buff.avenging_wrath.up
+	if BuffPresent(avenging_wrath) Spell(templars_verdict)
 	#judgment
-	Spell(judgment)
+	{
+		#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
+		Spell(judgment wait=0.2)
+	}
+	#exorcism
+	{
+		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
+		if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
+		if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
+	}
+	#templars_verdict,if=buff.tier15_4pc_melee.up
+	if BuffPresent(tier15_4pc_melee) Spell(templars_verdict)
 	if BuffRemains(inquisition) >4
 	{
 		#templars_verdict,if=buff.inquisition.remains>4
 		Spell(templars_verdict)
 	}
-	if TalentPoints(holy_prism_talent)
-	{
-		#holy_prism
-		Spell(holy_prism)
-	}
+	#holy_prism
+	if TalentPoints(holy_prism_talent) Spell(holy_prism)
 }
 
 AddFunction RetributionAoEActions
 {
 	#auto_attack
-	#judgment,if=!target.debuff.physical_vulnerability.up|target.debuff.physical_vulnerability.remains<6
-	if target.DebuffRemains(physical_vulnerability any=1) <6 Spell(judgment)
-	if TalentPoints(divine_purpose_talent)
-	{
-		#inquisition,if=buff.inquisition.down&(holy_power>=1|buff.divine_purpose.react)
-		if BuffExpires(inquisition) and {HolyPower() >=1 or BuffPresent(divine_purpose)} Spell(inquisition)
-	}
 	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
 	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
 	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
@@ -886,80 +852,80 @@ AddFunction RetributionAoEActions
 		#divine_storm,if=active_enemies>=2&(holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3))
 		Spell(divine_storm)
 	}
-	if SpellKnown(hammer_of_wrath) and {BuffPresent(avenging_wrath) or target.HealthPercent() <20}
+	#hammer_of_wrath
 	{
-		#hammer_of_wrath
-		Spell(hammer_of_wrath)
 		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
-		if SpellCooldown(hammer_of_wrath) >0 and SpellCooldown(hammer_of_wrath) <=0.2
-			wait Spell(hammer_of_wrath)
+		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
+		if TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.2)
+		if not TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.1)
 	}
-	if SpellKnown(exorcism)
+	#crusader_strike
 	{
-		#exorcism
-		Spell(exorcism)
-		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
-		if SpellCooldown(exorcism) >0 and SpellCooldown(exorcism) <=0.2
-			wait Spell(exorcism)
-	}
-	#judgment,if=!(set_bonus.tier15_4pc_melee)&(target.health.pct<=20|buff.avenging_wrath.up)&active_enemies<2
-	if ArmorSetParts(T15_melee) <4 and {target.HealthPercent() <=20 or BuffPresent(avenging_wrath)} and Enemies() <2 Spell(judgment)
-	#hammer_of_the_righteous,if=active_enemies>=4
-	Spell(hammer_of_the_righteous)
-	if SpellKnown(crusader_strike)
-	{
-		#crusader_strike
-		Spell(crusader_strike)
 		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
-		if SpellCooldown(crusader_strike) >0 and SpellCooldown(crusader_strike) <=0.2
-			wait Spell(crusader_strike)
+		Spell(crusader_strike wait=0.2)
 	}
+	#exorcism,if=active_enemies>=2&active_enemies<=4&set_bonus.tier15_2pc_melee&glyph.mass_exorcism.enabled
+	if Enemies() <=4 and ArmorSetParts(T15_melee) >=2 and Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed)
+	#hammer_of_the_righteous,if=active_enemies>=4
+	if Enemies() >=4 Spell(hammer_of_the_righteous)
+	#templars_verdict,if=buff.avenging_wrath.up
+	if BuffPresent(avenging_wrath) Spell(templars_verdict)
 	#judgment,target=2,if=active_enemies>=2&buff.glyph_double_jeopardy.up
-	if BuffPresent(glyph_of_double_jeopardy_aura) and Enemies() >=2 Spell(judgment)
+	if BuffPresent(glyph_of_double_jeopardy_aura) Spell(judgment)
 	#judgment
-	Spell(judgment)
+	{
+		#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
+		Spell(judgment wait=0.2)
+	}
+	#exorcism
+	{
+		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
+		if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
+		if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
+	}
+	#templars_verdict,if=buff.tier15_4pc_melee.up
+	if BuffPresent(tier15_4pc_melee) Spell(templars_verdict)
 	if BuffRemains(inquisition) >4
 	{
 		#divine_storm,if=active_enemies>=2&buff.inquisition.remains>4
 		Spell(divine_storm)
 	}
-	if TalentPoints(holy_prism_talent)
-	{
-		#holy_prism
-		Spell(holy_prism)
-	}
+	#holy_prism
+	if TalentPoints(holy_prism_talent) Spell(holy_prism)
 }
 
 AddFunction RetributionShortCooldownActions
 {
-	unless {target.DebuffRemains(physical_vulnerability any=1) <6 and Spell(judgment)}
-		or {TalentPoints(divine_purpose_talent) and BuffExpires(inquisition) and {HolyPower() >=1 or BuffPresent(divine_purpose)}}
-		or {BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)}}
+	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
+	unless BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)}
 	{
-		if BuffPresent(inquisition)
+		# // Avenging Wrath
 		{
-			if {HasTrinket(lei_shens_final_orders) and BuffPresent(lei_shens_final_orders_buff)}
-				or {HasTrinket(darkmist_vortex) and BuffPresent(darkmist_vortex_buff)}
-				or {HasTrinket(lei_shens_final_orders no) and HasTrinket(darkmist_vortex no)}
+			#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
+			#avenging_wrath,if=buff.inquisition.up
+			if BuffPresent(inquisition)
+				and {{not TalentPoints(sanctified_wrath_talent)
+						and SpellKnown(guardian_of_ancient_kings_retribution)
+						and SpellCooldown(guardian_of_ancient_kings_retribution) <291}
+					or TalentPoints(sanctified_wrath_talent)
+					or not SpellKnown(guardian_of_ancient_kings_retribution)}
 			{
-				if not SpellKnown(guardian_of_ancient_kings_retribution) or TalentPoints(sanctified_wrath_talent)
-				{
-					#avenging_wrath,if=buff.inquisition.up
-					Spell(avenging_wrath)
-				}
-				if SpellKnown(guardian_of_ancient_kings_retribution) and not TalentPoints(sanctified_wrath_talent)
-				{
-					#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
-					if SpellCooldown(guardian_of_ancient_kings_retribution) <291 Spell(avenging_wrath)
-				}
+				Spell(avenging_wrath)
 			}
 		}
-		if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=15}
+		# // Execution Sentence and Light's Hammer
 		{
-			#execution_sentence,if=buff.inquisition.up
-			if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
-			#lights_hammer,if=buff.inquisition.up
-			if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
+			#execution_sentence,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
+			#execution_sentence,if=buff.inquisition.up&time>=15
+			#lights_hammer,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
+			#lights_hammer,if=buff.inquisition.up&time>=15
+			if BuffPresent(inquisition)
+				and {{TalentPoints(sanctified_wrath_talent) and {BuffExpires(ancient_power) or BuffStacks(ancient_power) ==20}}
+					or {not TalentPoints(sanctified_wrath_talent) and TimeInCombat() >=15}}
+			{
+				if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
+				if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
+			}
 		}
 	}
 }
@@ -977,29 +943,25 @@ AddFunction RetributionCooldownActions
 	#mogu_power_potion,if=(buff.bloodlust.react|(buff.ancient_power.up&buff.avenging_wrath.up)|target.time_to_die<=40)
 	if BuffPresent(burst_haste any=1) or {BuffPresent(ancient_power) and BuffPresent(avenging_wrath)} or target.TimeToDie() <=40 RetributionUsePotion()
 
-	unless {target.DebuffRemains(physical_vulnerability any=1) <6 and Spell(judgment)}
-		or {TalentPoints(divine_purpose_talent) and BuffExpires(inquisition) and {HolyPower() >=1 or BuffPresent(divine_purpose)}}
-		or {BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)}}
+	unless BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)}
 	{
-		if SpellKnown(avenging_wrath)
+		# // Guardian of Ancient Kings
 		{
-			#guardian_of_ancient_kings,if=buff.avenging_wrath.up
-			if TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath) Spell(guardian_of_ancient_kings_retribution)
-			#guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10
-			if not TalentPoints(sanctified_wrath_talent) and SpellCooldown(avenging_wrath) <10 Spell(guardian_of_ancient_kings_retribution)
+			#guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10|target.time_to_die<=60
+			#guardian_of_ancient_kings,if=buff.avenging_wrath.up|target.time_to_die<=60
+			if {not TalentPoints(sanctified_wrath_talent) and SpellKnown(avenging_wrath) and SpellCooldown(avenging_wrath) <10}
+				or {TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath)}
+				or not SpellKnown(avenging_wrath)
+				or target.TimeToDie() <=60
+			{
+				Spell(guardian_of_ancient_kings_retribution)
+			}
 		}
-		if not SpellKnown(avenging_wrath)
-		{
-			#guardian_of_ancient_kings
-			Spell(guardian_of_ancient_kings_retribution)
-		}
+		# // Holy Avenger
 		if TalentPoints(holy_avenger_talent)
 		{
-			if BuffPresent(inquisition) and HolyPower() <=2
-			{
-				if not SpellKnown(guardian_of_ancient_kings_retribution) Spell(holy_avenger)
-				if SpellKnown(guardian_of_ancient_kings_retribution) and SpellCooldown(guardian_of_ancient_kings_retribution) <289 Spell(holy_avenger)
-			}
+			#holy_avenger,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<289)&holy_power<=2
+			if BuffPresent(inquisition) and HolyPower() <=2 and SpellCooldown(guardian_of_ancient_kings_retribution) <289 Spell(holy_avenger)
 		}
 		#use_item,name=reinbinders_fists,if=buff.inquisition.up
 		if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=14} UseItemActions()
@@ -1038,7 +1000,6 @@ AddIcon mastery=3 help=main
 
 AddIcon mastery=3 help=aoe checkboxon=aoe
 {
-	RetributionPreCombatActions()
 	BuffActions()
 	RetributionAoEActions()
 }
@@ -1052,6 +1013,7 @@ AddIcon mastery=3 help=cd
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	if BuffPresent(righteous_fury) Texture(spell_holy_sealoffury)
+	if Enemies() >=4 and not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
 }
 
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
