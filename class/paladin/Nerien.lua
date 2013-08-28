@@ -513,11 +513,11 @@ AddFunction ProtectionHolyPowerGeneratorActions
 	if BuffPresent(sanctified_wrath)
 	{
 		Spell(judgment)
-		Spell(crusader_strike)
+		Spell(crusader_strike wait=0.5)
 	}
 	if BuffExpires(sanctified_wrath)
 	{
-		Spell(crusader_strike)
+		Spell(crusader_strike wait=0.5)
 		Spell(judgment)
 	}
 	if BuffPresent(grand_crusader) Spell(avengers_shield)
@@ -585,23 +585,25 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 AddIcon mastery=2 help=shortcd
 {
 	if BuffExpires(righteous_fury) Spell(righteous_fury)
-	if TalentPoints(eternal_flame_talent)
+	# SimC: Delay actions for CS if it comes off cooldown in the next 0.5s.
+	if SpellCooldown(crusader_strike) >=0.5
 	{
-		# EF[buffEF<2.5]
-		if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffRemains(eternal_flame) <2.5 Spell(eternal_flame)
-		# SotR5
-		if BuffExpires(shield_of_the_righteous_buff) and HasMaxHolyPower() ShieldOfTheRighteous()
-	}
-	if not TalentPoints(eternal_flame_talent)
-	{
-		# SotR
-		if HasThreeHolyPower()
+		if TalentPoints(eternal_flame_talent)
 		{
-			if BuffPresent(shield_of_the_righteous_buff) and HealthPercent() <60 WordOfGlory()
-			ShieldOfTheRighteous()
+			# EF[buffEF<2.5]
+			if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffRemains(eternal_flame) <2.5 Spell(eternal_flame)
+			# SotR5
+			if BuffExpires(shield_of_the_righteous_buff) and HasMaxHolyPower() ShieldOfTheRighteous()
 		}
+		if not TalentPoints(eternal_flame_talent)
+		{
+			if HasThreeHolyPower() and BuffPresent(shield_of_the_righteous_buff) and HealthPercent() <60 WordOfGlory()
+			# SotR
+			# SimC: shield_of_the_righteous,if=(holy_power>=5)|(buff.divine_purpose.react)|(incoming_damage_1500ms>=health.max*0.3)
+			if HasMaxHolyPower() or IncomingDamage(1.5) >={MaxHealth() *0.3} ShieldOfTheRighteous()
+		}
+		ProtectionTier6TalentActions()
 	}
-	ProtectionTier6TalentActions()
 }
 
 AddIcon mastery=2 help=main
