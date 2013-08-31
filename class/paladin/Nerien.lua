@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.PALADIN.Nerien = {
-	desc = "[5.3] Nerien: Protection, Retribution",
+	desc = "[5.3] Nerien: Holy, Protection, Retribution",
 	code =
 [[
 # Nerien's paladin script based on SimulationCraft
