@@ -164,6 +164,8 @@ Define(misdirection 34477)
 Define(multi_shot 2643)
 	SpellInfo(multi_shot if_spell=steady_focus resetcounter=ss)
 	SpellAddBuff(multi_shot thrill_of_the_hunt=-1)
+Define(pet_beast_cleave 118455)
+	SpellInfo(pet_beast_cleave duration=4)
 Define(pet_frenzy 19615)
 	SpellInfo(pet_frenzy duration=30)
 Define(pet_nether_shock 50479)
@@ -205,7 +207,7 @@ Define(stampede 121818)
 	SpellInfo(stampede cd=300)
 Define(steady_focus 53224)
 Define(steady_focus_buff 53220)
-	SpellInfo(steady_focus_buff duration=10)
+	SpellInfo(steady_focus_buff duration=20)
 Define(steady_shot 56641)
 	SpellInfo(steady_shot focus=-14)
 	SpellInfo(steady_shot focus=-28 itemset=T13 itemcount=2)
@@ -341,7 +343,6 @@ AddFunction PreCombatActions
 		#hunters_mark,if=target.time_to_die>=21&!debuff.ranged_vulnerability.up
 		#summon_pet
 		SummonPet()
-		#trueshot_aura
 		#snapshot_stats
 		#virmens_bite_potion
 		UsePotion()
@@ -372,8 +373,8 @@ AddFunction BeastMasteryFullRotation
 	UseItemActions()
 	#use_profession_actions()
 	#auto_shot
-	#explosive_trap,if=target.adds>0
-	if CheckBoxOn(aoe) Spell(explosive_trap)
+	#explosive_trap,if=active_enemies>1
+	if Enemies() >1 Spell(explosive_trap)
 	#focus_fire,five_stacks=1
 	if BuffStacks(pet_frenzy any=1) ==5 Spell(focus_fire)
 	#serpent_sting,if=!ticking
@@ -384,10 +385,10 @@ AddFunction BeastMasteryFullRotation
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=65 Spell(fervor)
 	#bestial_wrath,if=focus>60&!buff.beast_within.up
 	if Focus() >60 and BuffExpires(beast_within) Spell(bestial_wrath)
-	#multi_shot,if=target.adds>5
-	if CheckBoxOn(aoe) Spell(multi_shot)
-	#cobra_shot,if=target.adds>5
-	if CheckBoxOn(aoe) Spell(cobra_shot)
+	#multi_shot,if=active_enemies>5|(active_enemies>2&buff.beast_cleave.down)
+	if Enemies() >5 or {Enemies() >2 and pet.BuffExpires(pet_beast_cleave any=1)} Spell(multi_shot)
+	#cobra_shot,if=active_enemies>5
+	if Enemies() >5 Spell(cobra_shot)
 	#rapid_fire,if=!buff.rapid_fire.up
 	if BuffExpires(rapid_fire) Spell(rapid_fire)
 	#stampede,if=buff.rapid_fire.up|buff.bloodlust.react|target.time_to_die<=25
@@ -457,7 +458,7 @@ AddFunction BeastMasteryMainActions
 AddFunction BeastMasteryAoEActions
 {
 	#auto_shot
-	#explosive_trap,if=target.adds>0
+	#explosive_trap,if=active_enemies>1
 	Spell(explosive_trap)
 	#focus_fire,five_stacks=1
 	if BuffStacks(pet_frenzy any=1) ==5 Spell(focus_fire)
@@ -465,9 +466,11 @@ AddFunction BeastMasteryAoEActions
 	if target.DebuffExpires(serpent_sting_dot) Spell(serpent_sting)
 	#fervor,if=enabled&!ticking&focus<=65
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=65 Spell(fervor)
-	#multi_shot,if=target.adds>5
+	#multi_shot,if=active_enemies>5|(active_enemies>2&buff.beast_cleave.down)
+	#if Enemies() >5 or {Enemies() >2 and pet.BuffExpires(pet_beast_cleave any=1)} Spell(multi_shot)
 	Spell(multi_shot)
-	#cobra_shot,if=target.adds>5
+	#cobra_shot,if=active_enemies>5
+	#if Enemies() >5 Spell(cobra_shot)
 }
 
 AddFunction BeastMasteryShortCooldownActions
@@ -591,7 +594,7 @@ AddFunction SurvivalFullRotation
 	UseRacialActions()
 	UseItemActions()
 	#auto_shot
-	#explosive_trap,if=target.adds>0
+	#explosive_trap,if=active_enemies>1
 	if CheckBoxOn(aoe) Spell(explosive_trap)
 	#fervor,if=enabled&focus<=50
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
@@ -607,10 +610,10 @@ AddFunction SurvivalFullRotation
 	if TalentPoints(powershot_talent) Spell(powershot)
 	#barrage,if=enabled
 	if TalentPoints(barrage_talent) Spell(barrage)
-	#multi_shot,if=target.adds>2
-	if CheckBoxOn(aoe) Spell(multi_shot)
-	#cobra_shot,if=target.adds>2
-	if CheckBoxOn(aoe) Spell(cobra_shot)
+	#multi_shot,if=active_enemies>3
+	if Enemies() >3 Spell(multi_shot)
+	#cobra_shot,if=active_enemies>3
+	if Enemies() >3 Spell(cobra_shot)
 	#serpent_sting,if=!ticking&target.time_to_die>=10
 	if target.DebuffExpires(serpent_sting_dot) and target.TimeToDie() >=10 Spell(serpent_sting)
 	#explosive_shot,if=cooldown_react
@@ -672,7 +675,7 @@ AddFunction SurvivalAoEActions
 {
 	SummonPet()
 	#auto_shot
-	#explosive_trap,if=target.adds>0
+	#explosive_trap,if=active_enemies>1
 	Spell(explosive_trap)
 	#fervor,if=enabled&focus<=50
 	if TalentPoints(fervor_talent) and BuffExpires(fervor) and Focus() <=50 Spell(fervor)
@@ -680,8 +683,11 @@ AddFunction SurvivalAoEActions
 	if BuffPresent(lock_and_load) Spell(explosive_shot)
 	#glaive_toss,if=enabled
 	if TalentPoints(glaive_toss_talent) Spell(glaive_toss)
-	#multi_shot,if=target.adds>2
+	#multi_shot,if=active_enemies>3
+	#if Enemies() >3 Spell(multi_shot)
 	Spell(multi_shot)
+	#cobra_shot,if=active_enemies>3
+	#if Enemies() >3 Spell(cobra_shot)
 }
 
 AddFunction SurvivalShortCooldownActions
