@@ -20,8 +20,7 @@ Define(charging_ox_wave 119392)
 	SpellInfo(charging_ox_wave cd=30)
 Define(charging_ox_wave_talent 11)
 Define(chi_brew 115399)
-	SpellInfo(chi_brew cd=90 chi=-4)
-	SpellInfo(chi_brew chi=-5 talent=ascension_talent)
+	SpellInfo(chi_brew cd=45 chi=-2)
 	SpellAddBuff(chi_brew healing_elixirs=0)
 Define(chi_brew_talent 9)
 Define(chi_burst 123986)
@@ -30,6 +29,7 @@ Define(chi_burst_talent 6)
 Define(chi_sphere 121286)
 	SpellInfo(chi_sphere duration=120)
 Define(chi_torpedo 115008)
+	SpellAddBuff(chi_torpedo rapid_rolling=0)
 Define(chi_torpedo_talent 18)
 Define(chi_wave 115098)
 	SpellInfo(chi_wave cd=15)
@@ -39,7 +39,7 @@ Define(combo_breaker_bok 116768)
 Define(combo_breaker_tp 118864)
 	SpellInfo(combo_breaker_tp duration=15)
 Define(crackling_jade_lightning 117952)
-	SpellInfo(crackling_jade_lightning canStopChannelling=6)
+	SpellInfo(crackling_jade_lightning canStopChannelling=6 duration=6 tick=1)
 	SpellAddBuff(crackling_jade_lightning power_strikes=0)
 Define(dampen_harm 122278)
 	SpellInfo(dampen_harm cd=90 duration=45)
@@ -71,9 +71,13 @@ Define(enveloping_mist 124682)
 Define(enveloping_mist_aura 132120)
 	SpellInfo(enveloping_mist_aura duration=6 haste=spell tick=1)
 Define(expel_harm 115072)
-	SpellInfo(expel_harm cd=15 chi=-2)
-	SpellInfo(expel_harm chi=-1 if_stance=monk_stance_of_the_sturdy_ox)
-	SpellInfo(expel_harm chi=-1 if_stance=monk_stance_of_the_wise_serpent)
+	SpellInfo(expel_harm cd=15 chi=-1)
+	SpellInfo(expel_harm chi=-2 if_stance=monk_stance_of_the_fierce_tiger)
+	SpellAddBuff(expel_harm power_strikes=0)
+Define(expel_harm_glyphed 147489)
+	SpellInfo(expel_harm_glyphed cd=15 chi=-1)
+	SpellInfo(expel_harm_glyphed chi=-2 if_stance=monk_stance_of_the_fierce_tiger)
+	SpellAddBuff(expel_harm_glyphed power_strikes=0)
 Define(fists_of_fury 113656)
 	SpellInfo(fists_of_fury canStopChannelling=4 cd=25 chi=3 tick=1)
 	SpellInfo(fists_of_fury addcd=-5 itemset=T14_melee itemcount=2)
@@ -87,8 +91,9 @@ Define(fortifying_brew 115203)
 #	SpellInfo(fortifying_brew_glyphed duration=20)
 Define(glyph_of_guard 123401)
 Define(glyph_of_mana_tea 123763)
-Define(glyph_of_retreat 124969)
 Define(glyph_of_surging_mist 120483)
+Define(glyph_of_targeted_expulsion 146950)
+Define(glyph_of_transcendence 123023)
 Define(glyph_of_uplift 125669)
 Define(guard 115295)
 	SpellInfo(guard cd=30 chi=2 duration=30)
@@ -124,7 +129,7 @@ Define(life_cocoon 116849)
 Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
 Define(mana_tea 115294)
-	SpellInfo(mana_tea duration=3 tick=1)
+	SpellInfo(mana_tea canStopChannelling=6 duration=3 tick=0.5)
 Define(mana_tea_aura 115867)
 	SpellInfo(mana_tea_aura duration=120)
 Define(mana_tea_glyphed 123761)
@@ -149,6 +154,8 @@ Define(purifier 138237) # 4pT15 tank bonus
 Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 chi=1)
 	SpellAddDebuff(purifying_brew healing_elixirs=0 heavy_stagger=0 light_stagger=0 moderate_stagger=0)
+Define(rapid_rolling 147364)
+	SpellInfo(rapid_rolling duration=5)
 Define(renewing_mist 115151)
 	SpellInfo(renewing_mist cd=8 chi=-1)
 #	SpellAddTargetBuff(renewing_mist renewing_mist_aura=1)
@@ -167,10 +174,12 @@ Define(rising_sun_kick 107428)
 	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_aura=1)
 Define(rising_sun_kick_aura 130320)
 	SpellInfo(rising_sun_kick_aura duration=15)
+Define(roll 109132)
+	SpellInfo(roll cd=0.8)
+	SpellAddBuff(roll rapid_rolling=0)
 Define(rushing_jade_wind 116847)
-	SpellInfo(rushing_jade_wind cd=30 chi=2 duration=8)
-	SpellAddBuff(rushing_jade_wind shuffle=1)
-	SpellAddTargetDebuff(rushing_jade_wind rushing_jade_wind=1)
+	SpellInfo(rushing_jade_wind cd=6 duration=6 tick=0.75)
+	SpellAddBuff(rushing_jade_wind rushing_jade_wind=1)
 Define(rushing_jade_wind_talent 16)
 Define(sanctuary_of_the_ox 126119)
 Define(serpents_zeal 127722)
@@ -179,10 +188,11 @@ Define(shuffle 115307)
 	SpellInfo(shuffle duration=6)
 Define(soothing_mist 115175)
 	SpellInfo(soothing_mist canStopChannelling=8 duration=8 haste=spell tick=1)
-	SpellAddBuff(soothing_mist soothing_mist=1)
+	SpellAddBuff(soothing_mist power_strikes=0 soothing_mist=1)
 Define(spear_hand_strike 116705)
 	SpellInfo(spear_hand_strike cd=10)
 Define(spinning_crane_kick 101546)
+	SpellInfo(spinning_crane_kick duration=2 tick=0.75)
 	SpellAddBuff(spinning_crane_kick spinning_crane_kick=1)
 Define(spinning_fire_blossom 115073)
 	SpellInfo(spinning_fire_blossom chi=1)
@@ -235,6 +245,11 @@ Define(touch_of_death 115080)
 Define(touch_of_karma 122470)
 	SpellInfo(touch_of_karma cd=90 duration=10)
 	SpellAddTargetDebuff(touch_of_karma touch_of_karma=1)
+Define(transcendence 101643)
+	SpellInfo(transcendence cd=45)
+Define(transcendence_transfer 119996)
+	SpellInfo(transcendence_transfer cd=25)
+	SpellInfo(transcendence_transfer addcd=-5 glyph=glyph_of_transcendence)
 Define(uplift 116670)
 	SpellInfo(uplift chi=2)
 	SpellAddBuff(uplift thunder_focus_tea=0)
@@ -337,10 +352,17 @@ AddListItem(opt_expel_harm_threshold 60percent "Expel Harm at 60% health")
 
 AddFunction ExpelHarm
 {
-	if List(opt_expel_harm_threshold 90percent) and HealthPercent() <90 Spell(expel_harm)
-	if List(opt_expel_harm_threshold 80percent) and HealthPercent() <80 Spell(expel_harm)
-	if List(opt_expel_harm_threshold 70percent) and HealthPercent() <70 Spell(expel_harm)
-	if List(opt_expel_harm_threshold 60percent) and HealthPercent() <60 Spell(expel_harm)
+	if Glyph(glyph_of_targeted_expulsion)
+	{
+		Spell(expel_harm_glyphed)
+	}
+	if Glyph(glyph_of_targeted_expulsion no)
+	{
+		if List(opt_expel_harm_threshold 90percent) and HealthPercent() <90 Spell(expel_harm)
+		if List(opt_expel_harm_threshold 80percent) and HealthPercent() <80 Spell(expel_harm)
+		if List(opt_expel_harm_threshold 70percent) and HealthPercent() <70 Spell(expel_harm)
+		if List(opt_expel_harm_threshold 60percent) and HealthPercent() <60 Spell(expel_harm)
+	}
 }
 
 AddFunction Interrupt
@@ -446,17 +468,6 @@ AddFunction BrewmasterPurifyingBrew
 	if DebuffPresent(moderate_stagger) and HealthPercent() <70 Spell(purifying_brew)
 }
 
-AddFunction BrewmasterShuffle
-{
-	Spell(blackout_kick)
-}
-
-AddFunction BrewmasterAoEShuffle
-{
-	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-	Spell(blackout_kick)
-}
-
 # Aggressive Jab for maximizing DPS/TPS.
 AddCheckBox(opt_aggressive_jab SpellName(jab) mastery=1)
 
@@ -516,16 +527,17 @@ AddIcon mastery=1 help=main
 	BrewmasterPreCombatActions()
 	BrewmasterBuffActions()
 
-	if BuffExpires(shuffle 2)
-	{
-		BrewmasterShuffle()
-	}
+	if BuffExpires(shuffle 2) Spell(blackout_kick)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
-	if NumberToMaxChi() >=1 and HealthPercent() <35 Spell(expel_harm)
+	if NumberToMaxChi() >=1 and HealthPercent() <35
+	{
+		if Glyph(glyph_of_targeted_expulsion) Spell(expel_harm_glyphed)
+		if Glyph(glyph_of_targeted_expulsion no) Spell(expel_harm)
+	}
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
-		BrewmasterShuffle()
+		Spell(blackout_kick)
 	}
 	if BrewmasterEnergyPoolingCondition()
 		and {SpellCooldown(keg_smash) > GCD()}
@@ -537,7 +549,7 @@ AddIcon mastery=1 help=main
 	}
 	if NumberToMaxChi() <2
 	{
-		BrewmasterShuffle()
+		Spell(blackout_kick)
 	}
 	BrewmasterFillerActions()
 }
@@ -547,16 +559,13 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 	BrewmasterPreCombatActions()
 	BrewmasterBuffActions()
 
-	if BuffExpires(shuffle 2)
-	{
-		BrewmasterAoEShuffle()
-	}
+	if BuffExpires(shuffle 2) Spell(blackout_kick)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
 	BrewmasterMaintenanceActions()
 	if NumberToMaxChi() ==0
 	{
 		if BuffPresent(shuffle 6) Spell(breath_of_fire)
-		BrewmasterAoEShuffle()
+		Spell(blackout_kick)
 	}
 	if BrewmasterEnergyPoolingCondition()
 		and {SpellCooldown(keg_smash) >2}
@@ -569,7 +578,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 	if NumberToMaxChi() <2
 	{
 		if BuffPresent(shuffle 6) Spell(breath_of_fire)
-		BrewmasterAoEShuffle()
+		Spell(blackout_kick)
 	}
 	BrewmasterFillerActions()
 }
@@ -627,12 +636,6 @@ AddFunction SurgingMist
 	if Glyph(glyph_of_surging_mist no) Spell(surging_mist)
 }
 
-AddFunction Uplift
-{
-	if Glyph(glyph_of_uplift) Spell(uplift_glyphed)
-	if Glyph(glyph_of_uplift no) Spell(uplift)
-}
-
 AddFunction MistweaverMeleeActions
 {
 	MistweaverManaTeaInstant()
@@ -665,11 +668,11 @@ AddFunction MistweaverAoEActions
 {
 	MistweaverManaTeaInstant()
 
-	if BuffPresent(thunder_focus_tea) Uplift()
+	if BuffPresent(thunder_focus_tea) Spell(uplift)
 	if BuffPresent(rushing_jade_wind) Spell(spinning_crane_kick)
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 	Spell(renewing_mist)
-	Uplift()
+	Spell(uplift)
 	Spell(spinning_crane_kick)
 
 	MistweaverManaTeaChanneled()
