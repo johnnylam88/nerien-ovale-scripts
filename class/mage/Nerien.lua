@@ -116,7 +116,7 @@ Define(ice_block 45438)
 	SpellInfo(ice_block cd=300 duration=10)
 	SpellAddBuff(ice_block ice_block=10)
 Define(ice_floes 108839)
-	SpellInfo(ice_floes cd=45 duration=15)
+	SpellInfo(ice_floes cd=20 duration=15)
 	SpellAddBuff(ice_floes ice_floes=1)
 Define(ice_floes_talent 3)
 Define(ice_lance 30455)
@@ -1105,7 +1105,7 @@ AddFunction FrostFullRotation
 	if BuffExpires(fingers_of_frost_aura) Spell(frozen_orb)
 	#icy_veins,if=(debuff.frostbolt.stack>=3&(buff.brain_freeze.react|buff.fingers_of_frost.react))|target.time_to_die<22,moving=0
 	{
-		if target.DebuffStacks(frostbolt) >=3 and {BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura)} FrostIcyVeins()
+		if BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura) FrostIcyVeins()
 		if target.TimeToDie() <22 FrostIcyVeins()
 	}
 	#blood_fury,if=buff.icy_veins.up|cooldown.icy_veins.remains>30|target.time_to_die<18
@@ -1153,8 +1153,6 @@ AddFunction FrostFullRotation
 	if {CheckBoxOff(opt_alter_time) or BuffPresent(alter_time)} and BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
 	#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
 	MageBomb()
-	#frostbolt,if=debuff.frostbolt.stack<3
-	if target.DebuffStacks(frostbolt) <3 Spell(frostbolt)
 	if FrostIcyVeinsReady() or FrostIcyVeinsCooldown() >2
 	{
 		#frostfire_bolt,if=buff.brain_freeze.react&cooldown.icy_veins.remains>2
@@ -1198,8 +1196,6 @@ AddFunction FrostMainActions
 	if {CheckBoxOff(opt_alter_time) or BuffPresent(alter_time)} and BuffPresent(fingers_of_frost_aura) Spell(ice_lance)
 	#nether_tempest,if=(!ticking|remains<tick_time)&target.time_to_die>6
 	MageBomb()
-	#frostbolt,if=debuff.frostbolt.stack<3
-	if target.DebuffStacks(frostbolt) <3 Spell(frostbolt)
 	if FrostIcyVeinsReady() or FrostIcyVeinsCooldown() >2
 	{
 		#frostfire_bolt,if=buff.brain_freeze.react&cooldown.icy_veins.remains>2
@@ -1281,7 +1277,7 @@ AddFunction FrostCooldownActions
 		{
 			#icy_veins,if=(debuff.frostbolt.stack>=3&(buff.brain_freeze.react|buff.fingers_of_frost.react))|target.time_to_die<22,moving=0
 			{
-				if target.DebuffStacks(frostbolt) >=3 and {BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura)} FrostIcyVeins()
+				if BuffPresent(brain_freeze_aura) or BuffPresent(fingers_of_frost_aura) FrostIcyVeins()
 				if target.TimeToDie() <22 FrostIcyVeins()
 			}
 			#blood_fury,if=buff.icy_veins.up|cooldown.icy_veins.remains>30|target.time_to_die<18
