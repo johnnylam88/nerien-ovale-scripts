@@ -5,7 +5,7 @@
 ## Author: Johnny C. Lam (jlam), Leafkiller
 ## X-Contributer: aggixx, Opisthobranch, ShmooDude
 ##
-## Interface: 50300
+## Interface: 50400
 ## Dependencies: Ovale
 
 Core.lua
