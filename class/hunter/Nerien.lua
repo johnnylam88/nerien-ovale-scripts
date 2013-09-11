@@ -50,8 +50,9 @@ Define(bestial_wrath 19574)
 Define(binding_shot 109248)
 	SpellInfo(binding_shot cd=45)
 	SpellInfo(binding_shot if_spell=steady_focus resetcounter=ss)
+Define(binding_shot_talent 4)
 Define(black_arrow 3674)
-	SpellInfo(black_arrow cd=30 duration=20 sharedcd=firetrap tick=2)
+	SpellInfo(black_arrow cd=30 duration=20 tick=2)
 	SpellInfo(black_arrow addcd=-6 if_spell=trap_mastery)
 	SpellAddTargetDebuff(black_arrow black_arrow=1)
 Define(blink_strikes_talent 14)
@@ -78,16 +79,18 @@ Define(cobra_shot 77767)
 Define(concussive_shot 5116)
 	SpellInfo(concussive_shot cd=5 duration=6)
 	SpellAddTargetDebuff(concussive_shot concussive_shot=1)
+Define(counter_shot 147362)
+	SpellInfo(counter_shot cd=24)
 Define(crouching_tiger_hidden_chimera_talent 3)
 Define(deterrence 19263)
-	SpellInfo(deterrence cd=120 duration=5)
+	SpellInfo(deterrence cd=180 duration=5)
 	SpellInfo(deterrence addcd=-60 talent=crouching_tiger_hidden_chimera_talent)
 	SpellAddBuff(deterrence deterrence=1)
 Define(dire_beast 120679)
 	SpellInfo(dire_beast cd=30)
 Define(dire_beast_talent 11)
 Define(disengage 781)
-	SpellInfo(disengage cd=25)
+	SpellInfo(disengage cd=20)
 	SpellInfo(disengage addcd=-10 talent=crouching_tiger_hidden_chimera_talent)
 Define(dismiss_pet 2641)
 Define(distracting_shot 20736)
@@ -100,7 +103,7 @@ Define(explosive_shot 53301)
 	SpellAddTargetDebuff(explosive_shot explosive_shot=1)
 	SpellAddTargetDebuff(explosive_shot hunters_mark=1)
 Define(explosive_trap 13813)
-	SpellInfo(explosive_trap cd=30 sharedcd=firetrap)
+	SpellInfo(explosive_trap cd=30)
 	SpellInfo(explosive_trap if_spell=steady_focus resetcounter=ss)
 	SpellInfo(explosive_trap addcd=-6 if_spell=trap_mastery)
 Define(explosive_trap_dot 13812)
@@ -184,8 +187,6 @@ Define(rapid_fire 3045)
 	SpellAddBuff(rapid_fire rapid_fire=1)
 Define(rapid_recuperation 54227)
 	SpellInfo(rapid_recuperation duration=15 tick=3)
-Define(readiness 23989)
-	SpellInfo(readiness cd=300)
 Define(revive_pet 982)
 Define(scare_beast 1513)
 	SpellInfo(scare_beast duration=20)
@@ -202,7 +203,6 @@ Define(serpent_sting_dot 118253)
 Define(silencing_shot 34490)
 	SpellInfo(silencing_shot cd=24)
 	SpellInfo(silencing_shot if_spell=steady_focus resetcounter=ss)
-Define(silencing_shot_talent 4)
 Define(stampede 121818)
 	SpellInfo(stampede cd=300)
 Define(steady_focus 53224)
@@ -301,7 +301,8 @@ AddFunction Interrupt
 {
 	if not target.IsFriend() and target.IsInterruptible()
 	{
-		if TalentPoints(silencing_shot_talent) Spell(silencing_shot)
+		Spell(silencing_shot)
+		Spell(counter_shot)
 		if pet.Present()
 		{
 			Spell(pet_nether_shock usable=1)
@@ -409,8 +410,6 @@ AddFunction BeastMasteryFullRotation
 	if TalentPoints(barrage_talent) Spell(barrage)
 	#powershot,if=enabled
 	if TalentPoints(powershot_talent) Spell(powershot)
-	#readiness,wait_for_rapid_fire=1
-	if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
 	#arcane_shot,if=buff.thrill_of_the_hunt.react
 	if BuffPresent(thrill_of_the_hunt) Spell(arcane_shot)
 	#focus_fire,five_stacks=1,if=!ticking&!buff.beast_within.up
@@ -523,8 +522,6 @@ AddFunction BeastMasteryCooldownActions
 		if TalentPoints(lynx_rush_talent) Spell(lynx_rush)
 		#dire_beast,if=enabled&focus<=90
 		if TalentPoints(dire_beast_talent) and Focus() <=90 Spell(dire_beast)
-		#readiness,wait_for_rapid_fire=1
-		if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
 	}
 }
 
@@ -632,8 +629,6 @@ AddFunction SurvivalFullRotation
 	if TalentPoints(dire_beast_talent) Spell(dire_beast)
 	#stampede,if=buff.rapid_fire.up|buff.bloodlust.react|target.time_to_die<=25
 	if BuffPresent(rapid_fire) or BuffPresent(burst_haste any=1) or target.TimeToDie() <=25 Spell(stampede)
-	#readiness,wait_for_rapid_fire=1
-	if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
 	#cobra_shot,if=dot.serpent_sting.remains<6
 	if target.DebuffPresent(serpent_sting_dot) and target.DebuffRemains(serpent_sting_dot) <6 Spell(cobra_shot)
 	#arcane_shot,if=focus>=67
@@ -730,8 +725,6 @@ AddFunction SurvivalCooldownActions
 			if BuffExpires(rapid_fire) Spell(rapid_fire)
 			#stampede,if=buff.rapid_fire.up|buff.bloodlust.react|target.time_to_die<=25
 			if BuffPresent(rapid_fire) or BuffPresent(burst_haste any=1) or target.TimeToDie() <=25 Spell(stampede)
-			#readiness,wait_for_rapid_fire=1
-			if Spell(rapid_fire) or BuffPresent(rapid_fire) Spell(readiness)
 		}
 	}
 }
