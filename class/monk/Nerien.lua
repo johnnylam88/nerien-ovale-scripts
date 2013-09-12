@@ -1,7 +1,7 @@
 local _, NerienOvaleScripts = ...
 
 NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "[5.3] Nerien: Brewmaster, Mistweaver, Windwalker",
+	desc = "[5.4] Nerien: Brewmaster, Mistweaver, Windwalker",
 	code =
 [[
 # Nerien's monk script based on SimulationCraft
@@ -178,7 +178,7 @@ Define(roll 109132)
 	SpellInfo(roll cd=0.8)
 	SpellAddBuff(roll rapid_rolling=0)
 Define(rushing_jade_wind 116847)
-	SpellInfo(rushing_jade_wind cd=6 duration=6 tick=0.75)
+	SpellInfo(rushing_jade_wind cd=6 cd_haste=melee duration=6 haste=melee tick=0.75)
 	SpellAddBuff(rushing_jade_wind rushing_jade_wind=1)
 Define(rushing_jade_wind_talent 16)
 Define(sanctuary_of_the_ox 126119)
@@ -192,7 +192,7 @@ Define(soothing_mist 115175)
 Define(spear_hand_strike 116705)
 	SpellInfo(spear_hand_strike cd=10)
 Define(spinning_crane_kick 101546)
-	SpellInfo(spinning_crane_kick duration=2 tick=0.75)
+	SpellInfo(spinning_crane_kick duration=2 haste=melee tick=0.75)
 	SpellAddBuff(spinning_crane_kick spinning_crane_kick=1)
 Define(spinning_fire_blossom 115073)
 	SpellInfo(spinning_fire_blossom chi=1)
@@ -568,12 +568,18 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 		Spell(blackout_kick)
 	}
 	if BrewmasterEnergyPoolingCondition()
-		and {SpellCooldown(keg_smash) >2}
 		and {Energy() - EnergyCost(spinning_crane_kick) + SpellCooldown(keg_smash) * EnergyRegen() > EnergyCost(keg_smash)}
 	{
-		# Only SCK if we'll have enough energy to Keg Smash when it comes off cooldown.
-		# The channel time of SCK is 2s, so only SCK if Keg Smash is on CD for at least 2s.
-		Spell(spinning_crane_kick)
+		# Only SCK/RJW if we'll have enough energy to Keg Smash when it comes off cooldown.
+		if TalentPoints(rushing_jade_wind_talent) and SpellCooldown(keg_smash) >GCD()
+		{
+			Spell(rushing_jade_wind)
+		}
+		if not TalentPoints(rushing_jade_wind_talent) and SpellCooldown(keg_smash) >2
+		{
+			# The channel time of SCK is 2s, so only SCK if Keg Smash is on CD for at least 2s.
+			Spell(spinning_crane_kick)
+		}
 	}
 	if NumberToMaxChi() <2
 	{
@@ -669,11 +675,10 @@ AddFunction MistweaverAoEActions
 	MistweaverManaTeaInstant()
 
 	if BuffPresent(thunder_focus_tea) Spell(uplift)
-	if BuffPresent(rushing_jade_wind) Spell(spinning_crane_kick)
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 	Spell(renewing_mist)
 	Spell(uplift)
-	Spell(spinning_crane_kick)
+	if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
 
 	MistweaverManaTeaChanneled()
 }
@@ -828,18 +833,16 @@ AddFunction WindwalkerFullRotation
 	{
 		#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-		#fists_of_fury
-		Spell(fists_of_fury)
 		#rising_sun_kick,if=chi=4
 		if Chi() >=4 Spell(rising_sun_kick)
 		#spinning_crane_kick
-		Spell(spinning_crane_kick)
+		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
 	}
 
 	#rising_sun_kick
 	Spell(rising_sun_kick)
 	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>4&buff.tiger_power.remains>4
-	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
+	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >4 and BuffRemains(tiger_power) >4 Spell(fists_of_fury)
 	#chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
 	if TalentPoints(chi_wave_talent) and TimeToMaxEnergy() >2 Spell(chi_wave)
 	#blackout_kick,if=buff.combo_breaker_bok.react
@@ -851,7 +854,7 @@ AddFunction WindwalkerFullRotation
 	}
 	#jab,if=talent.ascension.enabled&chi<=3
 	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >2 WindwalkerGenerateChi()
+	if NumberToMaxChi() >=2 WindwalkerGenerateChi()
 	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
 	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
 	if List(opt_tigereye_brew_usage burst) and Chi() >=3 Spell(blackout_kick)
@@ -909,12 +912,10 @@ AddFunction WindwalkerAoEActions
 {
 	#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-	#fists_of_fury
-	Spell(fists_of_fury)
 	#rising_sun_kick,if=chi=4
 	if Chi() >=4 Spell(rising_sun_kick)
 	#spinning_crane_kick
-	Spell(spinning_crane_kick)
+	if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
 }
 
 AddFunction WindwalkerShortCooldownActions
