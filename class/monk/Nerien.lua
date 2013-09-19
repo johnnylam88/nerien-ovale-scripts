@@ -438,7 +438,10 @@ AddFunction BrewmasterMaintenanceActions
 
 AddFunction BrewmasterFillerActions
 {
-	Tier2TalentActions()
+	# Filler heal/DPS Tier 2 talent.
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+	if TalentPoints(zen_sphere_talent) and BuffExpires(zen_sphere) Spell(zen_sphere)
+
 	# Use Tiger Palm as a filler only if it costs no Chi.
 	if SpellData(tiger_palm chi) ==0 Spell(tiger_palm)
 	Jab()
@@ -594,6 +597,7 @@ AddIcon mastery=1 help=cd
 	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	Interrupt()
+	if TalentPoints(chi_burst_talent) Spell(chi_burst)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
