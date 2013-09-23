@@ -12,7 +12,7 @@ NerienOvaleScripts.script.MONK.Nerien = {
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
 	SpellInfo(blackout_kick chi=2)
-	SpellAddBuff(blackout_kick combo_breaker_bok=0 muscle_memory=0 serpents_zeal=1 shuffle=1)
+	SpellAddBuff(blackout_kick combo_breaker_bok=0 muscle_memory_aura=0 serpents_zeal=1 shuffle=1)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
 Define(brewmaster_training 117967)
@@ -128,6 +128,8 @@ Define(life_cocoon 116849)
 #	SpellAddTargetBuff(life_cocoon life_cocoon=1)
 Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
+Define(lucidity 137331)
+	SpellInfo(lucidity duration=4)
 Define(mana_tea 115294)
 	SpellInfo(mana_tea canStopChannelling=6 duration=3 tick=0.5)
 Define(mana_tea_aura 115867)
@@ -137,8 +139,9 @@ Define(mana_tea_glyphed 123761)
 	SpellAddBuff(mana_tea_glyphed mana_tea_aura=-2)
 Define(moderate_stagger 124274)
 	SpellInfo(moderate_stagger duration=10 tick=1)
-Define(muscle_memory 139597)
-	SpellInfo(muscle_memory duration=15)
+Define(muscle_memory 139598)
+Define(muscle_memory_aura 139597)
+	SpellInfo(muscle_memory_aura duration=15)
 Define(nimble_brew 137562)
 	SpellInfo(nimble_brew cd=120 duration=6)
 	SpellAddBuff(nimble_brew healing_elixirs=0 nimble_brew=1)
@@ -226,7 +229,7 @@ Define(thunder_focus_tea 116680)
 Define(tiger_palm 100787)
 	SpellInfo(tiger_palm chi=1)
 	SpellInfo(tiger_palm chi=0 if_spell=brewmaster_training)
-	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory=0 power_guard=1 tiger_power=1 vital_mists=1)
+	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory_aura=0 power_guard=1 tiger_power=1 vital_mists=1)
 Define(tiger_power 125359)
 	SpellInfo(tiger_power duration=20)
 Define(tiger_strikes 120273)
@@ -383,8 +386,7 @@ AddFunction Jab
 
 AddFunction NumberToMaxChi
 {
-	if TalentPoints(ascension_talent) {5 - Chi()}
-	unless TalentPoints(ascension_talent) {4 - Chi()}
+	MaxChi() - Chi()
 }
 
 AddFunction Tier2TalentActions
@@ -651,6 +653,22 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 ### Mistweaver
 ###
 
+# Toggle for legendary healer meta-gem.
+AddCheckBox(opt_legendary_metagem "Courageous Primal Diamond")
+
+AddCheckBox(opt_mistweaver_pool_chi "Pool Chi" mastery=2)
+AddFunction MistweaverChiPool
+{
+	if CheckBoxOn(opt_mistweaver_pool_chi) 2
+	0
+}
+
+AddFunction MistweaverJab
+{
+	# Always display the "fist" jab texture when suggesting Jab.
+	if SpellUsable(jab) Spell(jab)
+}
+
 AddFunction MistweaverPreCombatActions
 {
 	if InCombat(no)
@@ -666,7 +684,7 @@ AddFunction MistweaverBuffActions
 
 AddFunction MistweaverManaTeaInstant
 {
-	if Glyph(glyph_of_mana_tea) and ManaPercent() <92 and BuffPresent(mana_tea_aura stacks=2) Spell(mana_tea_glyphed)
+	if Glyph(glyph_of_mana_tea) and BuffPresent(mana_tea_aura stacks=2) Spell(mana_tea_glyphed)
 }
 
 AddFunction MistweaverManaTeaChanneled
@@ -680,45 +698,64 @@ AddFunction SurgingMist
 	if Glyph(glyph_of_surging_mist no) Spell(surging_mist)
 }
 
+# Fistweaving rotation from Reglitch's Fistweaving Guide:
+#	http://www.mmo-champion.com/threads/1305950-Fistweaving-101-Hit-Boss-gt-Receive-Healing
+#
 AddFunction MistweaverMeleeActions
 {
-	MistweaverManaTeaInstant()
-
-	# Maintain 100% uptime on healing buffs as long as Muscle Memory is active.
-	if SpellKnown(teachings_of_the_monastery)
+	# Legendary meta-gem proc.
+	if BuffPresent(lucidity)
 	{
-		if BuffPresent(muscle_memory)
-		{
-			if BuffExpires(serpents_zeal 3) Spell(blackout_kick)
-			if BuffExpires(tiger_power 3) Spell(tiger_palm)
-		}
-	}
-
-	# Pool at least 3 Chi for emergency healing.
-	if Chi() >3 Spell(tiger_palm)
-
-	# Build Chi while not capped.
-	if NumberToMaxChi() >0
-	{
-		if not target.InRange(jab) Spell(crackling_jade_lightning)
-		ExpelHarm()
+		if BuffPresent(muscle_memory_aura) Spell(tiger_palm)
 		Jab()
 	}
 
-	MistweaverManaTeaChanneled()
+	# Restore mana.
+	if CheckBoxOn(opt_legendary_metagem) and ManaPercent() <20 MistweaverManaTeaInstant()
+	if CheckBoxOff(opt_legendary_metagem) and ManaPercent() <92 MistweaverManaTeaInstant()
+
+	# Use Muscle Memory.
+	if BuffPresent(muscle_memory_aura)
+	{
+		if BuffExpires(tiger_power) Spell(tiger_palm)
+		if Chi() >{MistweaverChiPool() +1} Spell(blackout_kick)
+		if Chi() >MistweaverChiPool() Spell(tiger_palm)
+	}
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+
+	# Generate Chi.
+	ExpelHarm()
+	Jab()
 }
 
 AddFunction MistweaverAoEActions
 {
-	MistweaverManaTeaInstant()
+	# Legendary meta-gem proc.
+	if BuffPresent(lucidity)
+	{
+		if BuffPresent(muscle_memory_aura) Spell(tiger_palm)
+		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
+		Jab()
+	}
 
-	if BuffPresent(thunder_focus_tea) Spell(uplift)
+	# Restore mana.
+	if CheckBoxOn(opt_legendary_metagem) and ManaPercent() <20 MistweaverManaTeaInstant()
+	if CheckBoxOff(opt_legendary_metagem) and ManaPercent() <92 MistweaverManaTeaInstant()
+
+	# Use Muscle Memory.
+	if BuffPresent(muscle_memory_aura)
+	{
+		if BuffExpires(tiger_power) Spell(tiger_palm)
+		if Chi() >{MistweaverChiPool() +1} Spell(blackout_kick)
+	}
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+
+	# Generate Chi.
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-	Spell(renewing_mist)
-	Spell(uplift)
 	if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
-
-	MistweaverManaTeaChanneled()
+	ExpelHarm()
+	Jab()
 }
 
 # Tier 5 damage reduction cooldown
@@ -729,10 +766,10 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 	UseRacialSurvivalActions()
 }
 
-# Damage reduction cooldowns
+# Raid cooldowns
 AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 {
-	Spell(life_cocoon)
+	Spell(thunder_focus_tea)
 	Spell(revival)
 }
 
@@ -741,10 +778,8 @@ AddIcon mastery=2 help=shortcd
 	unless Stance(monk_stance_of_the_wise_serpent) Spell(stance_of_the_wise_serpent)
 
 	if BuffStacks(vital_mists) ==5 SurgingMist()
-	if BuffPresent(soothing_mist) Spell(enveloping_mist)
-
+	Spell(renewing_mist)
 	if TalentPoints(chi_burst_talent) Spell(chi_burst)
-	if TalentPoints(chi_wave_talent) Spell(chi_wave)
 	if TalentPoints(zen_sphere_talent) Spell(zen_sphere)
 }
 
@@ -769,7 +804,8 @@ AddIcon mastery=2 help=cd
 	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	Interrupt()
-	Spell(thunder_focus_tea)
+	if Spell(thunder_focus_tea) and Chi() >=3 Spell(uplift)
+	if not Spell(thunder_focus_tea) and Chi() >=2 Spell(uplift)
 	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
 }
 
