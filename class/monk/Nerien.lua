@@ -400,6 +400,30 @@ AddFunction Tier5TalentActions
 	if TalentPoints(diffuse_magic_talent) Spell(diffuse_magic)
 }
 
+# Generic single-target DPS actions for non-Windwalker monks in Stance of the Fierce Tiger.
+AddFunction SingleTargetDPSActions
+{
+	Spell(blackout_kick)
+	if Energy() >EnergyCost(jab)
+	{
+		ExpelHarm()
+		Jab()
+	}
+	BrewmasterFillerActions()
+}
+
+# Generic AoE DPS actions for non-Windwalker monks in Stance of the Fierce Tiger.
+AddFunction AoEDPSActions
+{
+	Spell(blackout_kick)
+	if Energy() >EnergyCost(jab)
+	{
+		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
+	}
+	BrewmasterFillerActions()
+}
+
 ###
 ### Brewmaster
 ###
@@ -418,7 +442,6 @@ AddFunction BrewmasterPreCombatActions
 
 AddFunction BrewmasterBuffActions
 {
-	unless Stance(monk_stance_of_the_sturdy_ox) Spell(stance_of_the_sturdy_ox)
 	unless BuffPresent(str_agi_int any=1) Spell(legacy_of_the_emperor)
 }
 
@@ -484,52 +507,12 @@ AddFunction BrewmasterEnergyPoolingCondition
 	if CheckBoxOn(opt_aggressive_jab)
 	{
 		# Maximize DPS/TPS by using Jab/SCK as long as there is enough energy.
-		Energy() >40
+		Energy() >EnergyCost(jab)
 	}
 }
 
-# Tier 5 damage reduction cooldown
-AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+AddFunction BrewmasterSingleTargetActions
 {
-	Tier5TalentActions()
-}
-
-# Damage reduction cooldowns
-AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
-{
-	Spell(fortifying_brew)
-	Spell(symbiosis_survival_instincts)
-	UseRacialSurvivalActions()
-}
-
-# Defensive abilities
-AddIcon mastery=1 help=cd
-{
-	# Cast Purifying Brew only if Heavy Stagger (urgent!) or if Shuffle uptime won't suffer.
-	# Avoid Purifying while Elusive Brew is up unless under Heavy Stagger.
-	if DebuffPresent(heavy_stagger)
-		or {BuffExpires(elusive_brew) and {BuffPresent(shuffle 6) or Chi() >=2}}
-	{
-		BrewmasterPurifyingBrew()
-	}
-	if BuffPresent(purifier) and DebuffPresent(stagger) Spell(purifying_brew)
-	if ArmorSetParts(T15_tank) <2 and BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
-	if ArmorSetParts(T15_tank) >=2 and BuffStacks(elusive_brew) >5
-	{
-		if BuffRemains(staggering) < BuffStacks(elusive_brew) Spell(elusive_brew_use)
-	}
-	if BuffPresent(power_guard)
-	{
-		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
-		if Glyph(glyph_of_guard no) and BuffExpires(guard) Spell(guard)
-	}
-}
-
-AddIcon mastery=1 help=main
-{
-	BrewmasterPreCombatActions()
-	BrewmasterBuffActions()
-
 	if BuffExpires(shuffle 2) Spell(blackout_kick)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
 	if NumberToMaxChi() >=1 and HealthPercent() <35
@@ -557,11 +540,8 @@ AddIcon mastery=1 help=main
 	BrewmasterFillerActions()
 }
 
-AddIcon mastery=1 help=aoe checkboxon=aoe
+AddFunction BrewmasterAoEActions
 {
-	BrewmasterPreCombatActions()
-	BrewmasterBuffActions()
-
 	if BuffExpires(shuffle 2) Spell(blackout_kick)
 	if NumberToMaxChi() >=2 Spell(keg_smash)
 	BrewmasterMaintenanceActions()
@@ -590,6 +570,61 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 		Spell(blackout_kick)
 	}
 	BrewmasterFillerActions()
+}
+
+# Tier 5 damage reduction cooldown
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+{
+	Tier5TalentActions()
+}
+
+# Damage reduction cooldowns
+AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+{
+	Spell(fortifying_brew)
+	Spell(symbiosis_survival_instincts)
+	UseRacialSurvivalActions()
+}
+
+# Defensive abilities
+AddIcon mastery=1 help=cd
+{
+	unless Stance(monk_stance_of_the_sturdy_ox) Spell(stance_of_the_sturdy_ox)
+
+	# Cast Purifying Brew only if Heavy Stagger (urgent!) or if Shuffle uptime won't suffer.
+	# Avoid Purifying while Elusive Brew is up unless under Heavy Stagger.
+	if DebuffPresent(heavy_stagger)
+		or {BuffExpires(elusive_brew) and {BuffPresent(shuffle 6) or Chi() >=2}}
+	{
+		BrewmasterPurifyingBrew()
+	}
+	if BuffPresent(purifier) and DebuffPresent(stagger) Spell(purifying_brew)
+	if ArmorSetParts(T15_tank) <2 and BuffStacks(elusive_brew) >10 Spell(elusive_brew_use)
+	if ArmorSetParts(T15_tank) >=2 and BuffStacks(elusive_brew) >5
+	{
+		if BuffRemains(staggering) < BuffStacks(elusive_brew) Spell(elusive_brew_use)
+	}
+	if BuffPresent(power_guard)
+	{
+		if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed) Spell(guard_glyphed)
+		if Glyph(glyph_of_guard no) and BuffExpires(guard) Spell(guard)
+	}
+}
+
+AddIcon mastery=1 help=main
+{
+	BrewmasterPreCombatActions()
+	BrewmasterBuffActions()
+	if Stance(monk_stance_of_the_sturdy_ox) BrewmasterSingleTargetActions()
+	if Stance(monk_stance_of_the_fierce_tiger) SingleTargetDPSActions()
+}
+
+AddIcon mastery=1 help=aoe checkboxon=aoe
+{
+	BrewmasterPreCombatActions()
+	BrewmasterBuffActions()
+	if Stance(monk_stance_of_the_sturdy_ox) BrewmasterAoEActions()
+	if Stance(monk_stance_of_the_fierce_tiger) AoEDPSActions()
 }
 
 AddIcon mastery=1 help=cd
@@ -626,7 +661,6 @@ AddFunction MistweaverPreCombatActions
 
 AddFunction MistweaverBuffActions
 {
-	unless Stance(monk_stance_of_the_wise_serpent) Spell(stance_of_the_wise_serpent)
 	unless BuffPresent(str_agi_int any=1) Spell(legacy_of_the_emperor)
 }
 
@@ -704,6 +738,8 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 
 AddIcon mastery=2 help=shortcd
 {
+	unless Stance(monk_stance_of_the_wise_serpent) Spell(stance_of_the_wise_serpent)
+
 	if BuffStacks(vital_mists) ==5 SurgingMist()
 	if BuffPresent(soothing_mist) Spell(enveloping_mist)
 
@@ -716,14 +752,16 @@ AddIcon mastery=2 help=main
 {
 	MistweaverPreCombatActions()
 	MistweaverBuffActions()
-	MistweaverMeleeActions()
+	if Stance(monk_stance_of_the_wise_serpent) MistweaverMeleeActions()
+	if Stance(monk_stance_of_the_fierce_tiger) SingleTargetDPSActions()
 }
 
 AddIcon mastery=2 help=aoe checkboxon=aoe
 {
 	MistweaverPreCombatActions()
 	MistweaverBuffActions()
-	MistweaverAoEActions()
+	if Stance(monk_stance_of_the_wise_serpent) MistweaverAoEActions()
+	if Stance(monk_stance_of_the_fierce_tiger) AoEDPSActions()
 }
 
 AddIcon mastery=2 help=cd
