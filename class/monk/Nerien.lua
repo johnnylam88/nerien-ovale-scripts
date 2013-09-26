@@ -107,7 +107,7 @@ Define(invoke_xuen 123904)
 	SpellInfo(invoke_xuen cd=180 duration=45)
 Define(invoke_xuen_the_white_tiger_talent 17)
 Define(jab 100780)
-	SpellInfo(jab buff_chi=power_strikes chi=-2)
+	SpellInfo(jab buff_chi=power_strikes chi=-2 texture=ability_monk_jab)
 	SpellInfo(jab chi=-1 if_stance=monk_stance_of_the_sturdy_ox)
 	SpellInfo(jab chi=-1 if_stance=monk_stance_of_the_wise_serpent)
 	SpellAddBuff(jab power_strikes=0)
@@ -380,8 +380,7 @@ AddFunction Interrupt
 
 AddFunction Jab
 {
-	# Always display the "fist" jab texture when suggesting Jab.
-	if Spell(jab) Texture(ability_monk_jab)
+	if Energy() >40 Spell(jab)
 }
 
 AddFunction NumberToMaxChi
@@ -402,28 +401,41 @@ AddFunction Tier5TalentActions
 	if TalentPoints(diffuse_magic_talent) Spell(diffuse_magic)
 }
 
+# Generic filler actions for non-Windwalker monks in Stance of the Fierce Tiger.
+AddFunction FillerActions
+{
+	# Filler heal/DPS Tier 2 talent.
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+
+	# Use Tiger Palm as a filler only if it costs no Chi.
+	if SpellData(tiger_palm chi) ==0 Spell(tiger_palm)
+
+	# Jab otherwise.
+	Jab()
+}
+
 # Generic single-target DPS actions for non-Windwalker monks in Stance of the Fierce Tiger.
 AddFunction SingleTargetDPSActions
 {
 	Spell(blackout_kick)
-	if Energy() >EnergyCost(jab)
+	if Energy() >40
 	{
 		ExpelHarm()
 		Jab()
 	}
-	BrewmasterFillerActions()
+	FillerActions()
 }
 
 # Generic AoE DPS actions for non-Windwalker monks in Stance of the Fierce Tiger.
 AddFunction AoEDPSActions
 {
 	Spell(blackout_kick)
-	if Energy() >EnergyCost(jab)
+	if Energy() >40
 	{
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
 	}
-	BrewmasterFillerActions()
+	FillerActions()
 }
 
 ###
@@ -509,7 +521,7 @@ AddFunction BrewmasterEnergyPoolingCondition
 	if CheckBoxOn(opt_aggressive_jab)
 	{
 		# Maximize DPS/TPS by using Jab/SCK as long as there is enough energy.
-		Energy() >EnergyCost(jab)
+		Energy() >40
 	}
 }
 
@@ -529,7 +541,7 @@ AddFunction BrewmasterSingleTargetActions
 	}
 	if BrewmasterEnergyPoolingCondition()
 		and {SpellCooldown(keg_smash) > GCD()}
-		and {Energy() - EnergyCost(jab) + SpellCooldown(keg_smash) * EnergyRegen() > EnergyCost(keg_smash)}
+		and {Energy() - 40 + SpellCooldown(keg_smash) * EnergyRegen() >40}
 	{
 		# Only Jab or Expel Harm if we'll have enough energy to Keg Smash when it comes off cooldown.
 		ExpelHarm()
@@ -553,7 +565,7 @@ AddFunction BrewmasterAoEActions
 		Spell(blackout_kick)
 	}
 	if BrewmasterEnergyPoolingCondition()
-		and {Energy() - EnergyCost(spinning_crane_kick) + SpellCooldown(keg_smash) * EnergyRegen() > EnergyCost(keg_smash)}
+		and {Energy() - 40 + SpellCooldown(keg_smash) * EnergyRegen() >40}
 	{
 		# Only SCK/RJW if we'll have enough energy to Keg Smash when it comes off cooldown.
 		if TalentPoints(rushing_jade_wind_talent) and SpellCooldown(keg_smash) >GCD()
@@ -707,7 +719,7 @@ AddFunction MistweaverMeleeActions
 	if BuffPresent(lucidity)
 	{
 		if BuffPresent(muscle_memory_aura) Spell(tiger_palm)
-		Jab()
+		MistweaverJab()
 	}
 
 	# Restore mana.
@@ -725,7 +737,7 @@ AddFunction MistweaverMeleeActions
 
 	# Generate Chi.
 	ExpelHarm()
-	Jab()
+	MistweaverJab()
 }
 
 AddFunction MistweaverAoEActions
@@ -736,7 +748,7 @@ AddFunction MistweaverAoEActions
 		if BuffPresent(muscle_memory_aura) Spell(tiger_palm)
 		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
-		Jab()
+		MistweaverJab()
 	}
 
 	# Restore mana.
@@ -755,7 +767,7 @@ AddFunction MistweaverAoEActions
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
 	if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
 	ExpelHarm()
-	Jab()
+	MistweaverJab()
 }
 
 # Tier 5 damage reduction cooldown
