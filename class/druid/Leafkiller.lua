@@ -10,6 +10,8 @@ NerienOvaleScripts.script.DRUID.Leafkiller = {
 #   Fixed rake bug
 #   Added check to ensure you'll have energy to use thrash at the end of a rune before suggesting it
 #   Reenabled bleed ratio prediction but added a mangle specific filler line that occurs shortly after the traditional filler line so something shows up till Ovale bug is fixed
+#   Update FoN logic
+#   Fix Haromm's spell ID
 # 9/28/13 version 5.4.2.0
 #   Temporarily disabled bleed ratio prediction on filler rake until ovale fix can be implemented 
 #   Removed some unnecessary conditionals from FillerActions
@@ -149,7 +151,7 @@ Define(VICIOUS_TALISMAN 138700)
 	SpellInfo(VICIOUS_TALISMAN duration=20)
 Define(ASSURANCE_OF_CONSEQUENCE 146309)
 	SpellInfo(ASSURANCE_OF_CONSEQUENCE duration=20)
-Define(HAROMMS_TALISMAN 148904)
+Define(HAROMMS_TALISMAN 148903)
 	SpellInfo(HAROMMS_TALISMAN duration=10)
 Define(SIGIL_OF_RAMPAGE 148895)
 	SpellInfo(SIGIL_OF_RAMPAGE duration=15)
@@ -1555,15 +1557,15 @@ AddIcon help=Talent_Cooldowns size=small mastery=2 checkboxon=altpredictive {
 	if TalentPoints(FORCE_OF_NATURE_TALENT)
 	{
 		if Charges(FORCE_OF_NATURE) ==3 or {Charges(FORCE_OF_NATURE) ==2 and SpellChargeCooldown(FORCE_OF_NATURE) <=1} Spell(FORCE_OF_NATURE)
-		if BuffPresent(TICKING_EBON_DETONATOR)
-			or {BuffPresent(SOUL_CHARM) and BuffRemains(SOUL_CHARM) <= TreantTimeThreshold()}
-			or {BuffPresent(ROR) and BuffRemains(ROR) <= TreantTimeThreshold()}
-			or BuffPresent(BAD_JUJU)
-			or BuffPresent(VICIOUS_TALISMAN)
-			or BuffPresent(ASSURANCE_OF_CONSEQUENCE)
-			or BuffPresent(HAROMMS_TALISMAN)
-			or BuffPresent(SIGIL_OF_RAMPAGE) 
-		{
+                if BuffPresent(TICKING_EBON_DETONATOR)
+                   or {BuffPresent(SOUL_CHARM) and BuffRemains(SOUL_CHARM) <= TreantTimeThreshold()}
+                   or {BuffPresent(ROR_MASTERY) and BuffRemains(ROR_MASTERY) <= TreantTimeThreshold()}
+                   or {BuffPresent(BAD_JUJU) and BuffRemains(BAD_JUJU) <= TreantTimeThreshold()}
+                   or {BuffPresent(VICIOUS_TALISMAN) and BuffRemains(VICIOUS_TALISMAN) <= TreantTimeThreshold()}
+                   or {BuffPresent(ASSURANCE_OF_CONSEQUENCE) and BuffRemains(ASSURANCE_OF_CONSEQUENCE) <= TreantTimeThreshold()}
+                   or {BuffPresent(HAROMMS_TALISMAN) and BuffRemains(HAROMMS_TALISMAN) <= TreantTimeThreshold()}
+                   or {BuffPresent(SIGIL_OF_RAMPAGE)  and BuffRemains(SIGIL_OF_RAMPAGE) <= TreantTimeThreshold()}
+                {
 			Spell(FORCE_OF_NATURE)
 		}
 	}
