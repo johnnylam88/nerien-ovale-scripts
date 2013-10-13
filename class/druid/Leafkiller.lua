@@ -1544,7 +1544,7 @@ AddIcon size=small mastery=2 checkboxon=cooldownsL {
 }
 AddIcon help=Berserk size=small mastery=2 checkboxon=cooldownsL { # Berserk Icon
 	if BuffPresent(TIGERS_FURY) Spell(BERSERK_CAT)
-	if 0s before Spell(BERSERK_CAT) Texture(Ability_mount_polarbear_white)
+	if Spell(BERSERK_CAT) Texture(Ability_mount_polarbear_white)
 }
 
 
