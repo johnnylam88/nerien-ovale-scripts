@@ -255,6 +255,7 @@ Define(RIP 1079) #cat bleed
 	SpellInfo(RIP resetcounter=ripshreds duration=16 tick=2 combo=0)
 	SpellAddTargetDebuff(RIP RIP=1)
 	SpellDamageBuff(RIP DREAM_OF_CENARIUS=1.30)
+	SpellAddBuff(RIP DREAM_OF_CENARIUS=1)
 Define(SAVAGE_ROAR_OLD 52610)
 	SpellInfo(SAVAGE_ROAR_OLD duration=18 combo=0)
 	SpellAddBuff(SAVAGE_ROAR_OLD SAVAGE_ROAR_OLD=1)
