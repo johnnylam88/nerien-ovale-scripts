@@ -1662,8 +1662,8 @@ AddFunction BearMain {
 	
 	
 	# Debuff maintenance.
-	if target.DebuffRemains(WEAKENED_BLOWS 3 any=1) <=3 Spell(THRASH_BEAR)
-	if target.DebuffRemains(WEAKENED_ARMOR 3 any=1) <=3 or target.DebuffStacks(WEAKENED_ARMOR any=1) <3
+	if target.DebuffRemains(WEAKENED_BLOWS any=1) <=3 Spell(THRASH_BEAR)
+	if target.DebuffRemains(WEAKENED_ARMOR any=1) <=3 or target.DebuffStacks(WEAKENED_ARMOR any=1) <3
 	{
 		FaerieFire()
 	}
