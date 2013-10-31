@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.MAGE.Nerien = {
-	desc = "[5.3] Nerien: Arcane, Fire, Frost",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.3] Nerien: Arcane, Fire, Frost"
+	local code = [[
 # Nerien's mage script based on SimulationCraft.
 #
 # Arcane:
@@ -1419,5 +1421,7 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
 	if BuffExpires(burst_haste any=1) and DebuffExpires(burst_haste_debuff) Spell(time_warp)
 }
-]],
-}
+]]
+
+	OvaleScripts:RegisterScript("MAGE", name, desc, code)
+end

@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.DRUID.Nerien = {
-	desc = "[5.3] Nerien: Balance, Feral, Guardian",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.3] Nerien: Balance, Feral, Guardian"
+	local code = [[
 # Nerien's druid script based on SimulationCraft
 #
 # Balance:
@@ -1809,4 +1811,6 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
 ]]
-}
+
+	OvaleScripts:RegisterScript("DRUID", name, desc, code)
+end

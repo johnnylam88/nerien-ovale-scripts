@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.HUNTER.Nerien = {
-	desc = "[5.3] Nerien: Beast Mastery, Survival",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.3] Nerien: Beast Mastery, Survival"
+	local code = [[
 # Nerien's hunter script based on SimulationCraft
 #
 # Beast Mastery:
@@ -772,5 +774,7 @@ AddIcon mastery=3 size=small checkboxon=opt_icons_right
 {
 	UseItemActions()
 }
-]],
-}
+]]
+
+	OvaleScripts:RegisterScript("HUNTER", name, desc, code)
+end

@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.PALADIN.Nerien = {
-	desc = "[5.3] Nerien: Holy, Protection, Retribution",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.3] Nerien: Holy, Protection, Retribution"
+	local code = [[
 # Nerien's paladin script based on SimulationCraft
 #
 # Retribution
@@ -1039,5 +1041,7 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
-]],
-}
+]]
+
+	OvaleScripts:RegisterScript("PALADIN", name, desc, code)
+end

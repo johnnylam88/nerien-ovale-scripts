@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.PALADIN.Opisthobranch = {
-	desc = "[5.0] Opisthobranch: Protection, Retribution",
-	code =
-[[
+do
+	local name = "Opisthobranch"
+	local desc = "[5.0] Opisthobranch: Protection, Retribution"
+	local code = [[
 # Opisthobranch: Protection, Retribution
 
 Define(avengers_shield 31935)
@@ -132,4 +134,6 @@ AddIcon mastery=3 help=cd
     if TalentPoints(selfless_healer_talent) and BuffStacks(selfless_healer) >=3 Spell(flash_of_light)
 }
 ]]
-}
+
+	OvaleScripts:RegisterScript("PALADIN", name, desc, code)
+end

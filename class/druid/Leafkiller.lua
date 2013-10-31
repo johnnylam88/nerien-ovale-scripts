@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.DRUID.Leafkiller = {
-	desc = "[5.4] Leafkiller: Feral, Guardian",
-	code =
-[[
+do
+	local name = "Leafkiller"
+	local desc = "[5.4] Leafkiller: Feral, Guardian"
+	local code = [[
 # Leafkiller's Feral/Guardian druid script, maintained by ShmooDude and aggixx.
 # Support/Discussion thread: http://fluiddruid.net/forum/viewtopic.php?f=3&t=857
 # 10/24/13 version 5.4.3.0
@@ -1595,4 +1597,6 @@ AddIcon size=small mastery=3 checkboxon=cooldownsR {
     Spell(BERSERK_BEAR)
 }
 ]]
-}
+
+	OvaleScripts:RegisterScript("DRUID", name, desc, code)
+end

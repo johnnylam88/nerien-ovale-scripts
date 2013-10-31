@@ -1,8 +1,13 @@
 --[[
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.WARLOCK.Nerien = {
-	desc = "",
-	code = "",
-}
-]]--
+do
+	local name = "Nerien"
+	local desc = ""
+	local code = ""
+
+	OvaleScripts:RegisterScript("WARLOCK", name, desc, code)
+end
+--]]

@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.SHAMAN.Nerien = {
-	desc = "[5.3] Nerien: Elemental, Restoration",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.3] Nerien: Elemental, Restoration"
+	local code = [[
 # Nerien's shaman script based on SimulationCraft
 #
 # Elemental
@@ -809,5 +811,7 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
-]],
-}
+]]
+
+	OvaleScripts:RegisterScript("SHAMAN", name, desc, code)
+end

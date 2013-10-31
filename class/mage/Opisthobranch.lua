@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.MAGE.Opisthobranch = {
-	desc = "[5.0] Opisthobranch: Arcane, Fire, Frost",
-	code =
-[[
+do
+	local name = "Opisthobranch"
+	local desc = "[5.0] Opisthobranch: Arcane, Fire, Frost"
+	local code = [[
 # Opisthobranch: Arcane, Fire, Frost
 #
 # Caveats:
@@ -256,4 +258,6 @@ AddIcon help=Mobility size=small checkboxon=mob
     if TalentPoints(scorch_talent) Spell(scorch)
 }
 ]]
-}
+
+	OvaleScripts:RegisterScript("MAGE", name, desc, code)
+end

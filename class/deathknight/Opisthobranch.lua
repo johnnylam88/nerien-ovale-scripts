@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.DEATHKNIGHT.Opisthobranch = {
-	desc = "[5.0] Opisthobranch: Blood, Frost, Unholy",
-	code =
-[[
+do
+	local name = "Opisthobranch"
+	local desc = "[5.0] Opisthobranch: Blood, Frost, Unholy"
+	local code = [[
 # Opisthobranch: Blood, Frost, Unholy
 
 Define(army_of_the_dead 42650)
@@ -338,4 +340,6 @@ AddIcon mastery=3 help=cd
     Spell(empower_rune_weapon)
 }
 ]]
-}
+
+	OvaleScripts:RegisterScript("DEATHKNIGHT", name, desc, code)
+end

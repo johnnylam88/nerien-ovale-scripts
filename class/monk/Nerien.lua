@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.MONK.Nerien = {
-	desc = "[5.4] Nerien: Brewmaster, Mistweaver, Windwalker",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.4] Nerien: Brewmaster, Mistweaver, Windwalker"
+	local code = [[
 # Nerien's monk script based on SimulationCraft
 #
 # Windwalker
@@ -1100,5 +1102,7 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
 }
-]],
-}
+]]
+
+	OvaleScripts:RegisterScript("MONK", name, desc, code)
+end

@@ -1,9 +1,11 @@
 local _, NerienOvaleScripts = ...
+local Ovale = NerienOvaleScripts.Ovale
+local OvaleScripts = Ovale.OvaleScripts
 
-NerienOvaleScripts.script.ROGUE.Nerien = {
-	desc = "[5.3] Nerien: Assassination, Combat",
-	code =
-[[
+do
+	local name = "Nerien"
+	local desc = "[5.3] Nerien: Assassination, Combat"
+	local code = [[
 # Nerien's rogue script based on SimulationCraft
 #
 # Assassination:
@@ -994,5 +996,7 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 {
 	Spell(cloak_of_shadows)
 }
-]],
-}
+]]
+
+	OvaleScripts:RegisterScript("ROGUE", name, desc, code)
+end
