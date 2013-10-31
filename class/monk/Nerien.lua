@@ -649,7 +649,11 @@ AddIcon mastery=1 help=cd
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	Interrupt()
 	if TalentPoints(chi_burst_talent) Spell(chi_burst)
-	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+	unless {target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)}
+		or {TalentPoints(chi_burst_talent) and Spell(chi_burst)}
+	{
+		if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+	}
 }
 
 AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
