@@ -2,5 +2,4 @@
 ..\FrameXML\UI.xsd">
 	<Script file="Leafkiller.lua" />
 	<Script file="Nerien.lua" />
-	<Script file="ShmooDude.lua" />
 </Ui>
