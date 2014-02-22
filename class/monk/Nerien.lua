@@ -9,12 +9,12 @@ do
 # Nerien's monk script based on SimulationCraft
 #
 # Windwalker
-#	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!021221
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!002221
 
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
 	SpellInfo(blackout_kick chi=2)
-	SpellAddBuff(blackout_kick combo_breaker_bok=0 muscle_memory_aura=0 serpents_zeal=1 shuffle=1)
+	SpellAddBuff(blackout_kick combo_breaker_bok_buff=0 muscle_memory_buff=0 serpents_zeal=1 shuffle=1)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
 Define(brewmaster_training 117967)
@@ -36,10 +36,10 @@ Define(chi_torpedo_talent 18)
 Define(chi_wave 115098)
 	SpellInfo(chi_wave cd=15)
 Define(chi_wave_talent 4)
-Define(combo_breaker_bok 116768)
-	SpellInfo(combo_breaker_bok duration=15)
-Define(combo_breaker_tp 118864)
-	SpellInfo(combo_breaker_tp duration=15)
+Define(combo_breaker_bok_buff 116768)
+	SpellInfo(combo_breaker_bok_buff duration=15)
+Define(combo_breaker_tp_buff 118864)
+	SpellInfo(combo_breaker_tp_buff duration=15)
 Define(crackling_jade_lightning 117952)
 	SpellInfo(crackling_jade_lightning canStopChannelling=6 duration=6 tick=1)
 	SpellAddBuff(crackling_jade_lightning power_strikes=0)
@@ -64,12 +64,13 @@ Define(elusive_brew_use 115308)
 	SpellInfo(elusive_brew_use cd=9 duration=1)
 	SpellAddBuff(elusive_brew_use elusive_brew=0 elusive_brew_use=1 healing_elixirs=0)
 Define(energizing_brew 115288)
+Define(energizing_brew_buff 115288)
 	SpellInfo(energizing_brew cd=60 duration=6 tick=1)
 	SpellInfo(energizing_brew addduration=5 itemset=T14_melee itemcount=4)
 	SpellAddBuff(energizing_brew energizing_brew=1 healing_elixirs=0)
 Define(enveloping_mist 124682)
 	SpellInfo(enveloping_mist chi=3)
-#	SpellAddTargetBuff(enveloping_mist enveloping_mist_aura=1)
+	SpellAddTargetBuff(enveloping_mist enveloping_mist_aura=1)
 Define(enveloping_mist_aura 132120)
 	SpellInfo(enveloping_mist_aura duration=6 haste=spell tick=1)
 Define(expel_harm 115072)
@@ -107,7 +108,7 @@ Define(heavy_stagger 124273)
 	SpellInfo(heavy_stagger duration=10 tick=1)
 Define(invoke_xuen 123904)
 	SpellInfo(invoke_xuen cd=180 duration=45)
-Define(invoke_xuen_the_white_tiger_talent 17)
+Define(invoke_xuen_talent 17)
 Define(jab 100780)
 	SpellInfo(jab buff_chi=power_strikes chi=-2 texture=ability_monk_jab)
 	SpellInfo(jab chi=-1 if_stance=monk_stance_of_the_sturdy_ox)
@@ -127,23 +128,23 @@ Define(legacy_of_the_white_tiger 116781)
 	SpellAddBuff(legacy_of_the_white_tiger legacy_of_the_white_tiger=1)
 Define(life_cocoon 116849)
 	SpellInfo(life_cocoon cd=120 duration=12)
-#	SpellAddTargetBuff(life_cocoon life_cocoon=1)
+	SpellAddTargetBuff(life_cocoon life_cocoon=1)
 Define(light_stagger 124275)
 	SpellInfo(light_stagger duration=10 tick=1)
 Define(lucidity 137331)
 	SpellInfo(lucidity duration=4)
 Define(mana_tea 115294)
-	SpellInfo(mana_tea canStopChannelling=6 duration=3 tick=0.5)
+	SpellInfo(mana_tea canStopChannelling=6 duration=3 tick=0.5 texture=inv_misc_herb_jadetealeaf)
 Define(mana_tea_aura 115867)
 	SpellInfo(mana_tea_aura duration=120)
 Define(mana_tea_glyphed 123761)
-	SpellInfo(mana_tea_glyphed cd=10)
+	SpellInfo(mana_tea_glyphed cd=10 texture=inv_misc_herb_jadetealeaf)
 	SpellAddBuff(mana_tea_glyphed mana_tea_aura=-2)
 Define(moderate_stagger 124274)
 	SpellInfo(moderate_stagger duration=10 tick=1)
 Define(muscle_memory 139598)
-Define(muscle_memory_aura 139597)
-	SpellInfo(muscle_memory_aura duration=15)
+Define(muscle_memory_buff 139597)
+	SpellInfo(muscle_memory_buff duration=15)
 Define(nimble_brew 137562)
 	SpellInfo(nimble_brew cd=120 duration=6)
 	SpellAddBuff(nimble_brew healing_elixirs=0 nimble_brew=1)
@@ -163,7 +164,7 @@ Define(rapid_rolling 147364)
 	SpellInfo(rapid_rolling duration=5)
 Define(renewing_mist 115151)
 	SpellInfo(renewing_mist cd=8 chi=-1)
-#	SpellAddTargetBuff(renewing_mist renewing_mist_aura=1)
+	SpellAddTargetBuff(renewing_mist renewing_mist_aura=1)
 Define(renewing_mist_aura 119611)
 	SpellInfo(renewing_mist_aura duration=18 haste=spell tick=2)
 Define(renewing_mist_spread_aura 119607)
@@ -176,9 +177,9 @@ Define(ring_of_peace 116844)
 Define(ring_of_peace_talent 10)
 Define(rising_sun_kick 107428)
 	SpellInfo(rising_sun_kick cd=8 chi=2)
-	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_aura=1)
-Define(rising_sun_kick_aura 130320)
-	SpellInfo(rising_sun_kick_aura duration=15)
+	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_debuff=1)
+Define(rising_sun_kick_debuff 130320)
+	SpellInfo(rising_sun_kick_debuff duration=15)
 Define(roll 109132)
 	SpellInfo(roll cd=0.8)
 	SpellAddBuff(roll rapid_rolling=0)
@@ -231,16 +232,18 @@ Define(thunder_focus_tea 116680)
 Define(tiger_palm 100787)
 	SpellInfo(tiger_palm chi=1)
 	SpellInfo(tiger_palm chi=0 if_spell=brewmaster_training)
-	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory_aura=0 power_guard=1 tiger_power=1 vital_mists=1)
-Define(tiger_power 125359)
-	SpellInfo(tiger_power duration=20)
+	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory_buff=0 power_guard=1 tiger_power_buff=1 vital_mists=1)
+Define(tiger_power_buff 125359)
+	SpellInfo(tiger_power_buff duration=20)
 Define(tiger_strikes 120273)
 	SpellInfo(tiger_strikes duration=15)
-Define(tigereye_brew 125195)
-	SpellInfo(tigereye_brew duration=120)
-Define(tigereye_brew_use 116740)
-	SpellInfo(tigereye_brew_use cd=1 duration=15)
-	SpellAddBuff(tigereye_brew_use healing_elixirs=0 tigereye_brew=-10 tigereye_brew_use=1)
+Define(tigereye_brew 116740)
+	SpellInfo(tigereye_brew cd=5)
+	SpellAddBuff(tigereye_brew healing_elixirs=0 tigereye_brew_buff=-10 tigereye_brew_use_buff=1)
+Define(tigereye_brew_buff 125195)
+	SpellInfo(tigereye_brew_buff duration=120)
+Define(tigereye_brew_use_buff 116740)
+	SpellInfo(tigereye_brew_use_buff duration=15)
 Define(tigers_lust 116841)
 	SpellInfo(tigers_lust cd=30 duration=6)
 	SpellAddBuff(tigers_lust tigers_lust=1)
@@ -265,8 +268,13 @@ Define(vital_mists 118674)
 Define(weakened_blows 115798)
 	SpellInfo(weakened_blows duration=30)
 Define(zen_sphere 124081)
+Define(zen_sphere_buff 124081)
 	SpellInfo(zen_sphere cd=10 duration=16 haste=spell tick=2)
 Define(zen_sphere_talent 5)
+
+# MoP trinket buffs (agility, strength)
+SpellList(trinket_proc_agility_buff 126489 126554 126690 126707 128897 128984 138699 138756 138938 146308 146310 148896 148903)
+SpellList(trinket_proc_strength_buff 126519 126582 126679 126700 128986 138702 138759 138870 138960 146245 146250 148899)
 
 # Items
 Define(virmens_bite_potion 76089)
@@ -275,16 +283,6 @@ Define(virmens_bite_potion_buff 105697)
 Define(jade_serpent_potion 76093)
 Define(jade_serpent_potion_buff 105702)
 	SpellInfo(jade_serpent_potion_buff duration=25)
-
-# Rune of Re-Origination
-ItemList(rune_of_reorigination 94532 95802 96546)
-Define(rune_of_reorigination_crit_buff 139117)
-	SpellInfo(rune_of_reorigination_crit_buff duration=10)
-Define(rune_of_reorigination_haste_buff 139121)
-	SpellInfo(rune_of_reorigination_haste_buff duration=10)
-Define(rune_of_reorigination_mastery_buff 139120)
-	SpellInfo(rune_of_reorigination_mastery_buff duration=10)
-SpellList(rune_of_reorigination_buff rune_of_reorigination_crit_buff rune_of_reorigination_haste_buff rune_of_reorigination_mastery_buff)
 
 # Racials
 Define(arcane_torrent_chi 129597)
@@ -394,7 +392,7 @@ AddFunction Tier2TalentActions
 {
 	if TalentPoints(chi_burst_talent) Spell(chi_burst)
 	if TalentPoints(chi_wave_talent) Spell(chi_wave)
-	if TalentPoints(zen_sphere_talent) and BuffExpires(zen_sphere) Spell(zen_sphere)
+	if TalentPoints(zen_sphere_talent) and BuffExpires(zen_sphere_buff) Spell(zen_sphere)
 }
 
 AddFunction Tier5TalentActions
@@ -471,7 +469,7 @@ AddFunction BrewmasterMaintenanceActions
 			if Glyph(glyph_of_guard) and BuffExpires(guard_glyphed 2) and SpellCooldown(guard_glyphed) < GCD() Spell(tiger_palm)
 			if Glyph(glyph_of_guard no) and BuffExpires(guard 2) and SpellCooldown(guard) < GCD() Spell(tiger_palm)
 		}
-		if BuffExpires(tiger_power) Spell(tiger_palm)
+		if BuffExpires(tiger_power_buff) Spell(tiger_palm)
 	}
 }
 
@@ -479,7 +477,7 @@ AddFunction BrewmasterFillerActions
 {
 	# Filler heal/DPS Tier 2 talent.
 	if TalentPoints(chi_wave_talent) Spell(chi_wave)
-	if TalentPoints(zen_sphere_talent) and BuffExpires(zen_sphere) Spell(zen_sphere)
+	if TalentPoints(zen_sphere_talent) and BuffExpires(zen_sphere_buff) Spell(zen_sphere)
 
 	# Use Tiger Palm as a filler only if it costs no Chi.
 	if SpellData(tiger_palm chi) ==0 Spell(tiger_palm)
@@ -652,7 +650,7 @@ AddIcon mastery=1 help=cd
 	unless {target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)}
 		or {TalentPoints(chi_burst_talent) and Spell(chi_burst)}
 	{
-		if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+		if TalentPoints(invoke_xuen_talent) Spell(invoke_xuen)
 	}
 }
 
@@ -681,10 +679,10 @@ AddFunction MistweaverChiPool
 	0
 }
 
-AddFunction MistweaverJab
+AddFunction MistweaverExpelHarm
 {
-	# Always display the "fist" jab texture when suggesting Jab.
-	if SpellUsable(jab) Spell(jab)
+	if Glyph(glyph_of_targeted_expulsion) Spell(expel_harm_glyphed)
+	if Glyph(glyph_of_targeted_expulsion no) Spell(expel_harm)
 }
 
 AddFunction MistweaverPreCombatActions
@@ -700,14 +698,10 @@ AddFunction MistweaverBuffActions
 	unless BuffPresent(str_agi_int any=1) Spell(legacy_of_the_emperor)
 }
 
-AddFunction MistweaverManaTeaInstant
+AddFunction ManaTea
 {
-	if Glyph(glyph_of_mana_tea) and BuffPresent(mana_tea_aura stacks=2) Spell(mana_tea_glyphed)
-}
-
-AddFunction MistweaverManaTeaChanneled
-{
-	if not Glyph(glyph_of_mana_tea) and BuffPresent(mana_tea_aura) Spell(mana_tea)
+	if Glyph(glyph_of_mana_tea) Spell(mana_tea_glyphed)
+	if not Glyph(glyph_of_mana_tea) Spell(mana_tea)
 }
 
 AddFunction SurgingMist
@@ -716,72 +710,84 @@ AddFunction SurgingMist
 	if Glyph(glyph_of_surging_mist no) Spell(surging_mist)
 }
 
-# Fistweaving rotation from Reglitch's Fistweaving Guide:
-#	http://www.mmo-champion.com/threads/1305950-Fistweaving-101-Hit-Boss-gt-Receive-Healing
-#
-AddFunction MistweaverMeleeActions
+AddFunction MistweaverAoeActions
 {
-	# Legendary meta-gem proc.
-	if BuffPresent(lucidity)
-	{
-		if BuffPresent(muscle_memory_aura) Spell(tiger_palm)
-		MistweaverJab()
-	}
-
-	# Restore mana.
-	if CheckBoxOn(opt_legendary_metagem) and ManaPercent() <20 MistweaverManaTeaInstant()
-	if CheckBoxOff(opt_legendary_metagem) and ManaPercent() <92 MistweaverManaTeaInstant()
-
-	# Use Muscle Memory.
-	if BuffPresent(muscle_memory_aura)
-	{
-		if BuffExpires(tiger_power) Spell(tiger_palm)
-		if Chi() >{MistweaverChiPool() +1} Spell(blackout_kick)
-		if Chi() >MistweaverChiPool() Spell(tiger_palm)
-	}
-	if TalentPoints(chi_wave_talent) Spell(chi_wave)
-
-	# Generate Chi.
-	ExpelHarm()
-	MistweaverJab()
-}
-
-AddFunction MistweaverAoEActions
-{
-	# Legendary meta-gem proc.
-	if BuffPresent(lucidity)
-	{
-		if BuffPresent(muscle_memory_aura) Spell(tiger_palm)
-		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
-		MistweaverJab()
-	}
-
-	# Restore mana.
-	if CheckBoxOn(opt_legendary_metagem) and ManaPercent() <20 MistweaverManaTeaInstant()
-	if CheckBoxOff(opt_legendary_metagem) and ManaPercent() <92 MistweaverManaTeaInstant()
-
-	# Use Muscle Memory.
-	if BuffPresent(muscle_memory_aura)
-	{
-		if BuffExpires(tiger_power) Spell(tiger_palm)
-		if Chi() >{MistweaverChiPool() +1} Spell(blackout_kick)
-	}
-	if TalentPoints(chi_wave_talent) Spell(chi_wave)
-
-	# Generate Chi.
+	#spinning_crane_kick,if=!talent.rushing_jade_wind.enabled
+	#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
+	#zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking
+	if TalentPoints(zen_sphere_talent) and BuffCount(zen_sphere_buff) < 1 Spell(zen_sphere)
+	#chi_burst,if=talent.chi_burst.enabled
+	if TalentPoints(chi_burst_enabled) Spell(chi_burst)
+	#tiger_palm,if=buff.muscle_memory.up&!buff.tiger_power.up
+	if BuffPresent(muscle_memory_buff) and BuffExpires(tiger_power_buff) Spell(tiger_palm)
+	#blackout_kick,if=buff.muscle_memory.up&buff.tiger_power.up&chi>1
+	if BuffPresent(muscle_memory_buff) and BuffPresent(tiger_power_buff) and Chi() > {MistweaverChiPool() + 1} Spell(blackout_kick)
+	#jab,if=talent.rushing_jade_wind.enabled
 	if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
-	ExpelHarm()
-	MistweaverJab()
+	MistweaverExpelHarm()
+	if TalentPoints(rushing_jade_wind_talent) Spell(jab)
 }
 
-# Tier 5 damage reduction cooldown
-AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
+AddFunction MistweaverSingleTargetActions
 {
-	Tier5TalentActions()
-	Spell(fortifying_brew)
-	UseRacialSurvivalActions()
+	#crackling_jade_lightning,if=buff.bloodlust.up&buff.lucidity.up
+	if BuffPresent(burst_haste any=1) and BuffPresent(lucidity) Spell(crackling_jade_lightning)
+	#tiger_palm,if=buff.muscle_memory.up&buff.lucidity.up
+	if BuffPresent(lucidity) and BuffPresent(muscle_memory_buff) Spell(tiger_palm)
+	#jab,if=buff.lucidity.up
+	if BuffPresent(lucidity) Spell(jab)
+	#tiger_palm,if=buff.muscle_memory.up&!buff.tiger_power.up
+	if BuffPresent(muscle_memory_buff) and BuffExpires(tiger_power_buff) Spell(tiger_palm)
+	#blackout_kick,if=buff.muscle_memory.up&buff.tiger_power.up&chi>1
+	if BuffPresent(muscle_memory_buff) and BuffPresent(tiger_power_buff) and Chi() > {MistweaverChiPool() + 1} Spell(blackout_kick)
+	#tiger_palm,if=buff.muscle_memory.up&buff.tiger_power.up
+	if BuffPresent(muscle_memory_buff) and BuffPresent(tiger_power_buff) and Chi() > MistweaverChiPool() Spell(tiger_palm)
+	#chi_wave,if=talent.chi_wave.enabled
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+	#zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking
+	if TalentPoints(zen_sphere_talent) and BuffCount(zen_sphere_buff) < 1 Spell(zen_sphere)
+	#jab
+	MistweaverExpelHarm()
+	Spell(jab)
+}
+
+AddFunction MistweaverDefaultActions
+{
+	#auto_attack
+	#chi_brew,if=talent.chi_brew.enabled&chi=0
+	if TalentPoints(chi_brew_talent) and Chi() == 0 Spell(chi_brew)
+	#mana_tea,if=buff.mana_tea.react>=2&mana.pct<=25
+	if BuffStacks(mana_tea_aura) >= 2 and ManaPercent() <= 25 ManaTea()
+	#jade_serpent_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if BuffPresent(burst_haste any=1) and target.TimeToDie() <= 60 Item(jade_serpent_potion)
+	#use_item
+	Item(HandsSlot usable=1)
+	#invoke_xuen,if=talent.invoke_xuen.enabled
+	if TalentPoints(invoke_xuen_talent) Spell(invoke_xuen)
+	#run_action_list,name=aoe,if=active_enemies>=3
+	if Enemies() >= 3 MistweaverAoeActions()
+	#run_action_list,name=single_target,if=active_enemies<3
+	if Enemies() < 3 MistweaverSingleTargetActions()
+}
+
+AddFunction MistweaverDefaultCdActions
+{
+	#chi_brew,if=talent.chi_brew.enabled&chi=0
+	if TalentPoints(chi_brew_talent) and Chi() == 0 Spell(chi_brew)
+	#mana_tea,if=buff.mana_tea.react>=2&mana.pct<=25
+	if BuffStacks(mana_tea_aura) >= 2 and ManaPercent() <= 25 ManaTea()
+	#jade_serpent_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if BuffPresent(burst_haste any=1) and target.TimeToDie() <= 60 Item(jade_serpent_potion)
+	#use_item
+	Item(HandsSlot usable=1)
+	#invoke_xuen,if=talent.invoke_xuen.enabled
+	if TalentPoints(invoke_xuen_talent) Spell(invoke_xuen)
+}
+
+AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
+{
+	if TotemExpires(statue) Spell(summon_jade_serpent_statue)
 }
 
 # Raid cooldowns
@@ -805,7 +811,7 @@ AddIcon mastery=2 help=main
 {
 	MistweaverPreCombatActions()
 	MistweaverBuffActions()
-	if Stance(monk_stance_of_the_wise_serpent) MistweaverMeleeActions()
+	if Stance(monk_stance_of_the_wise_serpent) MistweaverSingleTargetActions()
 	if Stance(monk_stance_of_the_fierce_tiger) SingleTargetDPSActions()
 }
 
@@ -813,7 +819,7 @@ AddIcon mastery=2 help=aoe checkboxon=aoe
 {
 	MistweaverPreCombatActions()
 	MistweaverBuffActions()
-	if Stance(monk_stance_of_the_wise_serpent) MistweaverAoEActions()
+	if Stance(monk_stance_of_the_wise_serpent) MistweaverAoeActions()
 	if Stance(monk_stance_of_the_fierce_tiger) AoEDPSActions()
 }
 
@@ -824,12 +830,16 @@ AddIcon mastery=2 help=cd
 	Interrupt()
 	if Spell(thunder_focus_tea) and Chi() >=3 Spell(uplift)
 	if not Spell(thunder_focus_tea) and Chi() >=2 Spell(uplift)
-	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
+
+	MistweaverDefaultCdActions()
 }
 
-AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
+# Mana cooldown
+AddIcon mastery=2 help=mana size=small checkboxon=opt_icons_left
 {
-	if TotemExpires(statue) Spell(summon_jade_serpent_statue)
+	if BuffStacks(mana_tea_aura) == 20 ManaTea()
+	if ManaPercent() < 75 ManaTea()
+	if ManaPercent() < 100 and ManaPercent() < 100 - {BuffStacks(mana_tea_aura) * 4} ManaTea()
 }
 
 AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
@@ -841,6 +851,11 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 ###
 ### Windwalker
 ###
+
+# Based on SimulationCraft profile "Monk_Windwalker_1h_T16H".
+#	class=monk
+#	spec=windwalker
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#fb!002221
 
 AddFunction WindwalkerUsePotion
 {
@@ -854,216 +869,127 @@ AddFunction WindwalkerGenerateChi
 	Jab()
 }
 
-# TeB usage style: "consistent" is geared toward a crit build, "burst" is geared toward a mastery build.
-AddListItem(opt_tigereye_brew_usage consistent "TeB usage: Consistent" default mastery=3)
-AddListItem(opt_tigereye_brew_usage burst "TeB usage: Burst" mastery=3)
-
-AddFunction WindwalkerTigereyeBrewConditions
-{
-	#if ( find_item( "rune_of_reorigination" ) )
-	#	tigereye_brew,line_cd=15,if=buff.rune_of_reorigination.react&\
-	#		(buff.rune_of_reorigination.remains<=1|\
-	#		(buff.tigereye_brew_use.down&cooldown.rising_sun_kick.remains=0&\
-	#			chi>=2&target.debuff.rising_sun_kick.remains&buff.tiger_power.remains))
-	#	tigereye_brew,if=!buff.tigereye_brew_use.up&(buff.tigereye_brew.react>19|target.time_to_die<20)
-	#else
-	#	tigereye_brew,if=buff.tigereye_brew_use.down&cooldown.rising_sun_kick.remains=0&\
-	#			chi>=2&target.debuff.rising_sun_kick.remains&buff.tiger_power.remains
-	#
-	{BuffPresent(rune_of_reorigination_buff) and BuffRemains(rune_of_reorigination_buff) <=1}
-	or {{not HasTrinket(rune_of_reorigination) or BuffPresent(rune_of_reorigination_buff)}
-		and BuffExpires(tigereye_brew_use) and Spell(rising_sun_kick) and Chi() >=2
-		and {{List(opt_tigereye_brew_usage consistent)
-				and target.DebuffPresent(rising_sun_kick_aura) and BuffPresent(tiger_power)}
-			or {List(opt_tigereye_brew_usage burst)
-				and {{LastSpellAttackPower(rising_sun_kick) >0 and {AttackPower() /LastSpellAttackPower(rising_sun_kick) >1.4}}
-					or BuffStacks(tigereye_brew) >=16}}}}
-	or {HasTrinket(rune_of_reorigination)
-		and BuffExpires(tigereye_brew_use) and {BuffStacks(tigereye_brew) >19 or target.TimeToDie() <20}}
-}
-
-AddFunction WindwalkerFullRotation
-{
-	if InCombat(no)
-	{
-		#flask,type=spring_blossoms
-		#food,type=sea_mist_rice_noodles
-		if BuffExpires(str_agi_int 400 any=1) Spell(legacy_of_the_emperor)
-		if BuffExpires(critical_strike 400 any=1) Spell(legacy_of_the_white_tiger)
-		#stance
-		#snapshot_stats
-		#virmens_bite_potion
-		WindwalkerUsePotion()
-	}
-
-	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
-	#auto_attack
-	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
-	Interrupt()
-	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
-	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
-	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
-	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if BuffPresent(burst_haste any=1) or target.TimeToDie() <=60 WindwalkerUsePotion()
-	#use_item,name=red_crane_grips
-	UseItemActions()
-	#berserking
-	UseRacialActions()
-	#chi_brew,if=talent.chi_brew.enabled&chi=0
-	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
-	#tiger_palm,if=buff.tiger_power.remains<=3
-	if BuffExpires(tiger_power 3) Spell(tiger_palm)
-	if WindwalkerTigereyeBrewConditions() Spell(tigereye_brew_use)
-	#energizing_brew,if=energy.time_to_max>5
-	if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
-	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains
-	if target.DebuffExpires(rising_sun_kick_aura) Spell(rising_sun_kick)
-	#tiger_palm,if=buff.tiger_power.down&target.debuff.rising_sun_kick.remains>1&energy.time_to_max>1
-	if BuffExpires(tiger_power) and target.DebuffRemains(rising_sun_kick_aura) >1 and TimeToMaxEnergy() >1 Spell(tiger_palm)
-	#invoke_xuen,if=talent.invoke_xuen.enabled
-	if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
-	#run_action_list,name=aoe,if=active_enemies>=5
-	#run_action_list,name=st,if=active_enemies<5
-
-	if CheckBoxOn(aoe)
-	{
-		#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
-		if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-		#rising_sun_kick,if=chi=4
-		if Chi() >=4 Spell(rising_sun_kick)
-		#spinning_crane_kick
-		if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
-	}
-
-	#rising_sun_kick
-	Spell(rising_sun_kick)
-	#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>4&buff.tiger_power.remains>4
-	if BuffExpires(energizing_brew) and TimeToMaxEnergy() >4 and BuffRemains(tiger_power) >4 Spell(fists_of_fury)
-	#chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
-	if TalentPoints(chi_wave_talent) and TimeToMaxEnergy() >2 Spell(chi_wave)
-	#blackout_kick,if=buff.combo_breaker_bok.react
-	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
-	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
-	if BuffPresent(combo_breaker_tp)
-	{
-		if BuffRemains(combo_breaker_tp) <=2 or TimeToMaxEnergy() >=2 Spell(tiger_palm)
-	}
-	#jab,if=talent.ascension.enabled&chi<=3
-	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >=2 WindwalkerGenerateChi()
-	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
-	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
-	if List(opt_tigereye_brew_usage burst) and Chi() >=3 Spell(blackout_kick)
-}
-
-AddFunction WindwalkerPreCombatActions
-{
-	if InCombat(no)
-	{
-		#flask,type=spring_blossoms
-		#food,type=sea_mist_rice_noodles
-		if BuffExpires(str_agi_int 400 any=1) Spell(legacy_of_the_emperor)
-		if BuffExpires(critical_strike 400 any=1) Spell(legacy_of_the_white_tiger)
-		#stance
-		#snapshot_stats
-	}
-}
-
-AddFunction WindwalkerMaintenanceActions
-{
-	#auto_attack
-	if BuffExpires(str_agi_int any=1) Spell(legacy_of_the_emperor)
-	if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
-	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
-	#tiger_palm,if=buff.tiger_power.remains<=3
-	if BuffExpires(tiger_power 3) Spell(tiger_palm)
-	#rising_sun_kick,if=!target.debuff.rising_sun_kick.remains
-	if target.DebuffExpires(rising_sun_kick_aura) Spell(rising_sun_kick)
-	#tiger_palm,if=buff.tiger_power.down&target.debuff.rising_sun_kick.remains>1&energy.time_to_max>1
-	if BuffExpires(tiger_power) and target.DebuffRemains(rising_sun_kick_aura) >1 and TimeToMaxEnergy() >1 Spell(tiger_palm)
-}
-
-AddFunction WindwalkerMainActions
-{
-	#rising_sun_kick
-	Spell(rising_sun_kick)
-	#chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
-	if TalentPoints(chi_wave_talent) and TimeToMaxEnergy() >2 Spell(chi_wave)
-	#blackout_kick,if=buff.combo_breaker_bok.react
-	if BuffPresent(combo_breaker_bok) Spell(blackout_kick)
-	#tiger_palm,if=(buff.combo_breaker_tp.react&energy.time_to_max>=2)|(buff.combo_breaker_tp.remains<=2&buff.combo_breaker_tp.react)
-	if BuffPresent(combo_breaker_tp)
-	{
-		if BuffRemains(combo_breaker_tp) <=2 or TimeToMaxEnergy() >=2 Spell(tiger_palm)
-	}
-	#jab,if=talent.ascension.enabled&chi<=3
-	#jab,if=!talent.ascension.enabled&chi<=2
-	if NumberToMaxChi() >2 WindwalkerGenerateChi()
-	#blackout_kick,if=(energy+(energy.regen*(cooldown.rising_sun_kick.remains)))>=40
-	if {Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick)} >=40 Spell(blackout_kick)
-	if List(opt_tigereye_brew_usage burst) and Chi() >=3 Spell(blackout_kick)
-}
-
-AddFunction WindwalkerAoEActions
+AddFunction WindwalkerAoeActions
 {
 	#rushing_jade_wind,if=talent.rushing_jade_wind.enabled
 	if TalentPoints(rushing_jade_wind_talent) Spell(rushing_jade_wind)
-	#rising_sun_kick,if=chi=4
-	if Chi() >=4 Spell(rising_sun_kick)
-	#spinning_crane_kick
+	#zen_sphere,cycle_targets=1,if=talent.zen_sphere.enabled&!dot.zen_sphere.ticking
+	if TalentPoints(zen_sphere_talent) and not BuffPresent(zen_sphere_buff) Spell(zen_sphere)
+	#chi_wave,if=talent.chi_wave.enabled
+	if TalentPoints(chi_wave_talent) Spell(chi_wave)
+	#chi_burst,if=talent.chi_burst.enabled
+	if TalentPoints(chi_burst_talent) Spell(chi_burst)
+	#rising_sun_kick,if=chi=chi.max
+	if Chi() == MaxChi() Spell(rising_sun_kick)
+	#spinning_crane_kick,if=!talent.rushing_jade_wind.enabled
 	if not TalentPoints(rushing_jade_wind_talent) Spell(spinning_crane_kick)
 }
 
-AddFunction WindwalkerShortCooldownActions
+AddFunction WindwalkerSingleTargetActions
 {
-	unless {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
-	{
-		if WindwalkerTigereyeBrewConditions() Spell(tigereye_brew_use)
-		#energizing_brew,if=energy.time_to_max>5
-		if InCombat() and TimeToMaxEnergy() >5 Spell(energizing_brew)
+	#rising_sun_kick
+	Spell(rising_sun_kick)
+	#fists_of_fury,if=buff.energizing_brew.down&energy.time_to_max>4&buff.tiger_power.remains>4
+	if BuffExpires(energizing_brew_buff) and TimeToMaxEnergy() > 4 and BuffRemains(tiger_power_buff) > 4 Spell(fists_of_fury)
+	#chi_wave,if=talent.chi_wave.enabled&energy.time_to_max>2
+	if TalentPoints(chi_wave_talent) and TimeToMaxEnergy() > 2 Spell(chi_wave)
+	#blackout_kick,if=buff.combo_breaker_bok.react
+	if BuffPresent(combo_breaker_bok_buff) Spell(blackout_kick)
+	#tiger_palm,if=buff.combo_breaker_tp.react&(buff.combo_breaker_tp.remains<=2|energy.time_to_max>=2)
+	if BuffPresent(combo_breaker_tp_buff) and { BuffRemains(combo_breaker_tp_buff) <= 2 or TimeToMaxEnergy() >= 2 } Spell(tiger_palm)
+	#jab,if=chi.max-chi>=2
+	if MaxChi() - Chi() >= 2 WindwalkerGenerateChi()
+	#blackout_kick,if=energy+energy.regen*cooldown.rising_sun_kick.remains>=40
+	if Energy() + EnergyRegen() * SpellCooldown(rising_sun_kick) >= 40 Spell(blackout_kick)
+}
 
-		unless {target.DebuffExpires(rising_sun_kick_aura) and Spell(rising_sun_kick)}
-			or {BuffExpires(tiger_power) and target.DebuffRemains(rising_sun_kick_aura) >1 and TimeToMaxEnergy() >1 and Spell(tiger_palm)}
-			or Spell(rising_sun_kick)
-		{
-			#fists_of_fury,if=!buff.energizing_brew.up&energy.time_to_max>4&buff.tiger_power.remains>4
-			if BuffExpires(energizing_brew) and TimeToMaxEnergy() >timeWithHaste(4) and BuffRemains(tiger_power) >timeWithHaste(4) Spell(fists_of_fury)
-		}
+AddFunction WindwalkerSingleTargetShortCdActions
+{
+	unless Spell(rising_sun_kick)
+	{
+		#fists_of_fury,if=buff.energizing_brew.down&energy.time_to_max>4&buff.tiger_power.remains>4
+		if BuffExpires(energizing_brew_buff) and TimeToMaxEnergy() > 4 and BuffRemains(tiger_power_buff) > 4 Spell(fists_of_fury)
+		#chi_burst,if=talent.chi_burst.enabled&energy.time_to_max>2
+		if TalentPoints(chi_burst_talent) and TimeToMaxEnergy() > 2 Spell(chi_burst)
 	}
 }
 
-AddFunction WindwalkerCooldownActions
+AddFunction WindwalkerDefaultActions
+{
+	#auto_attack
+	#chi_sphere,if=talent.power_strikes.enabled&buff.chi_sphere.react&chi<4
+	#tiger_palm,if=buff.tiger_power.remains<=3
+	if BuffRemains(tiger_power_buff) <= 3 Spell(tiger_palm)
+	#rising_sun_kick,if=debuff.rising_sun_kick.down
+	if target.DebuffExpires(rising_sun_kick_debuff) Spell(rising_sun_kick)
+	#tiger_palm,if=buff.tiger_power.down&debuff.rising_sun_kick.remains>1&energy.time_to_max>1
+	if BuffExpires(tiger_power_buff) and target.DebuffRemains(rising_sun_kick_debuff) > 1 and TimeToMaxEnergy() > 1 Spell(tiger_palm)
+}
+
+AddFunction WindwalkerDefaultShortCdActions
+{
+	#chi_brew,if=talent.chi_brew.enabled&chi<=2&(trinket.proc.agility.react|(charges=1&recharge_time<=10)|charges=2|target.time_to_die<charges*10)
+	if TalentPoints(chi_brew_talent) and Chi() <= 2 and { BuffPresent(trinket_proc_agility_buff) or { Charges(chi_brew) == 1 and SpellChargeCooldown(chi_brew) <= 10 } or Charges(chi_brew) == 2 or target.TimeToDie() < Charges(chi_brew) * 10 } Spell(chi_brew)
+	unless BuffRemains(tiger_power_buff) <= 3 and Spell(tiger_palm)
+	{
+		#tigereye_brew,if=buff.tigereye_brew_use.down&buff.tigereye_brew.stack=20
+		if BuffExpires(tigereye_brew_use_buff) and BuffStacks(tigereye_brew_buff) == 20 Spell(tigereye_brew)
+		#tigereye_brew,if=buff.tigereye_brew_use.down&trinket.proc.agility.react
+		if BuffExpires(tigereye_brew_use_buff) and BuffPresent(trinket_proc_agility_buff) Spell(tigereye_brew)
+		#tigereye_brew,if=buff.tigereye_brew_use.down&chi>=2&(trinket.proc.agility.react|trinket.proc.strength.react|buff.tigereye_brew.stack>=15|target.time_to_die<40)&debuff.rising_sun_kick.up&buff.tiger_power.up
+		if BuffExpires(tigereye_brew_use_buff) and Chi() >= 2 and { BuffPresent(trinket_proc_agility_buff) or BuffPresent(trinket_proc_strength_buff) or BuffStacks(tigereye_brew_buff) >= 15 or target.TimeToDie() < 40 } and target.DebuffPresent(rising_sun_kick_debuff) and BuffPresent(tiger_power_buff) Spell(tigereye_brew)
+		#energizing_brew,if=energy.time_to_max>5
+		if TimeToMaxEnergy() > 5 Spell(energizing_brew)
+	}
+}
+
+AddFunction WindwalkerDefaultCdActions
+{
+	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
+	if BuffPresent(burst_haste any=1) or target.TimeToDie() <= 60 WindwalkerUsePotion()
+	#use_item,name=gloves_of_the_golden_protector
+	Item(HandsSlot usable=1)
+	#berserking
+	Spell(berserking)
+	unless {TalentPoints(chi_brew_talent) and Chi() <= 2 and { BuffPresent(trinket_proc_agility_buff) or { Charges(chi_brew) == 1 and SpellChargeCooldown(chi_brew) <= 10 } or Charges(chi_brew) == 2 or target.TimeToDie() < Charges(chi_brew) * 10 } Spell(chi_brew)}
+		or {BuffRemains(tiger_power_buff) <= 3 and Spell(tiger_palm)}
+		or {BuffExpires(tigereye_brew_use_buff) and BuffStacks(tigereye_brew_buff) == 20 and Spell(tigereye_brew)}
+		or {BuffExpires(tigereye_brew_use_buff) and BuffPresent(trinket_proc_agility_buff) and Spell(tigereye_brew)}
+		or {BuffExpires(tigereye_brew_use_buff) and Chi() >= 2 and { BuffPresent(trinket_proc_agility_buff) or BuffPresent(trinket_proc_strength_buff) or BuffStacks(tigereye_brew_buff) >= 15 or target.TimeToDie() < 40 } and target.DebuffPresent(rising_sun_kick_debuff) and BuffPresent(tiger_power_buff) and Spell(tigereye_brew)}
+		or {TimeToMaxEnergy() > 5 and Spell(energizing_brew)}
+		or {target.DebuffExpires(rising_sun_kick_debuff) and Spell(rising_sun_kick)}
+		or {BuffExpires(tiger_power_buff) and target.DebuffRemains(rising_sun_kick_debuff) > 1 and TimeToMaxEnergy() > 1 and Spell(tiger_palm)}
+	{
+		#invoke_xuen,if=talent.invoke_xuen.enabled
+		if TalentPoints(invoke_xuen_talent) Spell(invoke_xuen)
+	}
+}
+
+AddFunction WindwalkerPrecombatActions
 {
 	if InCombat(no)
 	{
+		if BuffExpires(str_agi_int 400 any=1) Spell(legacy_of_the_emperor)
+		if BuffExpires(critical_strike any=1) Spell(legacy_of_the_white_tiger)
+
 		#flask,type=spring_blossoms
 		#food,type=sea_mist_rice_noodles
-		unless {BuffExpires(str_agi_int 400 any=1) or BuffExpires(critical_strike 400 any=1)}
-		{
-			#virmens_bite_potion
-			WindwalkerUsePotion()
-		}
+		#stance,choose=fierce_tiger
+		if not Stance(monk_stance_of_the_fierce_tiger) Spell(stance_of_the_fierce_tiger)
+		#snapshot_stats
 	}
+}
 
+AddFunction WindwalkerReactCdActions
+{
+	#virmens_bite_potion
+	if not InCombat() WindwalkerUsePotion()
 	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
 	Interrupt()
-	#virmens_bite_potion,if=buff.bloodlust.react|target.time_to_die<=60
-	if BuffPresent(burst_haste any=1) or target.TimeToDie() <=60 WindwalkerUsePotion()
-	#use_item,name=red_crane_grips
-	UseItemActions()
-	#berserking
-	UseRacialActions()
-	#chi_brew,if=talent.chi_brew.enabled&chi=0
-	if TalentPoints(chi_brew_talent) and Chi() ==0 Spell(chi_brew)
-
-	unless {BuffExpires(tiger_power 3) and Spell(tiger_palm)}
-		or {WindwalkerTigereyeBrewConditions() and Spell(tigereye_brew_use)}
-	{
-		#invoke_xuen,if=talent.invoke_xuen.enabled
-		if TalentPoints(invoke_xuen_the_white_tiger_talent) Spell(invoke_xuen)
-	}
 }
+
+### Windwalker icons.
 
 # Tier 5 damage reduction cooldown
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
@@ -1079,26 +1005,28 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 
 AddIcon mastery=3 help=shortcd
 {
-	WindwalkerShortCooldownActions()
+	WindwalkerDefaultShortCdActions()
+	WindwalkerSingleTargetShortCdActions()
 }
 
 AddIcon mastery=3 help=main
 {
-	WindwalkerPreCombatActions()
-	WindwalkerMaintenanceActions()
-	WindwalkerMainActions()
+	WindwalkerPrecombatActions()
+	WindwalkerDefaultActions()
+	WindwalkerSingleTargetActions()
 }
 
 AddIcon mastery=3 help=aoe checkboxon=aoe
 {
-	WindwalkerPreCombatActions()
-	WindwalkerMaintenanceActions()
-	WindwalkerAoEActions()
+	WindwalkerPrecombatActions()
+	WindwalkerDefaultActions()
+	WindwalkerAoeActions()
 }
 
 AddIcon mastery=3 help=cd
 {
-	WindwalkerCooldownActions()
+	WindwalkerReactCdActions()
+	WindwalkerDefaultCdActions()
 }
 
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
