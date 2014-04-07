@@ -4,9 +4,13 @@ local OvaleScripts = Ovale.OvaleScripts
 
 do
 	local name = "Nerien"
-	local desc = "[5.3] Nerien: Holy, Protection, Retribution"
+	local desc = "[5.4] Nerien: Holy, Protection, Retribution"
 	local code = [[
 # Nerien's paladin script based on SimulationCraft
+#
+# Protection
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#bZ!201121
+#	glyphs=focused_shield/alabaster_shield/divine_protection
 #
 # Retribution
 #	talents=http://us.battle.net/wow/en/tool/talent-calculator#bb!110112
@@ -14,8 +18,8 @@ do
 
 Define(alabaster_shield 121467)
 	SpellInfo(alabaster_shield duration=12)
-Define(ancient_power 86700)
-	SpellInfo(ancient_power duration=30)
+Define(ancient_power_buff 86700)
+	SpellInfo(ancient_power_buff duration=30)
 Define(ardent_defender 31850)
 	SpellInfo(ardent_defender cd=180 duration=10)
 	SpellInfo(ardent_defender addcd=-60 itemset=T14_tank itemcount=2)
@@ -26,12 +30,15 @@ Define(avengers_shield 31935)
 	SpellAddBuff(avengers_shield grand_crusader=0)
 	SpellAddTargetDebuff(avengers_shield avengers_shield=1)
 Define(avenging_wrath 31884)
+Define(avenging_wrath_buff 31884)
 	SpellInfo(avenging_wrath cd=180 duration=20)
 	SpellInfo(avenging_wrath addduration=10 talent=sanctified_wrath_talent)
 	SpellInfo(avenging_wrath addcd=-65 itemset=T14_melee itemcount=4)
-	SpellAddBuff(avenging_wrath avenging_wrath=1)
-Define(bastion_of_glory 114637)
-	SpellInfo(bastion_of_glory duration=20)
+	SpellAddBuff(avenging_wrath avenging_wrath_buff=1)
+Define(bastion_of_glory_buff 114637)
+	SpellInfo(bastion_of_glory_buff duration=20)
+Define(bastion_of_power_buff 144569)
+	SpellInfo(bastion_of_power_buff duration=20)
 Define(beacon_of_light 53563)
 	SpellInfo(beacon_of_light cd=3)
 Define(blessing_of_kings 20217)
@@ -67,6 +74,8 @@ Define(devotion_aura 31821)
 	SpellInfo(devotion_aura cd=180 duration=6)
 	SpellInfo(devotion_aura addcd=-60 glyph=glyph_of_devotion_aura)
 	SpellAddBuff(devotion_aura devotion_aura=1)
+Define(divine_crusader_buff 144595)
+	SpellInfo(divine_crusader_buff duration=12)
 Define(divine_favor 31842)
 	SpellInfo(divine_favor cd=180 duration=20)
 	SpellAddBuff(divine_favor divine_favor=1)
@@ -79,21 +88,23 @@ Define(divine_plea 54428)
 Define(divine_protection 498)
 	SpellInfo(divine_protection cd=60 duration=10)
 	SpellInfo(divine_protection cd=30 talent=unbreakable_spirit_talent)
-Define(divine_purpose 90174)
-	SpellInfo(divine_purpose duration=8)
+Define(divine_purpose_buff 90174)
+	SpellInfo(divine_purpose_buff duration=8)
 Define(divine_purpose_talent 15)
 Define(divine_shield 642)
 	SpellInfo(divine_shield cd=300 duration=8)
 	SpellInfo(divine_shield cd=150 talent=unbreakable_spirit_talent)
 	SpellAddBuff(divine_shield divine_shield=1)
-	SpellAddDebuff(divine_shield forbearance=1)
+	SpellAddDebuff(divine_shield forbearance_debuff=1)
 Define(divine_storm 53385)
 	SpellInfo(divine_storm holy=3)
-	SpellAddBuff(divine_storm divine_purpose=0)
+	SpellAddBuff(divine_storm divine_crusader_buff=0 divine_purpose_buff=0)
 Define(emancipate 121783)
 Define(eternal_flame 114163)
+Define(eternal_flame_buff 114163)
 	SpellInfo(eternal_flame duration=30 haste=spell holy=1 tick=3)
-	SpellAddBuff(eternal_flame bastion_of_glory=0 divine_purpose=0)
+	SpellAddBuff(eternal_flame bastion_of_glory_buff=0 divine_purpose_buff=0)
+	SpellAddTargetBuff(eternal_flame eternal_flame_buff=1)
 Define(eternal_flame_talent 8)
 Define(evil_is_a_point_of_view_talent 6)
 Define(execution_sentence 114157)
@@ -116,8 +127,8 @@ Define(fist_of_justice 105593)
 Define(fist_of_justice_talent 4)
 Define(flash_of_light 19750)
 	SpellAddBuff(flash_of_light selfless_healer=0 supplication=0)
-Define(forbearance 25771)
-	SpellInfo(forbearance duration=60)
+Define(forbearance_debuff 25771)
+	SpellInfo(forbearance_debuff duration=60)
 Define(glyph_of_avenging_wrath_aura 115547)
 	SpellInfo(glyph_of_avenging_wrath_aura duration=20 tick=2)
 	SpellInfo(glyph_of_avenging_wrath_aura addduration=10 talent=sanctified_wrath_talent)
@@ -165,7 +176,7 @@ Define(hand_of_freedom 1044)
 	SpellInfo(hand_of_freedom cd=25 duration=6)
 Define(hand_of_protection 1022)
 	SpellInfo(hand_of_protection cd=300 duration=10)
-	SpellAddTargetDebuff(hand_of_protection forbearance=1)
+	SpellAddTargetDebuff(hand_of_protection forbearance_debuff=1)
 Define(hand_of_purity 114039)
 	SpellInfo(hand_of_purity cd=30 duration=6)
 Define(hand_of_purity_talent 10)
@@ -175,9 +186,11 @@ Define(hand_of_salvation 1038)
 	SpellInfo(hand_of_salvation cd=120 duration=10)
 Define(harsh_word 130552)
 	SpellInfo(harsh_word holy=1)
-	SpellAddBuff(harsh_word divine_purpose=0)
+	SpellAddBuff(harsh_word divine_purpose_buff=0)
 Define(holy_avenger 105809)
-	SpellInfo(holy_avenger cd=120 duration=18)
+	SpellInfo(holy_avenger cd=120)
+Define(holy_avenger_buff 105809)
+	SpellInfo(holy_avenger_buff duration=18)
 Define(holy_avenger_talent 13)
 Define(holy_light 635)
 	SpellAddBuff(holy_light infusion_of_light=0)
@@ -198,8 +211,10 @@ Define(holy_wrath 119072)
 Define(infusion_of_light 54149)
 	SpellInfo(infusion_of_light duration=15)
 Define(inquisition 84963)
-	SpellInfo(inquisition duration=20 holy=1)
-	SpellAddBuff(inquisition divine_purpose=0 inquisition=1)
+	SpellInfo(inquisition holy=1)
+	SpellAddBuff(inquisition divine_purpose_buff=0 inquisition_buff=1)
+Define(inquisition_buff 84963)
+	SpellInfo(inquisition_buff duration=20)
 Define(judgment 20271)
 	SpellInfo(judgment cd=6)
 	SpellInfo(judgment cd_haste=melee haste=melee if_spell=sanctity_of_battle)
@@ -216,12 +231,12 @@ Define(lay_on_hands 633)
 	SpellInfo(lay_on_hands cd=720 glyph=glyph_of_divinity)
 	SpellInfo(lay_on_hands cd=300 talent=unbreakable_spirit_talent)
 	SpellInfo(lay_on_hands cd=360 glyph=glyph_of_divinity talent=unbreakable_spirit_talent)
-	SpellAddTargetDebuff(lay_on_hands forbearance=1)
+	SpellAddTargetDebuff(lay_on_hands forbearance_debuff=1)
 Define(light_of_ancient_kings 86678)
 	SpellInfo(light_of_ancient_kings duration=8)
 Define(light_of_dawn 85222)
 	SpellInfo(light_of_dawn holy=1)
-	SpellAddBuff(light_of_dawn divine_purpose=0)
+	SpellAddBuff(light_of_dawn divine_purpose_buff=0)
 Define(lights_hammer 114158)
 	SpellInfo(lights_hammer cd=60)
 Define(lights_hammer_talent 17)
@@ -237,8 +252,9 @@ Define(repentance 20066)
 Define(repentance_talent 5)
 Define(righteous_fury 25780)
 Define(sacred_shield 20925)
+Define(sacred_shield_buff 20925)
 	SpellInfo(sacred_shield cd=6 duration=30 haste=spell tick=6)
-	SpellAddBuff(sacred_shield sacred_shield=1)
+	SpellAddBuff(sacred_shield sacred_shield_buff=1)
 Define(sacred_shield_aura 65148)
 	SpellInfo(sacred_shield_aura duration=6)
 Define(sacred_shield_holy 148039)
@@ -262,10 +278,10 @@ Define(selfless_healer_talent 7)
 Define(shield_of_the_righteous 53600)
 	SpellInfo(shield_of_the_righteous cd=1.5 holy=3)
 	SpellInfo(shield_of_the_righteous cd_haste=melee haste=melee if_spell=sanctity_of_battle)
-	SpellAddBuff(shield_of_the_righteous alabaster_shield=0 bastion_of_glory=1 divine_purpose=0 shield_of_the_righteous_buff=1)
+	SpellAddBuff(shield_of_the_righteous alabaster_shield=0 bastion_of_glory_buff=1 divine_purpose_buff=0 shield_of_the_righteous_buff=1)
 Define(shield_of_the_righteous_divine_purpose 132403)
 	SpellInfo(shield_of_the_righteous_divine_purpose cd_haste=melee haste=melee if_spell=sanctity_of_battle)
-	SpellAddBuff(shield_of_the_righteous_divine_purpose alabaster_shield=0 bastion_of_glory=1 divine_purpose=0 shield_of_the_righteous_buff=1)
+	SpellAddBuff(shield_of_the_righteous_divine_purpose alabaster_shield=0 bastion_of_glory_buff=1 divine_purpose_buff=0 shield_of_the_righteous_buff=1)
 Define(shield_of_the_righteous_buff 132403)
 	SpellInfo(shield_of_the_righteous_buff duration=3)
 Define(speed_of_light 85499)
@@ -277,7 +293,7 @@ Define(supplication 94686)
 	SpellInfo(supplication duration=8)
 Define(templars_verdict 85256)
 	SpellInfo(templars_verdict holy=3)
-	SpellAddBuff(templars_verdict divine_purpose=0)
+	SpellAddBuff(templars_verdict divine_purpose_buff=0)
 Define(turn_evil 10326)
 	SpellInfo(turn_evil cd=15 duration=40)
 	SpellAddTargetDebuff(turn_evil turn_evil=1)
@@ -289,15 +305,15 @@ Define(weakened_blows 115798)
 	SpellInfo(weakened_blows duration=30)
 Define(word_of_glory 85673)
 	SpellInfo(word_of_glory holy=1)
-	SpellAddBuff(word_of_glory bastion_of_glory=0 divine_purpose=0)
+	SpellAddBuff(word_of_glory bastion_of_glory_buff=0 divine_purpose_buff=0)
 Define(word_of_glory_divine_purpose 130551)
-	SpellAddBuff(word_of_glory_divine_purpose bastion_of_glory=0 divine_purpose=0)
+	SpellAddBuff(word_of_glory_divine_purpose bastion_of_glory_buff=0 divine_purpose_buff=0)
 Define(word_of_glory_glyphed 136494)
 	SpellInfo(word_of_glory_glyphed holy=1)
-	SpellAddBuff(word_of_glory_glyphed bastion_of_glory=0 divine_purpose=0)
+	SpellAddBuff(word_of_glory_glyphed bastion_of_glory_buff=0 divine_purpose_buff=0)
 
 # Items
-Define(tier15_4pc_melee 138169)
+Define(tier15_4pc_melee_buff 138169)
 Define(mogu_power_potion 76095)
 Define(mogu_power_potion_buff 105706)
 	SpellInfo(mogu_power_potion_buff duration=25)
@@ -367,12 +383,12 @@ AddFunction BuffActions
 AddFunction HasMaxHolyPower
 {
 	# Boundless Conviction is a level 85 ability.
-	BuffPresent(divine_purpose) or HolyPower() ==5 or {Level() <85 and HolyPower() >=3}
+	BuffPresent(divine_purpose_buff) or HolyPower() ==5 or {Level() <85 and HolyPower() >=3}
 }
 
 AddFunction HasThreeHolyPower
 {
-	BuffPresent(divine_purpose) or HolyPower() >=3
+	BuffPresent(divine_purpose_buff) or HolyPower() >=3
 }
 
 AddFunction Interrupt
@@ -399,8 +415,8 @@ AddFunction Tier6TalentActions
 
 AddFunction WordOfGlory
 {
-	if BuffPresent(divine_purpose) Spell(word_of_glory_divine_purpose)
-	if BuffExpires(divine_purpose) Spell(word_of_glory)
+	if BuffPresent(divine_purpose_buff) Spell(word_of_glory_divine_purpose)
+	if BuffExpires(divine_purpose_buff) Spell(word_of_glory)
 }
 
 ###
@@ -489,18 +505,11 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 ###
 ### Protection
 ###
-# Rotations from from the Maintankadin thread "Theck's MATLAB thread - MoP/5.x":
-#     http://maintankadin.failsafedesign.com/forum/viewtopic.php?f=6&t=32805
-#
-#     ^WB > CS > J > AS > HW > Cons > SotR (default)
-#     ^WB > EF[buffEF<2.5] > CS > J > AS > HW > Cons > SotR5 (Eternal Flame)
-#     ^WB > CS > J > AS > HW > Cons > SS > SotR (Sacred Shield)
-#     ^WB > SotR > J > CS > AS > HW > Cons (Sanctified Wrath)
-
-# Protection rotation.
-AddListItem(opt_prot_rotation balanced "Balanced rotation" default mastery=2)
-AddListItem(opt_prot_rotation max_dps "Max DPS rotation" mastery=2)
-AddListItem(opt_prot_rotation max_survival "Max survival rotation" mastery=2)
+# Based on SimulationCraft profile "Paladin_Protection_T16H".
+#	class=paladin
+#	spec=protection
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#bZ!201121
+#	glyphs=focused_shield/alabaster_shield/divine_protection
 
 AddFunction Consecration
 {
@@ -510,71 +519,93 @@ AddFunction Consecration
 
 AddFunction ShieldOfTheRighteous
 {
-	if BuffPresent(divine_purpose) Spell(shield_of_the_righteous_divine_purpose)
-	if BuffExpires(divine_purpose) Spell(shield_of_the_righteous)
+	if BuffPresent(divine_purpose_buff) Spell(shield_of_the_righteous_divine_purpose)
+	if BuffExpires(divine_purpose_buff) Spell(shield_of_the_righteous)
 }
 
-AddFunction ProtectionPreCombatActions
+AddFunction ProtectionDefaultActions
 {
-	PreCombatBuffActions()
-	if InCombat(no)
-	{
-		if not Stance(paladin_seal_of_insight) Spell(seal_of_insight)
-		if BuffRemains(sacred_shield) <12 Spell(sacred_shield)
-	}
-}
-
-AddFunction ProtectionHolyPowerGeneratorActions
-{
-	# ^WB > CS > J > AS+
-	if target.DebuffExpires(weakened_blows) Spell(hammer_of_the_righteous)
-	if BuffPresent(sanctified_wrath)
-	{
-		Spell(judgment)
-		Spell(crusader_strike wait=0.5)
-	}
-	if BuffExpires(sanctified_wrath)
-	{
-		Spell(crusader_strike wait=0.5)
-		Spell(judgment)
-	}
-	if BuffPresent(grand_crusader) Spell(avengers_shield)
-}
-
-AddFunction ProtectionFillerActions
-{
-	# AS > L90 > (MaxSurv: SS[buffSS<5]) > HW > HoW > Cons > SS
+	#auto_attack
+	#judgment,if=talent.sanctified_wrath.enabled&buff.avenging_wrath.react
+	#wait,sec=cooldown.judgment.remains,if=talent.sanctified_wrath.enabled&cooldown.judgment.remains>0&cooldown.judgment.remains<=0.5
+	if TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath_buff) Spell(judgment wait=0.5)
+	#crusader_strike
+	#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.5
+	Spell(crusader_strike wait=0.5)
+	#judgment
+	#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.5&(cooldown.crusader_strike.remains-cooldown.judgment.remains)>=0.5
+	Spell(judgment wait=0.5)
+	#avengers_shield
 	Spell(avengers_shield)
-	#Tier6TalentActions()
-	if List(opt_prot_rotation max_survival) and TalentPoints(sacred_shield_talent) and BuffRemains(sacred_shield) <5 Spell(sacred_shield)
+	#sacred_shield,if=talent.sacred_shield.enabled&target.dot.sacred_shield.remains<5
+	if TalentPoints(sacred_shield_talent) and target.BuffRemains(sacred_shield_buff) < 5 Spell(sacred_shield)
+	#holy_wrath
 	Spell(holy_wrath)
+	#hammer_of_wrath
 	Spell(hammer_of_wrath usable=1)
-	Consecration()
+	#sacred_shield,if=talent.sacred_shield.enabled
 	if TalentPoints(sacred_shield_talent) Spell(sacred_shield)
-	if TalentPoints(selfless_healer_talent) and BuffStacks(selfless_healer) >=3 Spell(flash_of_light)
 }
 
-AddFunction ProtectionTruckActions
+AddFunction ProtectionDefaultShortCdActions
 {
-	# L90[health_pct<20] > HoW > AS
-	#if target.HealthPercent() <20 Tier6TalentActions()
-	if Glyph(glyph_of_focused_shield) Spell(avengers_shield)
-	Spell(hammer_of_wrath usable=1)
-	Spell(avengers_shield)
-}
+	#eternal_flame,if=talent.eternal_flame.enabled&(buff.eternal_flame.remains<2&buff.bastion_of_glory.react>2&(holy_power>=3|buff.divine_purpose.react|buff.bastion_of_power.react))
+	if TalentPoints(eternal_flame_talent) and { BuffRemains(eternal_flame_buff) < 2 and BuffStacks(bastion_of_glory_buff) > 2 and { HolyPower() >= 3 or BuffPresent(divine_purpose_buff) or BuffPresent(bastion_of_power_buff) } } Spell(eternal_flame)
+	#eternal_flame,if=talent.eternal_flame.enabled&(buff.bastion_of_power.react&buff.bastion_of_glory.react>=5)
+	if TalentPoints(eternal_flame_talent) and { BuffPresent(bastion_of_power_buff) and BuffStacks(bastion_of_glory_buff) >= 5 } Spell(eternal_flame)
+	#shield_of_the_righteous,if=holy_power>=5|buff.divine_purpose.react|incoming_damage_1500ms>=health.max*0.3
+	if HolyPower() >= MaxHolyPower() or BuffPresent(divine_purpose_buff) or IncomingDamage(1.500) >= MaxHealth() * 0.3 ShieldOfTheRighteous()
 
-AddFunction ProtectionTier6TalentActions
-{
-	# Truck actions.
-	if List(opt_prot_rotation max_dps) and target.HealthPercent() <20 Tier6TalentActions()
-	# Filler actions (after holy power generator actions).
-	unless {target.DebuffExpires(weakened_blows) and Spell(hammer_of_the_righteous)}
-		or Spell(judgment)
+	unless { TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath_buff) and Spell(judgment) }
 		or Spell(crusader_strike)
+		or Spell(judgment)
 		or Spell(avengers_shield)
+		or { TalentPoints(sacred_shield_talent) and target.BuffRemains(sacred_shield_buff) < 5 and Spell(sacred_shield) }
+		or Spell(holy_wrath)
 	{
-		Tier6TalentActions()
+		#execution_sentence,if=talent.execution_sentence.enabled
+		if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
+		#lights_hammer,if=talent.lights_hammer.enabled
+		if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
+
+		unless Spell(hammer_of_wrath usable=1)
+		{
+			#consecration,if=target.debuff.flying.down&!ticking
+			Consecration()
+			#holy_prism,if=talent.holy_prism.enabled
+			if TalentPoints(holy_prism_talent) Spell(holy_prism)
+		}
 	}
+}
+
+AddFunction ProtectionDefaultCdActions
+{
+	Interrupt()
+	if IsRooted() Spell(hand_of_freedom)
+
+	#blood_fury
+	#avenging_wrath
+	Spell(avenging_wrath)
+	#holy_avenger,if=talent.holy_avenger.enabled
+	if TalentPoints(holy_avenger_talent) Spell(holy_avenger)
+}
+
+AddFunction ProtectionPrecombatActions
+{
+	#flask,type=earth
+	#food,type=chun_tian_spring_rolls
+	#blessing_of_kings,if=(!aura.str_agi_int.up)&(aura.mastery.up)
+	#blessing_of_might,if=!aura.mastery.up
+	if not BuffPresent(str_agi_int any=1)
+	{
+		Spell(blessing_of_kings)
+		if not BuffPresent(mastery any=1) Spell(blessing_of_might)
+	}
+	#seal_of_insight
+	if not Stance(paladin_seal_of_insight) Spell(seal_of_insight)
+	#sacred_shield,if=talent.sacred_shield.enabled
+	if TalentPoints(sacred_shield_talent) Spell(sacred_shield)
+	#snapshot_stats
 }
 
 ### Protection Icons
@@ -591,7 +622,7 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 # Cooldowns that apply Forbearance.
 AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 {
-	if DebuffExpires(forbearance)
+	if DebuffExpires(forbearance_debuff)
 	{
 		Spell(lay_on_hands)
 		Spell(hand_of_protection)
@@ -599,49 +630,25 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
 	}
 }
 
-# Defensive abilities.
 AddIcon mastery=2 help=shortcd
 {
 	if BuffExpires(righteous_fury) Spell(righteous_fury)
-	# SimC: Delay actions for CS if it comes off cooldown in the next 0.5s.
-	if SpellCooldown(crusader_strike) >=0.5
-	{
-		if TalentPoints(eternal_flame_talent)
-		{
-			# EF[buffEF<2.5]
-			if {BuffPresent(divine_purpose) or HolyPower() >=1} and BuffRemains(eternal_flame) <2.5 Spell(eternal_flame)
-			# SotR5
-			if BuffExpires(shield_of_the_righteous_buff) and HasMaxHolyPower() ShieldOfTheRighteous()
-		}
-		if not TalentPoints(eternal_flame_talent)
-		{
-			if HasThreeHolyPower() and BuffPresent(shield_of_the_righteous_buff) and HealthPercent() <60 WordOfGlory()
-			# SotR
-			# SimC: shield_of_the_righteous,if=(holy_power>=5)|(buff.divine_purpose.react)|(incoming_damage_1500ms>=health.max*0.3)
-			if HasMaxHolyPower() or IncomingDamage(1.5) >={MaxHealth() *0.3} ShieldOfTheRighteous()
-		}
-		ProtectionTier6TalentActions()
-	}
+	ProtectionDefaultShortCdActions()
 }
 
 AddIcon mastery=2 help=main
 {
-	ProtectionPreCombatActions()
-	BuffActions()
-
-	if List(opt_prot_rotation max_dps) ProtectionTruckActions()
-	ProtectionHolyPowerGeneratorActions()
-	ProtectionFillerActions()
+	if InCombat(no) ProtectionPrecombatActions()
+	ProtectionDefaultActions()
 }
 
 AddIcon mastery=2 help=aoe
 {
-	ProtectionPreCombatActions()
-	BuffActions()
+	if InCombat(no) ProtectionPrecombatActions()
 
 	# HotR > AS > Cons > J > HW
 	Spell(hammer_of_the_righteous)
-	if not List(opt_prot_rotation max_dps) Spell(judgment)
+	Spell(judgment)
 	Spell(avengers_shield)
 	Consecration()
 	Spell(judgment)
@@ -652,8 +659,7 @@ AddIcon mastery=2 help=cd
 {
 	Interrupt()
 	if IsRooted() Spell(hand_of_freedom)
-	Spell(avenging_wrath)
-	if TalentPoints(holy_avenger_talent) Spell(holy_avenger)
+	ProtectionDefaultCdActions()
 }
 
 # Righteous Fury indicator.
@@ -671,6 +677,11 @@ AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
 ###
 ### Retribution
 ###
+# Based on SimulationCraft profile "Paladin_Retribution_T16H".
+#	class=paladin
+#	spec=retribution
+#	talents=http://us.battle.net/wow/en/tool/talent-calculator#bb!110112
+#	glyphs=double_jeopardy/mass_exorcism
 
 AddFunction RetributionUsePotion
 {
@@ -678,314 +689,141 @@ AddFunction RetributionUsePotion
 	if CheckBoxOn(potions) and target.Classification(worldboss) Item(mogu_power_potion usable=1)
 }
 
-AddFunction RetributionFullRotation
+AddFunction RetributionAoeActions
 {
-	if InCombat(no)
-	{
-		#flask,type=winters_bite
-		#food,type=black_pepper_ribs_and_shrimp
-		#blessing_of_kings,if=!aura.str_agi_int.up
-		if BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_kings)
-		#blessing_of_might,if=!aura.mastery.up&!aura.str_agi_int.up
-		if BuffExpires(mastery 400 any=1) and BuffExpires(str_agi_int 400 any=1) Spell(blessing_of_might)
-		#seal_of_truth,if=active_enemies<4
-		if Enemies() <4 and not Stance(paladin_seal_of_truth) Spell(seal_of_truth)
-		#seal_of_righteousness,if=active_enemies>=4
-		if Enemies() >=4 and not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
-		#snapshot_stats
-		#mogu_power_potion
-		RetributionUsePotion()
-	}
-
-	#rebuke
-	Interrupt()
-	#mogu_power_potion,if=(buff.bloodlust.react|(buff.ancient_power.up&buff.avenging_wrath.up)|target.time_to_die<=40)
-	if BuffPresent(burst_haste any=1) or {BuffPresent(ancient_power) and BuffPresent(avenging_wrath)} or target.TimeToDie() <=40 RetributionUsePotion()
 	#auto_attack
-	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
-	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
-	# // Avenging Wrath
+	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*20|buff.divine_purpose.react)
+	if { BuffExpires(inquisition_buff) or BuffRemains(inquisition_buff) <= 2 } and { HolyPower() >= 3 or target.TimeToDie() < HolyPower() * 20 or BuffPresent(divine_purpose_buff) } Spell(inquisition)
+	#divine_storm,if=active_enemies>=2&(holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3))
+	if HolyPower() == MaxHolyPower() or BuffPresent(divine_purpose_buff) or { BuffPresent(holy_avenger_buff) and HolyPower() >= 3 } Spell(divine_storm)
+	#divine_storm,if=buff.divine_crusader.react&holy_power=5
+	if BuffPresent(divine_crusader_buff) and HolyPower() == MaxHolyPower() Spell(divine_storm)
+	#templars_verdict,if=holy_power=5|buff.holy_avenger.up&holy_power>=3
+	if HolyPower() == MaxHolyPower() or BuffPresent(holy_avenger_buff) and HolyPower() >= 3 Spell(templars_verdict)
+	#templars_verdict,if=buff.divine_purpose.react&buff.divine_purpose.remains<4
+	if BuffPresent(divine_purpose_buff) and BuffRemains(divine_purpose_buff) < 4 Spell(templars_verdict)
+	#hammer_of_wrath
+	#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
+	Spell(hammer_of_wrath usable=1 wait=0.2)
+	#divine_storm,if=buff.divine_crusader.react&buff.avenging_wrath.up
+	if BuffPresent(divine_crusader_buff) and BuffPresent(avenging_wrath_buff) Spell(divine_storm)
+	#templars_verdict,if=buff.avenging_wrath.up
+	if BuffPresent(avenging_wrath_buff) Spell(templars_verdict)
+	#hammer_of_the_righteous,if=active_enemies>=4
+	Spell(hammer_of_the_righteous)
+	#exorcism,if=active_enemies>=2&active_enemies<=4&set_bonus.tier15_2pc_melee&glyph.mass_exorcism.enabled
+	if ArmorSetBonus(T15_melee 2) and Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed)
+	#judgment
+	#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
+	Spell(judgment wait=0.2)
+	#divine_storm,if=buff.divine_crusader.react
+	if BuffPresent(divine_crusader_buff) Spell(divine_storm)
+	#templars_verdict,if=buff.divine_purpose.react
+	if BuffPresent(divine_purpose_buff) Spell(templars_verdict)
+	#exorcism
+	#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
+	if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
+	if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
+	#divine_storm,if=active_enemies>=2&buff.inquisition.remains>4
+	if BuffRemains(inquisition_buff) > 4 Spell(divine_storm)
+	#holy_prism,if=talent.holy_prism.enabled
+	if TalentPoints(holy_prism_talent) Spell(holy_prism)
+}
+
+AddFunction RetributionDefaultActions
+{
+	#auto_attack
+	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*20|buff.divine_purpose.react)
+	if { BuffExpires(inquisition_buff) or BuffRemains(inquisition_buff) <= 2 } and { HolyPower() >= 3 or target.TimeToDie() < HolyPower() * 20 or BuffPresent(divine_purpose_buff) } Spell(inquisition)
+	#divine_storm,if=buff.divine_crusader.react&holy_power=5
+	if BuffPresent(divine_crusader_buff) and HolyPower() == MaxHolyPower() Spell(divine_storm)
+	#templars_verdict,if=holy_power=5|buff.holy_avenger.up&holy_power>=3
+	if HolyPower() == MaxHolyPower() or BuffPresent(holy_avenger_buff) and HolyPower() >= 3 Spell(templars_verdict)
+	#templars_verdict,if=buff.divine_purpose.react&buff.divine_purpose.remains<4
+	if BuffPresent(divine_purpose_buff) and BuffRemains(divine_purpose_buff) < 4 Spell(templars_verdict)
+	#hammer_of_wrath
+	#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
+	Spell(hammer_of_wrath usable=1 wait=0.2)
+	#divine_storm,if=buff.divine_crusader.react&buff.avenging_wrath.up
+	if BuffPresent(divine_crusader_buff) and BuffPresent(avenging_wrath_buff) Spell(divine_storm)
+	#templars_verdict,if=buff.avenging_wrath.up
+	if BuffPresent(avenging_wrath_buff) Spell(templars_verdict)
+	#crusader_strike
+	#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
+	Spell(crusader_strike wait=0.2)
+	#judgment
+	#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
+	Spell(judgment wait=0.2)
+	#divine_storm,if=buff.divine_crusader.react
+	if BuffPresent(divine_crusader_buff) Spell(divine_storm)
+	#templars_verdict,if=buff.divine_purpose.react
+	if BuffPresent(divine_purpose_buff) Spell(templars_verdict)
+	#exorcism
+	#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
+	if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
+	if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
+	#templars_verdict,if=buff.tier15_4pc_melee.up&active_enemies<4
+	if BuffPresent(tier15_4pc_melee_buff) Spell(templars_verdict)
+	#templars_verdict,if=buff.inquisition.remains>4
+	if BuffRemains(inquisition_buff) > 4 Spell(templars_verdict)
+	#holy_prism,if=talent.holy_prism.enabled
+	if TalentPoints(holy_prism_talent) Spell(holy_prism)
+}
+
+AddFunction RetributionDefaultShortCdActions
+{
+	unless { BuffExpires(inquisition_buff) or BuffRemains(inquisition_buff) <= 2 } and { HolyPower() >= 3 or target.TimeToDie() < HolyPower() * 20 or BuffPresent(divine_purpose_buff) }
 	{
-		#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
 		#avenging_wrath,if=buff.inquisition.up
-		if BuffPresent(inquisition)
-			and {{not TalentPoints(sanctified_wrath_talent)
-					and SpellKnown(guardian_of_ancient_kings_retribution)
-					and SpellCooldown(guardian_of_ancient_kings_retribution) <291}
-				or TalentPoints(sanctified_wrath_talent)
-				or not SpellKnown(guardian_of_ancient_kings_retribution)}
-		{
-			Spell(avenging_wrath)
-		}
-	}
-	# // Guardian of Ancient Kings
-	{
-		#guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10|target.time_to_die<=60
-		#guardian_of_ancient_kings,if=buff.avenging_wrath.up|target.time_to_die<=60
-		if {not TalentPoints(sanctified_wrath_talent) and SpellKnown(avenging_wrath) and SpellCooldown(avenging_wrath) <10}
-			or {TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath)}
-			or not SpellKnown(avenging_wrath)
-			or target.TimeToDie() <=60
-		{
-			Spell(guardian_of_ancient_kings_retribution)
-		}
-	}
-	# // Holy Avenger
-	if TalentPoints(holy_avenger_talent)
-	{
-		#holy_avenger,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<289)&holy_power<=2
-		if BuffPresent(inquisition) and HolyPower() <=2 and SpellCooldown(guardian_of_ancient_kings_retribution) <289 Spell(holy_avenger)
-	}
-	#use_item,name=reinbinders_fists,if=buff.inquisition.up
-	if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=14} UseItemActions()
-	# // Execution Sentence and Light's Hammer
-	{
-		#execution_sentence,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
-		#execution_sentence,if=buff.inquisition.up&time>=15
-		#lights_hammer,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
-		#lights_hammer,if=buff.inquisition.up&time>=15
-		if BuffPresent(inquisition)
-			and {{TalentPoints(sanctified_wrath_talent) and {BuffExpires(ancient_power) or BuffStacks(ancient_power) ==20}}
-				or {not TalentPoints(sanctified_wrath_talent) and TimeInCombat() >=15}}
-		{
-			if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
-			if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
-		}
-	}
-	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
-	{
-		#divine_storm,if=active_enemies>=2&(holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3))
-		if Enemies() >=2 Spell(divine_storm)
-		#templars_verdict,if=holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3)
-		Spell(templars_verdict)
-	}
-	#hammer_of_wrath
-	{
-		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
-		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
-		if TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.2)
-		if not TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.1)
-	}
-	#crusader_strike
-	{
-		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
-		Spell(crusader_strike wait=0.2)
-	}
-	#exorcism,if=active_enemies>=2&active_enemies<=4&set_bonus.tier15_2pc_melee&glyph.mass_exorcism.enabled
-	if Enemies() >=2 and Enemies() <=4 and ArmorSetParts(T15_melee) >=2 and Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed)
-	#hammer_of_the_righteous,if=active_enemies>=4
-	if Enemies() >=4 Spell(hammer_of_the_righteous)
-	#templars_verdict,if=buff.avenging_wrath.up
-	if BuffPresent(avenging_wrath) Spell(templars_verdict)
-	#judgment,target=2,if=active_enemies>=2&buff.glyph_double_jeopardy.up
-	if BuffPresent(glyph_of_double_jeopardy_aura) and Enemies() >=2 Spell(judgment)
-	#judgment
-	{
-		#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
-		Spell(judgment wait=0.2)
-	}
-	#exorcism
-	{
-		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
-		if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
-		if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
-	}
-	#templars_verdict,if=buff.tier15_4pc_melee.up
-	if BuffPresent(tier15_4pc_melee) Spell(templars_verdict)
-	if BuffRemains(inquisition) >4
-	{
-		#divine_storm,if=active_enemies>=2&buff.inquisition.remains>4
-		if Enemies() >=2 Spell(divine_storm)
-		#templars_verdict,if=buff.inquisition.remains>4
-		Spell(templars_verdict)
-	}
-	#holy_prism
-	if TalentPoints(holy_prism_talent) Spell(holy_prism)
-}
-
-AddFunction RetributionPreCombatActions
-{
-	if InCombat(no)
-	{
-		#flask,type=winters_bite
-		#food,type=black_pepper_ribs_and_shrimp
-		PreCombatBuffActions()
-		#seal_of_truth,if=active_enemies<4
-		if not Stance(paladin_seal_of_truth) Spell(seal_of_truth)
-		#snapshot_stats
+		if BuffPresent(inquisition_buff) Spell(avenging_wrath)
+		#execution_sentence,if=talent.execution_sentence.enabled&(buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=12))
+		if TalentPoints(execution_sentence_talent) and { BuffPresent(inquisition_buff) and { BuffExpires(ancient_power_buff) or BuffStacks(ancient_power_buff) == 12 } } Spell(execution_sentence)
+		#lights_hammer,if=talent.lights_hammer.enabled&(buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=12))
+		if TalentPoints(lights_hammer_talent) and { BuffPresent(inquisition_buff) and { BuffExpires(ancient_power_buff) or BuffStacks(ancient_power_buff) == 12 } } Spell(lights_hammer)
 	}
 }
 
-AddFunction RetributionMainActions
+AddFunction RetributionDefaultCdActions
 {
-	#auto_attack
-	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
-	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
-	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
-	{
-		#templars_verdict,if=holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3)
-		Spell(templars_verdict)
-	}
-	#hammer_of_wrath
-	{
-		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
-		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
-		if TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.2)
-		if not TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.1)
-	}
-	#crusader_strike
-	{
-		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
-		Spell(crusader_strike wait=0.2)
-	}
-	#templars_verdict,if=buff.avenging_wrath.up
-	if BuffPresent(avenging_wrath) Spell(templars_verdict)
-	#judgment
-	{
-		#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
-		Spell(judgment wait=0.2)
-	}
-	#exorcism
-	{
-		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
-		if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
-		if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
-	}
-	#templars_verdict,if=buff.tier15_4pc_melee.up
-	if BuffPresent(tier15_4pc_melee) Spell(templars_verdict)
-	if BuffRemains(inquisition) >4
-	{
-		#templars_verdict,if=buff.inquisition.remains>4
-		Spell(templars_verdict)
-	}
-	#holy_prism
-	if TalentPoints(holy_prism_talent) Spell(holy_prism)
-}
-
-AddFunction RetributionAoEActions
-{
-	#auto_attack
-	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
-	if BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)} Spell(inquisition)
-	if HasMaxHolyPower() or {BuffPresent(holy_avenger) and HolyPower() >=3}
-	{
-		#divine_storm,if=active_enemies>=2&(holy_power=5|buff.divine_purpose.react|(buff.holy_avenger.up&holy_power>=3))
-		Spell(divine_storm)
-	}
-	#hammer_of_wrath
-	{
-		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.2
-		#wait,sec=cooldown.hammer_of_wrath.remains,if=cooldown.hammer_of_wrath.remains>0&cooldown.hammer_of_wrath.remains<=0.1
-		if TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.2)
-		if not TalentPoints(sanctified_wrath_talent) Spell(hammer_of_wrath usable=1 wait=0.1)
-	}
-	#crusader_strike
-	{
-		#wait,sec=cooldown.crusader_strike.remains,if=cooldown.crusader_strike.remains>0&cooldown.crusader_strike.remains<=0.2
-		Spell(crusader_strike wait=0.2)
-	}
-	#exorcism,if=active_enemies>=2&active_enemies<=4&set_bonus.tier15_2pc_melee&glyph.mass_exorcism.enabled
-	if Enemies() <=4 and ArmorSetParts(T15_melee) >=2 and Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed)
-	#hammer_of_the_righteous,if=active_enemies>=4
-	if Enemies() >=4 Spell(hammer_of_the_righteous)
-	#templars_verdict,if=buff.avenging_wrath.up
-	if BuffPresent(avenging_wrath) Spell(templars_verdict)
-	#judgment,target=2,if=active_enemies>=2&buff.glyph_double_jeopardy.up
-	if BuffPresent(glyph_of_double_jeopardy_aura) Spell(judgment)
-	#judgment
-	{
-		#wait,sec=cooldown.judgment.remains,if=cooldown.judgment.remains>0&cooldown.judgment.remains<=0.2
-		Spell(judgment wait=0.2)
-	}
-	#exorcism
-	{
-		#wait,sec=cooldown.exorcism.remains,if=cooldown.exorcism.remains>0&cooldown.exorcism.remains<=0.2
-		if Glyph(glyph_of_mass_exorcism) Spell(exorcism_glyphed wait=0.2)
-		if Glyph(glyph_of_mass_exorcism no) Spell(exorcism wait=0.2)
-	}
-	#templars_verdict,if=buff.tier15_4pc_melee.up
-	if BuffPresent(tier15_4pc_melee) Spell(templars_verdict)
-	if BuffRemains(inquisition) >4
-	{
-		#divine_storm,if=active_enemies>=2&buff.inquisition.remains>4
-		Spell(divine_storm)
-	}
-	#holy_prism
-	if TalentPoints(holy_prism_talent) Spell(holy_prism)
-}
-
-AddFunction RetributionShortCooldownActions
-{
-	#inquisition,if=(buff.inquisition.down|buff.inquisition.remains<=2)&(holy_power>=3|target.time_to_die<holy_power*10|buff.divine_purpose.react)
-	unless BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)}
-	{
-		# // Avenging Wrath
-		{
-			#avenging_wrath,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<291)
-			#avenging_wrath,if=buff.inquisition.up
-			if BuffPresent(inquisition)
-				and {{not TalentPoints(sanctified_wrath_talent)
-						and SpellKnown(guardian_of_ancient_kings_retribution)
-						and SpellCooldown(guardian_of_ancient_kings_retribution) <291}
-					or TalentPoints(sanctified_wrath_talent)
-					or not SpellKnown(guardian_of_ancient_kings_retribution)}
-			{
-				Spell(avenging_wrath)
-			}
-		}
-		# // Execution Sentence and Light's Hammer
-		{
-			#execution_sentence,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
-			#execution_sentence,if=buff.inquisition.up&time>=15
-			#lights_hammer,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=20)
-			#lights_hammer,if=buff.inquisition.up&time>=15
-			if BuffPresent(inquisition)
-				and {{TalentPoints(sanctified_wrath_talent) and {BuffExpires(ancient_power) or BuffStacks(ancient_power) ==20}}
-					or {not TalentPoints(sanctified_wrath_talent) and TimeInCombat() >=15}}
-			{
-				if TalentPoints(execution_sentence_talent) Spell(execution_sentence)
-				if TalentPoints(lights_hammer_talent) Spell(lights_hammer)
-			}
-		}
-	}
-}
-
-AddFunction RetributionCooldownActions
-{
-	if InCombat(no)
-	{
-		#mogu_power_potion
-		RetributionUsePotion()
-	}
-
 	#rebuke
 	Interrupt()
 	#mogu_power_potion,if=(buff.bloodlust.react|(buff.ancient_power.up&buff.avenging_wrath.up)|target.time_to_die<=40)
-	if BuffPresent(burst_haste any=1) or {BuffPresent(ancient_power) and BuffPresent(avenging_wrath)} or target.TimeToDie() <=40 RetributionUsePotion()
+	if { BuffPresent(burst_haste any=1) or { BuffPresent(ancient_power_buff) and BuffPresent(avenging_wrath_buff) } or target.TimeToDie() <= 40 } RetributionUsePotion()
 
-	unless BuffRemains(inquisition) <=2 and {HolyPower() >=3 or target.TimeToDie() < HolyPower() *10 or BuffPresent(divine_purpose)}
+	unless { BuffExpires(inquisition_buff) or BuffRemains(inquisition_buff) <= 2 } and { HolyPower() >= 3 or target.TimeToDie() < HolyPower() * 20 or BuffPresent(divine_purpose_buff) }
 	{
-		# // Guardian of Ancient Kings
-		{
-			#guardian_of_ancient_kings,if=cooldown.avenging_wrath.remains<10|target.time_to_die<=60
-			#guardian_of_ancient_kings,if=buff.avenging_wrath.up|target.time_to_die<=60
-			if {not TalentPoints(sanctified_wrath_talent) and SpellKnown(avenging_wrath) and SpellCooldown(avenging_wrath) <10}
-				or {TalentPoints(sanctified_wrath_talent) and BuffPresent(avenging_wrath)}
-				or not SpellKnown(avenging_wrath)
-				or target.TimeToDie() <=60
-			{
-				Spell(guardian_of_ancient_kings_retribution)
-			}
-		}
-		# // Holy Avenger
-		if TalentPoints(holy_avenger_talent)
-		{
-			#holy_avenger,if=buff.inquisition.up&(cooldown.guardian_of_ancient_kings.remains<289)&holy_power<=2
-			if BuffPresent(inquisition) and HolyPower() <=2 and SpellCooldown(guardian_of_ancient_kings_retribution) <289 Spell(holy_avenger)
-		}
-		#use_item,name=reinbinders_fists,if=buff.inquisition.up
-		if BuffPresent(inquisition) and {TalentPoints(sanctified_wrath_talent) or TimeInCombat() >=14} UseItemActions()
+		#guardian_of_ancient_kings,if=buff.inquisition.up
+		if BuffPresent(inquisition_buff) Spell(guardian_of_ancient_kings_retribution)
+		#holy_avenger,if=talent.holy_avenger.enabled&(buff.inquisition.up&holy_power<=2)
+		if TalentPoints(holy_avenger_talent) and { BuffPresent(inquisition_buff) and HolyPower() <= 2 } Spell(holy_avenger)
+		#use_item,name=gauntlets_of_winged_triumph,if=buff.inquisition.up&(buff.ancient_power.down|buff.ancient_power.stack=12)
+		if BuffPresent(inquisition_buff) and { BuffExpires(ancient_power_buff) or BuffStacks(ancient_power_buff) == 12 } Item(HandsSlot usable=1)
+		#blood_fury
 	}
+}
+
+AddFunction RetributionPrecombatActions
+{
+	#flask,type=winters_bite
+	#food,type=black_pepper_ribs_and_shrimp
+	#blessing_of_kings,if=!aura.str_agi_int.up
+	#blessing_of_might,if=!aura.mastery.up
+	if not BuffPresent(str_agi_int any=1)
+	{
+		Spell(blessing_of_kings)
+		if not BuffPresent(mastery any=1) Spell(blessing_of_might)
+	}
+	#seal_of_truth,if=active_enemies<4
+	if not Stance(paladin_seal_of_truth) Spell(seal_of_truth)
+	#snapshot_stats
+	#mogu_power_potion
+	RetributionUsePotion()
+}
+
+AddFunction RetributionPrecombatCdActions
+{
+	#mogu_power_potion
+	RetributionUsePotion()
 }
 
 ### Retribution Icons
@@ -1003,37 +841,38 @@ AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(lay_on_hands)
 	Spell(hand_of_protection)
-	if DebuffExpires(forbearance) Spell(divine_shield)
+	if DebuffExpires(forbearance_debuff) Spell(divine_shield)
 }
 
 AddIcon mastery=3 help=shortcd
 {
-	RetributionShortCooldownActions()
+	RetributionDefaultShortCdActions()
 }
 
 AddIcon mastery=3 help=main
 {
-	RetributionPreCombatActions()
-	BuffActions()
-	RetributionMainActions()
+	RetributionPrecombatActions()
+	RetributionDefaultActions()
 }
 
 AddIcon mastery=3 help=aoe checkboxon=aoe
 {
-	BuffActions()
-	RetributionAoEActions()
+	if InCombat(no) RetributionPrecombatActions()
+	RetributionAoeActions()
 }
 
 AddIcon mastery=3 help=cd
 {
-	RetributionCooldownActions()
+	if InCombat(no) RetributionPrecombatCdActions()
+	RetributionDefaultCdActions()
 }
 
 # Righteous Fury indicator.
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
 {
+	#seal_of_righteousness,if=active_enemies>=4
+	if Enemies() >= 4 and not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
 	if BuffPresent(righteous_fury) Texture(spell_holy_sealoffury)
-	if Enemies() >=4 and not Stance(paladin_seal_of_righteousness) Spell(seal_of_righteousness)
 }
 
 AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
