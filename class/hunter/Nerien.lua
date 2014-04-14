@@ -400,8 +400,6 @@ AddFunction BeastMasteryDefaultActions
 	Spell(kill_command)
 	#arcane_shot,if=buff.thrill_of_the_hunt.react|buff.beast_within.up
 	if BuffPresent(thrill_of_the_hunt_buff) or BuffPresent(beast_within_buff) Spell(arcane_shot)
-	#focus_fire,five_stacks=1
-	if BuffStacks(pet_frenzy any=1) == 5 Spell(focus_fire)
 	#cobra_shot,if=dot.serpent_sting.remains<6
 	if target.DebuffRemains(serpent_sting_debuff) < 6 Spell(cobra_shot)
 	#arcane_shot,if=focus>=61
