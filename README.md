@@ -1,3 +1,6 @@
+# This addon is now obsolete.
+# Install [Ovale 5.4.9 or later][ovale].
+
 **Nerien's Ovale Scripts** is a script collection for [Ovale Spell Priority][ovale].  The user can choose a script for the current class from amongst a collection of scripts contributed by other users.
 
   [ovale]: http://www.curse.com/addons/wow/ovale

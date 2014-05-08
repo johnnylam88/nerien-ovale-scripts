@@ -362,7 +362,7 @@ AddFunction Interrupt
 AddFunction SummonPet
 {
 	if pet.Present(no) Texture(ability_hunter_beastcall)
-	if pet.Health() ==0 Spell(revive_pet)
+	if pet.IsDead() Spell(revive_pet)
 }
 
 AddFunction UsePotion

@@ -14,6 +14,8 @@ do
 Define(ascension_talent 8)
 Define(blackout_kick 100784)
 	SpellInfo(blackout_kick chi=2)
+	SpellInfo(blackout_kick buffnocost=combo_breaker_bok_buff mastery=windwalker)
+	SpellInfo(blackout_kick buff_chi=focus_of_xuen_buff buff_chi_amount=-1 mastery=windwalker)
 	SpellAddBuff(blackout_kick combo_breaker_bok_buff=0 muscle_memory_buff=0 serpents_zeal=1 shuffle=1)
 Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire chi=2)
@@ -84,9 +86,12 @@ Define(expel_harm_glyphed 147489)
 Define(fists_of_fury 113656)
 	SpellInfo(fists_of_fury canStopChannelling=4 cd=25 chi=3 tick=1)
 	SpellInfo(fists_of_fury addcd=-5 itemset=T14_melee itemcount=2)
+	SpellInfo(fists_of_fury buff_chi=focus_of_xuen_buff buff_chi_amount=-1 mastery=windwalker)
 	SpellAddBuff(fists_of_fury fists_of_fury=1)
 Define(flying_serpent_kick 101545)
 	SpellInfo(flying_serpent_kick cd=25)
+Define(focus_of_xuen_buff 145024)
+	SpellInfo(focus_of_xuen_buff duration=10)
 Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=180)
 	SpellAddBuff(fortifying_brew healing_elixirs=0)
@@ -177,6 +182,7 @@ Define(ring_of_peace 116844)
 Define(ring_of_peace_talent 10)
 Define(rising_sun_kick 107428)
 	SpellInfo(rising_sun_kick cd=8 chi=2)
+	SpellInfo(rising_sun_kick buff_chi=focus_of_xuen_buff buff_chi_amount=-1 mastery=windwalker)
 	SpellAddTargetDebuff(rising_sun_kick rising_sun_kick_debuff=1)
 Define(rising_sun_kick_debuff 130320)
 	SpellInfo(rising_sun_kick_debuff duration=15)
@@ -231,6 +237,7 @@ Define(thunder_focus_tea 116680)
 	SpellInfo(thunder_focus_tea addcd=-5 itemset=T15_heal itemcount=4)
 Define(tiger_palm 100787)
 	SpellInfo(tiger_palm chi=1)
+	SpellInfo(tiger_palm buffnocost=combo_break_tp mastery=windwalker)
 	SpellInfo(tiger_palm chi=0 if_spell=brewmaster_training)
 	SpellAddBuff(tiger_palm combo_break_tp=0 muscle_memory_buff=0 power_guard=1 tiger_power_buff=1 vital_mists=1)
 Define(tiger_power_buff 125359)
@@ -509,7 +516,7 @@ AddFunction BrewmasterPurifyingBrew
 }
 
 # Aggressive Jab for maximizing DPS/TPS.
-AddCheckBox(opt_aggressive_jab SpellName(jab) mastery=1)
+AddCheckBox(opt_aggressive_jab SpellName(jab) mastery=brewmaster)
 
 AddFunction BrewmasterEnergyPoolingCondition
 {
@@ -587,13 +594,13 @@ AddFunction BrewmasterAoEActions
 }
 
 # Tier 5 damage reduction cooldown
-AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+AddIcon mastery=brewmaster help=cd size=small checkboxon=opt_icons_left
 {
 	Tier5TalentActions()
 }
 
 # Damage reduction cooldowns
-AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
+AddIcon mastery=brewmaster help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(fortifying_brew)
 	Spell(symbiosis_survival_instincts)
@@ -601,7 +608,7 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_left
 }
 
 # Defensive abilities
-AddIcon mastery=1 help=cd
+AddIcon mastery=brewmaster help=cd
 {
 	unless Stance(monk_stance_of_the_sturdy_ox) Spell(stance_of_the_sturdy_ox)
 
@@ -625,7 +632,7 @@ AddIcon mastery=1 help=cd
 	}
 }
 
-AddIcon mastery=1 help=main
+AddIcon mastery=brewmaster help=main
 {
 	BrewmasterPreCombatActions()
 	BrewmasterBuffActions()
@@ -633,7 +640,7 @@ AddIcon mastery=1 help=main
 	if Stance(monk_stance_of_the_fierce_tiger) SingleTargetDPSActions()
 }
 
-AddIcon mastery=1 help=aoe checkboxon=aoe
+AddIcon mastery=brewmaster help=aoe checkboxon=aoe
 {
 	BrewmasterPreCombatActions()
 	BrewmasterBuffActions()
@@ -641,7 +648,7 @@ AddIcon mastery=1 help=aoe checkboxon=aoe
 	if Stance(monk_stance_of_the_fierce_tiger) AoEDPSActions()
 }
 
-AddIcon mastery=1 help=cd
+AddIcon mastery=brewmaster help=cd
 {
 	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
@@ -654,12 +661,12 @@ AddIcon mastery=1 help=cd
 	}
 }
 
-AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+AddIcon mastery=brewmaster help=cd size=small checkboxon=opt_icons_right
 {
 	if BuffExpires(sanctuary_of_the_ox) Spell(summon_black_ox_statue)
 }
 
-AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
+AddIcon mastery=brewmaster help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
@@ -672,7 +679,7 @@ AddIcon mastery=1 help=cd size=small checkboxon=opt_icons_right
 # Toggle for legendary healer meta-gem.
 AddCheckBox(opt_legendary_metagem "Courageous Primal Diamond")
 
-AddCheckBox(opt_mistweaver_pool_chi "Pool Chi" mastery=2)
+AddCheckBox(opt_mistweaver_pool_chi "Pool Chi" mastery=mistweaver)
 AddFunction MistweaverChiPool
 {
 	if CheckBoxOn(opt_mistweaver_pool_chi) 2
@@ -785,19 +792,19 @@ AddFunction MistweaverDefaultCdActions
 	if TalentPoints(invoke_xuen_talent) Spell(invoke_xuen)
 }
 
-AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
+AddIcon mastery=mistweaver help=cd size=small checkboxon=opt_icons_right
 {
 	if TotemExpires(statue) Spell(summon_jade_serpent_statue)
 }
 
 # Raid cooldowns
-AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_left
+AddIcon mastery=mistweaver help=cd size=small checkboxon=opt_icons_left
 {
 	Spell(thunder_focus_tea)
 	Spell(revival)
 }
 
-AddIcon mastery=2 help=shortcd
+AddIcon mastery=mistweaver help=shortcd
 {
 	unless Stance(monk_stance_of_the_wise_serpent) Spell(stance_of_the_wise_serpent)
 
@@ -807,7 +814,7 @@ AddIcon mastery=2 help=shortcd
 	if TalentPoints(zen_sphere_talent) Spell(zen_sphere)
 }
 
-AddIcon mastery=2 help=main
+AddIcon mastery=mistweaver help=main
 {
 	MistweaverPreCombatActions()
 	MistweaverBuffActions()
@@ -815,7 +822,7 @@ AddIcon mastery=2 help=main
 	if Stance(monk_stance_of_the_fierce_tiger) SingleTargetDPSActions()
 }
 
-AddIcon mastery=2 help=aoe checkboxon=aoe
+AddIcon mastery=mistweaver help=aoe checkboxon=aoe
 {
 	MistweaverPreCombatActions()
 	MistweaverBuffActions()
@@ -823,7 +830,7 @@ AddIcon mastery=2 help=aoe checkboxon=aoe
 	if Stance(monk_stance_of_the_fierce_tiger) AoEDPSActions()
 }
 
-AddIcon mastery=2 help=cd
+AddIcon mastery=mistweaver help=cd
 {
 	if IsFeared() or IsRooted() or IsStunned() Spell(nimble_brew)
 	if target.Health() < Health() and BuffPresent(death_note) Spell(touch_of_death)
@@ -835,14 +842,14 @@ AddIcon mastery=2 help=cd
 }
 
 # Mana cooldown
-AddIcon mastery=2 help=mana size=small checkboxon=opt_icons_left
+AddIcon mastery=mistweaver help=mana size=small checkboxon=opt_icons_left
 {
 	if BuffStacks(mana_tea_aura) == 20 ManaTea()
 	if ManaPercent() < 75 ManaTea()
 	if ManaPercent() < 100 and ManaPercent() < 100 - {BuffStacks(mana_tea_aura) * 4} ManaTea()
 }
 
-AddIcon mastery=2 help=cd size=small checkboxon=opt_icons_right
+AddIcon mastery=mistweaver help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
@@ -992,44 +999,44 @@ AddFunction WindwalkerReactCdActions
 ### Windwalker icons.
 
 # Tier 5 damage reduction cooldown
-AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
+AddIcon mastery=windwalker help=cd size=small checkboxon=opt_icons_left
 {
 	Tier5TalentActions()
 }
 
 # Tier 2 healing cooldown
-AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_left
+AddIcon mastery=windwalker help=cd size=small checkboxon=opt_icons_left
 {
 	Tier2TalentActions()
 }
 
-AddIcon mastery=3 help=shortcd
+AddIcon mastery=windwalker help=shortcd
 {
 	WindwalkerDefaultShortCdActions()
 	WindwalkerSingleTargetShortCdActions()
 }
 
-AddIcon mastery=3 help=main
+AddIcon mastery=windwalker help=main
 {
 	WindwalkerPrecombatActions()
 	WindwalkerDefaultActions()
 	WindwalkerSingleTargetActions()
 }
 
-AddIcon mastery=3 help=aoe checkboxon=aoe
+AddIcon mastery=windwalker help=aoe checkboxon=aoe
 {
 	WindwalkerPrecombatActions()
 	WindwalkerDefaultActions()
 	WindwalkerAoeActions()
 }
 
-AddIcon mastery=3 help=cd
+AddIcon mastery=windwalker help=cd
 {
 	WindwalkerReactCdActions()
 	WindwalkerDefaultCdActions()
 }
 
-AddIcon mastery=3 help=cd size=small checkboxon=opt_icons_right
+AddIcon mastery=windwalker help=cd size=small checkboxon=opt_icons_right
 {
 	unless List(trinketcd0 000s) Item(Trinket0Slot usable=1)
 	unless List(trinketcd1 000s) Item(Trinket1Slot usable=1)
