@@ -26,4 +26,4 @@ Open up the **Ovale** code window and select the script you would like to use fo
 
 The following classes and specializations are supported for Shadowlands:
 
-- Work in progress!
+- Death Knight: Blood
