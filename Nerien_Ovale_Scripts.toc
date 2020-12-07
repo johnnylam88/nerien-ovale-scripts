@@ -12,3 +12,4 @@
 ## Dependencies: Ovale
 
 main.lua
+localization.lua
