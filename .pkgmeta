@@ -1,4 +1,8 @@
 package-as: Nerien_Ovale_Scripts
 
-required-dependencies:
-	- ovale
+enable-nolib-creation: no
+
+externals:
+    libs/LibStub:
+        url: https://repos.curseforge.com/wow/libstub/trunk
+        tag: latest

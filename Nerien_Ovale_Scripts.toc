@@ -1,12 +1,12 @@
-## Title: Nerien's Ovale Scripts
-## Notes: Ovale script manager that allows choosing between scripts contributed by various authors.
-##
-## Version: @project-version@
-## Author: Johnny C. Lam (jlam), Leafkiller
-## X-Contributer: aggixx, Opisthobranch, ShmooDude
-##
-## Interface: 50400
-## Dependencies: Ovale
+## Interface: 90002
 
-Core.lua
-class\class.xml
+## Title: Nerien's Ovale Scripts
+## Notes: Nerien's collection of Ovale scripts for various classes and specializations.
+## Author: Johnny C. Lam
+## Version: @project-version@
+
+## X-License: BSD-2-Clause
+## X-Website: https://github.com/ultijlam/nerien-ovale-scripts
+## X-Curse-Project-ID: 42999
+
+## Dependencies: Ovale
