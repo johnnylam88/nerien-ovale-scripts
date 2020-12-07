@@ -13,3 +13,4 @@
 
 main.lua
 localization.lua
+scripts/library.lua
