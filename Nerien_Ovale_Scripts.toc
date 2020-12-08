@@ -15,3 +15,4 @@ main.lua
 localization.lua
 scripts/library.lua
 scripts/deathknight_blood.lua
+scripts/monk_brewmaster.lua
