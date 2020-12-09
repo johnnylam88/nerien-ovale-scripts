@@ -15,7 +15,7 @@ Each script uses the following general icon layout:
 - **Short Cooldowns**: short (generally under 1 minute) cooldown abilities
 - **Main Rotation**: main abilities for single-target situations
 - **AoE Rotation**: AoE abilities for multi-target situations
-- **Cooldown Icon**: long (generally longer than 1 minute) cooldown abilities
+- **Long Cooldowns**: long (generally longer than 1 minute) cooldown abilities
 
 ### How to Use ###
 
