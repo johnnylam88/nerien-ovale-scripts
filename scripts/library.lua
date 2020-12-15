@@ -99,11 +99,18 @@ AddFunction ItemHealActions
 
 AddFunction InterruptActions
 {
+	if (not focus.IsFriend() and focus.Casting() and not focus.Classification(worldboss))
+	{
+		if (focus.Distance() < 6) Spell(bull_rush help=focus)
+		if (focus.Distance() < 6 and CastTime(haymaker) < focus.RemainingCastTime()) Spell(haymaker text=focus)
+		if focus.InRange(quaking_palm) Spell(quaking_palm text=focus)
+		if (focus.Distance() < 8) Spell(war_stomp text=focus)
+	}
 	if (not target.IsFriend() and target.Casting() and not target.Classification(worldboss))
 	{
 		if (target.Distance() < 6) Spell(bull_rush)
 		if (target.Distance() < 6 and CastTime(haymaker) < target.RemainingCastTime()) Spell(haymaker)
-		if (target.Distance() < 5) Spell(quaking_palm)
+		if target.InRange(quaking_palm) Spell(quaking_palm)
 		if (target.Distance() < 8) Spell(war_stomp)
 	}
 }
@@ -119,7 +126,7 @@ AddFunction DefensiveDispelActions
 
 AddFunction OffensiveDispelActions
 {
-	if target.HasDebuffType(magic)
+	if (target.Distance() < 8 and target.HasDebuffType(magic))
 	{
 		Spell(arcane_torrent_deathknight)
 		Spell(arcane_torrent_demonhunter)

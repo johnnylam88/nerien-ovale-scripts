@@ -213,6 +213,15 @@ AddFunction BrewmasterDefaultCdActions
 
 AddFunction BrewmasterInterruptActions
 {
+	if not focus.IsFriend() and focus.Casting()
+	{
+		if focus.InRange(spear_hand_strike) and focus.IsInterruptible() Spell(spear_hand_strike text=focus)
+		if not focus.Classification(worldboss)
+		{
+			if focus.InRange(paralysis) Spell(paralysis text=focus)
+			if (focus.Distance() < 6) Spell(leg_sweep text=focus)
+		}
+	}
 	if not target.IsFriend() and target.Casting()
 	{
 		if target.InRange(spear_hand_strike) and target.IsInterruptible() Spell(spear_hand_strike)

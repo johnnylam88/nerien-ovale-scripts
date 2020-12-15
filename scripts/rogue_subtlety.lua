@@ -368,6 +368,16 @@ AddFunction SubtletyDefaultAoEActions
 
 AddFunction SubtletyInterruptActions
 {
+	if not focus.IsFriend() and focus.Casting()
+	{
+		if focus.InRange(kick) and focus.IsInterruptible() Spell(kick text=focus)
+		if not focus.Classification(worldboss)
+		{
+			if focus.InRange(cheap_shot) Spell(cheap_shot text=focus)
+			if focus.InRange(kidney_shot) Spell(kidney_shot text=focus)
+			if focus.InRange(blind) Spell(blind text=focus)
+		}
+	}
 	if not target.IsFriend() and target.Casting()
 	{
 		if target.InRange(kick) and target.IsInterruptible() Spell(kick)

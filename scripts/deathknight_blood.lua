@@ -311,6 +311,16 @@ AddFunction BloodDefaultCdActions
 
 AddFunction BloodInterruptActions
 {
+	if not focus.IsFriend() and focus.Casting()
+	{
+		if (focus.InRange(mind_freeze) and focus.IsInterruptible()) Spell(mind_freeze text=focus)
+		if not focus.Classification(worldboss)
+		{
+			if focus.InRange(asphyxiate) Spell(asphyxiate text=focus)
+			if focus.InRange(death_grip) Spell(death_grip text=focus)
+			if (focus.Distance() < 15) Spell(gorefiends_grasp text=focus)
+		}
+	}
 	if not target.IsFriend() and target.Casting()
 	{
 		if (target.InRange(mind_freeze) and target.IsInterruptible()) Spell(mind_freeze)
