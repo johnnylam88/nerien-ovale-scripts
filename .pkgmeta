@@ -6,3 +6,6 @@ externals:
     libs/LibStub:
         url: https://repos.curseforge.com/wow/libstub/trunk
         tag: latest
+
+required-dependencies:
+    - ovale
