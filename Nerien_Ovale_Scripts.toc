@@ -11,6 +11,8 @@
 
 ## Dependencies: Ovale
 
+Libs\LibStub\LibStub.lua
+
 main.lua
 localization.lua
 scripts/library.lua
