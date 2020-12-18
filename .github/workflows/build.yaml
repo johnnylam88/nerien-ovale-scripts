@@ -1,0 +1,23 @@
+name: Package addon
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Clone project
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 100
+
+      - name: Package
+        uses: BigWigsMods/packager@master
