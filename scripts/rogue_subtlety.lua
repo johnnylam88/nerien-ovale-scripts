@@ -315,7 +315,6 @@ AddFunction SubtletyFinisherActions
 
 AddFunction SubtletyFillerBuilderActions
 {
-	if (Enemies() > 1) Spell(shuriken_storm)
 	Spell(gloomblade)
 	Spell(backstab)
 	if (not target.InRange(backstab) and EnergyDeficit() < 20) Spell(shuriken_toss)
@@ -329,6 +328,7 @@ AddFunction SubtletyPriorityBuilderActions
 		if (Enemies() >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
 	}
 	Spell(shadowstrike)
+	if (Enemies(tagged=1) > 1) Spell(shuriken_storm)
 	SubtletyFillerBuilderActions()
 }
 
@@ -341,6 +341,7 @@ AddFunction SubtletyBuilderActions
 	}
 	if (Enemies() > 2) Spell(shuriken_storm)
 	Spell(shadowstrike)
+	if (Enemies() > 1) Spell(shuriken_storm)
 	SubtletyFillerBuilderActions()
 }
 
