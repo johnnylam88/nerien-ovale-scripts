@@ -29,3 +29,8 @@ The following classes and specializations are supported for Shadowlands:
 - Death Knight: Blood
 - Monk: Brewmaster
 - Rogue: Subtlety
+
+### Links ###
+
+- GitHub: https://github.com/ultijlam/nerien-ovale-scripts
+- CurseForge: https://www.curseforge.com/wow/addons/nerien-ovale-scripts
