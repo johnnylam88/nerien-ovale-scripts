@@ -5,9 +5,11 @@
 ## Author: Johnny C. Lam
 ## Version: @project-version@
 
+## X-Category: Combat
 ## X-License: BSD-2-Clause
 ## X-Website: https://github.com/ultijlam/nerien-ovale-scripts
 ## X-Curse-Project-ID: 42999
+## X-WoWI-ID: 25835
 
 ## Dependencies: Ovale
 
