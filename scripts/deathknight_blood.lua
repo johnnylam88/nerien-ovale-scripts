@@ -219,6 +219,34 @@ AddFunction BloodDefaultShortCdActions
 	Spell(shackle_the_unworthy)
 	# [*] (Necrolord) Use Abomination Limb on cooldown for free damage.
 	Spell(abomination_limb)
+
+	unless
+		((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and Spell(blood_boil)) or
+		((BuffRemaining(deaths_due_buff) < 3 and target.DebuffRemaining(deaths_due_debuff) > 3) and Spell(deaths_due)) or
+		(BuffPresent(deaths_due_buff) and
+			(((target.DebuffRemaining(deaths_due_debuff) < 2) and Spell(heart_strike)) or
+			 ((BuffRemaining(deaths_due_buff) < 3 and (target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(deaths_due_buff) < 9)) and Spell(heart_strike)))) or
+		(BloodHasPooledForBonestorm() and Spell(bonestorm)) or
+		((not BloodIsPoolingForBonestorm() and RunicPowerDeficit() < 20) and Spell(death_strike)) or
+		((BuffStacks(bone_shield) < 8 - 3 * BuffPresent(dancing_rune_weapon_buff)) and Spell(marrowrend)) or
+		((TimeToRunes(3) < GCD()) and Spell(heart_strike))
+	{
+		# Death and Decay when Crimson Scourge procs with 3+ targets or Night Fae.
+		Spell(deaths_due)
+		if (BuffPresent(crimson_scourge_buff) and Enemies() >= 3) Spell(death_and_decay)
+
+		unless
+			((Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
+			((Rune() >= 3) and Spell(heart_strike)) or
+			((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
+			 (((BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) and Spell(heart_strike)) or
+			  ((not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
+			((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
+		{
+			# Death and Decay when Crimson Scourge procs.
+			if BuffPresent(crimson_scourge_buff) Spell(death_and_decay)
+		}
+	}
 }
 
 AddFunction BloodPrecombatMainActions
@@ -264,9 +292,6 @@ AddFunction BloodDefaultMainActions
 	if (BuffStacks(bone_shield) < 8 - 3 * BuffPresent(dancing_rune_weapon_buff)) Spell(marrowrend)
 	# Heart Strike with, or when 1.5 second away from, having more than 3 Runes.
 	if (TimeToRunes(3) < GCD()) Spell(heart_strike)
-	# Death and Decay when Crimson Scourge procs with 3+ targets or Night Fae.
-	Spell(deaths_due)
-	if (BuffPresent(crimson_scourge_buff) and Enemies() >= 3) Spell(death_and_decay)
 	# Blood Boil with 2 Blood Boil charges and less than 5 stacks of Hemostasis.
 	if (Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
 	# Heart Strike with 3 Runes.
@@ -282,8 +307,6 @@ AddFunction BloodDefaultMainActions
 	}
 	# Blood Boil with 1 charge and less than 5 stacks of Hemostasis.
 	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
-	# Death and Decay when Crimson Scourge procs.
-	if BuffPresent(crimson_scourge_buff) Spell(death_and_decay)
 	# [*] Fillers that don't consume Runes or Runic Power.
 	if (target.DebuffExpires(mark_of_blood) and target.IsTargetingPlayer()) Spell(mark_of_blood)
 	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
