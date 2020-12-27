@@ -215,6 +215,7 @@ AddFunction SubtletyPrecombatMainActions
 
 AddFunction SubtletyPrecombatCdActions
 {
+	PrecombatCdActions()
 	if EquippedRuneforge(mark_of_the_master_assassin_runeforge) Spell(shadow_blades)
 }
 

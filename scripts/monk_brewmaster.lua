@@ -201,6 +201,11 @@ AddFunction BrewmasterDefaultMainActions
 	}
 }
 
+AddFunction BrewmasterPrecombatCdActions
+{
+	PrecombatCdActions()
+}
+
 AddFunction BrewmasterDefaultCdActions
 {
 	Spell(weapons_of_order)
@@ -269,6 +274,7 @@ AddIcon help=aoe
 
 AddIcon help=cd
 {
+	if not InCombat() BrewmasterPrecombatCdActions()
 	BrewmasterDefaultCdActions()
 }
 

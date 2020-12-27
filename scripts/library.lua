@@ -87,6 +87,9 @@ Define(fleshcraft 324631)
 # Items
 Define(item_healthstone 5512)
 Define(item_spiritual_healing_potion 171267)
+Define(item_mistcaller_ocarina 178715)
+Define(mistcaller_ocarina 330067)
+	SpellInfo(mistcaller_ocarina duration=900)
 
 AddFunction ItemHealActions
 {
@@ -137,6 +140,11 @@ AddFunction OffensiveDispelActions
 		Spell(arcane_torrent_rogue)
 		Spell(arcane_torrent_warrior)
 	}
+}
+
+AddFunction PrecombatCdActions
+{
+	if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina) < 600) Item(item_mistcaller_ocarina)
 }
 ]]
 	Private.scripts:RegisterScript(nil, nil, name, desc, code, "include")
