@@ -443,7 +443,7 @@ AddIcon help=trinkets size=small
 	if SubtletySymbolsOfDeathIsReady()
 	{
 		Item(Trinket0Slot usable=1 text=13)
-		Item(Trinket1Slot usable=1 text=13)
+		Item(Trinket1Slot usable=1 text=14)
 	}
 }
 ]]
