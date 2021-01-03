@@ -156,6 +156,8 @@ AddFunction BrewmasterDefaultShortCdActions
 	if (HealthPercent() < 60 - 30 * (2 - Charges(healing_elixir count=0))) Spell(healing_elixir)
 	# Purify on heavy stagger.
 	if (StaggerPercent() > 70) Spell(purifying_brew)
+	# Use Expel Harm to heal if needed.
+	if (HealthPercent() < 50) Spell(expel_harm)
 
 	Spell(bonedust_brew)
 	Spell(faeline_stomp)
@@ -171,9 +173,6 @@ AddFunction BrewmasterPrecombatMainActions
 
 AddFunction BrewmasterDefaultMainActions
 {
-	# Use Expel Harm to heal if needed.
-	if (HealthPercent() < 50) Spell(expel_harm)
-
 	# Use the Blackout Combo buff for damage if it won't push back Keg Smash.
 	if BuffPresent(blackout_combo_buff)
 	{
