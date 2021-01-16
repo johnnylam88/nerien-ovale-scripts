@@ -208,9 +208,13 @@ AddFunction BloodDefaultShortCdActions
 	{
 		# Blood Tap if you have 2 charges, or are less than 5 seconds away from 2 charges of Blood Tap, and you have less than 3 Runes.
 		if (Charges(blood_tap count=0) > 1.9) Spell(blood_tap)
-		# Blood Tap if you have less than 3 Runes and less than 63 RP (57 RP with Bryndaor’s Might equipped).
-		if (not EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 63) Spell(blood_tap)
-		if (EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 57) Spell(blood_tap)
+		# Bank 2nd charge of Blood Tap unless healing is needed.
+		if (HealthPercent() <= 60)
+		{
+			# Blood Tap if you have less than 3 Runes and less than 63 RP (57 RP with Bryndaor’s Might equipped).
+			if (not EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 63) Spell(blood_tap)
+			if (EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 57) Spell(blood_tap)
+		}
 	}
 	# (Venthyr) Swarming Mist with less than 67 RP (61 RP with Bryndaor’s Might equipped).
 	if (not EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 67) Spell(swarming_mist)
