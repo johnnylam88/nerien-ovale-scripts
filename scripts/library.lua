@@ -88,8 +88,15 @@ Define(fleshcraft 324631)
 Define(item_healthstone 5512)
 Define(item_spiritual_healing_potion 171267)
 Define(item_mistcaller_ocarina 178715)
-Define(mistcaller_ocarina 330067)
-	SpellInfo(mistcaller_ocarina duration=900)
+Define(mistcaller_ocarina_crit_buff 332299)
+	SpellInfo(mistcaller_ocarina_crit_buff duration=900)
+Define(mistcaller_ocarina_haste_buff 332300)
+	SpellInfo(mistcaller_ocarina_haste_buff duration=900)
+Define(mistcaller_ocarina_mastery_buff 332301)
+	SpellInfo(mistcaller_ocarina_mastery_buff duration=900)
+Define(mistcaller_ocarina_versatility_buff 330067)
+	SpellInfo(mistcaller_ocarina_versatility_buff duration=900)
+SpellList(mistcaller_ocarina_buff mistcaller_ocarina_crit_buff mistcaller_ocarina_haste_buff mistcaller_ocarina_mastery_buff mistcaller_ocarina_versatility_buff)
 
 AddFunction ItemHealActions
 {
@@ -144,7 +151,7 @@ AddFunction OffensiveDispelActions
 
 AddFunction PrecombatCdActions
 {
-	if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina) < 600) Item(item_mistcaller_ocarina)
+	if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina_buff) < 600) Item(item_mistcaller_ocarina)
 }
 ]]
 	Private.scripts:RegisterScript(nil, nil, name, desc, code, "include")
