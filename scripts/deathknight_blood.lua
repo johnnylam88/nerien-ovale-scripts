@@ -39,9 +39,7 @@ Define(blood_plague_debuff 55078)
 	SpellAddTargetDebuff(blood_boil blood_plague_debuff add=1)
 Define(blood_tap 221699)
 	SpellInfo(blood_tap cd=0.5 charge_cd=60 runes=-1)
-	# XXX The "Charges(blood_rap) < 1" condition below shouldn't be needed.
-	# XXX It is there to work around an Ovale bug with spell usability.
-	SpellRequire(blood_tap unusable set=1 enabled=(not HasTalent(blood_tap_talent) or Charges(blood_tap) < 1))
+	SpellRequire(blood_tap unusable set=1 enabled=(not HasTalent(blood_tap_talent)))
 Define(bone_shield 195181)
 	SpellInfo(bone_shield duration=30 max_stacks=10)
 	SpellAddBuff(marrowrend bone_shield add=3)
