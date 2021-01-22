@@ -285,5 +285,5 @@ AddIcon help=trinkets size=small
 	Item(Trinket1Slot usable=1 text=14)
 }
 ]]
-	Private.scripts:RegisterScript("MONK", "brewmaster", name, desc, code, "script")
+	Private.scripts:registerScript("MONK", "brewmaster", name, desc, code, "script")
 end

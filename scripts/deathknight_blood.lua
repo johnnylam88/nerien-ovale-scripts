@@ -413,5 +413,5 @@ AddIcon help=trinkets size=small
 	Item(Trinket1Slot usable=1 text=14)
 }
 ]]
-	Private.scripts:RegisterScript("DEATHKNIGHT", "blood", name, desc, code, "script")
+	Private.scripts:registerScript("DEATHKNIGHT", "blood", name, desc, code, "script")
 end

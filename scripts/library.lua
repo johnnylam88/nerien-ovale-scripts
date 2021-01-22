@@ -154,5 +154,5 @@ AddFunction PrecombatCdActions
 	if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina_buff) < 600) Item(item_mistcaller_ocarina)
 }
 ]]
-	Private.scripts:RegisterScript(nil, nil, name, desc, code, "include")
+	Private.scripts:registerScript(nil, nil, name, desc, code, "include")
 end

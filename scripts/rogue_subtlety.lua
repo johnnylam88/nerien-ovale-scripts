@@ -447,5 +447,5 @@ AddIcon help=trinkets size=small
 	}
 }
 ]]
-	Private.scripts:RegisterScript("ROGUE", "subtlety", name, desc, code, "script")
+	Private.scripts:registerScript("ROGUE", "subtlety", name, desc, code, "script")
 end

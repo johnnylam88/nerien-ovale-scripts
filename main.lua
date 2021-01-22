@@ -8,5 +8,11 @@ do
 		Private.name = name
 		Private.scripts = scripts
 		Private.initialized = true
+		do
+			-- backwards compatibility for Ovale<=9.0.43
+			if not scripts.registerScript then
+				scripts.registerScript = scripts.RegisterScript
+			end
+		end
 	end
 end

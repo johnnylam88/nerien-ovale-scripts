@@ -2,7 +2,12 @@ local _, Private = ...
 
 if Private.initialized then
 	local localization = LibStub:GetLibrary("ovale/ui/Localization")
-	local L = localization and localization.L or {}
+	local L = localization and localization.l or nil
+	do
+		-- backwards compatibiility for Ovale<=9.0.43
+		L = L or (localization and localization.L or nil)
+	end
+	L = L or {}
 	local locale = GetLocale()
 
 	--[[
