@@ -138,7 +138,7 @@ AddFunction BrewmasterEnergyForKegSmashPlusFiller
 
 AddFunction BrewmasterPrecombatShortCdActions
 {
-	Spell(fleshcraft)
+	PrecombatShortCdActions()
 }
 
 AddFunction BrewmasterDefaultShortCdActions

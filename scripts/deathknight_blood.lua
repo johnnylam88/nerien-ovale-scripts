@@ -196,6 +196,7 @@ AddFunction BloodHeartStrikeRunicPower
 
 AddFunction BloodPrecombatShortCdActions
 {
+	PrecombatShortCdActions()
 	# Only Rune Tap if Bone Shield is down or about to expire.
 	if (not BuffPresent(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap)
 }

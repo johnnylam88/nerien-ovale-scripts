@@ -149,6 +149,11 @@ AddFunction OffensiveDispelActions
 	}
 }
 
+AddFunction PrecombatShortCdActions
+{
+	Spell(fleshcraft)
+}
+
 AddFunction PrecombatCdActions
 {
 	if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina_buff) < 600) Item(item_mistcaller_ocarina)
