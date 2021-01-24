@@ -324,24 +324,35 @@ AddFunction BloodPrecombatCdActions
 	Spell(dancing_rune_weapon)
 }
 
-AddFunction BloodDefaultCdActions
+AddFunction BloodDefaultOffensiveCdActions
 {
-
-	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
-	if (BuffStacks(bone_shield) >= 6) Spell(tombstone)
-
-	Spell(dancing_rune_weapon)
 	if BuffExpires(dancing_rune_weapon_buff)
 	{
 		Spell(raise_dead)
 		# Sacrifice ghoul with at least 5 enemies or 15 seconds left.
 		if (Enemies() >= 5 or TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
 	}
+}
+
+AddFunction BloodDefaultDefensiveCdActions
+{
+
+	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
+	if (BuffStacks(bone_shield) >= 6) Spell(tombstone)
+
+	Spell(dancing_rune_weapon)
 	Spell(vampiric_blood)
 	Spell(icebound_fortitude)
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
-	# Only suggest Rune Tap if Heart Strike won't grant enough Runic Power for a Death Strike heal.
+	# Only suggest Rune Tap if Heart Strike won't grant enough Runic Power
+	# for a Death Strike heal.
 	if (not BuffPresent(rune_tap) and RunicPower() < RunicPowerCost(death_strike) - BloodHeartStrikeRunicPower()) Spell(rune_tap)
+}
+
+AddFunction BloodDefaultCdActions
+{
+	BloodDefaultOffensiveCdActions()
+	BloodDefaultDefensiveCdActions()
 }
 
 AddFunction BloodInterruptActions

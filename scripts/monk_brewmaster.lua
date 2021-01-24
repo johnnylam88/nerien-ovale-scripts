@@ -205,14 +205,24 @@ AddFunction BrewmasterPrecombatCdActions
 	PrecombatCdActions()
 }
 
-AddFunction BrewmasterDefaultCdActions
+AddFunction BrewmasterDefaultOffensiveCdActions
 {
 	Spell(weapons_of_order)
 	Spell(fallen_order)
 	if (target.TimeToDie() > 25) Spell(invoke_niuzao_the_black_ox)
+}
+
+AddFunction BrewmasterDefaultDefensiveCdActions
+{
 	Spell(fortifying_brew)
 	Spell(dampen_harm)
 	Spell(zen_meditation)
+}
+
+AddFunction BrewmasterDefaultCdActions
+{
+	BrewmasterDefaultOffensiveCdActions()
+	BrewmasterDefaultDefensiveCdActions()
 }
 
 AddFunction BrewmasterInterruptActions
