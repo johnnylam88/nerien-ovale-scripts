@@ -226,7 +226,7 @@ AddFunction SubtletyDefensiveActions
 	if (target.IsTargetingPlayer() and IncomingPhysicalDamage(1.5) > 0) Spell(evasion)
 }
 
-AddFunction SubtletyDefaultShortCdActions
+AddFunction SubtletyShortCdActions
 {
 	SubtletyDefensiveActions()
 
@@ -251,7 +251,7 @@ AddFunction SubtletyDefaultShortCdActions
 	if (SubtletyBuilderCondition() and not Spell(sepsis)) Spell(shadowmeld)
 }
 
-AddFunction SubtletyDefaultCdActions
+AddFunction SubtletyCdActions
 {
 	# Use Flagellation (Venthyr) on cooldown to apply the debuff and start
 	# the lashing. Use it again right before the debuff expires to convert
@@ -346,7 +346,7 @@ AddFunction SubtletyBuilderActions
 	SubtletyFillerBuilderActions()
 }
 
-AddFunction SubtletyDefaultMainActions
+AddFunction SubtletyMainActions
 {
 	if BuffExpires(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
@@ -357,7 +357,7 @@ AddFunction SubtletyDefaultMainActions
 	}
 }
 
-AddFunction SubtletyDefaultAoEActions
+AddFunction SubtletyAoEActions
 {
 	if BuffExpires(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
@@ -412,25 +412,25 @@ AddIcon help=interrupt size=small
 AddIcon help=shortcd
 {
 	if not InCombat() SubtletyPrecombatShortCdActions()
-	if InCombat() SubtletyDefaultShortCdActions()
+	if InCombat() SubtletyShortCdActions()
 }
 
 AddIcon help=main
 {
 	if not InCombat() SubtletyPrecombatMainActions()
-	SubtletyDefaultMainActions()
+	SubtletyMainActions()
 }
 
 AddIcon help=aoe
 {
 	if not InCombat() SubtletyPrecombatMainActions()
-	SubtletyDefaultAoEActions()
+	SubtletyAoEActions()
 }
 
 AddIcon help=cd
 {
 	if not InCombat() SubtletyPrecombatCdActions()
-	if InCombat() SubtletyDefaultCdActions()
+	if InCombat() SubtletyCdActions()
 }
 
 AddIcon help=trinkets size=small

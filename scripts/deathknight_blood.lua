@@ -201,7 +201,7 @@ AddFunction BloodPrecombatShortCdActions
 	if (not BuffPresent(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap)
 }
 
-AddFunction BloodDefaultShortCdActions
+AddFunction BloodShortCdActions
 {
 	ItemHealActions()
 
@@ -262,7 +262,7 @@ AddFunction BloodPrecombatMainActions
 	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
 }
 
-AddFunction BloodDefaultMainActions
+AddFunction BloodMainActions
 {
 	if (HealthPercent() <= 60)
 	{
@@ -324,7 +324,7 @@ AddFunction BloodPrecombatCdActions
 	Spell(dancing_rune_weapon)
 }
 
-AddFunction BloodDefaultOffensiveCdActions
+AddFunction BloodOffensiveCdActions
 {
 	if BuffExpires(dancing_rune_weapon_buff)
 	{
@@ -334,7 +334,7 @@ AddFunction BloodDefaultOffensiveCdActions
 	}
 }
 
-AddFunction BloodDefaultDefensiveCdActions
+AddFunction BloodDefensiveCdActions
 {
 
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
@@ -349,10 +349,10 @@ AddFunction BloodDefaultDefensiveCdActions
 	if (not BuffPresent(rune_tap) and RunicPower() < RunicPowerCost(death_strike) - BloodHeartStrikeRunicPower()) Spell(rune_tap)
 }
 
-AddFunction BloodDefaultCdActions
+AddFunction BloodCdActions
 {
-	BloodDefaultOffensiveCdActions()
-	BloodDefaultDefensiveCdActions()
+	BloodOffensiveCdActions()
+	BloodDefensiveCdActions()
 }
 
 AddFunction BloodInterruptActions
@@ -397,25 +397,25 @@ AddIcon help=interrupt size=small
 AddIcon help=shortcd
 {
 	if not InCombat() BloodPrecombatShortCdActions()
-	BloodDefaultShortCdActions()
+	BloodShortCdActions()
 }
 
 AddIcon enemies=1 help=main
 {
 	if not InCombat() BloodPrecombatMainActions()
-	BloodDefaultMainActions()
+	BloodMainActions()
 }
 
 AddIcon help=aoe
 {
 	if not InCombat() BloodPrecombatMainActions()
-	BloodDefaultMainActions()
+	BloodMainActions()
 }
 
 AddIcon help=cd
 {
 	if not InCombat() BloodPrecombatCdActions()
-	BloodDefaultCdActions()
+	BloodCdActions()
 }
 
 AddIcon help=trinkets size=small

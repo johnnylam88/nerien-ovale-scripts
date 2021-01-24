@@ -141,7 +141,7 @@ AddFunction BrewmasterPrecombatShortCdActions
 	PrecombatShortCdActions()
 }
 
-AddFunction BrewmasterDefaultShortCdActions
+AddFunction BrewmasterShortCdActions
 {
 	ItemHealActions()
 
@@ -171,7 +171,7 @@ AddFunction BrewmasterPrecombatMainActions
 	Spell(keg_smash)
 }
 
-AddFunction BrewmasterDefaultMainActions
+AddFunction BrewmasterMainActions
 {
 	# Use the Blackout Combo buff for damage if it won't push back Keg Smash.
 	if BuffPresent(blackout_combo_buff)
@@ -205,24 +205,24 @@ AddFunction BrewmasterPrecombatCdActions
 	PrecombatCdActions()
 }
 
-AddFunction BrewmasterDefaultOffensiveCdActions
+AddFunction BrewmasterOffensiveCdActions
 {
 	Spell(weapons_of_order)
 	Spell(fallen_order)
 	if (target.TimeToDie() > 25) Spell(invoke_niuzao_the_black_ox)
 }
 
-AddFunction BrewmasterDefaultDefensiveCdActions
+AddFunction BrewmasterDefensiveCdActions
 {
 	Spell(fortifying_brew)
 	Spell(dampen_harm)
 	Spell(zen_meditation)
 }
 
-AddFunction BrewmasterDefaultCdActions
+AddFunction BrewmasterCdActions
 {
-	BrewmasterDefaultOffensiveCdActions()
-	BrewmasterDefaultDefensiveCdActions()
+	BrewmasterOffensiveCdActions()
+	BrewmasterDefensiveCdActions()
 }
 
 AddFunction BrewmasterInterruptActions
@@ -266,25 +266,25 @@ AddIcon help=interrupt size=small
 AddIcon help=shortcd
 {
 	if not InCombat() BrewmasterPrecombatShortCdActions()
-	BrewmasterDefaultShortCdActions()
+	BrewmasterShortCdActions()
 }
 
 AddIcon enemies=1 help=main
 {
 	if not InCombat() BrewmasterPrecombatMainActions()
-	BrewmasterDefaultMainActions()
+	BrewmasterMainActions()
 }
 
 AddIcon help=aoe
 {
 	if not InCombat() BrewmasterPrecombatMainActions()
-	BrewmasterDefaultMainActions()
+	BrewmasterMainActions()
 }
 
 AddIcon help=cd
 {
 	if not InCombat() BrewmasterPrecombatCdActions()
-	BrewmasterDefaultCdActions()
+	BrewmasterCdActions()
 }
 
 AddIcon help=trinkets size=small
