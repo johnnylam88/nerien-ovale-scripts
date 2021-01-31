@@ -27,6 +27,7 @@ Open up the **Ovale** code window and select the script you would like to use fo
 The following classes and specializations are supported for Shadowlands:
 
 - Death Knight: Blood
+- Druid: Guardian
 - Monk: Brewmaster
 - Rogue: Assassination, Subtlety
 

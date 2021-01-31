@@ -19,6 +19,7 @@ main.lua
 localization.lua
 scripts/library.lua
 scripts/deathknight_blood.lua
+scripts/druid_guardian.lua
 scripts/monk_brewmaster.lua
 scripts/rogue_assassination.lua
 scripts/rogue_subtlety.lua
