@@ -143,8 +143,6 @@ AddFunction BrewmasterPrecombatShortCdActions
 
 AddFunction BrewmasterShortCdActions
 {
-	ItemHealActions()
-
 	# Use Black Ox Brew when Celestial Brew is on cooldown and Purifying Brew has no charges.
 	if (SpellCooldown(celestial_brew) > GCD() and SpellCharges(purifying_brew count=0) < 0.75) Spell(black_ox_brew)
 	# Never let Celestial Brew or Purifying Brew sit on cooldown while tanking.
@@ -253,6 +251,7 @@ AddFunction BrewmasterDispelActions
 	OffensiveDispelActions()
 	if player.HasDebuffType(poison disease) Spell(detox)
 	DefensiveDispelActions()
+	ItemHealActions()
 }
 
 ### User Interface ###

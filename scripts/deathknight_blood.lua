@@ -203,8 +203,6 @@ AddFunction BloodPrecombatShortCdActions
 
 AddFunction BloodShortCdActions
 {
-	ItemHealActions()
-
 	if TimeToRunes(3) > GCD()
 	{
 		# Blood Tap if you have 2 charges, or are less than 5 seconds away from 2 charges of Blood Tap, and you have less than 3 Runes.
@@ -392,6 +390,7 @@ AddIcon help=interrupt size=small
 {
 	BloodInterruptActions()
 	BloodDispelActions()
+	ItemHealActions()
 }
 
 AddIcon help=shortcd

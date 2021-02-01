@@ -228,8 +228,6 @@ AddFunction SubtletyDefensiveActions
 
 AddFunction SubtletyShortCdActions
 {
-	SubtletyDefensiveActions()
-
 	if (SpellMaxCharges(shadow_dance) > 1 and Charges(shadow_dance count=0) > SpellMaxCharges(shadow_dance) - 0.1) Spell(shadow_dance)
 	if (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge))
 	{
@@ -407,6 +405,7 @@ AddIcon help=interrupt size=small
 {
 	SubtletyInterruptActions()
 	SubtletyDispelActions()
+	SubtletyDefensiveActions()
 }
 
 AddIcon help=shortcd
