@@ -28,7 +28,7 @@ The following classes and specializations are supported for Shadowlands:
 
 - Death Knight: Blood
 - Monk: Brewmaster
-- Rogue: Subtlety
+- Rogue: Assassination, Subtlety
 
 ### Links ###
 
