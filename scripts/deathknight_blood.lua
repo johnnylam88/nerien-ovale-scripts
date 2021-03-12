@@ -122,7 +122,8 @@ Define(vampiric_blood 55233)
 
 # Covenant Abilities
 Define(abomination_limb 315443)
-	SpellInfo(abomination_limb cd=120)
+	SpellInfo(abomination_limb cd=120 duration=12 tick=1)
+	SpellAddBuff(abomination_limb abomination_limb add=1)
 	SpellAddBuff(abomination_limb bone_shield add=3)
 	SpellRequire(abomination_limb unusable set=1 enabled=(not IsCovenant(necrolord)))
 Define(deaths_due 324128)
@@ -201,14 +202,13 @@ AddFunction BloodOssuaryThreshold
 {
 	# Return the number of Bone Shield charges at which we should Marrowrend to maintain Ossuary.
 	# Marrowrend if below 8 stacks of Bone Shield (7 stacks with Crimson Rune Weapon).
-	if BuffPresent(dancing_rune_weapon_buff) (5)
-	if not EquippedRuneforge(crimson_rune_weapon_runeforge) (8)
-	if EquippedRuneforge(crimson_rune_weapon_runeforge)
-	{
-		# Bone Shield loses 1 stack every 2.5 seconds with incoming physical damage.
-		if (SpellCooldown(dancing_rune_weapon) < 2.5 * 5) (5 + SpellCooldown(dancing_rune_weapon) / 2.5)
-		7
-	}
+	# Bone Shield loses 1 stack every 2.5 seconds with incoming physical damage.
+	# Keep Bone Shield stacks low when Dancing Rune Weapon (with Crimson Rune Weapon) or Abomination Limb is coming off cooldown.
+	if (BuffPresent(dancing_rune_weapon_buff) or BuffRemaining(abomination_limb) > 6) (5)
+	if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) / 2.5 < 3) (4 + SpellCooldown(dancing_rune_weapon) / 2.5)
+	if (IsCovenant(necrolord) and SpellCooldown(abomination_limb) / 2.5 < 3) (4 + SpellCooldown(abomination_limb) / 2.5)
+	if EquippedRuneforge(crimson_rune_weapon_runeforge) (7)
+	8
 }
 
 AddFunction BloodPrecombatShortCdActions
@@ -237,8 +237,6 @@ AddFunction BloodShortCdActions
 	if (EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 61) Spell(swarming_mist)
 	# (Kyrian) Shackle the Unworthy (with Combat Meditation enabled).
 	Spell(shackle_the_unworthy)
-	# [*] (Necrolord) Use Abomination Limb on cooldown for free damage.
-	Spell(abomination_limb)
 
 	unless
 		(((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) and Spell(blood_boil)) or
@@ -278,7 +276,12 @@ AddFunction BloodShortCdActions
 AddFunction BloodPrecombatMainActions
 {
 	# Marrowrend if Bone Shield is not active or about to expire.
-	if (BuffRemaining(bone_shield) < GCD() + 2) Spell(marrowrend)
+	if (BuffRemaining(bone_shield) < GCD() + 2)
+	{
+		if not EquippedRuneforge(crimson_rune_weapon_runeforge) Spell(marrowrend)
+		# [*] Skip Marrowrend with Crimson Rune Weapon if Dancing Rune Weapon is available out of combat.
+		if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend)
+	}
 	# [*] Blooddrinker when closing with the boss on the opener.
 	if BuffExpires(dancing_rune_weapon_buff) Spell(blooddrinker)
 }
@@ -346,6 +349,7 @@ AddFunction BloodMainActions
 
 AddFunction BloodPrecombatCdActions
 {
+	Spell(abomination_limb)
 	Spell(dancing_rune_weapon)
 	Spell(raise_dead)
 }
@@ -354,6 +358,8 @@ AddFunction BloodOffensiveCdActions
 {
 	if BuffExpires(dancing_rune_weapon_buff)
 	{
+		Spell(abomination_limb)
+		Spell(dancing_rune_weapon)
 		Spell(raise_dead)
 		# Sacrifice ghoul with at least 5 enemies or 15 seconds left.
 		if (Enemies() >= 5 or TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
