@@ -254,7 +254,7 @@ AddFunction BloodShortCdActions
 		unless ((TimeToRunes(3) < GCD()) and Spell(heart_strike))
 		{
 			# Death and Decay when Crimson Scourge procs with 3+ targets.
-			if (BuffPresent(crimson_scourge_buff) and Enemies() >= 3) Spell(death_and_decay)
+			if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies() >= 3) Spell(death_and_decay)
 
 			unless
 				((Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
@@ -267,7 +267,7 @@ AddFunction BloodShortCdActions
 				((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
 			{
 				# Death and Decay when Crimson Scourge procs.
-				if BuffPresent(crimson_scourge_buff) Spell(death_and_decay)
+				if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff)) Spell(death_and_decay)
 			}
 		}
 	}
