@@ -85,6 +85,7 @@ Define(death_grip 49576)
 Define(death_strike 49998)
 	SpellInfo(death_strike runicpower=45)
 	SpellRequire(death_strike runicpower add=-5 enabled=(SpellKnown(ossuary) and BuffStacks(bone_shield) >= 5))
+SpellList(dnd_buff death_and_decay_buff deaths_due_buff)
 Define(gorefiends_grasp 108199)
 	SpellInfo(gorefiends_grasp cd=120)
 	SpellRequire(gorefiends_grasp cd add=-30 enabled=(HasTalent(tightening_grasp_talent)))
@@ -181,7 +182,7 @@ AddFunction BloodDeathStrikeHealing
 AddFunction BloodHeartStrikeMaxTargets
 {
 	# Heart Strike hits 2 targets, but up to 5 targets if player is standing in Death and Decay.
-	2 + 3 * BuffPresent(death_and_decay_buff)
+	2 + 3 * BuffPresent(dnd_buff)
 }
 
 AddFunction BloodHeartStrikeTargets
@@ -263,11 +264,15 @@ AddFunction BloodShortCdActions
 				((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
 				 ((not IsCovenant(night_fae) and Rune() >= 2) or
 				  ((BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) and Spell(heart_strike)) or
-				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
+				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
 				((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
 			{
 				# Death and Decay when Crimson Scourge procs.
-				if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff)) Spell(death_and_decay)
+				if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff))
+				{
+					Spell(deaths_due)
+					Spell(death_and_decay)
+				}
 			}
 		}
 	}
@@ -337,7 +342,7 @@ AddFunction BloodMainActions
 	{
 		if (not IsCovenant(night_fae) and Rune() >= 2) Spell(heart_strike)
 		if (BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) Spell(heart_strike)
-		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
+		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
 	}
 	# Blood Boil with 1 charge and less than 5 stacks of Hemostasis.
 	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
