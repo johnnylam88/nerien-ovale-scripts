@@ -328,7 +328,7 @@ AddFunction BloodMainActions
 	if (TimeToRunes(3) < GCD()) Spell(heart_strike)
 	# Blood Boil with 2 charges and less than 5 stacks of Hemostasis.
 	if (Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
-	# [*] Heart Strike with Crimon Rune Weapon and Dancing Rune Weapon is active.
+	# [*] Heart Strike with Crimson Rune Weapon and Dancing Rune Weapon is active.
 	# [*] This depletes runes ahead of gaining 40% increased rune regeneration for 10s after Dancing Rune Weapon expires.
 	if (EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffPresent(dancing_rune_weapon_buff)) Spell(heart_strike)
 	# Heart Strike with 3 Runes.
