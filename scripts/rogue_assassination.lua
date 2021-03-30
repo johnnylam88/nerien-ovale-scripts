@@ -220,8 +220,8 @@ AddFunction AssassinationShortCdActions
 		{
 			if not ComboPointsDeficit() > 0
 			{
-				if (Enemies() > 2 and Spell(crimson_tempest)) Spell(vanish)
-				if (not Enemies() > 2 and Spell(rupture)) Spell(vanish)
+				if (Enemies(tagged=1) > 2 and Spell(crimson_tempest)) Spell(vanish)
+				if (not Enemies(tagged=1) > 2 and Spell(rupture)) Spell(vanish)
 			}
 		}
 		if HasTalent(master_assassin_talent)
@@ -258,7 +258,7 @@ AddFunction AssassinationMainActions
 	if (ComboPointsDeficit() <= 1)
 	{
 		if (Enemies(tagged=1) > 1 and target.DebuffExpires(crimson_tempest) < 2) Spell(crimson_tempest)
-		if ((Enemies(tagged=1) <= 4 and DebuffCountOnAny(rupture) < Enemies()) or (Enemies() > 4 and DebuffCountOnAny(rupture) < 4)) Spell(rupture text=missing)
+		if ((Enemies(tagged=1) <= 4 and DebuffCountOnAny(rupture) < Enemies(tagged=1)) or (Enemies(tagged=1) > 4 and DebuffCountOnAny(rupture) < 4)) Spell(rupture text=missing)
 		if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) Spell(rupture text=overwrite)
 		if (PersistentMultiplier(rupture) == target.DebuffPersistentMultiplier(rupture) and target.DebuffRefreshable(rupture)) Spell(rupture)
 		Spell(envenom)

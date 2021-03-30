@@ -190,7 +190,7 @@ AddFunction SubtletyEnergyPoolingBaseThreshold
 
 AddFunction SubtletyEnergyPoolingThreshold
 {
-	if (Enemies() > 3) (SubtletyEnergyPoolingBaseThreshold() - 25)
+	if (Enemies(tagged=1) > 3) (SubtletyEnergyPoolingBaseThreshold() - 25)
 	SubtletyEnergyPoolingBaseThreshold()
 }
 
@@ -269,13 +269,13 @@ AddFunction SubtletyCdActions
 		if (HasTalent(nightstalker_talent) and BuffPresent(shadow_dance_buff)) Spell(shiv)
 		if (not HasTalent(nightstalker_talent) and BuffExpires(shadow_dance_buff)) Spell(shiv)
 	}
-	if (Enemies() < 5) Spell(echoing_reprimand)
+	if (Enemies(tagged=1) < 5) Spell(echoing_reprimand)
 	if (BuffPresent(shadow_dance_buff) and BuffPresent(symbols_of_death)) Spell(shuriken_tornado)
 }
 
 AddFunction SubtletySliceAndDiceActions
 {
-	if (Enemies() < 6)
+	if (Enemies(tagged=1) < 6)
 	{
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
 		if (SubtletyShadowDanceWindowCondition() and SubtletySliceAndDiceNeedsEarlyRefresh())
@@ -288,7 +288,7 @@ AddFunction SubtletySliceAndDiceActions
 
 AddFunction SubtletyPriorityRuptureActions
 {
-	if (Enemies() < 5 and BuffExpires(master_assassins_mark))
+	if (Enemies(tagged=1) < 5 and BuffExpires(master_assassins_mark))
 	{
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
 		if (SubtletyShadowDanceWindowCondition() and SubtletyRuptureNeedsEarlyRefresh())
@@ -312,7 +312,7 @@ AddFunction SubtletyFinisherActions
 	SubtletySliceAndDiceActions()
 	SubtletyPriorityRuptureActions()
 	Spell(secret_technique)
-	if (Enemies() > 2) Spell(black_powder)
+	if (Enemies(tagged=1) > 2) Spell(black_powder)
 	Spell(eviscerate)
 }
 
@@ -327,8 +327,8 @@ AddFunction SubtletyPriorityBuilderActions
 {
 	if (BuffPresent(premeditation) or HasTalent(weaponmaster_talent))
 	{
-		if (Enemies() < 5 and DebuffCountOnAny(find_weakness) < Enemies()) Spell(shadowstrike text=cycle)
-		if (Enemies() >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
+		if (Enemies(tagged=1) < 5 and DebuffCountOnAny(find_weakness) < Enemies(tagged=1)) Spell(shadowstrike text=cycle)
+		if (Enemies(tagged=1) >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
 	}
 	Spell(shadowstrike)
 	if (Enemies(tagged=1) > 1) Spell(shuriken_storm)
@@ -339,12 +339,12 @@ AddFunction SubtletyBuilderActions
 {
 	if BuffPresent(premeditation)
 	{
-		if (Enemies() < 5 and DebuffCountOnAny(find_weakness) < Enemies()) Spell(shadowstrike text=cycle)
-		if (Enemies() >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
+		if (Enemies(tagged=1) < 5 and DebuffCountOnAny(find_weakness) < Enemies(tagged=1)) Spell(shadowstrike text=cycle)
+		if (Enemies(tagged=1) >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
 	}
-	if (Enemies() > 2) Spell(shuriken_storm)
+	if (Enemies(tagged=1) > 2) Spell(shuriken_storm)
 	Spell(shadowstrike)
-	if (Enemies() > 1) Spell(shuriken_storm)
+	if (Enemies(tagged=1) > 1) Spell(shuriken_storm)
 	SubtletyFillerBuilderActions()
 }
 

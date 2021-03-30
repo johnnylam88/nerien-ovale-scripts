@@ -153,13 +153,13 @@ AddFunction BloodInRange
 AddFunction BloodHasPooledForBonestorm
 {
 	# Bonestorm only with 3+ targets and Runic Power is above 90 for full healing ticks.
-	HasTalent(bonestorm_talent) and not SpellCooldown(bonestorm) > 0 and Enemies() >= 3 and RunicPower() > 90
+	HasTalent(bonestorm_talent) and not SpellCooldown(bonestorm) > 0 and Enemies(tagged=1) >= 3 and RunicPower() > 90
 }
 
 AddFunction BloodIsPoolingForBonestorm
 {
 	# Begin pooling for Bonestorm when it is down to 3 seconds left on the cooldown.
-	HasTalent(bonestorm_talent) and SpellCooldown(bonestorm) < 3 and Enemies() >= 3 and not RunicPower() > 90
+	HasTalent(bonestorm_talent) and SpellCooldown(bonestorm) < 3 and Enemies(tagged=1) >= 3 and not RunicPower() > 90
 }
 
 AddFunction BloodDeathStrikeMinHealing
@@ -188,7 +188,7 @@ AddFunction BloodHeartStrikeMaxTargets
 AddFunction BloodHeartStrikeTargets
 {
 	# Return the number of targets that Heart Strike can hit.
-	if (Enemies() <= BloodHeartStrikeMaxTargets()) Enemies()
+	if (Enemies(tagged=1) <= BloodHeartStrikeMaxTargets()) Enemies(tagged=1)
 	BloodHeartStrikeMaxTargets()
 }
 
@@ -255,7 +255,7 @@ AddFunction BloodShortCdActions
 		unless ((TimeToRunes(3) < GCD()) and Spell(heart_strike))
 		{
 			# Death and Decay when Crimson Scourge procs with 3+ targets.
-			if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies() >= 3) Spell(death_and_decay)
+			if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies(tagged=1) >= 3) Spell(death_and_decay)
 
 			unless
 				((Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
@@ -264,7 +264,7 @@ AddFunction BloodShortCdActions
 				((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
 				 ((not IsCovenant(night_fae) and Rune() >= 2) or
 				  ((BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) and Spell(heart_strike)) or
-				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
+				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
 				((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
 			{
 				# Death and Decay when Crimson Scourge procs.
@@ -295,7 +295,7 @@ AddFunction BloodMainActions
 {
 	if (HealthPercent() <= 60)
 	{
-		if (Enemies() >= 3)
+		if (Enemies(tagged=1) >= 3)
 		{
 			# [*] Bonestorm if you are below 60% health.
 			if BloodHasPooledForBonestorm() Spell(bonestorm)
@@ -342,7 +342,7 @@ AddFunction BloodMainActions
 	{
 		if (not IsCovenant(night_fae) and Rune() >= 2) Spell(heart_strike)
 		if (BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) Spell(heart_strike)
-		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies() >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
+		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
 	}
 	# Blood Boil with 1 charge and less than 5 stacks of Hemostasis.
 	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
@@ -367,7 +367,7 @@ AddFunction BloodOffensiveCdActions
 		Spell(dancing_rune_weapon)
 		Spell(raise_dead)
 		# Sacrifice ghoul with at least 5 enemies or 15 seconds left.
-		if (Enemies() >= 5 or TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
+		if (Enemies(tagged=1) >= 5 or TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
 	}
 }
 
