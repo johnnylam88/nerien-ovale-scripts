@@ -460,8 +460,8 @@ AddIcon help=cd
 
 AddIcon help=trinkets size=small
 {
-	if not BloodInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	BloodOffensiveCdActions()
+	if not BloodInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
 }
