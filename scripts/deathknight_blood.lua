@@ -238,6 +238,8 @@ AddFunction BloodShortCdActions
 	if (EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 61) Spell(swarming_mist)
 	# (Kyrian) Shackle the Unworthy (with Combat Meditation enabled).
 	Spell(shackle_the_unworthy)
+	# [*] (Necrolord) Fleshcraft.
+	Spell(fleshcraft)
 
 	unless
 		(((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) and Spell(blood_boil)) or
@@ -354,7 +356,7 @@ AddFunction BloodMainActions
 
 AddFunction BloodPrecombatCdActions
 {
-	Spell(abomination_limb)
+	PrecombatCdActions()
 	Spell(dancing_rune_weapon)
 	Spell(raise_dead)
 }
@@ -373,11 +375,12 @@ AddFunction BloodOffensiveCdActions
 
 AddFunction BloodDefensiveCdActions
 {
-
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
 	if (BuffStacks(bone_shield) >= 6) Spell(tombstone)
 
 	Spell(dancing_rune_weapon)
+	# [*] Avoid capping on Bone Shield stacks when using Abomination Limb.
+	if (BuffExpires(dancing_rune_weapon_buff) and BuffStacks(bone_shield) < 8) Spell(abomination_limb)
 	Spell(vampiric_blood)
 	Spell(icebound_fortitude)
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
