@@ -364,28 +364,34 @@ AddFunction GuardianCatweaveActions
 	Spell(shred)
 }
 
+AddFunction GuardianEclipseLunarNext { BuffGain(eclipse_lunar_buff) > BuffGain(eclipse_solar_buff) }
+AddFunction GuardianEclipseSolarNext { BuffGain(eclipse_lunar_buff) < BuffGain(eclipse_solar_buff) }
+AddFunction GuardianEclipseAnyNext { not GuardianEclipseLunarNext() and not GuardianEclipseSolarNext() }
+
 AddFunction GuardianOwlweaveActions
 {
 	# Actions to cast from Moonkin Form.
 	# Refresh DoTs.
 	if target.DebuffRefreshable(sunfire_debuff) Spell(sunfire)
-	if (target.DebuffRefreshable(moonfire_debuff) or BuffPresent(galactic_guardian_buff)) Spell(moonfire)
+	if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
+	if BuffPresent(galactic_guardian_buff)
+	{
+		if (Enemies(tagged=1) == 1) Spell(moonfire)
+		GuardianMoonfireCycle()
+	}
 	# Use Starsurge during Eclipse.
-	if BuffPresent(eclipse_lunar_buff) or BuffPresent(eclipse_lunar_buff) Spell(starsurge)
+	if BuffPresent(eclipse_lunar_buff) or BuffPresent(eclipse_solar_buff) Spell(starsurge)
 	# Use Starfire or Wrath depending on the Eclipse.
 	if BuffPresent(eclipse_lunar_buff) Spell(starfire)
 	if BuffPresent(eclipse_solar_buff) Spell(wrath)
 	# Use Starfire or Wrath to move into the next Eclipse state.
-	if (Counter("solar") == 1 and Counter("lunar") == 0) Spell(starfire)
-	if (Counter("lunar") == 1 and Counter("solar") == 0) Spell(wrath)
-	# Use Starsurge.
-	Spell(starsurge)
-	# Use Starfire or Wrath to move towards the preferred Eclipse state.
-	if Counter("solar") == 0 and Counter("lunar") == 0
+	if GuardianEclipseAnyNext()
 	{
 		if IsCovenant(night_fae) Spell(starfire)
 		Spell(wrath)
 	}
+	if GuardianEclipseLunarNext() Spell(wrath)
+	if GuardianEclipseSolarNext() Spell(starfire)
 }
 
 AddFunction GuardianPrecombatShortCdActions
