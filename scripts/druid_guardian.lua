@@ -473,16 +473,19 @@ AddFunction GuardianOffensiveCdActions
 
 AddFunction GuardianDefensiveCdActions
 {
-	Spell(pulverize)
-	if (HealthPercent() < 50) Spell(renewal)
-	Spell(barkskin)
-	if BuffExpires(survival_instincts) Spell(survival_instincts)
+	if Stance(druid_bear_form)
+	{
+		Spell(pulverize)
+		if (HealthPercent() < 50) Spell(renewal)
+		Spell(barkskin)
+		if BuffExpires(survival_instincts) Spell(survival_instincts)
+	}
 }
 
 AddFunction GuardianCdActions
 {
-	GuardianOffensiveCdActions()
 	GuardianDefensiveCdActions()
+	GuardianOffensiveCdActions()
 }
 
 AddFunction GuardianInterruptActions
