@@ -74,9 +74,8 @@ Define(death_coil 47541)
 Define(death_and_decay_buff 188290)
 	SpellInfo(death_and_decay_buff duration=10 tick=1)
 	SpellAddBuff(death_and_decay death_and_decay_buff add=1)
-Define(deaths_due_buff 315442)
-	SpellInfo(deaths_due_buff duration=10 tick=1)
-	SpellAddBuff(deaths_due deaths_due_buff add=1)
+Define(deaths_due_buff 324165)
+	SpellInfo(deaths_due_buff duration=12 tick=1)
 Define(deaths_due_debuff 324164)
 	SpellInfo(deaths_due_debuff duration=12)
 	SpellAddTargetDebuff(deaths_due deaths_due_debuff add=1)
@@ -85,7 +84,6 @@ Define(death_grip 49576)
 Define(death_strike 49998)
 	SpellInfo(death_strike runicpower=45)
 	SpellRequire(death_strike runicpower add=-5 enabled=(SpellKnown(ossuary) and BuffStacks(bone_shield) >= 5))
-SpellList(dnd_buff death_and_decay_buff deaths_due_buff)
 Define(gorefiends_grasp 108199)
 	SpellInfo(gorefiends_grasp cd=120)
 	SpellRequire(gorefiends_grasp cd add=-30 enabled=(HasTalent(tightening_grasp_talent)))
@@ -182,7 +180,7 @@ AddFunction BloodDeathStrikeHealing
 AddFunction BloodHeartStrikeMaxTargets
 {
 	# Heart Strike hits 2 targets, but up to 5 targets if player is standing in Death and Decay.
-	2 + 3 * BuffPresent(dnd_buff)
+	2 + 3 * BuffPresent(death_and_decay_buff)
 }
 
 AddFunction BloodHeartStrikeTargets
@@ -243,10 +241,12 @@ AddFunction BloodShortCdActions
 
 	unless
 		(((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) and Spell(blood_boil)) or
-		((BuffRemaining(deaths_due_buff) < 3 and target.DebuffRemaining(deaths_due_debuff) > 3) and Spell(deaths_due)) or
-		(BuffPresent(deaths_due_buff) and
-			(((target.DebuffRemaining(deaths_due_debuff) < 2) and Spell(heart_strike)) or
-			 ((BuffRemaining(deaths_due_buff) < 3 and (target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(deaths_due_buff) < 9)) and Spell(heart_strike)))) or
+		((BuffRemaining(death_and_decay_buff) < (3 * GCD()) and (BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3)) and Spell(deaths_due)) or
+		(BuffPresent(death_and_decay_buff) and
+			(((BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3) and Spell(heart_strike)) or
+			 (BuffRemaining(death_and_decay_buff) < 3 and
+				(((BuffRemaining(deaths_due_buff) - BuffRemaining(death_and_decay_buff) < 9) and Spell(heart_strike)) or
+				 ((target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(death_and_decay_buff) < 9) and Spell(heart_strike)))))) or
 		(BloodHasPooledForBonestorm() and Spell(bonestorm)) or
 		((not BloodIsPoolingForBonestorm() and RunicPowerDeficit() < 20) and Spell(death_strike)) or
 		((BuffStacks(bone_shield) < BloodOssuaryThreshold()) and Spell(marrowrend))
@@ -266,7 +266,7 @@ AddFunction BloodShortCdActions
 				((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
 				 ((not IsCovenant(night_fae) and Rune() >= 2) or
 				  ((BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) and Spell(heart_strike)) or
-				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
+				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
 				((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
 			{
 				# Death and Decay when Crimson Scourge procs.
@@ -310,15 +310,19 @@ AddFunction BloodMainActions
 	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist is not active.
 	if ((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) Spell(blood_boil)
 	# (Night Fae) Death and Decay when the duration of the Death’s Due buff/debuff is about to expire, but with enough remaining time to Heart Strike.
-	if (BuffRemaining(deaths_due_buff) < 3 and target.DebuffRemaining(deaths_due_debuff) > 3) Spell(deaths_due)
+	if (BuffRemaining(death_and_decay_buff) < (3 * GCD()) and (BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3)) Spell(deaths_due)
 	# (Night Fae) Heart Strike:
 	#   while in Death and Decay when the duration of the Death’s Due buff/debuff is about to expire or
 	#   (the duration of our Death and Decay ground effect is about to expire and
 	#       the Death’s Due buff/debuff won’t outlast the Death and Decay by at least ~9 seconds).
-	if BuffPresent(deaths_due_buff)
+	if BuffPresent(death_and_decay_buff)
 	{
-		if (target.DebuffRemaining(deaths_due_debuff) < 2) Spell(heart_strike)
-		if (BuffRemaining(deaths_due_buff) < 3 and (target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(deaths_due_buff) < 9)) Spell(heart_strike)
+		if (BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3) Spell(heart_strike)
+		if BuffRemaining(death_and_decay_buff) < 3
+		{
+			if (BuffRemaining(deaths_due_buff) - BuffRemaining(death_and_decay_buff) < 9) Spell(heart_strike)
+			if (target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(death_and_decay_buff) < 9) Spell(heart_strike)
+		}
 	}
 	# [*] Use Bonestorm if we have pooled enough Runic Power.
 	if BloodHasPooledForBonestorm() Spell(bonestorm)
@@ -344,7 +348,7 @@ AddFunction BloodMainActions
 	{
 		if (not IsCovenant(night_fae) and Rune() >= 2) Spell(heart_strike)
 		if (BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) Spell(heart_strike)
-		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(dnd_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
+		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
 	}
 	# Blood Boil with 1 charge and less than 5 stacks of Hemostasis.
 	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
