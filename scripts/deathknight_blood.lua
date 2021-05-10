@@ -241,7 +241,8 @@ AddFunction BloodShortCdActions
 
 	unless
 		(((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) and Spell(blood_boil)) or
-		((BuffRemaining(death_and_decay_buff) < (3 * GCD()) and (BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3)) and Spell(deaths_due)) or
+		((3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) and Spell(deaths_due)) or
+		((3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) and Spell(deaths_due)) or
 		(BuffPresent(death_and_decay_buff) and
 			(((BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3) and Spell(heart_strike)) or
 			 (BuffRemaining(death_and_decay_buff) < 3 and
@@ -310,7 +311,8 @@ AddFunction BloodMainActions
 	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist is not active.
 	if ((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) Spell(blood_boil)
 	# (Night Fae) Death and Decay when the duration of the Death’s Due buff/debuff is about to expire, but with enough remaining time to Heart Strike.
-	if (BuffRemaining(death_and_decay_buff) < (3 * GCD()) and (BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3)) Spell(deaths_due)
+	if (3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) Spell(deaths_due)
+	if (3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) Spell(deaths_due)
 	# (Night Fae) Heart Strike:
 	#   while in Death and Decay when the duration of the Death’s Due buff/debuff is about to expire or
 	#   (the duration of our Death and Decay ground effect is about to expire and
