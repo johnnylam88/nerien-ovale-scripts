@@ -219,7 +219,7 @@ AddFunction BloodPrecombatShortCdActions
 
 AddFunction BloodShortCdActions
 {
-	if TimeToRunes(3) > GCD()
+	if Rune() < 3
 	{
 		# Blood Tap if you have 2 charges, or are less than 5 seconds away from 2 charges of Blood Tap, and you have less than 3 Runes.
 		if (Charges(blood_tap count=0) > 1.9) Spell(blood_tap)
@@ -236,11 +236,11 @@ AddFunction BloodShortCdActions
 	if (EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 61) Spell(swarming_mist)
 	# (Kyrian) Shackle the Unworthy (with Combat Meditation enabled).
 	Spell(shackle_the_unworthy)
-	# [*] (Necrolord) Fleshcraft.
-	Spell(fleshcraft)
 
 	unless
-		(((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) and Spell(blood_boil)) or
+		((BuffRemaining(bone_shield) < GCD() + 2) and Spell(marrowrend)) or
+		((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and
+			((BuffExpires(swarming_mist) and BuffExpires(abomination_limb)) and Spell(blood_boil))) or
 		((3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) and Spell(deaths_due)) or
 		((3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) and Spell(deaths_due)) or
 		(BuffPresent(death_and_decay_buff) and
@@ -279,19 +279,20 @@ AddFunction BloodShortCdActions
 			}
 		}
 	}
+	# [*] (Necrolord) Fleshcraft.
+	Spell(fleshcraft)
 }
 
 AddFunction BloodPrecombatMainActions
 {
-	# Marrowrend if Bone Shield is not active or about to expire.
+	# [*] Blooddrinker when closing with the boss on the opener.
+	if BuffExpires(dancing_rune_weapon_buff) Spell(blooddrinker)
 	if (BuffRemaining(bone_shield) < GCD() + 2)
 	{
 		if not EquippedRuneforge(crimson_rune_weapon_runeforge) Spell(marrowrend)
 		# [*] Skip Marrowrend with Crimson Rune Weapon if Dancing Rune Weapon is available out of combat.
 		if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend)
 	}
-	# [*] Blooddrinker when closing with the boss on the opener.
-	if BuffExpires(dancing_rune_weapon_buff) Spell(blooddrinker)
 }
 
 AddFunction BloodMainActions
@@ -308,8 +309,13 @@ AddFunction BloodMainActions
 		# Death Strike if you are below 60% Health.
 		if (not BloodIsPoolingForBonestorm() and BloodDeathStrikeHealing() <= HealthMissing()) Spell(death_strike)
 	}
-	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist is not active.
-	if ((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and BuffExpires(swarming_mist)) Spell(blood_boil)
+	# Marrowrend if Bone Shield is not active or about to expire.
+	if (BuffRemaining(bone_shield) < GCD() + 2) Spell(marrowrend)
+	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist or (Necrolord) Abomination Limb is not active.
+	if DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)
+	{
+		if (BuffExpires(swarming_mist) and BuffExpires(abomination_limb)) Spell(blood_boil)
+	}
 	# (Night Fae) Death and Decay when the duration of the Death’s Due buff/debuff is about to expire, but with enough remaining time to Heart Strike.
 	if (3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) Spell(deaths_due)
 	if (3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) Spell(deaths_due)
@@ -363,6 +369,7 @@ AddFunction BloodMainActions
 AddFunction BloodPrecombatCdActions
 {
 	PrecombatCdActions()
+	Spell(abomination_limb)
 	Spell(dancing_rune_weapon)
 	Spell(raise_dead)
 }
@@ -385,8 +392,8 @@ AddFunction BloodDefensiveCdActions
 	if (BuffStacks(bone_shield) >= 6) Spell(tombstone)
 
 	Spell(dancing_rune_weapon)
-	# [*] Avoid capping on Bone Shield stacks when using Abomination Limb.
-	if (BuffExpires(dancing_rune_weapon_buff) and BuffStacks(bone_shield) < 8) Spell(abomination_limb)
+	# (Necrolord) Abomination Limb if below 6 stacks of Bone Shield or for threat generation.
+	if (BuffExpires(dancing_rune_weapon_buff) and BuffStacks(bone_shield) < 6) Spell(abomination_limb)
 	Spell(vampiric_blood)
 	Spell(icebound_fortitude)
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
