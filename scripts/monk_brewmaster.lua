@@ -86,6 +86,10 @@ Define(purifying_brew 119582)
 Define(rushing_jade_wind 116847)
 	SpellInfo(rushing_jade_wind cd=6)
 	SpellRequire(rushing_jade_wind unusable set=1 enabled=(not HasTalent(rushing_jade_wind_talent)))
+Define(shuffle 215479)
+	SpellAddBuff(blackout_kick shuffle add=3)
+	SpellAddBuff(keg_smash shuffle add=5)
+	SpellAddBuff(spinning_crane_kick shuffle add=1)
 Define(spear_hand_strike 116705)
 	SpellInfo(spear_hand_strike cd=15 gcd=0 offgcd=1 interrupt=1)
 Define(spinning_crane_kick 322729)
@@ -194,6 +198,12 @@ AddFunction BrewmasterPrecombatMainActions
 AddFunction BrewmasterMainActions
 {
 	Spell(keg_smash)
+	# Ensure Shuffle is up.
+	if BuffExpires(shuffle)
+	{
+		Spell(blackout_kick)
+		BrewmasterUseSpinningCraneKick()
+	}
 	if (Enemies(tagged=1) >= 3) Spell(breath_of_fire)
 	# Consume Blackout Combo buff for damage if it won't push back Keg Smash.
 	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3) BrewmasterUseTigerPalm()
