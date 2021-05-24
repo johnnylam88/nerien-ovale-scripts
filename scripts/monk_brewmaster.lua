@@ -41,6 +41,9 @@ Define(breath_of_fire 115181)
 	SpellInfo(breath_of_fire cd=15)
 Define(celestial_brew 322507)
 	SpellInfo(celestial_brew cd=60)
+Define(charred_passions_buff 338140)
+	SpellInfo(charred_passions_buff duration=8)
+	SpellAddBuff(breath_of_fire charred_passions_buff add=1 enabled=(EquippedRuneforge(charred_passions_runeforge)))
 Define(chi_burst 123986)
 	SpellInfo(chi_burst cd=30)
 	SpellRequire(chi_burst unusable set=1 enabled=(not HasTalent(chi_burst_talent)))
@@ -121,6 +124,9 @@ Define(weapons_of_order 310454)
 	SpellInfo(weapons_of_order cd=120)
 	SpellRequire(weapons_of_order unusable set=1 enabled=(not IsCovenant(kyrian)))
 
+# Runeforge Legendary Effects
+Define(charred_passions_runeforge 86)
+
 ### Functions ###
 
 AddFunction BrewmasterInRange
@@ -193,6 +199,7 @@ AddFunction BrewmasterMainActions
 	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3) BrewmasterUseTigerPalm()
 	Spell(blackout_kick)
 	Spell(breath_of_fire)
+	if BuffPresent(charred_passions_buff) BrewmasterUseSpinningCraneKick()
 	Spell(rushing_jade_wind)
 	if (Enemies(tagged=1) < 2) Spell(chi_wave)
 	Spell(chi_burst)
