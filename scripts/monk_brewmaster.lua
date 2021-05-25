@@ -225,6 +225,8 @@ AddFunction BrewmasterMainActions
 	}
 	# Tiger Palm is a terrible offensive skill, so only use it as a filler to prevent capping energy.
 	if (TimeToMaxEnergy() < 2 * GCD()) Spell(tiger_palm)
+	# Use fillers that cost no energy.
+	Spell(chi_wave)
 }
 
 AddFunction BrewmasterPrecombatCdActions
