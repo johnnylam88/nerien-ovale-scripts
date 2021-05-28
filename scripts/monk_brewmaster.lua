@@ -215,12 +215,13 @@ AddFunction BrewmasterMainActions
 	Spell(chi_burst)
 	# Maintain the Eye of the Tiger buff with Tiger Palm if it won't push back Keg Smash.
 	if (HasTalent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff)) BrewmasterUseTigerPalm()
-	# Use Expel Harm to heal if needed.
-	if (HealthPercent() < 50) BrewmasterUseExpelHarm()
+	# Use Expel Harm with Gift of the Ox orbs to heal if needed.
+	if (SpellCount(expel_harm) > 0 and HealthPercent() + 10 * SpellCount(expel_harm) < 70) BrewmasterUseExpelHarm()
 	# Use fillers for multi-target if they won't push back Keg Smash.
 	if Enemies(tagged=1) > 1
 	{
-		if (Enemies(tagged=1) >= 3) BrewmasterUseSpinningCraneKick()
+		# Avoid using Spinning Crane Kick if you will need to use a stronger Expel Harm.
+		if (Enemies(tagged=1) >= 3 and (HealthPercent() > 60 or SpellCount(expel_harm) < 3)) BrewmasterUseSpinningCraneKick()
 		if (Enemies(tagged=1) <  3) BrewmasterUseTigerPalm()
 	}
 	# Tiger Palm is a terrible offensive skill, so only use it as a filler to prevent capping energy.
