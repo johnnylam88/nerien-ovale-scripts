@@ -240,7 +240,7 @@ AddFunction BrewmasterOffensiveCdActions
 	Spell(touch_of_death)
 	if (target.TimeToDie() > 25) Spell(invoke_niuzao_the_black_ox)
 	# Weapons of Order resets the cooldown of Keg Smash.
-	unless Spell(keg_smash) Spell(weapons_of_order)
+	if (not Spell(keg_smash) and SpellCooldown(keg_smash) > 4) Spell(weapons_of_order)
 	Spell(fallen_order)
 }
 
