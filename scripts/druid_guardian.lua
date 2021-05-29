@@ -197,6 +197,9 @@ Define(tooth_and_claw_buff 135286)
 Define(typhoon 132469)
 	SpellInfo(typhoon cd=30)
 	SpellRequire(typhoon unusable set=1 enabled=(not HasTalent(balance_affinity_talent)))
+Define(ursols_fury_remembered 345048)
+	SpellInfo(ursols_fury_remembered duration=15)
+	SpellAddBuff(thrash_Bear ursols_fury_remembered set=1 enabled=(EquippedRuneforge(ursols_fury_remembered_runeforge)))
 Define(ursols_vortex 102793)
 	SpellInfo(ursols_vortex cd=60)
 	SpellRequire(ursols_vortex unusable set=1 enabled=(not HasTalent(restoration_affinity_talent)))
@@ -237,6 +240,7 @@ Define(legacy_of_the_sleeper_runeforge 61)
 	SpellRequire(barkskin duration add=-30 enabled=(EquippedRuneforge(legacy_of_the_sleeper_runeforge)))
 Define(luffainfused_embrace_runeforge 58)
 	SpellRequire(thrash_bear_debuff max_stacks add=1 enabled=(EquippedRuneforge(luffainfused_embrace_runeforge)))
+Define(ursols_fury_remembered_runeforge 60)
 
 ### Functions ###
 
@@ -313,6 +317,8 @@ AddFunction GuardianBearActions
 {
 	# [*] Use Maul if Tooth and Claw is up.
 	if BuffPresent(tooth_and_claw_buff) Spell(maul)
+	# [*] Spam Thrash on more than 4 targets when Berserk is up and using Ursol's Fury Remembered.
+	if (Enemies(tagged=1) >= 4 and BuffPresent(bs_inc_buff) and EquippedRuneforge(ursols_fury_remembered_runeforge)) Spell(thrash_bear)
 	# Keep Moonfire ticking on up to 2 targets.
 	if (Enemies(tagged=1) == 1 and target.DebuffRefreshable(moonfire_debuff)) Spell(moonfire)
 	if (Enemies(tagged=1) >= 2 and DebuffCountOnAny(moonfire_debuff) < 2) GuardianMoonfireCycle()
