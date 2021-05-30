@@ -51,8 +51,9 @@ Define(chi_wave 115098)
 	SpellInfo(chi_wave cd=15)
 	SpellRequire(chi_wave unusable set=1 enabled=(not HasTalent(chi_wave_talent)))
 Define(dampen_harm 122278)
-	SpellInfo(dampen_harm cd=120 gcd=0 offgcd=1)
+	SpellInfo(dampen_harm cd=120 duration=10 gcd=0 offgcd=1)
 	SpellRequire(dampen_harm unusable set=1 enabled=(not HasTalent(dampen_harm_talent)))
+	SpellAddBuff(dampen_harm dampen_harm add=1)
 Define(detox 218164)
 	SpellInfo(detox cd=8)
 Define(exploding_keg 325153)
@@ -67,6 +68,9 @@ Define(eye_of_the_tiger_buff 196608)
 	SpellAddBuff(tiger_palm eye_of_the_tiger_buff add=1 enabled=(HasTalent(eye_of_the_tiger_talent)))
 Define(fortifying_brew 115203)
 	SpellInfo(fortifying_brew cd=360 gcd=0 offgcd=1)
+Define(fortifying_brew_buff 120954)
+	SpellInfo(fortifying_brew_buff duration=15)
+	SpellAddBuff(fortifying_brew fortifying_brew_buff add=1)
 Define(healing_elixir 122281)
 	SpellInfo(healing_elixir charge_cd=30 gcd=0 offgcd=1)
 	SpellRequire(healing_elixir unusable set=1 enabled=(not HasTalent(healing_elixir_talent)))
@@ -101,6 +105,7 @@ Define(touch_of_death 322109)
 	SpellRequire(touch_of_death unusable set=0 enabled=(target.Health() < player.Health() or (Level() >= 44 and target.HealthPercent() < 15)))
 Define(zen_meditation 115176)
 	SpellInfo(zen_meditation cd=300 gcd=0 offgcd=1)
+SpellList(brewmaster_defensive_buff dampen_harm fortifying_brew_buff)
 
 # Stagger
 Define(heavy_stagger_debuff 124273)
@@ -246,9 +251,12 @@ AddFunction BrewmasterOffensiveCdActions
 
 AddFunction BrewmasterDefensiveCdActions
 {
-	Spell(dampen_harm)
-	Spell(fortifying_brew)
-	Spell(zen_meditation)
+	if not BuffPresent(brewmaster_defensive_buff)
+	{
+		Spell(dampen_harm)
+		Spell(fortifying_brew)
+		Spell(zen_meditation)
+	}
 }
 
 AddFunction BrewmasterCdActions
