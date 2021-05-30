@@ -246,8 +246,8 @@ AddFunction BrewmasterOffensiveCdActions
 
 AddFunction BrewmasterDefensiveCdActions
 {
-	Spell(fortifying_brew)
 	Spell(dampen_harm)
+	Spell(fortifying_brew)
 	Spell(zen_meditation)
 }
 
