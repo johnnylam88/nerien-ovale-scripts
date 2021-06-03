@@ -23,3 +23,4 @@ scripts/druid_guardian.lua
 scripts/monk_brewmaster.lua
 scripts/rogue_assassination.lua
 scripts/rogue_subtlety.lua
+scripts/warrior_protection.lua

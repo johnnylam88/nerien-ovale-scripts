@@ -30,6 +30,7 @@ The following classes and specializations are supported for Shadowlands:
 - Druid: Guardian
 - Monk: Brewmaster
 - Rogue: Assassination, Subtlety
+- Warrior: Protection
 
 ### Links ###
 

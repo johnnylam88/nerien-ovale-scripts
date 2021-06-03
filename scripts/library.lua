@@ -83,6 +83,12 @@ Define(zeal_of_the_burning_blade 274740)
 Define(fleshcraft 324631)
 	SpellInfo(fleshcraft cd=120 unusable=1)
     SpellRequire(fleshcraft unusable set=0 enabled=(IsCovenant(necrolord)))
+Define(summon_steward 324739)
+	SpellInfo(summon_steward cd=300 unusable=1)
+    SpellRequire(summon_steward unusable set=0 enabled=(IsCovenant(kyrian)))
+Define(item_phial_of_serenity 177278)
+	ItemInfo(item_phial_of_serenity cd=180 unusable=1)
+	ItemRequire(item_phial_of_serenity unusable set=0 enabled=(IsCovenant(kyrian)))
 
 # Items
 Define(item_healthstone 5512)
@@ -127,6 +133,10 @@ AddFunction InterruptActions
 
 AddFunction DefensiveDispelActions
 {
+	if player.HasDebuffType(poison disease curse bleed)
+	{
+		Item(item_phial_of_serenity usable=1)
+	}
 	if player.HasDebuffType(poison disease curse magic bleed)
 	{
 		Spell(fireblood)
@@ -152,6 +162,7 @@ AddFunction OffensiveDispelActions
 AddFunction PrecombatShortCdActions
 {
 	Spell(fleshcraft)
+	if (ItemCount(item_phial_of_serenity) < 2) Spell(summon_steward)
 }
 
 AddFunction PrecombatCdActions
