@@ -181,8 +181,6 @@ AddFunction BrewmasterShortCdActions
 	# Use up Purifying Brew charges if Black Ox Brew is coming off cooldown.
 	if (HasTalent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew)
 	if BuffExpires(blackout_combo_buff) Spell(celestial_brew)
-	# Use Healing Elixir between 60% and 30% health.
-	if (HealthPercent() < 60 - 30 * (2 - Charges(healing_elixir count=0))) Spell(healing_elixir)
 	Spell(bonedust_brew)
 	Spell(exploding_keg)
 	# Faeline Stomp has higher priority than Keg Smash for AoE.
@@ -292,7 +290,13 @@ AddFunction BrewmasterDispelActions
 	OffensiveDispelActions()
 	if player.HasDebuffType(poison disease) Spell(detox)
 	DefensiveDispelActions()
+}
+
+AddFunction BrewmasterHealActions
+{
 	ItemHealActions()
+	# Use Healing Elixir between 60% and 30% health.
+	if (HealthPercent() < 60 - 30 * (2 - Charges(healing_elixir count=0))) Spell(healing_elixir)
 }
 
 ### User Interface ###
@@ -301,6 +305,7 @@ AddIcon help=interrupt size=small
 {
 	BrewmasterInterruptActions()
 	BrewmasterDispelActions()
+	BrewmasterHealActions()
 }
 
 AddIcon help=shortcd

@@ -438,13 +438,18 @@ AddFunction BloodDispelActions
 	DefensiveDispelActions()
 }
 
+AddFunction BloodHealActions
+{
+	ItemHealActions()
+}
+
 ### User Interface ###
 
 AddIcon help=interrupt size=small
 {
 	BloodInterruptActions()
 	BloodDispelActions()
-	ItemHealActions()
+	BloodHealActions()
 }
 
 AddIcon help=shortcd

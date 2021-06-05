@@ -482,7 +482,6 @@ AddFunction GuardianDefensiveCdActions
 	if Stance(druid_bear_form)
 	{
 		Spell(pulverize)
-		if (HealthPercent() < 50) Spell(renewal)
 		Spell(barkskin)
 		if BuffExpires(survival_instincts) Spell(survival_instincts)
 	}
@@ -529,13 +528,19 @@ AddFunction GuardianDispelActions
 	DefensiveDispelActions()
 }
 
+AddFunction GuardianHealActions
+{
+	ItemHealActions()
+	if (HealthPercent() < 50) Spell(renewal)
+}
+
 ### User Interface ###
 
 AddIcon help=interrupt size=small
 {
 	GuardianInterruptActions()
 	GuardianDispelActions()
-	ItemHealActions()
+	GuardianHealActions()
 }
 
 AddIcon help=shortcd
