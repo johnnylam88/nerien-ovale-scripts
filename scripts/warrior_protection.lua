@@ -241,7 +241,7 @@ AddFunction ProtectionShortCdActions
 
 AddFunction ProtectionPrecombatMainActions
 {
-	if (BuffRemaining(battle_shout) < 900) Spell(battle_shout)
+	if (BuffRemaining(battle_shout any=1) < 900) Spell(battle_shout)
 	Spell(charge)
 }
 
