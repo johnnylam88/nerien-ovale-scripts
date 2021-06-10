@@ -138,8 +138,8 @@ Define(swarming_mist 311648)
 	SpellAddBuff(swarming_mist swarming_mist add=1)
 
 # Runeforge Legendary Effects
-Define(bryndaors_might_runeforge 34)
-Define(crimson_rune_weapon_runeforge 35)
+Define(bryndaors_might_runeforge 6940)
+Define(crimson_rune_weapon_runeforge 6941)
 
 ### Functions ###
 

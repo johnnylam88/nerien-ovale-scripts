@@ -134,7 +134,7 @@ Define(weapons_of_order 310454)
 	SpellRequire(weapons_of_order unusable set=1 enabled=(not IsCovenant(kyrian)))
 
 # Runeforge Legendary Effects
-Define(charred_passions_runeforge 86)
+Define(charred_passions_runeforge 7076)
 
 ### Functions ###
 
