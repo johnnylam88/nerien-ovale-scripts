@@ -185,6 +185,23 @@ AddFunction ProtectionUseRageForActiveMitigation
 	IncomingPhysicalDamage(5) > 0 or HealthPercent() < 50
 }
 
+AddFunction ProtectionShouldShieldBlock
+{
+	# Shield Block should be used when AoE-tanking or if the target is targeting you.
+	Enemies(tagged=1) > 1 or target.IsTargetingPlayer()
+}
+
+AddFunction ProtectionReprisalActions
+{
+	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
+	if EquippedRuneforge(reprisal_runeforge) and ProtectionShouldShieldBlock()
+	{
+		if target.InRange(charge) Spell(charge)
+		Spell(charge text=away)
+		Spell(intervene text=friend)
+	}
+}
+
 AddFunction ProtectionNeverSurrenderCoefficient
 {
 	# Never Surrender makes Ignore Pain prevent 40% to 100% more damage,
@@ -218,19 +235,27 @@ AddFunction ProtectionPrecombatShortCdActions
 
 AddFunction ProtectionShortCdActions
 {
-	if BuffExpires(shield_block_buff)
+	if ProtectionShouldShieldBlock()
 	{
-		# Apply Shield Block with either Shield Block or Bolster.
-		Spell(shield_block)
-		if HasTalent(bolster_talent) Spell(last_stand)
+		# Don't cap Shield Block charges with Reprisal.
+		if (EquippedRuneforge(reprisal_runeforge) and Charges(shield_block count=0) > 1.9) Spell(shield_block)
+		if BuffExpires(shield_block_buff)
+		{
+			# Apply Shield Block with either Shield Block or Bolster.
+			Spell(shield_block)
+			if HasTalent(bolster_talent) Spell(last_stand)
+		}
 	}
-	# Only use Ignore Pain if it won't reduce the current absorb.
-	if ProtectionIgnorePainCurrentAbsorb() < ProtectionIgnorePainCap()
+	# Ignore Pain if we've been taking damage.
+	if IncomingDamage(5) > 0
 	{
-		# Only use Ignore Pain if it won't exceed the cap by more than 30%.
-		if (ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap()) Spell(ignore_pain)
+		# Only use Ignore Pain if it won't reduce the current absorb.
+		if ProtectionIgnorePainCurrentAbsorb() < ProtectionIgnorePainCap()
+		{
+			# Only use Ignore Pain if it won't exceed the cap by more than 30%.
+			if (ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap()) Spell(ignore_pain)
+		}
 	}
-
 	if HasTalent(booming_voice_talent) Spell(demoralizing_shout)
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
@@ -242,7 +267,6 @@ AddFunction ProtectionShortCdActions
 AddFunction ProtectionPrecombatMainActions
 {
 	if (BuffRemaining(battle_shout any=1) < 900) Spell(battle_shout)
-	Spell(charge)
 }
 
 AddFunction ProtectionMainActions
@@ -340,6 +364,7 @@ AddIcon help=interrupt size=small
 	ProtectionInterruptActions()
 	ProtectionDispelActions()
 	ProtectionHealActions()
+	ProtectionReprisalActions()
 }
 
 AddIcon help=shortcd
