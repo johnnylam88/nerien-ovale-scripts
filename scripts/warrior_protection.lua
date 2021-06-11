@@ -303,6 +303,8 @@ AddFunction ProtectionOffensiveCdActions
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
+	Spell(ravager)
+	Spell(execute)
 }
 
 AddFunction ProtectionDefensiveCdActions
