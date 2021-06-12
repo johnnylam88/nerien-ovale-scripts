@@ -181,12 +181,6 @@ AddFunction ProtectionInRange
 	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel)) 
 }
 
-AddFunction ProtectionUseRageForActiveMitigation
-{
-	# Condition for when Rage should be used for active mitigation.
-	IncomingPhysicalDamage(5) > 0 or HealthPercent() < 50
-}
-
 AddFunction ProtectionShouldShieldBlock
 {
 	# Shield Block should be used when AoE-tanking or if the target is targeting you.
@@ -276,11 +270,11 @@ AddFunction ProtectionMainActions
 	Spell(shield_slam)
 	# Use Thunder Clap on cooldown.
 	Spell(thunder_clap)
+	# Use Revenge when it's free.
+	if BuffPresent(revenge_buff) Spell(revenge text=free)
 	# Use Revenge to apply Deep Wounds to multiple targets in melee range.
 	if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(deep_wounds_debuff) < 3) Spell(revenge)
-	# Use Revenge when it's free.
-	if BuffPresent(revenge_buff) Spell(revenge)
-	if RageDeficit() < 40 and not ProtectionUseRageForActiveMitigation()
+	if RageDeficit() < 20 and not ProtectionShouldIgnorePain()
 	{
 		# At 3+ targets, Revenge is a more efficient Rage dump than Execute.
 		if (Enemies(tagged=1) >= 3) Spell(revenge)
