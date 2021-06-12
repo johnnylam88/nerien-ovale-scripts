@@ -228,6 +228,14 @@ AddFunction ProtectionIgnorePainCap
 	2 * ProtectionIgnorePainOnCastAbsorb()
 }
 
+AddFunction ProtectionShouldIgnorePain
+{
+	# Only use Ignore Pain if it won't reduce the current absorb,
+	# and it won't exceed the Ignore Pain cap by more than 30%.
+	(ProtectionIgnorePainCurrentAbsorb() < ProtectionIgnorePainCap()) and
+	(ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap())
+}
+
 AddFunction ProtectionPrecombatShortCdActions
 {
 	PrecombatShortCdActions()
@@ -247,15 +255,7 @@ AddFunction ProtectionShortCdActions
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if IncomingDamage(5) > 0
-	{
-		# Only use Ignore Pain if it won't reduce the current absorb.
-		if ProtectionIgnorePainCurrentAbsorb() < ProtectionIgnorePainCap()
-		{
-			# Only use Ignore Pain if it won't exceed the cap by more than 30%.
-			if (ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap()) Spell(ignore_pain)
-		}
-	}
+	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) Spell(ignore_pain)
 	if HasTalent(booming_voice_talent) Spell(demoralizing_shout)
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
