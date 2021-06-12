@@ -256,7 +256,6 @@ AddFunction ProtectionShortCdActions
 	}
 	# Ignore Pain if we've been taking damage.
 	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) Spell(ignore_pain)
-	if HasTalent(booming_voice_talent) Spell(demoralizing_shout)
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
@@ -309,9 +308,12 @@ AddFunction ProtectionOffensiveCdActions
 
 AddFunction ProtectionDefensiveCdActions
 {
-	if not HasTalent(booming_voice_talent) Spell(demoralizing_shout)
-	Spell(last_stand)
-	Spell(shield_wall)
+	Spell(demoralizing_shout)
+	if SpellCooldown(demoralizing_shout) > 0
+	{
+		Spell(last_stand)
+		Spell(shield_wall)
+	}
 	Spell(fleshcraft)
 }
 
