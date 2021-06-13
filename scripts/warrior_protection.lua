@@ -181,6 +181,22 @@ AddFunction ProtectionInRange
 	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel)) 
 }
 
+AddFunction ProtectionRageUntilShieldBlock
+{
+	# Let N = SpellCooldown(shield_block).
+	# In N seconds, autoattacks will generate ~N Rage.
+	# In N seconds, damage taken will generate 3 rage per hit with a 1-second ICD.
+	# In next N seconds, Shield Slam will generate rage each time it's off cooldown.
+	# Approximate rage from Shield Slam as a linear function through two points:
+	#	-1 * RageCost(shield_slam) at SpellCooldown(shield_slam) seconds, and
+	#	-2 * RageCost(shield_slam) at SpellCooldown(shield_slam) + SpellCooldownDuration(shield_slam) seconds
+	if SpellCooldown(shield_block) > 0
+	{
+		Rage() + 3 * SpellCooldown(shield_block) - RageCost(shield_slam) * (1 + (SpellCooldown(shield_block) - SpellCooldown(shield_slam)) / SpellCooldownDuration(shield_slam))
+	}
+	Rage()
+}
+
 AddFunction ProtectionShouldShieldBlock
 {
 	# Shield Block should be used when AoE-tanking or if the target is targeting you.
@@ -232,6 +248,12 @@ AddFunction ProtectionShouldIgnorePain
 	(ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap())
 }
 
+AddFunction ProtectionUseIgnorePain
+{
+	# Use Ignore Pain if it won't push back Shield Block.
+	if (ProtectionRageUntilShieldBlock() >= RageCost(shield_block) + RageCost(ignore_pain)) Spell(ignore_pain)
+}
+
 AddFunction ProtectionPrecombatShortCdActions
 {
 	PrecombatShortCdActions()
@@ -251,7 +273,7 @@ AddFunction ProtectionShortCdActions
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) Spell(ignore_pain)
+	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) ProtectionUseIgnorePain()
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
