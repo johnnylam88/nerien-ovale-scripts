@@ -321,7 +321,7 @@ AddFunction ProtectionOffensiveCdActions
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
 	Spell(ravager)
-	Spell(execute)
+	if (Rage() > RageCost(execute max=1)) Spell(execute)
 }
 
 AddFunction ProtectionDefensiveCdActions
