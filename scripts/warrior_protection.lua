@@ -206,11 +206,11 @@ AddFunction ProtectionShouldShieldBlock
 AddFunction ProtectionReprisalActions
 {
 	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
-	if EquippedRuneforge(reprisal_runeforge) and ProtectionShouldShieldBlock()
+	if BuffRemaining(shield_block_buff) < 2 and ProtectionShouldShieldBlock()
 	{
 		if target.InRange(charge) Spell(charge)
 		Spell(charge text=away)
-		Spell(intervene text=friend)
+		Spell(intervene)
 	}
 }
 
@@ -398,7 +398,7 @@ AddIcon help=interrupt size=small
 	ProtectionInterruptActions()
 	ProtectionDispelActions()
 	ProtectionHealActions()
-	ProtectionReprisalActions()
+	if EquippedRuneforge(reprisal_runeforge) ProtectionReprisalActions()
 }
 
 AddIcon help=shortcd
