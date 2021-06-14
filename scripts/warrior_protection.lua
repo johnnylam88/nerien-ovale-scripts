@@ -254,6 +254,18 @@ AddFunction ProtectionUseIgnorePain
 	if (ProtectionRageUntilShieldBlock() >= RageCost(shield_block) + RageCost(ignore_pain)) Spell(ignore_pain)
 }
 
+AddFunction ProtectionUseExecute
+{
+	# Use Execute if it won't push back Shield Block.
+	if (ProtectionRageUntilShieldBlock() >= RageCost(shield_block) + RageCost(execute max=1)) Spell(execute)
+}
+
+AddFunction ProtectionUseRevenge
+{
+	# Use Revenge if it won't push back Shield Block.
+	if (ProtectionRageUntilShieldBlock() >= RageCost(shield_block) + RageCost(revenge)) Spell(revenge)
+}
+
 AddFunction ProtectionPrecombatShortCdActions
 {
 	PrecombatShortCdActions()
@@ -296,14 +308,14 @@ AddFunction ProtectionMainActions
 	if BuffPresent(revenge_buff) Spell(revenge text=free)
 	# Use Revenge to apply Deep Wounds to multiple targets in melee range.
 	if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(deep_wounds_debuff) < 3) Spell(revenge)
-	if RageDeficit() < 20 and not ProtectionShouldIgnorePain()
+	if not ProtectionShouldIgnorePain()
 	{
 		# At 3+ targets, Revenge is a more efficient Rage dump than Execute.
-		if (Enemies(tagged=1) >= 3) Spell(revenge)
+		if (Enemies(tagged=1) >= 3) ProtectionUseRevenge()
 		# Use Execute to dump Rage.
-		Spell(execute)
+		ProtectionUseExecute()
 		# Use Revenge to dump Rage outside of Execute phase.
-		Spell(revenge)
+		ProtectionUseRevenge()
 	}
 	# Use Devastate as filler.
 	Spell(devastate)
