@@ -21,5 +21,6 @@ if Private.initialized then
 	L.dispel = [[Dispels]]
 	--L.interrupt = [[Interrupts]]
 	--L.not_in_melee_range = [[Not in melee range]]
+	L.opt_nerien_shield_block = [[Always suggest Shield Block]]
 	L.trinkets = [[Trinkets]]
 end

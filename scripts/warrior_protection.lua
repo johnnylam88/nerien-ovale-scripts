@@ -200,7 +200,7 @@ AddFunction ProtectionRageUntilShieldBlock
 AddFunction ProtectionShouldShieldBlock
 {
 	# Shield Block should be used when AoE-tanking or if the target is targeting you.
-	Enemies(tagged=1) > 1 or target.IsTargetingPlayer()
+	CheckBoxOn(opt_nerien_shield_block) or Enemies(tagged=1) > 1 or target.IsTargetingPlayer()
 }
 
 AddFunction ProtectionReprisalActions
@@ -396,6 +396,8 @@ AddFunction ProtectionHealActions
 }
 
 ### User Interface ###
+
+AddCheckBox(opt_nerien_shield_block L(opt_nerien_shield_block))
 
 AddIcon help=interrupt size=small
 {
