@@ -208,9 +208,8 @@ AddFunction ProtectionReprisalActions
 	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
 	if BuffRemaining(shield_block_buff) < 2 and ProtectionShouldShieldBlock()
 	{
-		if target.InRange(charge) Spell(charge)
-		Spell(charge text=away)
-		Spell(intervene)
+		if (target.Distance() < 8) Spell(charge text=block)
+		Spell(intervene text=block)
 	}
 }
 
@@ -269,6 +268,8 @@ AddFunction ProtectionUseRevenge
 AddFunction ProtectionPrecombatShortCdActions
 {
 	PrecombatShortCdActions()
+	# Apply Shield Block using Charge with Reprisal.
+	if (EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge text=block)
 }
 
 AddFunction ProtectionShortCdActions
@@ -276,7 +277,11 @@ AddFunction ProtectionShortCdActions
 	if ProtectionShouldShieldBlock()
 	{
 		# Don't cap Shield Block charges with Reprisal.
-		if (EquippedRuneforge(reprisal_runeforge) and Charges(shield_block count=0) > 1.9) Spell(shield_block)
+		if EquippedRuneforge(reprisal_runeforge)
+		{
+			if target.InRange(charge) Spell(charge text=block)
+			if (Charges(shield_block count=0) > 1.9) Spell(shield_block)
+		}
 		if BuffExpires(shield_block_buff)
 		{
 			# Apply Shield Block with either Shield Block or Bolster.
@@ -286,11 +291,6 @@ AddFunction ProtectionShortCdActions
 	}
 	# Ignore Pain if we've been taking damage.
 	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) ProtectionUseIgnorePain()
-	Spell(spear_of_bastion)
-	Spell(conquerors_banner)
-	Spell(ancient_aftershock)
-	Spell(ravager)
-	Spell(dragon_roar)
 }
 
 AddFunction ProtectionPrecombatMainActions
@@ -300,6 +300,8 @@ AddFunction ProtectionPrecombatMainActions
 
 AddFunction ProtectionMainActions
 {
+	# Use Dragon Roar on cooldown.
+	Spell(dragon_roar)
 	# Use Shield Slam on cooldown.
 	Spell(shield_slam)
 	# Use Thunder Clap on cooldown.
@@ -333,7 +335,7 @@ AddFunction ProtectionOffensiveCdActions
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
 	Spell(ravager)
-	if (Rage() > RageCost(execute max=1)) Spell(execute)
+	if (Rage() >= RageCost(execute max=1)) ProtectionUseExecute()
 }
 
 AddFunction ProtectionDefensiveCdActions
@@ -349,6 +351,8 @@ AddFunction ProtectionDefensiveCdActions
 
 AddFunction ProtectionCdActions
 {
+	Item(Trinket0Slot usable=1 text=13)
+	Item(Trinket1Slot usable=1 text=14)
 	ProtectionDefensiveCdActions()
 }
 
@@ -425,17 +429,15 @@ AddIcon help=cd
 	ProtectionCdActions()
 }
 
-AddIcon help=trinkets size=small
+AddIcon help=offensive size=small
 {
 	if not ProtectionInRange()
 	{
-		if target.InRange(charge) Spell(charge)
+		if (not EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}
 	ProtectionOffensiveCdActions()
-	Item(Trinket0Slot usable=1 text=13)
-	Item(Trinket1Slot usable=1 text=14)
 }
 ]]
 	Private.scripts:registerScript("WARRIOR", "protection", name, desc, code, "script")
