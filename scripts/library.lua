@@ -167,7 +167,8 @@ AddFunction PrecombatShortCdActions
 
 AddFunction PrecombatCdActions
 {
-	if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina_buff) < 600) Item(item_mistcaller_ocarina)
+	# XXX HasTrinket() seems to always return true.
+	#if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina_buff) < 600) Item(item_mistcaller_ocarina)
 }
 ]]
 	Private.scripts:registerScript(nil, nil, name, desc, code, "include")

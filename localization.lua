@@ -20,6 +20,9 @@ if Private.initialized then
 	-- Default locale (enUS)
 	L.dispel = [[Dispels]]
 	--L.interrupt = [[Interrupts]]
+	L.mage_arcane_power_burn = [[Arcane Power Burn phase]]
+	L.mage_arcane_mini_burn = [[Mini Burn phase]]
+	L.mage_arcane_conserve = [[Conserve phase]]
 	--L.not_in_melee_range = [[Not in melee range]]
 	L.opt_nerien_shield_block = [[Always suggest Shield Block]]
 	L.trinkets = [[Trinkets]]
