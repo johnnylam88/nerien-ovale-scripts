@@ -2,7 +2,7 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_mage_arcane"
-	local desc = string.format("[9.0.5] %s: Mage - Arcane", Private.name)
+	local desc = string.format("[9.1] %s: Mage - Arcane", Private.name)
 	local code = [[
 # Adapted from "Toegrinder Arcane Mage Compendium"
 # https://tinyurl.com/arcane-mage-compendium

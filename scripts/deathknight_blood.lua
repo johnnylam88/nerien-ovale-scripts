@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_deathknight_blood"
-	local desc = string.format("[9.0.5] %s: Death Knight - Blood", Private.name)
+	local desc = string.format("[9.1] %s: Death Knight - Blood", Private.name)
 	local code = [[
-# Adapted from "[9.0.5] Advanced Blood Death Knight Guide for M+"
+# Adapted from "[9.1.0] Advanced Blood Death Knight Guide for M+"
 #	by Kyrasis-Stormreaver.
 # https://docs.google.com/document/d/1FJlB1T8ijaQLjY_cihyoyhLoi6lYRnT-N-ipVFCLidE
 

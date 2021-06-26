@@ -2,10 +2,10 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_druid_guardian"
-	local desc = string.format("[9.0.5] %s: Druid - Guardian", Private.name)
+	local desc = string.format("[9.1] %s: Druid - Guardian", Private.name)
 	local code = [[
 # Adapted from Icy Vein's "Guardian Druid Tank Rotation, Cooldowns,
-#   and Abilities — Shadowlands 9.0.5" by Pumpsw-Frostmourne
+#   and Abilities — Shadowlands 9.1.0" by Pumpsw-Frostmourne
 # https://www.icy-veins.com/wow/guardian-druid-pve-tank-rotation-cooldowns-abilities
 
 Include(nerien_ovale_library)

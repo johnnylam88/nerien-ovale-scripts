@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_warrior_protection"
-	local desc = string.format("[9.0.5] %s: Warrior - Protection", Private.name)
+	local desc = string.format("[9.1] %s: Warrior - Protection", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Protection Warrior Rotation Guide - Shadowlands 9.0.5"
+# Adapted from Wowhead's "Protection Warrior Rotation Guide - Shadowlands 9.1.0"
 #	by Llarold-Area52
 # https://www.wowhead.com/protection-warrior-rotation-guide
 
