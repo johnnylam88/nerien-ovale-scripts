@@ -293,10 +293,7 @@ AddFunction ProtectionShortCdActions
 	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) ProtectionUseIgnorePain()
 }
 
-AddFunction ProtectionPrecombatMainActions
-{
-	if (BuffRemaining(battle_shout any=1) < 900) Spell(battle_shout)
-}
+AddFunction ProtectionPrecombatMainActions { }
 
 AddFunction ProtectionMainActions
 {
@@ -354,6 +351,11 @@ AddFunction ProtectionCdActions
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
 	ProtectionDefensiveCdActions()
+}
+
+AddFunction ProtectionBuffActions
+{
+	if not BuffPresent(battle_shout mine=0) Spell(battle_shout)
 }
 
 AddFunction ProtectionInterruptActions
@@ -433,6 +435,7 @@ AddIcon help=cd
 
 AddIcon help=offensive size=small
 {
+	if not InCombat() ProtectionBuffActions()
 	if not ProtectionInRange()
 	{
 		if (not EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge)
