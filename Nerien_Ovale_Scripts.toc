@@ -21,6 +21,7 @@ scripts/library.lua
 scripts/deathknight_blood.lua
 scripts/druid_guardian.lua
 scripts/mage_arcane.lua
+scripts/mage_frost.lua
 scripts/monk_brewmaster.lua
 scripts/rogue_assassination.lua
 scripts/rogue_subtlety.lua
