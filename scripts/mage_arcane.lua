@@ -440,7 +440,6 @@ AddFunction ArcaneDispelActions
 
 AddIcon help=interrupt size=small
 {
-	if not InCombat() ArcaneBuffActions()
 	ArcaneInterruptActions()
 	ArcaneDispelActions()
 	ArcaneDefensiveActions()
@@ -472,6 +471,7 @@ AddIcon help=aoe
 
 AddIcon help=trinkets size=small
 {
+	if not InCombat() ArcaneBuffActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
 }
