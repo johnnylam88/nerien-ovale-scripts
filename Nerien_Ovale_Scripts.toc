@@ -1,4 +1,4 @@
-## Interface: 90005
+## Interface: 90100
 
 ## Title: Nerien's Ovale Scripts
 ## Notes: Nerien's collection of Ovale scripts for various classes and specializations.
