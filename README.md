@@ -24,13 +24,13 @@ Open up the **Ovale** code window and select the script you would like to use fo
 
 ### Status ###
 
-The following classes and specializations are supported for Shadowlands:
+The following classes and specializations are up-to-date for Shadowlands 9.1:
 
 - Death Knight: Blood
 - Druid: Guardian
 - Mage: Arcane, Frost
 - Monk: Brewmaster
-- Rogue: Assassination, Subtlety
+- Rogue: Assassination (9.0.2), Subtlety (9.0.2)
 - Warrior: Protection
 
 ### Links ###
