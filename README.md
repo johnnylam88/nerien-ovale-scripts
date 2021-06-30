@@ -33,7 +33,7 @@ The following classes and specializations are supported for Shadowlands:
 - Monk: Brewmaster
 - Paladin: Protection
 - Rogue: Assassination
-- Warrior: Fury (9.2), Protection (9.2)
+- Warrior: Arms (9.2), Fury (9.2), Protection (9.2)
 
 ### Links ###
 
