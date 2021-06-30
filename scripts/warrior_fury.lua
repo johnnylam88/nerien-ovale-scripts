@@ -213,7 +213,7 @@ AddFunction FuryShortCdActions
 	unless (
 		Spell(execute) or
 		Spell(onslaught) or
-		(IsEnraged() and Charges(raging_blow) >= 1.8) or
+		(IsEnraged() and Charges(raging_blow count=0) >= 1.8) or
 		Spell(bloodthirst)
 	) {
 		if IsEnraged()
@@ -237,7 +237,7 @@ AddFunction FuryMainActions
 	if (not IsEnraged() or Rage() > 90) Spell(rampage)
 	Spell(execute)
 	Spell(onslaught)
-	if (IsEnraged() and Charges(raging_blow) >= 1.8) Spell(raging_blow)
+	if (IsEnraged() and Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
 	Spell(bloodthirst)
 	Spell(raging_blow)
 	Spell(whirlwind)

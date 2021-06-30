@@ -261,7 +261,7 @@ AddFunction BloodShortCdActions
 			if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies(tagged=1) >= 3) Spell(death_and_decay)
 
 			unless
-				((Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
+				((Charges(blood_boil count=0) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
 				((EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffPresent(dancing_rune_weapon_buff)) and Spell(heart_strike)) or
 				((Rune() >= 3) and Spell(heart_strike)) or
 				((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
@@ -341,7 +341,7 @@ AddFunction BloodMainActions
 	# Heart Strike with, or when 1.5 second away from, having more than 3 Runes.
 	if (TimeToRunes(3) < GCD()) Spell(heart_strike)
 	# Blood Boil with 2 charges and less than 5 stacks of Hemostasis.
-	if (Charges(blood_boil) >= 1.8 and BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
+	if (Charges(blood_boil count=0) >= 1.8 and BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
 	# [*] Heart Strike with Crimson Rune Weapon and Dancing Rune Weapon is active.
 	# [*] This depletes runes ahead of gaining 40% increased rune regeneration for 10s after Dancing Rune Weapon expires.
 	if (EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffPresent(dancing_rune_weapon_buff)) Spell(heart_strike)
