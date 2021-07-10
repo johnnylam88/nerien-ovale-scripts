@@ -238,7 +238,7 @@ AddFunction SubtletyShortCdActions
 		if SubtletyShadowDanceWindowCondition()
 		{
 			if (EquippedRuneforge(deathly_shadows_runeforge) and ComboPoints() < 1) Spell(vanish)
-			if (EquippedRuneforge(mark_of_the_master_assassin_runeforge) and BuffExpires(master_assassins_mark)) Spell(vanish)
+			if (EquippedRuneforge(mark_of_the_master_assassin_runeforge) and not BuffPresent(master_assassins_mark)) Spell(vanish)
 		}
 	}
 	if (ComboPoints() < 3 and not SubtletySliceAndDiceNeedsEarlyRefresh() and not SubtletyRuptureNeedsEarlyRefresh())
@@ -260,14 +260,14 @@ AddFunction SubtletyCdActions
 	# the stacks into the Haste buff.
 	#Spell(flagellation)
 	if (Charges(serrated_bone_spike count=0) > 2.9) Spell(serrated_bone_spike)
-	if (target.BuffExpires(serrated_bone_spike_debuff) and target.TimeToDie() > 21) Spell(serrated_bone_spike)
+	if (not target.BuffPresent(serrated_bone_spike_debuff) and target.TimeToDie() > 21) Spell(serrated_bone_spike)
 	if ((Spell(symbols_of_death) or SpellCooldown(symbols_of_death) > 10) and SubtletyBuilderCondition()) Spell(sepsis)
 	if (ComboPoints() < 1 or target.TimeToDie() < 10) Spell(marked_for_death)
 	if (SubtletySymbolsOfDeathIsReady() and SubtletyBuilderCondition()) Spell(shadow_blades)
 	if EquippedRuneforge(tiny_toxic_blade_runeforge)
 	{
 		if (HasTalent(nightstalker_talent) and BuffPresent(shadow_dance_buff)) Spell(shiv)
-		if (not HasTalent(nightstalker_talent) and BuffExpires(shadow_dance_buff)) Spell(shiv)
+		if (not HasTalent(nightstalker_talent) and not BuffPresent(shadow_dance_buff)) Spell(shiv)
 	}
 	if (Enemies(tagged=1) < 5) Spell(echoing_reprimand)
 	if (BuffPresent(shadow_dance_buff) and BuffPresent(symbols_of_death)) Spell(shuriken_tornado)
@@ -282,13 +282,13 @@ AddFunction SubtletySliceAndDiceActions
 		{
 			if not HasTalent(premeditation_talent) Spell(slice_and_dice)
 		}
-		if (BuffExpires(shadow_dance_buff) and BuffRefreshable(slice_and_dice)) Spell(slice_and_dice)
+		if (not BuffPresent(shadow_dance_buff) and BuffRefreshable(slice_and_dice)) Spell(slice_and_dice)
 	}
 }
 
 AddFunction SubtletyPriorityRuptureActions
 {
-	if (Enemies(tagged=1) < 5 and BuffExpires(master_assassins_mark))
+	if (Enemies(tagged=1) < 5 and not BuffPresent(master_assassins_mark))
 	{
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
 		if (SubtletyShadowDanceWindowCondition() and SubtletyRuptureNeedsEarlyRefresh())
@@ -350,7 +350,7 @@ AddFunction SubtletyBuilderActions
 
 AddFunction SubtletyMainActions
 {
-	if BuffExpires(slice_and_dice) Spell(slice_and_dice)
+	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
 	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold())
 	{
@@ -361,7 +361,7 @@ AddFunction SubtletyMainActions
 
 AddFunction SubtletyAoEActions
 {
-	if BuffExpires(slice_and_dice) Spell(slice_and_dice)
+	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
 	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold())
 	{

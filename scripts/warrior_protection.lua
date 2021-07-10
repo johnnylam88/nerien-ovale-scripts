@@ -136,7 +136,7 @@ Define(victorious_buff 32216)
 	SpellAddBuff(impending_victory victorious_buff set=0)
 	SpellAddBuff(victory_rush victorious_buff set=0)
 Define(victory_rush 34428)
-	SpellRequire(victory_rush unusable set=1 enabled=(BuffExpires(victorious_buff)))
+	SpellRequire(victory_rush unusable set=1 enabled=(not BuffPresent(victorious_buff)))
 	SpellRequire(victory_rush replaced_by set=impending_victory enabled=(HasTalent(impending_victory_talent)))
 
 # Covenant Abilities
@@ -283,7 +283,7 @@ AddFunction ProtectionShortCdActions
 			if target.InRange(charge) Spell(charge text=block)
 			if (Charges(shield_block count=0) > 1.9) Spell(shield_block)
 		}
-		if BuffExpires(shield_block_buff)
+		if not BuffPresent(shield_block_buff)
 		{
 			# Apply Shield Block with either Shield Block or Bolster.
 			Spell(shield_block)

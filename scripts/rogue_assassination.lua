@@ -24,7 +24,7 @@ Define(subterfuge_talent 22332)
 # Class Abilities
 Define(ambush 8676)
 	SpellInfo(ambush energy=50 combopoints=-2)
-	SpellRequire(ambush unusable set=1 enabled=(not Stealthed() and BuffExpires(blindside_buff)))
+	SpellRequire(ambush unusable set=1 enabled=(not Stealthed() and not BuffPresent(blindside_buff)))
 Define(blind 2094)
 	SpellInfo(blind cd=120)
 Define(blindside_buff 121153)
@@ -246,7 +246,7 @@ AddFunction AssassinationCdActions
 	Spell(echoing_reprimand)
 	Spell(sepsis)
 	if (Charges(serrated_bone_spike count=0) > 2.9) Spell(serrated_bone_spike)
-	if (target.BuffExpires(serrated_bone_spike_debuff) and target.TimeToDie() > 21) Spell(serrated_bone_spike)
+	if (not target.BuffPresent(serrated_bone_spike_debuff) and target.TimeToDie() > 21) Spell(serrated_bone_spike)
 	if (not Stealthed() and ComboPoints() < 1 or target.TimeToDie() < 10) Spell(marked_for_death)
 	if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta)
 }

@@ -214,7 +214,7 @@ AddFunction BloodPrecombatShortCdActions
 {
 	PrecombatShortCdActions()
 	# Only Rune Tap if Bone Shield is down or about to expire.
-	if (BuffExpires(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap)
+	if (not BuffPresent(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap)
 }
 
 AddFunction BloodShortCdActions
@@ -240,7 +240,7 @@ AddFunction BloodShortCdActions
 	unless
 		((BuffRemaining(bone_shield) < GCD() + 2) and Spell(marrowrend)) or
 		((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and
-			((BuffExpires(swarming_mist) and BuffExpires(abomination_limb)) and Spell(blood_boil))) or
+			((not BuffPresent(swarming_mist) and not BuffPresent(abomination_limb)) and Spell(blood_boil))) or
 		((3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) and Spell(deaths_due)) or
 		((3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) and Spell(deaths_due)) or
 		(BuffPresent(death_and_decay_buff) and
@@ -258,7 +258,7 @@ AddFunction BloodShortCdActions
 		unless ((TimeToRunes(3) < GCD()) and Spell(heart_strike))
 		{
 			# Death and Decay when Crimson Scourge procs with 3+ targets.
-			if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies(tagged=1) >= 3) Spell(death_and_decay)
+			if (not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies(tagged=1) >= 3) Spell(death_and_decay)
 
 			unless
 				((Charges(blood_boil count=0) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
@@ -267,11 +267,11 @@ AddFunction BloodShortCdActions
 				((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
 				 ((not IsCovenant(night_fae) and Rune() >= 2) or
 				  ((BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) and Spell(heart_strike)) or
-				  ((BuffExpires(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
+				  ((not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
 				((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
 			{
 				# Death and Decay when Crimson Scourge procs.
-				if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff))
+				if (not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff))
 				{
 					Spell(deaths_due)
 					Spell(death_and_decay)
@@ -286,7 +286,7 @@ AddFunction BloodShortCdActions
 AddFunction BloodPrecombatMainActions
 {
 	# [*] Blooddrinker when closing with the boss on the opener.
-	if BuffExpires(dancing_rune_weapon_buff) Spell(blooddrinker)
+	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
 	if (BuffRemaining(bone_shield) < GCD() + 2)
 	{
 		if not EquippedRuneforge(crimson_rune_weapon_runeforge) Spell(marrowrend)
@@ -314,7 +314,7 @@ AddFunction BloodMainActions
 	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist or (Necrolord) Abomination Limb is not active.
 	if DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)
 	{
-		if (BuffExpires(swarming_mist) and BuffExpires(abomination_limb)) Spell(blood_boil)
+		if (not BuffPresent(swarming_mist) and not BuffPresent(abomination_limb)) Spell(blood_boil)
 	}
 	# (Night Fae) Death and Decay when the duration of the Death’s Due buff/debuff is about to expire, but with enough remaining time to Heart Strike.
 	if (3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) Spell(deaths_due)
@@ -356,13 +356,13 @@ AddFunction BloodMainActions
 	{
 		if (not IsCovenant(night_fae) and Rune() >= 2) Spell(heart_strike)
 		if (BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) Spell(heart_strike)
-		if (BuffExpires(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
+		if (not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
 	}
 	# Blood Boil with 1 charge and less than 5 stacks of Hemostasis.
 	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
 	# [*] Fillers that don't consume Runes or Runic Power.
 	if (target.DebuffExpires(mark_of_blood) and target.IsTargetingPlayer()) Spell(mark_of_blood)
-	if BuffExpires(dancing_rune_weapon_buff) Spell(blooddrinker)
+	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
 	Spell(consumption)
 }
 
@@ -376,7 +376,7 @@ AddFunction BloodPrecombatCdActions
 
 AddFunction BloodOffensiveCdActions
 {
-	if BuffExpires(dancing_rune_weapon_buff)
+	if not BuffPresent(dancing_rune_weapon_buff)
 	{
 		Spell(abomination_limb)
 		Spell(dancing_rune_weapon)
@@ -393,13 +393,13 @@ AddFunction BloodDefensiveCdActions
 
 	Spell(dancing_rune_weapon)
 	# (Necrolord) Abomination Limb if below 6 stacks of Bone Shield or for threat generation.
-	if (BuffExpires(dancing_rune_weapon_buff) and BuffStacks(bone_shield) < 6) Spell(abomination_limb)
+	if (not BuffPresent(dancing_rune_weapon_buff) and BuffStacks(bone_shield) < 6) Spell(abomination_limb)
 	Spell(vampiric_blood)
 	Spell(icebound_fortitude)
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
 	# Only suggest Rune Tap if Heart Strike won't grant enough Runic Power
 	# for a Death Strike heal.
-	if (BuffExpires(rune_tap) and RunicPower() < RunicPowerCost(death_strike) - BloodHeartStrikeRunicPower()) Spell(rune_tap)
+	if (not BuffPresent(rune_tap) and RunicPower() < RunicPowerCost(death_strike) - BloodHeartStrikeRunicPower()) Spell(rune_tap)
 }
 
 AddFunction BloodCdActions

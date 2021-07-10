@@ -180,7 +180,7 @@ AddFunction BrewmasterShortCdActions
 	if (SpellCharges(purifying_brew count=0) > 1.8) Spell(purifying_brew)
 	# Use up Purifying Brew charges if Black Ox Brew is coming off cooldown.
 	if (HasTalent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew)
-	if BuffExpires(blackout_combo_buff) Spell(celestial_brew)
+	if not BuffPresent(blackout_combo_buff) Spell(celestial_brew)
 	Spell(bonedust_brew)
 	Spell(exploding_keg)
 	# Faeline Stomp has higher priority than Keg Smash for AoE.
@@ -202,7 +202,7 @@ AddFunction BrewmasterMainActions
 {
 	Spell(keg_smash)
 	# Ensure Shuffle is up.
-	if BuffExpires(shuffle)
+	if not BuffPresent(shuffle)
 	{
 		Spell(blackout_kick)
 		BrewmasterUseSpinningCraneKick()

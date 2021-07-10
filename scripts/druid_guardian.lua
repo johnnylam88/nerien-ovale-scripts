@@ -173,10 +173,10 @@ Define(survival_instincts 61336)
 Define(swiftmend 18562)
 	SpellInfo(swiftmend cd=15)
 	SpellRequire(swiftmend unusable set=1 enabled=(not HasTalent(restoration_affinity_talent)))
-	SpellRequire(swiftmend unusable set=1 enabled=(BuffExpires(regrowth) and BuffExpires(wild_growth) and BuffExpires(rejuvenation)))
+	SpellRequire(swiftmend unusable set=1 enabled=(not BuffPresent(regrowth) and not BuffPresent(wild_growth) and not BuffPresent(rejuvenation)))
 	SpellAddBuff(swiftmend regrowth set=0 enabled=(BuffPresent(regrowth)))
-	SpellAddBuff(swiftmend wild_growth set=0 enabled=(BuffExpires(regrowth) and BuffPresent(wild_growth)))
-	SpellAddBuff(swiftmend rejuvenation set=0 enabled=(BuffExpires(regrowth) and BuffExpires(wild_growth) and BuffPresent(rejuvenation)))
+	SpellAddBuff(swiftmend wild_growth set=0 enabled=(not BuffPresent(regrowth) and BuffPresent(wild_growth)))
+	SpellAddBuff(swiftmend rejuvenation set=0 enabled=(not BuffPresent(regrowth) and not BuffPresent(wild_growth) and BuffPresent(rejuvenation)))
 Define(swipe_bear 213771)
 	SpellRequire(swipe_bear unusable set=1 enabled=(not Stance(druid_bear_form)))
 Define(swipe_cat 106785)
@@ -286,11 +286,11 @@ AddFunction GuardianShapeshiftActions
 		{
 			# Begin a catweave cycle at full energy. Also check that empowered
 			# Moonfire is used before entering catweave cycle.
-			if HasTalent(feral_affinity_talent) and TimeToEnergy(100) < 1 and BuffExpires(galactic_guardian_buff)
+			if HasTalent(feral_affinity_talent) and TimeToEnergy(100) < 1 and not BuffPresent(galactic_guardian_buff)
 			{
 				# [*] Dump Rage so it's not wasted.
 				if BuffPresent(tooth_and_claw_buff) Spell(maul text=dump)
-				if BuffExpires(tooth_and_claw_buff) Spell(ironfur text=dump)
+				if not BuffPresent(tooth_and_claw_buff) Spell(ironfur text=dump)
 				# [*] Heart of the Wild will also shift to Cat Form.
 				Spell(heart_of_the_wild)
 				Spell(cat_form)
@@ -300,7 +300,7 @@ AddFunction GuardianShapeshiftActions
 			{
 				# [*] Dump Rage so it's not wasted.
 				if BuffPresent(tooth_and_claw_buff) Spell(maul text=dump)
-				if BuffExpires(tooth_and_claw_buff) Spell(ironfur text=dump)
+				if not BuffPresent(tooth_and_claw_buff) Spell(ironfur text=dump)
 				# [*] Heart of the Wild will also shift to Moonkin Form.
 				Spell(heart_of_the_wild)
 				Spell(moonkin_form)
@@ -423,7 +423,7 @@ AddFunction GuardianShortCdActions
 	# Use Frenzied Regeneration between 50% and 20% health.
 	if HealthPercent() < (50 - 20 * (2 - Charges(frenzied_regeneration count=0)))
 	{
-		if BuffExpires(frenzied_regeneration) Spell(frenzied_regeneration)
+		if not BuffPresent(frenzied_regeneration) Spell(frenzied_regeneration)
 	}
 	Spell(bristling_fur)
 }
@@ -481,7 +481,7 @@ AddFunction GuardianDefensiveCdActions
 	{
 		Spell(pulverize)
 		Spell(barkskin)
-		if BuffExpires(survival_instincts) Spell(survival_instincts)
+		if not BuffPresent(survival_instincts) Spell(survival_instincts)
 	}
 }
 
