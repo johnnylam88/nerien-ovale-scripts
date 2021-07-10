@@ -279,6 +279,9 @@ AddFunction GuardianShapeshiftActions
 	# you have no Rage to spend.
 	if Stance(druid_bear_form)
 	{
+		# Use Ravenous Frenzy with Berserk/Incarnation to boost the power of
+		# both abilities, and the cooldown syncs up perfectly.
+		if BuffPresent(bs_inc_buff) Spell(ravenous_frenzy)
 		if not BuffPresent(bs_inc_buff) and SpellCooldown(mangle) > 0 and SpellCooldown(thrash_bear) > 0
 		{
 			# Begin a catweave cycle at full energy. Also check that empowered
@@ -302,13 +305,17 @@ AddFunction GuardianShapeshiftActions
 				Spell(heart_of_the_wild)
 				Spell(moonkin_form)
 			}
+			# Save Convoke the Spirits for offense if using either Balance or Feral Affinity.
+			if (not HasTalent(balance_affinity_talent) and not HasTalent(feral_affinity_talent)) Spell(convoke_the_spirits)
+			Spell(incarnation_guardian_of_ursoc)
+			Spell(berserk)
 		}
 	}
 	if not Stance(druid_bear_form)
 	{
 		if not (SpellCooldown(mangle) > 0 and SpellCooldown(thrash_bear) > 0)
 		{
-			if (HasTalent(balance_affinity_talent) or HasTalent(feral_affinity_talent)) Spell(bear_form)
+			Spell(bear_form)
 		}
 	}
 }
@@ -466,15 +473,6 @@ AddFunction GuardianOffensiveCdActions
 		Spell(heart_of_the_wild)
 		Spell(convoke_the_spirits)
 	}
-	if Stance(druid_bear_form)
-	{
-		Spell(convoke_the_spirits)
-		Spell(incarnation_guardian_of_ursoc)
-		Spell(berserk)
-		# Use Ravenous Frenzy with Berserk/Incarnation to boost the power of
-		# both abilities, and the cooldown syncs up perfectly.
-		if BuffPresent(bs_inc_buff) Spell(ravenous_frenzy)
-	}
 }
 
 AddFunction GuardianDefensiveCdActions
@@ -567,7 +565,7 @@ AddIcon help=cd
 	GuardianCdActions()
 }
 
-AddIcon help=trinkets size=small
+AddIcon help=offensive size=small
 {
 	if not InCombat()
 	{
