@@ -152,9 +152,9 @@ Define(echoing_reprimand_4 323560)
 	SpellInfo(echoing_reprimand_4 duration=45)
 
 # Runeforge Legendary Effects
-Define(deathly_shadows_runeforge 7126)
-Define(mark_of_the_master_assassin_runeforge 7111)
-Define(tiny_toxic_blade_runeforge 7112)
+Define(deathly_shadows_runeforge 129)
+Define(mark_of_the_master_assassin_runeforge 117)
+Define(tiny_toxic_blade_runeforge 116)
 
 ### Functions ###
 
