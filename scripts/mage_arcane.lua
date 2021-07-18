@@ -94,6 +94,11 @@ Define(mana_gem 36799)
 	ItemInfo(mana_gem cd=120)
 Define(mirror_image 55342)
 	SpellInfo(mirror_image cd=120)
+Define(nether_precision_buff 336889)
+	SpellInfo(nether_precision_buff duration=10)
+	SpellAddBuff(arcane_explosion nether_precision_buff add=2 enabled=(BuffPresent(clearcasting_buff) and Conduit(nether_precision_conduit)))
+	SpellAddBuff(arcane_missiles nether_precision_buff add=2 enabled=(BuffPresent(clearcasting_buff) and Conduit(nether_precision_conduit)))
+	SpellAddBuff(arcane_blast nether_precision_buff add=-1 enabled=(Conduit(nether_precision_conduit)))
 Define(nether_tempest 114923)
 	SpellInfo(nether_tempest duration=12 tick=1)
 	SpellRequire(nether_tempest unusable set=1 enabled=(not HasTalent(nether_tempest_talent)))
@@ -152,6 +157,9 @@ Define(mirrors_of_torment 314793)
 	SpellInfo(mirrors_of_torment cd=90 duration=25)
 	SpellRequire(mirrors_of_torment unusable set=1 enabled=(not IsCovenant(venthyr)))
 	SpellAddTargetDebuff(mirrors_of_torment mirrors_of_torment add=3)
+
+# Conduits
+Define(nether_precision_conduit 336886)
 
 # Runeforge Legendary Effects
 Define(arcane_bombardment_runeforge 7126)
@@ -344,10 +352,10 @@ AddFunction ArcaneConserveActions
 	#if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
 	if (ArcaneCharges() <= 2) Spell(arcane_orb)
 	if BuffPresent(rule_of_threes_buff) Spell(arcane_blast text=free)
+	if BuffPresent(nether_precision_buff) Spell(arcane_blast text=np)
 	# When a mini-burn phase is approaching, start holding Clearcasting procs.
 	if (SpellCooldown(touch_of_the_magi) > 10 and BuffPresent(clearcasting_buff)) Spell(arcane_missiles)
 	if (SpellCooldown(touch_of_the_magi) < 10 and BuffStacks(clearcasting_buff) > 2) Spell(arcane_missiles text=cap)
-	if BuffPresent(rule_of_threes_buff) Spell(arcane_blast text=free)
 	if (ArcaneCharges() < MaxArcaneCharges() or ManaPercent() > 90) Spell(arcane_blast)
 	if (ArcaneCharges() == MaxArcaneCharges()) Spell(arcane_barrage)
 }
