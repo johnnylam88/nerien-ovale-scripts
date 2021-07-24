@@ -188,17 +188,12 @@ AddFunction FrostWintersChillLeft
 	0
 }
 
-AddFunction FrostShouldBeAoEing
-{
-	HasTalent(freezing_rain_talent) or Enemies(tagged=1) > 2
-}
-
 AddFunction FrostPrecombatShortCdActions { }
 
 AddFunction FrostShortCdActions
 {
 	if not pet.Present() Spell(summon_water_elemental)
-	if FrostShouldBeAoEing() Spell(frozen_orb)
+	if (HasTalent(freezing_rain_talent) or Enemies(tagged=1) > 2) Spell(frozen_orb)
 	if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
 	unless BuffPresent(brain_freeze_buff)
 	{
@@ -221,7 +216,7 @@ AddFunction FrostMainActions
 	) {
 		Spell(flurry)
 	}
-	if BuffPresent(freezing_rain_buff) Spell(blizzard)
+	if (BuffPresent(freezing_rain_buff) or Enemies(tagged=1) > 2) Spell(blizzard)
 	if (Enemies(tagged=1) > 1) Spell(glacial_spike)
 	if target.DebuffPresent(winters_chill_debuff)
 	{
@@ -247,8 +242,7 @@ AddFunction FrostMainActions
 
 AddFunction FrostPrecombatAoEActions
 {
-	if (Enemies(tagged=1) > 2) Spell(blizzard)
-	Spell(frostbolt)
+	Spell(blizzard)
 }
 
 AddFunction FrostAoEActions
@@ -260,7 +254,7 @@ AddFunction FrostAoEActions
 		Spell(blizzard)
 		Spell(ice_lance)
 	}
-	Spell(blizzard)
+	if (BuffPresent(freezing_rain_buff) or Enemies(tagged=1) > 2) Spell(blizzard)
 	if (Enemies(tagged=1) > 5 and target.Distance() < 10) Spell(arcane_explosion)
 	if (BuffPresent(brain_freeze_buff) and not FrostWintersChillLeft() > 0) Spell(flurry)
 	Spell(ice_nova)
