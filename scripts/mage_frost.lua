@@ -216,6 +216,12 @@ AddFunction FrostMainActions
 	) {
 		Spell(flurry)
 	}
+	# AoE Shatter for Comet Storm
+	if PreviousSpell(comet_storm) and not target.Classification(worldboss)
+	{
+		Spell(freeze)
+		if (target.Distance() < 12) Spell(frost_nova)
+	}
 	if (BuffPresent(freezing_rain_buff) or Enemies(tagged=1) > 2) Spell(blizzard)
 	if (Enemies(tagged=1) > 1) Spell(glacial_spike)
 	if target.DebuffPresent(winters_chill_debuff)
@@ -229,11 +235,6 @@ AddFunction FrostMainActions
 		if (FrostWintersChillLeft() > CastTime(ice_lance) + TravelTime(ice_lance)) Spell(ice_lance)
 	}
 	Spell(comet_storm)
-	if PreviousSpell(comet_storm) and not target.Classification(worldboss)
-	{
-		Spell(freeze)
-		if (target.Distance() < 12) Spell(frost_nova)
-	}
 	Spell(ice_nova)
 	if BuffPresent(fingers_of_frost_buff) Spell(ice_lance)
 	Spell(ebonbolt)
@@ -254,16 +255,17 @@ AddFunction FrostAoEActions
 		Spell(blizzard)
 		Spell(ice_lance)
 	}
-	if (BuffPresent(freezing_rain_buff) or Enemies(tagged=1) > 2) Spell(blizzard)
-	if (Enemies(tagged=1) > 5 and target.Distance() < 10) Spell(arcane_explosion)
-	if (BuffPresent(brain_freeze_buff) and not FrostWintersChillLeft() > 0) Spell(flurry)
-	Spell(ice_nova)
-	Spell(comet_storm)
+	# AoE Shatter for Comet Storm
 	if PreviousSpell(comet_storm) and not target.Classification(worldboss)
 	{
 		Spell(freeze)
 		if (target.Distance() < 12) Spell(frost_nova)
 	}
+	if (BuffPresent(freezing_rain_buff) or Enemies(tagged=1) > 2) Spell(blizzard)
+	if (Enemies(tagged=1) > 5 and target.Distance() < 10) Spell(arcane_explosion)
+	if (BuffPresent(brain_freeze_buff) and not FrostWintersChillLeft() > 0) Spell(flurry)
+	Spell(ice_nova)
+	Spell(comet_storm)
 	if (FrostWintersChillLeft() > CastTime(ice_lance) + TravelTime(ice_lance)) Spell(ice_lance)
 	if BuffPresent(fingers_of_frost_buff) Spell(ice_lance)
 	if (ManaPercent() > 30 and target.Distance() < 10) Spell(arcane_explosion)
