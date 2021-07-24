@@ -261,7 +261,7 @@ AddFunction FrostAoEActions
 		Spell(ice_lance)
 	}
 	Spell(blizzard)
-	if (Enemies(tagged=1) > 5) Spell(arcane_explosion)
+	if (Enemies(tagged=1) > 5 and target.Distance() < 10) Spell(arcane_explosion)
 	if (BuffPresent(brain_freeze_buff) and not FrostWintersChillLeft() > 0) Spell(flurry)
 	Spell(ice_nova)
 	Spell(comet_storm)
@@ -272,7 +272,7 @@ AddFunction FrostAoEActions
 	}
 	if (FrostWintersChillLeft() > CastTime(ice_lance) + TravelTime(ice_lance)) Spell(ice_lance)
 	if BuffPresent(fingers_of_frost_buff) Spell(ice_lance)
-	if (ManaPercent() > 30) Spell(arcane_explosion)
+	if (ManaPercent() > 30 and target.Distance() < 10) Spell(arcane_explosion)
 	Spell(ebonbolt)
 	Spell(frostbolt)
 }
