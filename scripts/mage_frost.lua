@@ -282,7 +282,7 @@ AddFunction FrostPrecombatCdActions { }
 AddFunction FrostCdActions
 {
 	Spell(deathborne)
-	if not BuffPresent(rune_of_power_buff) Spell(icy_veins)
+	if (not BuffPresent(rune_of_power_buff) and not BuffPresent(icy_veins)) Spell(icy_veins)
 	unless (
 		BuffPresent(brain_freeze_buff) or
 		(BuffPresent(freezing_rain_buff) and Spell(blizzard)) or
