@@ -88,6 +88,8 @@ Define(frostbolt 116)
 	SpellInfo(frostbolt travel_time=0.5)
 Define(frozen_orb 84714)
 	SpellInfo(frozen_orb cd=60)
+Define(frozen_orb_debuff 289308)
+	SpellInfo(frozen_orb_debuff duration=3)
 Define(glacial_spike 199786)
 	SpellInfo(glacial_spike travel_time=0.75)
 	SpellRequire(glacial_spike unusable set=1 enabled=(not (HasTalent(glacial_spike_talent) and BuffStacks(icicles_buff) == 5)))
@@ -178,6 +180,7 @@ Define(mirrors_of_torment 314793)
 	SpellAddTargetDebuff(mirrors_of_torment mirrors_of_torment add=3)
 
 # Runeforge Legendary Effects
+Define(freezing_winds_runeforge 4)
 Define(glacial_fragments_runeforge 5)
 Define(temporal_warp_runeforge 9)
 Define(temporal_warp_buff 327355)
@@ -289,6 +292,7 @@ AddFunction FrostCdActions
 	Spell(deathborne)
 	if (not BuffPresent(rune_of_power_buff) and not BuffPresent(icy_veins)) Spell(icy_veins)
 	unless (
+		(EquippedRuneforge(freezing_winds_runeforge) and target.DebuffPresent(frozen_orb_debuff)) or
 		BuffPresent(brain_freeze_buff) or
 		(BuffPresent(freezing_rain_buff) and Spell(blizzard)) or
 		(BuffStacks(icicles_buff) >= 5) or
