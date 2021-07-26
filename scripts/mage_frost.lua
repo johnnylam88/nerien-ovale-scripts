@@ -76,12 +76,14 @@ Define(focus_magic 321358)
 Define(freeze 33395)
 	SpellInfo(freeze cd=25)
 	SpellRequire(freeze unusable set=1 enabled=(not pet.Present()))
+	SpellAddTargetDebuff(freeze freeze add=1)
 Define(freezing_rain_buff 270232)
 	SpellInfo(freezing_rain_buff duration=12)
 	SpellAddBuff(frozen_orb freezing_rain_buff add=1 enabled=(HasTalent(freezing_rain_talent)))
 Define(frost_nova 122)
 	SpellRequire(frost_nova cd set=30 enabled=(not HasTalent(ice_ward_talent)))
 	SpellRequire(frost_nova charge_cd set=30 enabled=(HasTalent(ice_ward_talent)))
+	SpellAddTargetDebuff(frost_nova frost_nova add=1)
 Define(frostbolt 116)
 	SpellInfo(frostbolt travel_time=0.5)
 Define(frozen_orb 84714)
@@ -106,6 +108,7 @@ Define(ice_lance 30455)
 Define(ice_nova 157997)
 	SpellInfo(ice_nova cd=25)
 	SpellRequire(ice_nova unusable set=1 enabled=(not HasTalent(ice_nova_talent)))
+	SpellAddTargetDebuff(ice_nova ice_nova add=1)
 Define(icicles 76613)
 Define(icicles_buff 205473)
 	SpellInfo(icicles_buff duration=60)
@@ -162,6 +165,7 @@ Define(winters_chill_debuff 228358)
 	SpellAddTargetDebuff(glacial_spike winters_chill_debuff add=-1)
 	SpellAddTargetDebuff(ice_lance winters_chill_debuff add=-1)
 	SpellAddTargetDebuff(ray_of_frost winters_chill_debuff add=-1)
+SpellList(frozen_debuff freeze frost_nova ice_nova winters_chill_debuff)
 
 # Covenant Abilities
 Define(deathborne 324220)
@@ -186,6 +190,11 @@ AddFunction FrostWintersChillLeft
 {
 	if target.DebuffPresent(winters_chill_debuff) target.DebuffRemaining(winters_chill_debuff)
 	0
+}
+
+AddFunction FrostCanShatterIceLance
+{
+	BuffPresent(fingers_of_frost_buff) or target.DebuffPresent(frozen_debuff)
 }
 
 AddFunction FrostPrecombatShortCdActions { }
@@ -217,7 +226,7 @@ AddFunction FrostMainActions
 		Spell(flurry)
 	}
 	# AoE Shatter for Comet Storm
-	if PreviousSpell(comet_storm) and not target.Classification(worldboss)
+	if PreviousSpell(comet_storm) and not target.DebuffPresent(frozen_debuff) and not target.Classification(worldboss)
 	{
 		Spell(freeze)
 		if (target.Distance() < 12) Spell(frost_nova)
@@ -236,7 +245,7 @@ AddFunction FrostMainActions
 	}
 	Spell(comet_storm)
 	Spell(ice_nova)
-	if BuffPresent(fingers_of_frost_buff) Spell(ice_lance)
+	if FrostCanShatterIceLance() Spell(ice_lance)
 	Spell(ebonbolt)
 	Spell(frostbolt)
 }
@@ -256,7 +265,7 @@ AddFunction FrostAoEActions
 		Spell(ice_lance)
 	}
 	# AoE Shatter for Comet Storm
-	if PreviousSpell(comet_storm) and not target.Classification(worldboss)
+	if PreviousSpell(comet_storm) and not target.DebuffPresent(frozen_debuff) and not target.Classification(worldboss)
 	{
 		Spell(freeze)
 		if (target.Distance() < 12) Spell(frost_nova)
@@ -267,7 +276,7 @@ AddFunction FrostAoEActions
 	Spell(ice_nova)
 	Spell(comet_storm)
 	if (FrostWintersChillLeft() > CastTime(ice_lance) + TravelTime(ice_lance)) Spell(ice_lance)
-	if BuffPresent(fingers_of_frost_buff) Spell(ice_lance)
+	if FrostCanShatterIceLance() Spell(ice_lance)
 	if (ManaPercent() > 30 and target.Distance() < 10) Spell(arcane_explosion)
 	Spell(ebonbolt)
 	Spell(frostbolt)
