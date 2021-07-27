@@ -219,7 +219,7 @@ Define(wrath 5176)
 SpellList(damage_reduction_cooldown_buff barkskin survival_instincts)
 
 # Covenant Abilities
-# XXX Mising Kyrian abilities
+# XXX TODO: Kyrian abilities
 Define(adaptive_swarm 325727)
 	SpellInfo(adaptive_swarm cd=25)
 	SpellAddTargetDebuff(adaptive_swarm adaptive_swarm_damage add=3)
