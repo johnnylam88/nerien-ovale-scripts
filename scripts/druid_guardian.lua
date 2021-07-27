@@ -216,6 +216,7 @@ Define(wild_growth 48438)
 Define(wrath 5176)
 	SpellInfo(wrath inccounter="lunar" resetcounter="solar")
 	SpellAddBuff(wrath eclipse_lunar_buff add=1 enabled=(Counter("lunar") > 0))
+SpellList(damage_reduction_cooldown_buff barkskin survival_instincts)
 
 # Covenant Abilities
 # XXX Mising Kyrian abilities
@@ -480,8 +481,11 @@ AddFunction GuardianDefensiveCdActions
 	if Stance(druid_bear_form)
 	{
 		Spell(pulverize)
-		Spell(barkskin)
-		if not BuffPresent(survival_instincts) Spell(survival_instincts)
+		if not BuffPresent(damage_reduction_cooldown_buff)
+		{
+			Spell(barkskin)
+			Spell(survival_instincts)
+		}
 	}
 }
 
