@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_rogue_assassination"
-	local desc = string.format("[9.0.2] %s: Rogue - Assassination", Private.name)
+	local desc = string.format("[9.1] %s: Rogue - Assassination", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Assassination Rogue Rotation Guide - Shadowlands 9.0.2"
+# Adapted from Wowhead's "Assassination Rogue Rotation Guide - Shadowlands 9.1"
 #	by Mystler
 # https://www.wowhead.com/assassination-rogue-rotation-guide
 
@@ -16,6 +16,7 @@ Include(nerien_ovale_library)
 Define(blindside_talent 22339)
 Define(crimson_tempest_talent 23174)
 Define(exsanguinate_talent 22344)
+Define(hidden_blades_talent 22133)
 Define(master_assassin_talent 23022)
 Define(marked_for_death_talent 19241)
 Define(nightstalker_talent 22331)
@@ -66,11 +67,11 @@ Define(feint 1966)
 	SpellInfo(feint energy=35 cd=15 duration=5)
 	SpellAddBuff(feint feint add=1)
 Define(garrote 703)
-	SpellInfo(garrote cd=6 energy=45 combopoints=-1)
+	SpellInfo(garrote cd=6 energy=45 combopoints=-1 duration=18 tick=2)
 	SpellRequire(garrote cd set=0 enabled=(BuffPresent(stealth_subterfuge_buff) or BuffPresent(subterfuge_buff)))
-	SpellDamageBuff(garrote stealth_subterfuge_buff set=1.8 enabled=(HasTalent(subterfuge_talent)))
-	SpellDamageBuff(garrote subterfuge_buff set=1.8 enabled=(HasTalent(subterfuge_talent)))
-	SpellDamageBuff(garrote vanish_buff set=1.8 enabled=(HasTalent(subterfuge_talent)))
+	SpellAddTargetDebuff(garrote garrote add=1)
+Define(hidden_blades_buff 270070)
+	SpellAddBuff(fan_of_knives hidden_blades_buff set=0 enabled=HasTalent(hidden_blades_talent))
 Define(internal_bleeding 154953)
 	SpellInfo(internal_bleeding duration=1 add_duration_combopoints=1 tick=1)
 	SpellAddTargetDebuff(kidney_shot internal_bleeding add=1 enabled=(HasTalent(internal_bleeding_talent)))
@@ -110,19 +111,24 @@ Define(slice_and_dice 315496)
 	SpellAddBuff(slice_and_dice slice_and_dice add=1)
 Define(stealth 1784)
 	SpellInfo(stealth cd=2 gcd=0 offgcd=1)
+	SpellDamageBuff(crimson_tempest stealth set=1.5 enabled=(HasTalent(nightstalker_talent)))
+	SpellDamageBuff(garrote stealth set=1.5 enabled=(HasTalent(nightstalker_talent)))
+	SpellDamageBuff(rupture stealth set=1.5 enabled=(HasTalent(nightstalker_talent)))
 	SpellRequire(stealth unusable set=1 enabled=(Stealthed() or InCombat()))
 	SpellAddBuff(stealth stealth add=1 enabled=(not HasTalent(subterfuge_talent)))
 Define(stealth_subterfuge_buff 115191)
 	SpellAddBuff(stealth stealth_subterfuge_buff add=1 enabled=(HasTalent(subterfuge_talent)))
-	SpellDamageBuff(garrote stealth_subterfuge_buff set=1.8)
+	SpellDamageBuff(garrote stealth_subterfuge_buff set=1.8 enabled=(HasTalent(subterfuge_talent)))
 Define(subterfuge_buff 115192)
 	SpellInfo(subterfuge_buff duration=3)
+	SpellDamageBuff(garrote subterfuge_buff set=1.8 enabled=(HasTalent(subterfuge_talent)))
 Define(tricks_of_the_trade 57934)
 	SpellInfo(tricks_of_the_trade cd=30)
 Define(vanish 1856)
 	SpellInfo(vanish cd=120 gcd=0 offgcd=1)
 Define(vanish_buff 11327)
 	SpellInfo(vanish_buff duration=3)
+	SpellDamageBuff(garrote vanish_buff set=1.8 enabled=(HasTalent(subterfuge_talent)))
 	SpellAddBuff(vanish vanish_buff add=1)
 Define(vendetta 79140)
 	SpellInfo(vendetta cd=120 duration=20)
@@ -131,23 +137,23 @@ Define(vendetta 79140)
 # Covenant Abilities
 Define(flagellation 323654)
 	SpellInfo(flagellation energy=20 cd=90 duration=20 max_stacks=30)
-	SpellRequire(flagellation unusable set=1 enabled=(not IsCovenant("venthyr")))
+	SpellRequire(flagellation unusable set=1 enabled=(not IsCovenant(venthyr)))
 	SpellAddTargetDebuff(flagellation flagellation add=1)
 Define(serrated_bone_spike 328547)
 	SpellInfo(serrated_bone_spike energy=15 cd=1 charge_cd=30 combopoints=-1)
-	SpellRequire(serrated_bone_spike unusable set=1 enabled=(not IsCovenant("necrolord")))
+	SpellRequire(serrated_bone_spike unusable set=1 enabled=(not IsCovenant(necrolord)))
 Define(serrated_bone_spike_debuff 324073)
 	SpellInfo(serrated_bone_spike_debuff tick=3)
 	SpellAddTargetDebuff(serrated_bone_spike serrated_bone_spike_debuff add=1)
 Define(sepsis 328305)
 	SpellInfo(sepsis energy=25 cd=90 duration=10 combopoints=-1 tick=1)
-	SpellRequire(sepsis unusable set=1 enabled=(not IsCovenant("night_fae")))
+	SpellRequire(sepsis unusable set=1 enabled=(not IsCovenant(night_fae)))
 	SpellAddTargetDebuff(sepsis sepsis add=1)
 Define(sepsis_stealth_buff 347037)
 	SpellInfo(sepsis_stealth_buff duration=5)
 Define(echoing_reprimand 323547)
 	SpellInfo(echoing_reprimand energy=10 cd=45 combopoints=-2)
-	SpellRequire(echoing_reprimand unusable set=1 enabled=(not IsCovenant("kyrian")))
+	SpellRequire(echoing_reprimand unusable set=1 enabled=(not IsCovenant(kyrian)))
 Define(echoing_reprimand_2 323558)
 	SpellInfo(echoing_reprimand_2 duration=45)
 Define(echoing_reprimand_3 323559)
@@ -172,28 +178,164 @@ AddFunction AssassinationInRange
 	((Stealthed() and target.InRange(ambush)) or (not Stealthed() and target.InRange(mutilate)))
 }
 
-AddFunction AssassinationBuilderCondition
-{
-	(ComboPointsDeficit() > 1)
-}
-
-AddFunction AssassinationFinisherCondition
-{
-	(ComboPointsDeficit() <= 1)
-}
-
 AddFunction AssassinationPrecombatShortCdActions
 {
 	Spell(marked_for_death)
 	Spell(stealth)
 }
 
+AddFunction AssassinationShortCdActions
+{
+	if ((not Stealthed() and ComboPoints() < 1) or target.TimeToDie() < 10) Spell(marked_for_death)
+	if BuffRemaining(slice_and_dice) > 2
+	{
+		# Use Vanish on cooldown with Subterfuge to apply Empowered Garrote.
+		if HasTalent(subterfuge_talent)
+		{
+			if not target.DebuffPresent(garrote) Spell(vanish)
+			if target.DebuffPresent(garrote)
+			{
+				if (target.DebuffPersistentMultiplier(garrote) < 1.8) Spell(vanish)
+				if (target.DebuffPersistentMultiplier(garrote) >= 1.8 and target.DebuffRefreshable(garrote)) Spell(vanish)
+			}
+		}
+		# Use Vanish at full combo points with Nightstalker or Master Assassin.
+		if HasTalent(nightstalker_talent) or HasTalent(master_assassin_talent)
+		{
+			if (ComboPointsDeficit() == 0) Spell(vanish)
+		}
+		# Use Covenant abilities on cooldown.
+		if (target.TimeToDie() > BaseDuration(flagellation)) Spell(flagellation)
+		if (ComboPointsDeficit() > 0) Spell(sepsis)
+		if (ComboPointsDeficit() > 1) Spell(echoing_reprimand)
+		if (
+			(ComboPointsDeficit() < DebuffCountOnAny(serrated_bone_spikes) and DebuffCountOnAny(serrated_bone_spikes) < MaxComboPoints()) or
+			(not DebuffCountOnAny(serrated_bone_spikes) < MaxComboPoints())
+		) {
+			if (Enemies(tagged=1) > DebuffCountOnAny(serrated_bone_spike)) Spell(serrated_bone_spike text=cycle)
+			if (not Enemies(tagged=1) > DebuffCountOnAny(serrated_bone_spike)) Spell(serrated_bone_spike)
+		}
+		if (ComboPointsDeficit() > 0) Spell(shiv)
+		if (target.DebuffRemaining(rupture) > 24 and target.DebuffRemaining(garrote) > 6) Spell(exsanguinate)
+	}
+}
+
+AddFunction AssassinationGarroteMaintenanceActions
+{
+	# Always apply Empowered Garrote.
+	if (target.DebuffPresent(garrote) and PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) Spell(garrote text=new)
+	# Maintain Garrote on up to 3 targets.
+	if Enemies(tagged=1) == 1
+	{
+		if (target.DebuffPresent(garrote) and target.DebuffRefreshable(garrote)) Spell(garrote)
+		if not target.DebuffPresent(garrote) Spell(garrote)
+	}
+	if Enemies(tagged=1) == 2
+	{
+		if DebuffCountOnAny(garrote) < 1 Spell(garrote text=two)
+		if DebuffCountOnAny(garrote) < 2 Spell(garrote text=one)
+	}
+	if Enemies(tagged=1) >= 3
+	{
+		if DebuffCountOnAny(garrote) < 1 Spell(garrote text=three)
+		if DebuffCountOnAny(garrote) < 2 Spell(garrote text=two)
+		if DebuffCountOnAny(garrote) < 3 Spell(garrote text=one)
+	}
+}
+
+AddFunction AssassinationRuptureMaintenanceActions
+{
+	# Always apply Empowered Rupture.
+	if (target.DebuffPresent(rupture) and PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) Spell(rupture text=new)
+	# Maintain Rupture on up to 4 targets.
+	if Enemies(tagged=1) == 1
+	{
+		if (target.DebuffPresent(rupture) and target.DebuffRefreshable(rupture)) Spell(rupture)
+		if not target.DebuffPresent(rupture) Spell(rupture)
+	}
+	if Enemies(tagged=1) == 2
+	{
+		if DebuffCountOnAny(rupture) < 1 Spell(rupture text=two)
+		if DebuffCountOnAny(rupture) < 2 Spell(rupture text=one)
+	}
+	if Enemies(tagged=1) == 3
+	{
+		if DebuffCountOnAny(rupture) < 1 Spell(rupture text=three)
+		if DebuffCountOnAny(rupture) < 2 Spell(rupture text=two)
+		if DebuffCountOnAny(rupture) < 3 Spell(rupture text=one)
+	}
+	if Enemies(tagged=1) >= 4
+	{
+		if DebuffCountOnAny(rupture) < 1 Spell(rupture text=four)
+		if DebuffCountOnAny(rupture) < 2 Spell(rupture text=three)
+		if DebuffCountOnAny(rupture) < 3 Spell(rupture text=two)
+		if DebuffCountOnAny(rupture) < 4 Spell(rupture text=one)
+	}
+}
+
+AddFunction AssassinationBuilderActions
+{
+	AssassinationGarroteMaintenanceActions()
+	if (Enemies(tagged=1) > 3) Spell(fan_of_knives)
+	# Maintain Deadly Poison on 3 targets using Fan of Knives.
+	if (Enemies(tagged=1) == 3 and BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1)) Spell(fan_of_knives text=dp)
+	if (BuffStacks(hidden_blades_buff) > 19) Spell(fan_of_knives)
+	if BuffPresent(blindside_buff) Spell(ambush)
+	# Maintain Deadly Poison on 2 targets using Mutilate.
+	if (Enemies(tagged=1) == 2 and BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < 2) Spell(mutilate text=cycle)
+	Spell(mutilate)
+}
+
+AddFunction AssassinationFinisherActions
+{
+	if (Enemies(tagged=1) > 1 and target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
+	AssassinationRuptureMaintenanceActions()
+	if (Enemies(tagged=1) > 1) Spell(envenom)
+	# Pool to 80 energy if single-target before casting Envenom.
+	if (Enemies(tagged=1) == 1) Spell(envenom extra_energy=45)
+}
+
 AddFunction AssassinationPrecombatMainActions
 {
 	if (BuffRemaining(lethal_poison_buff) < 1200) Spell(deadly_poison)
 	Spell(slice_and_dice)
-	if HasTalent(master_assassin_talent) Spell(mutilate)
-	Spell(garrote)
+	if (HasTalent(subterfuge_talent) and Stealthed()) Spell(garrote)
+	Spell(serrated_bone_spike)
+	Spell(mutilate)
+}
+
+AddFunction AssassinationPrecombatAoEActions
+{
+	if (BuffRemaining(lethal_poison_buff) < 1200) Spell(deadly_poison)
+	Spell(slice_and_dice)
+	if (HasTalent(subterfuge_talent) and Stealthed()) Spell(garrote text=cycle)
+	Spell(serrated_bone_spike)
+	Spell(fan_of_knives)
+}
+
+AddFunction AssassinationMainActions
+{
+	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
+	if (BuffRemaining(slice_and_dice) < 2) Spell(envenom text=SnD)
+
+	# Use finisher on the Animacharged combo point.
+	if (
+		(BuffPresent(echoing_reprimand_2) and ComboPoints() == 2) or
+		(BuffPresent(echoing_reprimand_3) and ComboPoints() == 3) or
+		(BuffPresent(echoing_reprimand_4) and ComboPoints() == 4)
+	) {
+		AssassinationFinisherActions()
+	}
+	if SpellCooldown(vanish) > 0 or HasTalent(subterfuge_talent)
+	{
+		if (ComboPointsDeficit() <= 1) AssassinationFinisherActions()
+		if (ComboPointsDeficit() > 1) AssassinationBuilderActions()
+	}
+	if not SpellCooldown(vanish) > 0 and (HasTalent(nightstalker_talent) or HasTalent(master_assassin_talent))
+	{
+		if (ComboPointsDeficit() == 0) AssassinationFinisherActions()
+		if (ComboPointsDeficit() > 0) AssassinationBuilderActions()
+	}
 }
 
 AddFunction AssassinationPrecombatCdActions
@@ -201,79 +343,9 @@ AddFunction AssassinationPrecombatCdActions
 	PrecombatCdActions()
 }
 
-AddFunction AssassinationDefensiveActions
-{
-	ItemHealActions()
-	if (HealthPercent() < 70) Spell(crimson_vial)
-	if (target.IsTargetingPlayer() and IncomingPhysicalDamage(1.5) > 0) Spell(evasion)
-}
-
-AddFunction AssassinationShortCdActions
-{
-	if (Spell(vendetta) or BuffPresent(vendetta))
-	{
-		if HasTalent(subterfuge_talent)
-		{
-			if (ComboPointsDeficit() > 3 and Spell(garrote)) Spell(vanish)
-		}
-		if HasTalent(nightstalker_talent)
-		{
-			if not ComboPointsDeficit() > 0
-			{
-				if (Enemies(tagged=1) > 2 and Spell(crimson_tempest)) Spell(vanish)
-				if (not Enemies(tagged=1) > 2 and Spell(rupture)) Spell(vanish)
-			}
-		}
-		if HasTalent(master_assassin_talent)
-		{
-			Spell(vanish)
-		}
-	}
-	if ComboPointsDeficit() > 0
-	{
-		if SpellCooldown(vendetta) > 25 Spell(shiv)
-		if Spell(sepsis) Spell(shadowmeld)
-	}
-	if (target.DebuffRemaining(rupture) > 24 and target.DebuffRemaining(garrote) > 6) Spell(exsanguinate)
-}
-
 AddFunction AssassinationCdActions
 {
-	# Use Flagellation (Venthyr) on cooldown to apply the debuff and start
-	# the lashing. Use it again right before the debuff expires to convert
-	# the stacks into the Haste buff.
-	#Spell(flagellation)
-	Spell(echoing_reprimand)
-	Spell(sepsis)
-	if (Charges(serrated_bone_spike count=0) > 2.9) Spell(serrated_bone_spike)
-	if (not target.BuffPresent(serrated_bone_spike_debuff) and target.TimeToDie() > 21) Spell(serrated_bone_spike)
-	if (not Stealthed() and ComboPoints() < 1 or target.TimeToDie() < 10) Spell(marked_for_death)
 	if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta)
-}
-
-AddFunction AssassinationMainActions
-{
-	if (Enemies(tagged=1) < 6 and BuffRefreshable(slice_and_dice)) Spell(slice_and_dice)
-	if (Spell(exsanguinate) and not ComboPointsDeficit() > 0) Spell(rupture)
-	if (ComboPointsDeficit() <= 1)
-	{
-		if (Enemies(tagged=1) > 1 and target.DebuffExpires(crimson_tempest) < 2) Spell(crimson_tempest)
-		if ((Enemies(tagged=1) <= 4 and DebuffCountOnAny(rupture) < Enemies(tagged=1)) or (Enemies(tagged=1) > 4 and DebuffCountOnAny(rupture) < 4)) Spell(rupture text=missing)
-		if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) Spell(rupture text=overwrite)
-		if (PersistentMultiplier(rupture) == target.DebuffPersistentMultiplier(rupture) and target.DebuffRefreshable(rupture)) Spell(rupture)
-		Spell(envenom)
-	}
-	if (ComboPointsDeficit() > 1)
-	{
-		if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) Spell(garrote text=overwrite)
-		if (PersistentMultiplier(garrote) == target.DebuffPersistentMultiplier(garrote) and target.DebuffRefreshable(garrote)) Spell(garrote)
-		if (DebuffCountOnAny(garrote) < Enemies(tagged=1)) Spell(garrote text=missing)
-		if (Enemies(tagged=1) > 3) Spell(fan_of_knives)
-		if (Enemies(tagged=1) == 3 and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1)) Spell(fan_of_knives)
-		if (BuffPresent(blindside_buff) or BuffPresent(sepsis_stealth_buff)) Spell(ambush)
-		if (Enemies(tagged=1) == 2 and target.DebuffRemaining(deadly_poison_debuff) >= DebuffRemainingOnAny(deadly_poison_debuff)) Spell(mutilate text=other)
-		Spell(mutilate)
-	}
 }
 
 AddFunction AssassinationInterruptActions
@@ -309,12 +381,26 @@ AddFunction AssassinationDispelActions
 	DefensiveDispelActions()
 }
 
+AddFunction AssassinationHealActions
+{
+	ItemHealActions()
+	if (HealthPercent() < 70) Spell(crimson_vial)
+}
+
+AddFunction AssassinationDefensiveActions
+{
+	if not BuffPresent(feint) Spell(feint)
+	Spell(fleshcraft)
+	if target.IsTargetingPlayer() Spell(evasion)
+}
+
 ### User Interface ###
 
 AddIcon help=interrupt size=small
 {
 	AssassinationInterruptActions()
 	AssassinationDispelActions()
+	AssassinationHealActions()
 	AssassinationDefensiveActions()
 }
 
@@ -332,7 +418,7 @@ AddIcon enemies=1 help=main
 
 AddIcon help=aoe
 {
-	if not InCombat() AssassinationPrecombatMainActions()
+	if not InCombat() AssassinationPrecombatAoEActions()
 	AssassinationMainActions()
 }
 
