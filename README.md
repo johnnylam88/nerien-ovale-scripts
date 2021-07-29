@@ -30,7 +30,7 @@ The following classes and specializations are up-to-date for Shadowlands 9.1:
 - Druid: Guardian
 - Mage: Arcane, Frost
 - Monk: Brewmaster
-- Rogue: Assassination (9.0.2), Subtlety (9.0.2)
+- Rogue: Assassination
 - Warrior: Fury, Protection
 
 ### Links ###
