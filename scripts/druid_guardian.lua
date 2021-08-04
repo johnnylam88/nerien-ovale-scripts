@@ -156,9 +156,7 @@ Define(skull_bash 106839)
 Define(soothe 2908)
 	SpellInfo(soothe cd=10)
 Define(starfire 197628)
-	SpellInfo(starfire inccounter="solar" resetcounter="lunar")
 	SpellRequire(starfire unusable set=1 enabled=(not Stance(druid_moonkin_form)))
-	SpellAddBuff(starfire eclipse_solar_buff add=1 enabled=(Counter("solar") > 0))
 Define(starsurge 197626)
 	SpellInfo(starsurge cd=10)
 	SpellRequire(starsurge unusable set=1 enabled=(not Stance(druid_moonkin_form)))
@@ -214,8 +212,6 @@ Define(wild_growth 48438)
 	SpellRequire(wild_growth unusable set=1 enabled=(not HasTalent(restoration_affinity_talent)))
 	SpellAddBuff(wild_growth wild_growth)
 Define(wrath 5176)
-	SpellInfo(wrath inccounter="lunar" resetcounter="solar")
-	SpellAddBuff(wrath eclipse_lunar_buff add=1 enabled=(Counter("lunar") > 0))
 SpellList(damage_reduction_cooldown_buff barkskin survival_instincts)
 
 # Covenant Abilities
@@ -378,10 +374,6 @@ AddFunction GuardianCatweaveActions
 	Spell(shred)
 }
 
-AddFunction GuardianEclipseLunarNext { BuffGain(eclipse_lunar_buff) > BuffGain(eclipse_solar_buff) }
-AddFunction GuardianEclipseSolarNext { BuffGain(eclipse_lunar_buff) < BuffGain(eclipse_solar_buff) }
-AddFunction GuardianEclipseAnyNext { not GuardianEclipseLunarNext() and not GuardianEclipseSolarNext() }
-
 AddFunction GuardianOwlweaveActions
 {
 	# Actions to cast from Moonkin Form.
@@ -399,13 +391,13 @@ AddFunction GuardianOwlweaveActions
 	if BuffPresent(eclipse_lunar_buff) Spell(starfire)
 	if BuffPresent(eclipse_solar_buff) Spell(wrath)
 	# Use Starfire or Wrath to move into the next Eclipse state.
-	if GuardianEclipseAnyNext()
+	if EclipseAnyNext()
 	{
 		if IsCovenant(night_fae) Spell(starfire)
 		Spell(wrath)
 	}
-	if GuardianEclipseLunarNext() Spell(wrath)
-	if GuardianEclipseSolarNext() Spell(starfire)
+	if EclipseLunarNext() Spell(wrath)
+	if EclipseSolarNext() Spell(starfire)
 }
 
 AddFunction GuardianPrecombatShortCdActions
