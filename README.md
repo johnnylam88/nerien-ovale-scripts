@@ -27,6 +27,7 @@ Open up the **Ovale** code window and select the script you would like to use fo
 The following classes and specializations are up-to-date for Shadowlands 9.1:
 
 - Death Knight: Blood
+- Demon Hunter: Vengeance
 - Druid: Guardian
 - Mage: Arcane, Frost
 - Monk: Brewmaster
