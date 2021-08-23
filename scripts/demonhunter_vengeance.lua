@@ -313,7 +313,7 @@ AddIcon help=interrupt size=small
 	VengeanceHealActions()
 }
 
-AddIcon help=shortcd
+AddIcon help=active_mitigation
 {
 	if not InCombat() VengeancePrecombatActiveMitigationActions()
 	VengeanceActiveMitigationActions()

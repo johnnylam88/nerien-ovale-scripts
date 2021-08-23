@@ -266,14 +266,14 @@ AddFunction ProtectionUseRevenge
 	if (ProtectionRageUntilShieldBlock() >= RageCost(shield_block) + RageCost(revenge)) Spell(revenge)
 }
 
-AddFunction ProtectionPrecombatShortCdActions
+AddFunction ProtectionPrecombatActiveMitigationActions
 {
 	PrecombatShortCdActions()
 	# Apply Shield Block using Charge with Reprisal.
 	if (EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge text=block)
 }
 
-AddFunction ProtectionShortCdActions
+AddFunction ProtectionActiveMitigationActions
 {
 	if ProtectionShouldShieldBlock()
 	{
@@ -410,10 +410,10 @@ AddIcon help=interrupt size=small
 	if EquippedRuneforge(reprisal_runeforge) ProtectionReprisalActions()
 }
 
-AddIcon help=shortcd
+AddIcon help=active_mitigation
 {
-	if not InCombat() ProtectionPrecombatShortCdActions()
-	ProtectionShortCdActions()
+	if not InCombat() ProtectionPrecombatActiveMitigationActions()
+	ProtectionActiveMitigationActions()
 }
 
 AddIcon enemies=1 help=main

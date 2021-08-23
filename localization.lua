@@ -18,6 +18,7 @@ if Private.initialized then
 	--]]
 
 	-- Default locale (enUS)
+	L.active_mitigation = [[Active mitigation]]
 	L.dispel = [[Dispels]]
 	--L.interrupt = [[Interrupts]]
 	L.mage_arcane_ap_burn = [[Arcane Power Burn phase]]
