@@ -16,6 +16,7 @@ Include(nerien_ovale_library)
 Define(abyssal_strike_talent 22502)
 Define(agonizing_flames_talent 22503)
 Define(bulk_extraction_talent 21902)
+Define(burning_alive_talent 22507)
 Define(concentrated_sigils_talent 22546)
 Define(demonic_talent 22513)
 Define(feast_of_souls_talent 22505)
@@ -131,6 +132,7 @@ Define(the_hunt 323639)
 	SpellInfo(the_hunt cd=90)
 
 # Runeforge Legendary Effects
+Define(fiery_soul_runeforge 29)
 Define(razelikhs_defilement_runeforge 27)
 
 ### Functions ###
@@ -211,6 +213,10 @@ AddFunction VengeancePrecombatShortCdActions
 AddFunction VengeanceShortCdActions
 {
 	Spell(elysian_decree)
+	if EquippedRuneforge(fiery_soul_runeforge) and HasTalent(burning_alive_talent)
+	{
+		if (not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
+	}
 	unless SoulFragments() >= 4 and Spell(spirit_bomb)
 	{
 		Spell(fel_devastation)
@@ -241,9 +247,9 @@ AddFunction VengeanceOffensiveCdActions
 
 AddFunction VengeanceDefensiveCdActions
 {
-	if not target.DebuffPresent(fiery_brand)
+	unless EquippedRuneforge(fiery_soul_runeforge) and HasTalent(burning_alive_talent)
 	{
-		if not BuffPresent(metamorphosis) Spell(fiery_brand)
+		if not BuffPresent(metamorphosis) and not target.DebuffPresent(fiery_brand) Spell(fiery_brand)
 	}
 	if (SoulFragments() >= 4) Spell(soul_barrier)
 	if (SpellCooldown(fiery_brand) > 0 and (HasTalent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)) Spell(metamorphosis)
