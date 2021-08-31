@@ -183,10 +183,13 @@ AddFunction VengeancePrecombatActiveMitigationActions
 
 AddFunction VengeanceActiveMitigationActions
 {
-	if Enemies(tagged=1) > 1 or (target.IsTargetingPlayer() and IncomingPhysicalDamage(3) > 0)
+	unless BuffPresent(metamorphosis)
 	{
-		if (Charges(demon_spikes count=0) > 1.9) Spell(demon_spikes text=cap)
-		if not BuffPresent(demon_spikes_buff) Spell(demon_spikes)
+		if Enemies(tagged=1) > 1 or (target.IsTargetingPlayer() and IncomingPhysicalDamage(3) > 0)
+		{
+			if (Charges(demon_spikes count=0) > 1.9) Spell(demon_spikes text=cap)
+			if not BuffPresent(demon_spikes_buff) Spell(demon_spikes)
+		}
 	}
 }
 
