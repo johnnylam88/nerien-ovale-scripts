@@ -210,7 +210,6 @@ AddFunction VengeancePrecombatShortCdActions
 
 AddFunction VengeanceShortCdActions
 {
-	if (Charges(infernal_strike count=0) >= 1.8) Spell(infernal_strike)
 	Spell(elysian_decree)
 	unless SoulFragments() >= 4 and Spell(spirit_bomb)
 	{
@@ -233,6 +232,7 @@ AddFunction VengeancePrecombatCdActions
 
 AddFunction VengeanceOffensiveCdActions
 {
+	if (Charges(infernal_strike count=0) >= 1.8) Spell(infernal_strike)
 	Spell(sinful_brand)
 	Spell(fodder_to_the_flame)
 	Spell(the_hunt)
