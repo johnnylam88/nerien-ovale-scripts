@@ -2,7 +2,7 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_library"
-	local desc = string.format("[9.0.2] %s: Library", Private.name)
+	local desc = string.format("[9.1] %s: Library", Private.name)
 	local code = [[
 Include(ovale_common)
 
