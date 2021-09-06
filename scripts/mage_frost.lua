@@ -185,7 +185,7 @@ Define(glacial_fragments_runeforge 6830)
 Define(temporal_warp_runeforge 6834)
 Define(temporal_warp_buff 327355)
 	SpellInfo(temporal_warp_buff duration=40)
-	SpellAddBuff(time_warp temporal_warp_buff add=1 enabled=(HasTalent(temporal_warp_runeforge)))
+	SpellAddBuff(time_warp temporal_warp_buff add=1 enabled=(EquippedRuneforge(temporal_warp_runeforge)))
 
 ### Functions ###
 

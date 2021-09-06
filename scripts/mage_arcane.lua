@@ -163,14 +163,14 @@ Define(nether_precision_conduit 336886)
 
 # Runeforge Legendary Effects
 Define(arcane_bombardment_runeforge 6927)
-Define(arcane_harmony_runeforge 14)
 Define(arcane_harmony_buff 332777)
-	SpellAddBuff(arcane_missiles arcane_harmony_buff add=1 enabled=(HasTalent(arcane_harmony_runeforge)))
-	SpellAddBuff(arcane_barrage arcane_harmony_buff set=0 enabled=(HasTalent(arcane_harmony_runeforge)))
+	SpellAddBuff(arcane_missiles arcane_harmony_buff add=1 enabled=(EquippedRuneforge(arcane_infinity_runeforge)))
+	SpellAddBuff(arcane_barrage arcane_harmony_buff set=0 enabled=(EquippedRuneforge(arcane_infinity_runeforge)))
+Define(arcane_infinity_runeforge 6926)
 Define(temporal_warp_runeforge 6834)
 Define(temporal_warp_buff 327355)
 	SpellInfo(temporal_warp_buff duration=40)
-	SpellAddBuff(time_warp temporal_warp_buff add=1 enabled=(HasTalent(temporal_warp_runeforge)))
+	SpellAddBuff(time_warp temporal_warp_buff add=1 enabled=(EquippedRuneforge(temporal_warp_runeforge)))
 
 ### Functions ###
 
