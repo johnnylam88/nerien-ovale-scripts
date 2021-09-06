@@ -132,8 +132,8 @@ Define(the_hunt 323639)
 	SpellInfo(the_hunt cd=90)
 
 # Runeforge Legendary Effects
-Define(fiery_soul_runeforge 29)
-Define(razelikhs_defilement_runeforge 27)
+Define(fiery_soul_runeforge 7048)
+Define(razelikhs_defilement_runeforge 7046)
 
 ### Functions ###
 

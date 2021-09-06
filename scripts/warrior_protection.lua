@@ -165,14 +165,14 @@ Define(spear_of_bastion_debuff 307871)
 	SpellAddTargetDebuff(spear_of_bastion spear_of_bastion_debuff add=1)
 
 # Runeforge Legendary Effects
-Define(reprisal_runeforge 193)
+Define(reprisal_runeforge 6969)
 	SpellRequire(charge rage add=-20 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellAddBuff(charge shield_block add=1 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellAddBuff(charge revenge_buff add=1 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellRequire(intervene rage add=-20 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellAddBuff(intervene shield_block add=1 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellAddBuff(intervene revenge_buff add=1 enabled=(EquippedRuneforge(reprisal_runeforge)))
-Define(the_wall_runeforge 191)
+Define(the_wall_runeforge 6957)
 	SpellRequire(shield_slam rage add=-5 enabled=(EquippedRuneforge(the_wall_runeforge)))
 
 ### Functions ###

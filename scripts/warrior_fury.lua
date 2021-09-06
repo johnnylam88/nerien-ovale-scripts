@@ -187,7 +187,7 @@ Define(spear_of_bastion_debuff 307871)
 	SpellAddTargetDebuff(spear_of_bastion spear_of_bastion_debuff add=1)
 
 # Runeforge Legendary Effects
-Define(elysian_might_runeforge 263)
+Define(elysian_might_runeforge 7730)
 	SpellRequire(spear_of_bastion_debuff duration add=4 enabled=(EquippedRuneforge(elysian_might_runeforge)))
 Define(elysian_might_buff 311193)
 	SpellInfo(elysian_might_buff duration=8)

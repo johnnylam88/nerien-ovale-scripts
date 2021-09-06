@@ -233,11 +233,11 @@ Define(ravenous_frenzy 323546)
 	SpellAddBuff(ravenous_frenzy ravenous_frenzy add=1)
 
 # Runeforge Legendary Effects
-Define(legacy_of_the_sleeper_runeforge 61)
+Define(legacy_of_the_sleeper_runeforge 7095)
 	SpellRequire(barkskin duration add=-30 enabled=(EquippedRuneforge(legacy_of_the_sleeper_runeforge)))
-Define(luffainfused_embrace_runeforge 58)
+Define(luffainfused_embrace_runeforge 7092)
 	SpellRequire(thrash_bear_debuff max_stacks add=1 enabled=(EquippedRuneforge(luffainfused_embrace_runeforge)))
-Define(ursols_fury_remembered_runeforge 60)
+Define(ursols_fury_remembered_runeforge 7094)
 
 ### Functions ###
 

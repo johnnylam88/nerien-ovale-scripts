@@ -180,9 +180,9 @@ Define(mirrors_of_torment 314793)
 	SpellAddTargetDebuff(mirrors_of_torment mirrors_of_torment add=3)
 
 # Runeforge Legendary Effects
-Define(freezing_winds_runeforge 4)
-Define(glacial_fragments_runeforge 5)
-Define(temporal_warp_runeforge 9)
+Define(freezing_winds_runeforge 6829)
+Define(glacial_fragments_runeforge 6830)
+Define(temporal_warp_runeforge 6834)
 Define(temporal_warp_buff 327355)
 	SpellInfo(temporal_warp_buff duration=40)
 	SpellAddBuff(time_warp temporal_warp_buff add=1 enabled=(HasTalent(temporal_warp_runeforge)))
