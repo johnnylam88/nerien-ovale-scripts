@@ -142,6 +142,12 @@ AddFunction VengeanceInRange
 	target.InRange(soul_cleave)
 }
 
+AddFunction VengeanceIsTanking
+{
+	# Return true if AoE-tanking or if the target is targeting you.
+	Enemies(tagged=1) > 1 or target.IsTargetingPlayer()
+}
+
 AddFunction VengeanceFuryDeficit
 {
 	# Account for Fury gains from Immolation Aura and Metamorphosis.
@@ -218,7 +224,7 @@ AddFunction VengeanceShortCdActions
 	Spell(elysian_decree)
 	if EquippedRuneforge(fiery_soul_runeforge) and HasTalent(burning_alive_talent)
 	{
-		if (not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
+		if (VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
 	}
 	unless SoulFragments() >= 4 and Spell(spirit_bomb)
 	{
@@ -252,7 +258,7 @@ AddFunction VengeanceDefensiveCdActions
 {
 	unless EquippedRuneforge(fiery_soul_runeforge) and HasTalent(burning_alive_talent)
 	{
-		if not BuffPresent(metamorphosis) and not target.DebuffPresent(fiery_brand) Spell(fiery_brand)
+		if not BuffPresent(metamorphosis) and VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) Spell(fiery_brand)
 	}
 	if (SoulFragments() >= 4) Spell(soul_barrier)
 	if (SpellCooldown(fiery_brand) > 0 and (HasTalent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)) Spell(metamorphosis)
