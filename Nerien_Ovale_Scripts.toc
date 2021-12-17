@@ -24,6 +24,7 @@ scripts/druid_guardian.lua
 scripts/mage_arcane.lua
 scripts/mage_frost.lua
 scripts/monk_brewmaster.lua
+scripts/paladin_protection.lua
 scripts/rogue_assassination.lua
 scripts/rogue_subtlety.lua
 scripts/warrior_fury.lua
