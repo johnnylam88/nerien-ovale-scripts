@@ -27,4 +27,5 @@ if Private.initialized then
 	--L.not_in_melee_range = [[Not in melee range]]
 	L.opt_nerien_shield_block = [[Always suggest Shield Block]]
 	L.trinkets = [[Trinkets]]
+	L.opt_suggest_covenant_ability= [[Suggest Covenant abilities]]
 end

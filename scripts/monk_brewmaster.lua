@@ -120,17 +120,22 @@ Define(moderate_stagger_debuff 124274)
 SpellList(any_stagger_debuff light_stagger_debuff moderate_stagger_debuff heavy_stagger_debuff)
 
 # Covenant Abilities
+AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
 Define(bonedust_brew 325216)
 	SpellInfo(bonedust_brew cd=60)
+	SpellRequire(bonedust_brew unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(bonedust_brew unusable set=1 enabled=(not IsCovenant(necrolord)))
 Define(faeline_stomp 327104)
 	SpellInfo(faeline_stomp cd=30)
+	SpellRequire(faeline_stomp unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(faeline_stomp unusable set=1 enabled=(not IsCovenant(night_fae)))
 Define(fallen_order 326860)
 	SpellInfo(fallen_order cd=180)
+	SpellRequire(fallen_order unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(fallen_order unusable set=1 enabled=(not IsCovenant(venthyr)))
 Define(weapons_of_order 310454)
 	SpellInfo(weapons_of_order cd=120)
+	SpellRequire(weapons_of_order unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(weapons_of_order unusable set=1 enabled=(not IsCovenant(kyrian)))
 
 # Runeforge Legendary Effects

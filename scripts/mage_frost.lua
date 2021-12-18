@@ -170,12 +170,16 @@ Define(winters_chill_debuff 228358)
 SpellList(frozen_debuff freeze frost_nova ice_nova winters_chill_debuff)
 
 # Covenant Abilities
+# TODO Kyrian and Night Fae abilities
+AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
 Define(deathborne 324220)
 	SpellInfo(deathborne cd=180 duration=25)
+	SpellRequire(deathborne unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(deathborne unusable set=1 enabled=(not IsCovenant(necrolord)))
 	SpellAddBuff(deathborne deathborne add=1)
 Define(mirrors_of_torment 314793)
 	SpellInfo(mirrors_of_torment cd=90 duration=25)
+	SpellRequire(mirrors_of_torment unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(mirrors_of_torment unusable set=1 enabled=(not IsCovenant(venthyr)))
 	SpellAddTargetDebuff(mirrors_of_torment mirrors_of_torment add=3)
 
