@@ -42,7 +42,7 @@ Define(arcane_explosion 1449)
 	SpellInfo(arcane_explosion arcanecharges=-1)
 Define(arcane_familiar 205022)
 	SpellInfo(arcane_familiar cd=10)
-	SpellRequire(arcane_familiar unusable set=1 enabled=(not HasTalent(arcane_familiar_talent)))
+	SpellRequire(arcane_familiar unusable set=1 enabled=(not Talent(arcane_familiar_talent)))
 Define(arcane_familiar_buff 210126)
 	SpellInfo(arcane_familiar_buff duration=3600)
 	SpellAddBuff(arcane_familiar arcane_familiar_buff add=1)
@@ -53,7 +53,7 @@ Define(arcane_missiles 5143)
 	SpellInfo(arcane_missiles channel=3 cd_haste=1)
 Define(arcane_orb 153626)
 	SpellInfo(arcane_orb cd=20 arcanecharges=-1)
-	SpellRequire(arcane_orb unusable set=1 enabled=(not HasTalent(arcane_orb_talent)))
+	SpellRequire(arcane_orb unusable set=1 enabled=(not Talent(arcane_orb_talent)))
 Define(arcane_power 12042)
 	SpellInfo(arcane_power cd=120 duration=10 gcd=0 offgcd=1)
 	SpellRequire(arcane_power duration add=5 enabled=(Level() >= 56))
@@ -73,11 +73,11 @@ Define(evocation 12051)
 Define(fire_blast 319836)
 	SpellInfo(fire_blast cd=12 cd_haste=1)
 Define(focus_magic 321358)
-	SpellRequire(focus_magic unusable set=1 enabled=(not HasTalent(focus_magic_talent)))
+	SpellRequire(focus_magic unusable set=1 enabled=(not Talent(focus_magic_talent)))
 	SpellAddTargetBuff(focus_magic focus_magic add=1)
 Define(frost_nova 122)
-	SpellRequire(frost_nova cd set=30 enabled=(not HasTalent(ice_ward_talent)))
-	SpellRequire(frost_nova charge_cd set=30 enabled=(HasTalent(ice_ward_talent)))
+	SpellRequire(frost_nova cd set=30 enabled=(not Talent(ice_ward_talent)))
+	SpellRequire(frost_nova charge_cd set=30 enabled=(Talent(ice_ward_talent)))
 Define(frostbolt 116)
 Define(greater_invisibility 110959)
 	SpellInfo(greater_invisibility cd=120)
@@ -101,7 +101,7 @@ Define(nether_precision_buff 336889)
 	SpellAddBuff(arcane_blast nether_precision_buff add=-1 enabled=(Conduit(nether_precision_conduit)))
 Define(nether_tempest 114923)
 	SpellInfo(nether_tempest duration=12 tick=1)
-	SpellRequire(nether_tempest unusable set=1 enabled=(not HasTalent(nether_tempest_talent)))
+	SpellRequire(nether_tempest unusable set=1 enabled=(not Talent(nether_tempest_talent)))
 	SpellAddTargetDebuff(nether_tempest nether_tempest add=1)
 Define(polymorph 118)
 Define(presence_of_mind 205025)
@@ -116,24 +116,24 @@ Define(remove_curse 475)
 	SpellInfo(remove_curse cd=8)
 Define(ring_of_frost 113724)
 	SpellInfo(ring_of_frost cd=45)
-	SpellRequire(ring_of_frost unusable set=1 enabled=(not HasTalent(ring_of_frost_talent)))
+	SpellRequire(ring_of_frost unusable set=1 enabled=(not Talent(ring_of_frost_talent)))
 Define(rule_of_threes_buff 264774)
 	SpellInfo(rule_of_threes_buff duration=15)
-	SpellAddBuff(arcane_blast rule_of_threes_buff add=1 enabled=(HasTalent(rule_of_threes_talent) and ArcaneCharges() == 2))
-	SpellAddBuff(arcane_orb rule_of_threes_buff add=1 enabled=(HasTalent(rule_of_threes_talent) and ArcaneCharges() == 2))
-	SpellAddBuff(arcane_orb rule_of_threes_buff add=1 enabled=(HasTalent(rule_of_threes_talent) and ArcaneCharges() == 2))
-	SpellAddBuff(touch_of_the_magi rule_of_threes_buff add=1 enabled=(HasTalent(rule_of_threes_talent)))
+	SpellAddBuff(arcane_blast rule_of_threes_buff add=1 enabled=(Talent(rule_of_threes_talent) and ArcaneCharges() == 2))
+	SpellAddBuff(arcane_orb rule_of_threes_buff add=1 enabled=(Talent(rule_of_threes_talent) and ArcaneCharges() == 2))
+	SpellAddBuff(arcane_orb rule_of_threes_buff add=1 enabled=(Talent(rule_of_threes_talent) and ArcaneCharges() == 2))
+	SpellAddBuff(touch_of_the_magi rule_of_threes_buff add=1 enabled=(Talent(rule_of_threes_talent)))
 Define(rune_of_power 116011)
 	SpellInfo(rune_of_power cd=45)
-	SpellRequire(rune_of_power unusable set=1 enabled=(not HasTalent(rune_of_power_talent)))
+	SpellRequire(rune_of_power unusable set=1 enabled=(not Talent(rune_of_power_talent)))
 Define(rune_of_power_buff 116014)
 	SpellInfo(rune_of_power_buff duration=12)
-	SpellAddBuff(arcane_power rune_of_power_buff add=1 enabled=(HasTalent(rune_of_power_talent)))
+	SpellAddBuff(arcane_power rune_of_power_buff add=1 enabled=(Talent(rune_of_power_talent)))
 	SpellAddBuff(rune_of_power rune_of_power_buff add=1)
 Define(shimmer 212653)
 	SpellInfo(shimmer charge_cd=25 cd_haste=1 gcd=0 offgcd=1)
-	SpellRequire(shimmer unusable set=1 enabled=(not HasTalent(shimmer_talent)))
-	SpellRequire(blink replaced_by set=shimmer enabled=(HasTalent(shimmer_talent)))
+	SpellRequire(shimmer unusable set=1 enabled=(not Talent(shimmer_talent)))
+	SpellRequire(blink replaced_by set=shimmer enabled=(Talent(shimmer_talent)))
 Define(slow 31589)
 Define(spellsteal 30449)
 Define(temporal_displacement_debuff 80354)
@@ -234,7 +234,7 @@ AddFunction ArcaneWithinArcanePowerBurn
 	BuffPresent(arcane_power) or
 	(
 		# Check in case Arcane Power is shorter than Rune of Power.
-		HasTalent(rune_of_power_talent) and BuffPresent(rune_of_power_buff) and
+		Talent(rune_of_power_talent) and BuffPresent(rune_of_power_buff) and
 		SpellCooldown(arcane_power) > SpellCooldownDuration(arcane_power) - BaseDuration(rune_of_power_buff)
 	)
 }
@@ -254,10 +254,10 @@ AddFunction ArcaneArcanePowerBurnActions
 		Spell(touch_of_the_magi)
 		if (SpellCooldown(touch_of_the_magi) > 0) Spell(arcane_power)
 		if BuffPresent(arcane_power) Spell(deathborne)
-		if (HasTalent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
+		if (Talent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
 		if (
-			(HasTalent(rune_of_power_talent) and BuffPresent(rune_of_power_buff) and BuffRemaining(rune_of_power_buff) < 2) or
-			(not HasTalent(rune_of_power_talent) and target.DebuffPresent(touch_of_the_magi_debuff) and target.DebuffRemaining(touch_of_the_magi_debuff) < 2) or
+			(Talent(rune_of_power_talent) and BuffPresent(rune_of_power_buff) and BuffRemaining(rune_of_power_buff) < 2) or
+			(not Talent(rune_of_power_talent) and target.DebuffPresent(touch_of_the_magi_debuff) and target.DebuffRemaining(touch_of_the_magi_debuff) < 2) or
 			(BuffPresent(arcane_power) and BuffRemaining(arcane_power) < 2)
 		) {
 			Spell(presence_of_mind)
@@ -291,7 +291,7 @@ AddFunction ArcaneShouldEnterMiniBurn
 	#
 	not SpellCooldown(touch_of_the_magi) > 0 and
 	(
-		(HasTalent(rune_of_power_talent) and not SpellCooldown(rune_of_power) > 0) or
+		(Talent(rune_of_power_talent) and not SpellCooldown(rune_of_power) > 0) or
 		(
 			(not SpellCooldown(arcane_power) > 0) or
 			(40 < SpellCooldown(arcane_power) and SpellCooldown(arcane_power) < 50)
@@ -303,7 +303,7 @@ AddFunction ArcaneWithinMiniBurn
 {
 	target.DebuffPresent(touch_of_the_magi_debuff) or
 	(
-		HasTalent(rune_of_power_talent) and
+		Talent(rune_of_power_talent) and
 		BuffPresent(rune_of_power_buff) and
 		SpellCooldown(touch_of_the_magi) > SpellCooldownDuration(touch_of_the_magi) - BaseDuration(rune_of_power_buff)
 	)
@@ -319,11 +319,11 @@ AddFunction ArcaneMiniBurnActions
 			if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest)
 			Spell(touch_of_the_magi)
 			if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
-			if (HasTalent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
+			if (Talent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
 			if (
 				ArcaneCharges() == MaxArcaneCharges() or
 				(
-					HasTalent(rune_of_power_talent) and
+					Talent(rune_of_power_talent) and
 					BuffPresent(rune_of_power_buff) and BuffRemaining(rune_of_power_buff) < 2
 				)
 			) {
@@ -382,7 +382,7 @@ AddFunction ArcaneAoEActions
 		if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest text=burn)
 		Spell(touch_of_the_magi text=burn)
 		if not BuffPresent(rune_of_power_buff) Spell(rune_of_power text=burn)
-		if (HasTalent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
+		if (Talent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
 		if (ArcaneCharges() <= 2) Spell(arcane_orb text=burn)
 		if (ArcaneCharges() == MaxArcaneCharges()) Spell(arcane_barrage text=burn)
 		if (BuffPresent(clearcasting_buff) and ManaPercent() < 95) Spell(arcane_missiles text=burn)

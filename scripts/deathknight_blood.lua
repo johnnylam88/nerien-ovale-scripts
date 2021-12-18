@@ -23,14 +23,14 @@ Define(voracious_talent 19230)
 # Class Abilities
 Define(antimagic_shell 48707)
 	SpellInfo(antimagic_shell cd=60 offgcd=1)
-	SpellRequire(antimagic_shell cd add=-20 enabled=(HasTalent(antimagic_barrier_talent)))
+	SpellRequire(antimagic_shell cd add=-20 enabled=(Talent(antimagic_barrier_talent)))
 Define(antimagic_zone 51052)
 	SpellInfo(antimagic_zone cd=120)
 Define(asphyxiate 221562)
 	SpellInfo(asphyxiate cd=45)
 Define(blooddrinker 206931)
 	SpellInfo(blooddrinker runes=1 runicpower=-10 cd=30 channel=3 tick=1)
-	SpellRequire(blooddrinker unusable set=1 enabled=(not HasTalent(blooddrinker_talent)))
+	SpellRequire(blooddrinker unusable set=1 enabled=(not Talent(blooddrinker_talent)))
 Define(blooddrinker_talent 19166)
 Define(blood_boil 50842)
 	SpellInfo(blood_boil cd=7.5)
@@ -39,7 +39,7 @@ Define(blood_plague_debuff 55078)
 	SpellAddTargetDebuff(blood_boil blood_plague_debuff add=1)
 Define(blood_tap 221699)
 	SpellInfo(blood_tap cd=0.5 charge_cd=60 runes=-1)
-	SpellRequire(blood_tap unusable set=1 enabled=(not HasTalent(blood_tap_talent)))
+	SpellRequire(blood_tap unusable set=1 enabled=(not Talent(blood_tap_talent)))
 Define(bone_shield 195181)
 	SpellInfo(bone_shield duration=30 max_stacks=10)
 	SpellAddBuff(dancing_rune_weapon bone_shield add=5 enabled=(EquippedRuneforge(crimson_rune_weapon_runeforge)))
@@ -47,22 +47,22 @@ Define(bone_shield 195181)
 	SpellAddBuff(tombstone bone_shield add=-5)
 Define(bonestorm 194844)
 	SpellInfo(bonestorm runicpower=10 cd=60)
-	SpellRequire(bonestorm unusable set=1 enabled=(not HasTalent(bonestorm_talent)))
+	SpellRequire(bonestorm unusable set=1 enabled=(not Talent(bonestorm_talent)))
 Define(bonestorm_talent 21209)
 Define(consumption 274156)
 	SpellInfo(consumption cd=30)
-	SpellRequire(consumption unusable set=1 enabled=(not HasTalent(consumption_talent)))
+	SpellRequire(consumption unusable set=1 enabled=(not Talent(consumption_talent)))
 Define(consumption_talent 19220)
 Define(crimson_scourge_buff 81141)
 	SpellInfo(crimson_scourge_buff duration=15)
 	SpellAddBuff(death_and_decay crimson_scourge_buff set=0)
 	SpellRequire(death_and_decay runes set=0 enabled=(BuffPresent(crimson_scourge_buff)))
-	SpellRequire(death_and_decay runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not HasTalent(relish_in_blood_talent)))
-	SpellRequire(death_and_decay runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and HasTalent(relish_in_blood_talent)))
+	SpellRequire(death_and_decay runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not Talent(relish_in_blood_talent)))
+	SpellRequire(death_and_decay runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and Talent(relish_in_blood_talent)))
 	SpellAddBuff(deaths_due crimson_scourge_buff set=0)
 	SpellRequire(deaths_due runes set=0 enabled=(BuffPresent(crimson_scourge_buff)))
-	SpellRequire(deaths_due runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not HasTalent(relish_in_blood_talent)))
-	SpellRequire(deaths_due runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and HasTalent(relish_in_blood_talent)))
+	SpellRequire(deaths_due runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not Talent(relish_in_blood_talent)))
+	SpellRequire(deaths_due runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and Talent(relish_in_blood_talent)))
 Define(dancing_rune_weapon 49028)
 	SpellInfo(dancing_rune_weapon cd=120)
 Define(dancing_rune_weapon_buff 81256)
@@ -86,11 +86,11 @@ Define(death_strike 49998)
 	SpellRequire(death_strike runicpower add=-5 enabled=(SpellKnown(ossuary) and BuffStacks(bone_shield) >= 5))
 Define(gorefiends_grasp 108199)
 	SpellInfo(gorefiends_grasp cd=120)
-	SpellRequire(gorefiends_grasp cd add=-30 enabled=(HasTalent(tightening_grasp_talent)))
+	SpellRequire(gorefiends_grasp cd add=-30 enabled=(Talent(tightening_grasp_talent)))
 Define(heart_strike 206930)
 	SpellInfo(heart_strike runes=1 runicpower=-10)
 	SpellRequire(heart_strike runicpower add=-5 enabled=(Level() >= 23))
-	SpellRequire(heart_strike runicpower add=-2 enabled=(HasTalent(heartbreaker_talent)))
+	SpellRequire(heart_strike runicpower add=-2 enabled=(Talent(heartbreaker_talent)))
 Define(hemostasis_buff 273947)
 	SpellInfo(hemostasis_buff duration=15 max_stacks=5)
 	SpellAddBuff(death_strike hemostasis_buff set=0)
@@ -114,7 +114,7 @@ Define(sacrificial_pact 327574)
     SpellRequire(sacrificial_pact unusable set=1 enabled=(TotemExpires(raise_dead)))
 Define(tombstone 219809)
 	SpellInfo(tombstone cd=60)
-	SpellRequire(tombstone unusable set=1 enabled=(not HasTalent(tombstone_talent)))
+	SpellRequire(tombstone unusable set=1 enabled=(not Talent(tombstone_talent)))
 Define(tombstone_talent 23454)
 Define(vampiric_blood 55233)
 	SpellInfo(vampiric_blood cd=90 gcd=0 offgcd=1)
@@ -151,18 +151,18 @@ AddFunction BloodInRange
 AddFunction BloodHasPooledForBonestorm
 {
 	# Bonestorm only with 3+ targets and Runic Power is above 90 for full healing ticks.
-	HasTalent(bonestorm_talent) and not SpellCooldown(bonestorm) > 0 and Enemies(tagged=1) >= 3 and RunicPower() > 90
+	Talent(bonestorm_talent) and not SpellCooldown(bonestorm) > 0 and Enemies(tagged=1) >= 3 and RunicPower() > 90
 }
 
 AddFunction BloodIsPoolingForBonestorm
 {
 	# Begin pooling for Bonestorm when it is down to 3 seconds left on the cooldown.
-	HasTalent(bonestorm_talent) and SpellCooldown(bonestorm) < 3 and Enemies(tagged=1) >= 3 and not RunicPower() > 90
+	Talent(bonestorm_talent) and SpellCooldown(bonestorm) < 3 and Enemies(tagged=1) >= 3 and not RunicPower() > 90
 }
 
 AddFunction BloodDeathStrikeMinHealing
 {
-	MaxHealth() * (7 + 3 * HasTalent(voracious_talent)) / 100
+	MaxHealth() * (7 + 3 * Talent(voracious_talent)) / 100
 }
 
 AddFunction BloodDeathStrikeBaseHealing
@@ -174,7 +174,7 @@ AddFunction BloodDeathStrikeBaseHealing
 AddFunction BloodDeathStrikeHealing
 {
 	# Death Strike healing is increased by both Voracious and Hemostatis talents.
-	BloodDeathStrikeBaseHealing() * ((100 + 20 * HasTalent(voracious_talent)) / 100) * ((100 + 8 * BuffStacks(hemostasis_buff)) / 100)
+	BloodDeathStrikeBaseHealing() * ((100 + 20 * Talent(voracious_talent)) / 100) * ((100 + 8 * BuffStacks(hemostasis_buff)) / 100)
 }
 
 AddFunction BloodHeartStrikeMaxTargets
@@ -193,8 +193,8 @@ AddFunction BloodHeartStrikeTargets
 AddFunction BloodHeartStrikeRunicPower
 {
 	# Return the amount of runic power generated by Heart Strike.
-	if (Level() < 23) (10 + HasTalent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets())
-	15 + HasTalent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets()
+	if (Level() < 23) (10 + Talent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets())
+	15 + Talent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets()
 }
 
 AddFunction BloodOssuaryThreshold

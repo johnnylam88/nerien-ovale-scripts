@@ -30,7 +30,7 @@ Define(weaponmaster_talent 19233)
 # Class Abilities
 Define(backstab 53)
 	SpellInfo(backstab energy=35 combopoints=-1)
-	SpellRequire(backstab replaced_by set=gloomblade enabled=(HasTalent(gloomblade_talent)))
+	SpellRequire(backstab replaced_by set=gloomblade enabled=(Talent(gloomblade_talent)))
 	SpellRequire(backstab combopoints add=-1 enabled=(BuffPresent(shadow_blades)))
 Define(black_powder 319175)
 	SpellInfo(black_powder energy=35 combopoints=1 set_combopoints=0)
@@ -55,7 +55,7 @@ Define(find_weakness 316220)
 	SpellInfo(find_weakness duration=18)
 Define(gloomblade 200758)
 	SpellInfo(gloomblade energy=35 combopoints=-1)
-	SpellRequire(gloomblade unusable set=1 enabled=(not HasTalent(gloomblade_talent)))
+	SpellRequire(gloomblade unusable set=1 enabled=(not Talent(gloomblade_talent)))
 	SpellRequire(gloomblade combopoints add=-1 enabled=(BuffPresent(shadow_blades)))
 Define(instant_poison 315584)
 	SpellInfo(instant_poison duration=3600 gcd=0 offgcd=1)
@@ -66,7 +66,7 @@ Define(kidney_shot 408)
 	SpellInfo(kidney_shot energy=25 cd=20 combopoints=1 set_combopoints=0)
 Define(marked_for_death 137619)
 	SpellInfo(marked_for_death cd=60 duration=60 gcd=0 offgcd=1 combopoints=-5)
-	SpellRequire(marked_for_death unusable set=1 enabled=(not HasTalent(marked_for_death_talent)))
+	SpellRequire(marked_for_death unusable set=1 enabled=(not Talent(marked_for_death_talent)))
 	SpellAddTargetDebuff(marked_for_death marked_for_death add=1)
 Define(master_assassins_mark 340094)
 Define(numbing_poison 5761)
@@ -77,7 +77,7 @@ Define(rupture 1943)
 	SpellAddTargetDebuff(rupture rupture add=1)
 Define(secret_technique 280719)
 	SpellInfo(secret_technique energy=30 combopoints=1 cd=45 gcd=1)
-	SpellRequire(secret_technique unusable set=1 enabled=(not HasTalent(secret_technique_talent)))
+	SpellRequire(secret_technique unusable set=1 enabled=(not Talent(secret_technique_talent)))
 Define(shadow_blades 121471)
 	SpellInfo(shadow_blades cd=180 duration=20 gcd=0 offgcd=1)
 	SpellAddBuff(shadow_blades shadow_blades add=1)
@@ -85,7 +85,7 @@ Define(shadow_dance 185313)
 	SpellInfo(shadow_dance cd=8 charge_cd=60 gcd=0 offgcd=1)
 Define(shadow_dance_buff 185422)
 	SpellInfo(shadow_dance_buff duration=8)
-	SpellRequire(shadow_dance_buff duration add=1 enabled=(HasTalent(subterfuge_talent)))
+	SpellRequire(shadow_dance_buff duration add=1 enabled=(Talent(subterfuge_talent)))
 	SpellAddBuff(shadow_dance shadow_dance_buff add=1)
 Define(shadowstep 36554)
 	SpellInfo(shadowstep cd=1 charge_cd=30 gcd=0 offgcd=1)
@@ -102,7 +102,7 @@ Define(shuriken_storm 197835)
 	SpellInfo(shuriken_storm energy=35)
 Define(shuriken_tornado 277925)
 	SpellInfo(shuriken_tornado energy=60 cd=60 duration=4 tick=1)
-	SpellRequire(shuriken_tornado unusable set=1 enabled=(not HasTalent(shuriken_tornado_talent)))
+	SpellRequire(shuriken_tornado unusable set=1 enabled=(not Talent(shuriken_tornado_talent)))
 	SpellAddBuff(shuriken_tornado shuriken_tornado add=1)
 Define(slice_and_dice 315496)
 	SpellInfo(slice_and_dice energy=25 combopoints=1 set_combopoints=0 duration=6 add_duration_combopoints=6 tick=2)
@@ -185,7 +185,7 @@ AddFunction SubtletyShadowDanceWindowCondition
 
 AddFunction SubtletyEnergyPoolingBaseThreshold
 {
-	(MaxEnergy() - 25 - HasTalent(vigor_talent) * 20 - HasTalent(master_of_shadows_talent) * 20 - HasTalent(shadow_focus_talent) * 25 - HasTalent(alacrity_talent) * 20)
+	(MaxEnergy() - 25 - Talent(vigor_talent) * 20 - Talent(master_of_shadows_talent) * 20 - Talent(shadow_focus_talent) * 25 - Talent(alacrity_talent) * 20)
 }
 
 AddFunction SubtletyEnergyPoolingThreshold
@@ -266,8 +266,8 @@ AddFunction SubtletyCdActions
 	if (SubtletySymbolsOfDeathIsReady() and SubtletyBuilderCondition()) Spell(shadow_blades)
 	if EquippedRuneforge(tiny_toxic_blade_runeforge)
 	{
-		if (HasTalent(nightstalker_talent) and BuffPresent(shadow_dance_buff)) Spell(shiv)
-		if (not HasTalent(nightstalker_talent) and not BuffPresent(shadow_dance_buff)) Spell(shiv)
+		if (Talent(nightstalker_talent) and BuffPresent(shadow_dance_buff)) Spell(shiv)
+		if (not Talent(nightstalker_talent) and not BuffPresent(shadow_dance_buff)) Spell(shiv)
 	}
 	if (Enemies(tagged=1) < 5) Spell(echoing_reprimand)
 	if (BuffPresent(shadow_dance_buff) and BuffPresent(symbols_of_death)) Spell(shuriken_tornado)
@@ -280,7 +280,7 @@ AddFunction SubtletySliceAndDiceActions
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
 		if (SubtletyShadowDanceWindowCondition() and SubtletySliceAndDiceNeedsEarlyRefresh())
 		{
-			if not HasTalent(premeditation_talent) Spell(slice_and_dice)
+			if not Talent(premeditation_talent) Spell(slice_and_dice)
 		}
 		if (not BuffPresent(shadow_dance_buff) and BuffRefreshable(slice_and_dice)) Spell(slice_and_dice)
 	}
@@ -325,7 +325,7 @@ AddFunction SubtletyFillerBuilderActions
 
 AddFunction SubtletyPriorityBuilderActions
 {
-	if (BuffPresent(premeditation) or HasTalent(weaponmaster_talent))
+	if (BuffPresent(premeditation) or Talent(weaponmaster_talent))
 	{
 		if (Enemies(tagged=1) < 5 and DebuffCountOnAny(find_weakness) < Enemies(tagged=1)) Spell(shadowstrike text=cycle)
 		if (Enemies(tagged=1) >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
