@@ -4,9 +4,9 @@ if Private.initialized then
 	local name = "nerien_ovale_monk_brewmaster"
 	local desc = string.format("[9.1] %s: Monk - Brewmaster", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Brewmaster Monk Rotation Guide - Shadowlands 9.1.0"
-#	by Llarold-Area52
-# https://www.wowhead.com/brewmaster-monk-rotation-guide
+# Adapted from Icy Vein's Brewmaster Monk Tank Guide for Shadowlands 9.1.5
+#	by Sinzhu
+# https://www.icy-veins.com/wow/brewmaster-monk-pve-tank-rotation-cooldowns-abilities
 
 Include(nerien_ovale_library)
 
@@ -90,6 +90,7 @@ Define(purifying_brew 119582)
 Define(rushing_jade_wind 116847)
 	SpellInfo(rushing_jade_wind cd=6)
 	SpellRequire(rushing_jade_wind unusable set=1 enabled=(not Talent(rushing_jade_wind_talent)))
+	SpellAddBuff(rushing_jade_wind rushing_jade_wind add=1)
 Define(shuffle 215479)
 	SpellAddBuff(blackout_kick shuffle add=3)
 	SpellAddBuff(keg_smash shuffle add=5)
@@ -187,55 +188,51 @@ AddFunction BrewmasterShortCdActions
 	if (Talent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew)
 	if not BuffPresent(blackout_combo_buff) Spell(celestial_brew)
 	Spell(bonedust_brew)
-	Spell(exploding_keg)
 	# Faeline Stomp has higher priority than Keg Smash for AoE.
 	if (Enemies(tagged=1) >= 3) Spell(faeline_stomp)
 	unless (Spell(keg_smash) or Spell(blackout_kick))
 	{
 		Spell(faeline_stomp)
+		unless Spell(breath_of_fire)
+		{
+			Spell(exploding_keg)
+		}
 	}
 	Spell(fleshcraft)
 }
 
 AddFunction BrewmasterPrecombatMainActions
 {
-	# Opener.
-	Spell(rushing_jade_wind)
+	# Ensure Shuffle is up when entering combat.
+	if not BuffPresent(shuffle)
+	{
+		Spell(keg_smash)
+		Spell(blackout_kick)
+		Spell(spinning_crane_kick)
+	}
 }
 
 AddFunction BrewmasterMainActions
 {
-	Spell(keg_smash)
-	# Ensure Shuffle is up.
-	if not BuffPresent(shuffle)
-	{
-		Spell(blackout_kick)
-		BrewmasterUseSpinningCraneKick()
-	}
-	if (Enemies(tagged=1) >= 3) Spell(breath_of_fire)
-	# Consume Blackout Combo buff for damage if it won't push back Keg Smash.
+	if BuffPresent(charred_passions_buff) Spell(blackout_kick)
+	if (SpellCharges(keg_smash count=0) >= SpellMaxCharges(keg_smash) - 0.2) Spell(keg_smash)
 	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3) BrewmasterUseTigerPalm()
-	Spell(blackout_kick)
+	if not EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(breath_of_fire)
-	if BuffPresent(charred_passions_buff) BrewmasterUseSpinningCraneKick()
+	if EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(rushing_jade_wind)
-	if (Enemies(tagged=1) < 2) Spell(chi_wave)
+	Spell(chi_wave)
+	if BuffPresent(charred_passions_buff) BrewmasterUseSpinningCraneKick()
 	Spell(chi_burst)
-	# Maintain the Eye of the Tiger buff with Tiger Palm if it won't push back Keg Smash.
 	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff)) BrewmasterUseTigerPalm()
-	# Use Expel Harm with Gift of the Ox orbs to heal if needed.
-	if (SpellCount(expel_harm) > 0 and HealthPercent() + 10 * SpellCount(expel_harm) < 70) BrewmasterUseExpelHarm()
-	# Use fillers for multi-target if they won't push back Keg Smash.
+	if BuffPresent(rushing_jade_wind) Spell(rushing_jade_wind)
 	if Enemies(tagged=1) > 1
 	{
-		# Avoid using Spinning Crane Kick if you will need to use a stronger Expel Harm.
-		if (Enemies(tagged=1) >= 3 and (HealthPercent() > 60 or SpellCount(expel_harm) < 3)) BrewmasterUseSpinningCraneKick()
+		if (Enemies(tagged=1) >= 3) BrewmasterUseSpinningCraneKick()
 		if (Enemies(tagged=1) <  3) BrewmasterUseTigerPalm()
 	}
-	# Tiger Palm is a terrible offensive skill, so only use it as a filler to prevent capping energy.
-	if (TimeToMaxEnergy() < 2 * GCD()) Spell(tiger_palm)
-	# Use fillers that cost no energy.
-	Spell(chi_wave)
+	# Avoid energy-capping with Tiger Palm.
+	if (TimeToMaxEnergy() < GCD()) Spell(tiger_palm)
 }
 
 AddFunction BrewmasterPrecombatCdActions
@@ -247,8 +244,8 @@ AddFunction BrewmasterOffensiveCdActions
 {
 	Spell(touch_of_death)
 	if (target.TimeToDie() > 25) Spell(invoke_niuzao_the_black_ox)
-	# Weapons of Order resets the cooldown of Keg Smash.
-	if (not Spell(keg_smash) and SpellCooldown(keg_smash) > 4) Spell(weapons_of_order)
+	# Weapons of Order resets the cooldown for one charge of Keg Smash.
+	if (SpellCharges(keg_smash count=1) < 1.5) Spell(weapons_of_order)
 	Spell(fallen_order)
 }
 
@@ -299,6 +296,12 @@ AddFunction BrewmasterDispelActions
 
 AddFunction BrewmasterHealActions
 {
+	# Expel Harm if we have at least 3 Gift of the Ox orbs and won't overheal.
+	if (HealthPercent() < 70 and SpellCount(expel_harm) > 2)
+	{
+		# Assume each Gift of the Ox orb heals for 10% health.
+		if (HealthPercent() + 10 * SpellCount(expel_harm) < 90) BrewmasterUseExpelHarm()
+	}
 	ItemHealActions()
 	# Use Healing Elixir between 60% and 30% health.
 	if (HealthPercent() < 60 - 30 * (2 - Charges(healing_elixir count=0))) Spell(healing_elixir)
