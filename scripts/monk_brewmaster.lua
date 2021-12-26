@@ -186,9 +186,9 @@ AddFunction BrewmasterShortCdActions
 	# Use Black Ox Brew when Celestial Brew is on cooldown and Purifying Brew has no charges.
 	if (SpellCooldown(celestial_brew) > GCD() and SpellCharges(purifying_brew count=0) < 0.75) Spell(black_ox_brew)
 	# Never let Celestial Brew or Purifying Brew sit on cooldown while tanking.
-	if (SpellCharges(purifying_brew count=0) > 1.9) Spell(purifying_brew)
+	if (SpellCharges(purifying_brew count=0) > 1.9) Spell(purifying_brew text=cap)
 	# Use up Purifying Brew charges if Black Ox Brew is coming off cooldown.
-	if (Talent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew)
+	if (Talent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew text=dump)
 	if not BuffPresent(blackout_combo_buff) Spell(celestial_brew)
 	Spell(bonedust_brew)
 	# Faeline Stomp has higher priority than Keg Smash for AoE.
@@ -235,7 +235,7 @@ AddFunction BrewmasterMainActions
 		if (Enemies(tagged=1) <  3) BrewmasterUseTigerPalm()
 	}
 	# Avoid energy-capping with Tiger Palm.
-	if (TimeToMaxEnergy() < GCD()) Spell(tiger_palm)
+	if (TimeToMaxEnergy() < GCD()) Spell(tiger_palm text=cap)
 }
 
 AddFunction BrewmasterPrecombatCdActions
