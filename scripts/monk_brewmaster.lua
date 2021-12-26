@@ -152,6 +152,15 @@ AddFunction BrewmasterInRange
 	(not SpellCooldown(keg_smash) > 0 and target.InRange(keg_smash)) or (SpellCooldown(keg_smash) > 0 and target.InRange(tiger_palm))
 }
 
+AddFunction BrewmasterKegSmashCost
+{
+	# Slowly scale up the perceived cost of Keg Smash so that when
+	# Weapons of Order is off cooldown, it will equal the cost of two
+	# Keg Smashes.
+	if not (IsCovenant(kyrian) and SpellKnown(weapons_of_order)) PowerCost(keg_smash)
+	if     (IsCovenant(kyrian) and SpellKnown(weapons_of_order)) PowerCost(keg_smash) * (1 + (1 - SpellCooldown(weapons_of_order) / SpellCooldownDuration(weapons_of_order)))
+}
+
 AddFunction BrewmasterEnergyUntilKegSmashPlusFiller
 {
 	if (SpellCooldown(keg_smash) >  GCDRemaining()) (Energy() + EnergyRegenRate() * (GCD() + SpellCooldown(keg_smash)))
@@ -161,19 +170,19 @@ AddFunction BrewmasterEnergyUntilKegSmashPlusFiller
 AddFunction BrewmasterUseExpelHarm
 {
 	# Use Expel Harm if it won't push back Keg Smash.
-	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= PowerCost(keg_smash) + PowerCost(expel_harm)) Spell(expel_harm)
+	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(expel_harm)) Spell(expel_harm)
 }
 
 AddFunction BrewmasterUseTigerPalm
 {
 	# Use Tiger Palm if it won't push back Keg Smash.
-	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= PowerCost(keg_smash) + PowerCost(tiger_palm)) Spell(tiger_palm)
+	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(tiger_palm)) Spell(tiger_palm)
 }
 
 AddFunction BrewmasterUseSpinningCraneKick
 {
 	# Use Spinning Crane Kick if it won't push back Keg Smash.
-	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= PowerCost(keg_smash) + PowerCost(spinning_crane_kick)) Spell(spinning_crane_kick)
+	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(spinning_crane_kick)) Spell(spinning_crane_kick)
 }
 
 AddFunction BrewmasterPrecombatShortCdActions
