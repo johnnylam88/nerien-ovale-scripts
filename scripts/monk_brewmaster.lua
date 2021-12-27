@@ -238,13 +238,20 @@ AddFunction BrewmasterMainActions
 	Spell(chi_burst)
 	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff)) BrewmasterUseTigerPalm()
 	if BuffPresent(rushing_jade_wind) Spell(rushing_jade_wind)
-	if Enemies(tagged=1) > 1
-	{
-		if (Enemies(tagged=1) >= 3) BrewmasterUseSpinningCraneKick()
-		if (Enemies(tagged=1) <  3) BrewmasterUseTigerPalm()
-	}
+}
+
+AddFunction BrewmasterSingleTargetActions
+{
+	BrewmasterMainActions()
 	# Avoid energy-capping with Tiger Palm.
 	if (TimeToMaxEnergy() < GCD()) Spell(tiger_palm text=cap)
+}
+
+AddFunction BrewmasterAoeActions
+{
+	BrewmasterMainActions()
+	if (Enemies(tagged=1) >= 3) BrewmasterUseSpinningCraneKick()
+	BrewmasterUseTigerPalm()
 }
 
 AddFunction BrewmasterPrecombatCdActions
@@ -338,13 +345,13 @@ AddIcon help=shortcd
 AddIcon enemies=1 help=main
 {
 	if not InCombat() BrewmasterPrecombatMainActions()
-	BrewmasterMainActions()
+	BrewmasterSingleTargetActions()
 }
 
 AddIcon help=aoe
 {
 	if not InCombat() BrewmasterPrecombatMainActions()
-	BrewmasterMainActions()
+	BrewmasterAoeActions()
 }
 
 AddIcon help=cd
