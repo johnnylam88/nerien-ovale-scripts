@@ -222,7 +222,8 @@ AddFunction ProtectionMainActions
 	# Bump Avenger's Shield in priority if the target is casting.
 	if target.IsInterruptible() Spell(avengers_shield)
 
-	if not BuffPresent(consecration_buff) Spell(consecration)
+	# Only suggest Consecration for the damage reduction buff if standing still.
+	if (not BuffPresent(consecration_buff) and not Speed() > 0) Spell(consecration text=buff)
 	if (Enemies(tagged=1) > 2) Spell(avengers_shield)
 	Spell(vanquishers_hammer)
 	ProtectionUseJudgment()
