@@ -191,17 +191,16 @@ AddFunction VengeanceShearSoulFragments
 AddFunction VengeancePrecombatActiveMitigationActions
 {
 	PrecombatShortCdActions()
+	# Use Demon Spikes heading into a pull if not already up.
+	if not BuffPresent(demon_spikes_buff) Spell(demon_spikes)
 }
 
 AddFunction VengeanceActiveMitigationActions
 {
-	unless BuffPresent(metamorphosis)
+	if (not BuffPresent(metamorphosis) and VengeanceIsTanking())
 	{
-		if Enemies(tagged=1) > 1 or (target.IsTargetingPlayer() and IncomingPhysicalDamage(3) > 0)
-		{
-			if (Charges(demon_spikes count=0) > 1.9) Spell(demon_spikes text=cap)
-			if not BuffPresent(demon_spikes_buff) Spell(demon_spikes)
-		}
+		# Don't cap on charges of Demon Spikes.
+		if (Charges(demon_spikes count=0) > 1.9) Spell(demon_spikes text=cap)
 	}
 }
 
