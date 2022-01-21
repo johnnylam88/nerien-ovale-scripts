@@ -171,6 +171,12 @@ AddFunction VengeanceSoulFragmentHealing
 	MaxHealth() / 100
 }
 
+AddFunction VengeanceSoulCleaveHealing
+{
+	if (SoulFragments() >= 2) (2 * VengeanceSoulFragmentHealing())
+	SoulFragments() * VengeanceSoulFragmentHealing()
+}
+
 AddFunction VengeanceBulkExtractionHealing
 {
 	if (Enemies(tagged=1) > 5) (5 * VengeanceSoulFragmentHealing())
@@ -210,7 +216,19 @@ AddFunction VengeanceMainActions
 {
 	if (SoulFragments() >= 4) Spell(spirit_bomb)
 	if not target.InRange(soul_cleave) Spell(throw_glaive text=range)
-	if (VengeanceFuryDeficit() < 20) Spell(soul_cleave)
+	if target.InRange(soul_cleave)
+	{
+		if (
+			not Talent(spirit_bomb_talent) and
+			HealthPercent() <= 70 and
+			Fury() >= PowerCost(soul_cleave) and
+			SoulFragments() >= 2 and
+			VengeanceSoulCleaveHealing() <= HealthMissing()
+		) {
+			Spell(soul_cleave)
+		}
+		if (VengeanceFuryDeficit() < 20) Spell(soul_cleave)
+	}
 	if (VengeanceFuryDeficit() > 40) Spell(felblade)
 	if (Talent(fracture_talent) and VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5) Spell(fracture)
 	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5) Spell(immolation_aura)
