@@ -193,15 +193,21 @@ AddFunction ProtectionUseJudgment
 AddFunction ProtectionPrecombatActiveMitigationActions
 {
 	PrecombatShortCdActions()
+	if not BuffPresent(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
 }
 
 AddFunction ProtectionActiveMitigationActions
 {
+	Spell(seraphim)
+	# Use Word of Glory below 50% health if it's free.
 	if (BuffPresent(shining_light_free_buff) and HealthPercent() < 50) Spell(word_of_glory)
-	if (HolyPowerDeficit() <= 2)
-	{
-		if target.DebuffPresent(judgment_debuff) Spell(shield_of_the_righteous)
-		if (BuffRemaining(shield_of_the_righteous_buff) < 9) Spell(shield_of_the_righteous)
+	unless (
+		(Talent(seraphim_talent) and not SpellCooldown(seraphim) > 0) or
+		(BuffPresent(shining_light_free_buff) and HealthPercent() < 50)
+	) {
+		# Avoid capping on Holy Power.
+		if (HealthPercent() > 70 and HolyPowerDeficit() <= 2 or HolyPowerDeficit() < 2) Spell(shield_of_the_righteous)
+		if (BuffRemaining(shield_of_the_righteous_buff) < 2) Spell(shield_of_the_righteous)
 	}
 }
 
@@ -236,13 +242,22 @@ AddFunction ProtectionMainActions
 AddFunction ProtectionPrecombatCdActions
 {
 	PrecombatCdActions()
+	Spell(ashen_hallow)
 }
 
 AddFunction ProtectionOffensiveCdActions
 {
-	if (not Talent(seraphim_talent) and not BuffPresent(avenging_wrath)) Spell(avenging_wrath)
-	if (Talent(seraphim_talent) and not SpellCooldown(seraphim) > 0) Spell(avenging_wrath)
-	Spell(seraphim)
+	if not BuffPresent(avenging_wrath)
+	{
+		if not Talent(seraphim_talent) Spell(avenging_wrath)
+		if Talent(seraphim_talent)
+		{
+			# Synchronize Avenging Wrath with Seraphim.
+			if BuffPresent(seraphim) Spell(avenging_wrath)
+			if (not SpellCooldown(seraphim) > 0) Spell(avenging_wrath)
+			if (SpellCooldown(seraphim) > 30) Spell(avenging_wrath)
+		}
+	}
 	Spell(holy_avenger)
 	if (SpellCooldown(avengers_shield) > GCD()) Spell(moment_of_glory)
 	Spell(divine_toll)
@@ -309,6 +324,8 @@ AddFunction ProtectionHealActions
 	ItemHealActions()
 	# Use Lay on Hands below 25% health.
 	if (HealthPercent() < 25) Spell(lay_on_hands)
+	# Use Shining Light procs on others if not personally needed.
+	if (BuffPresent(shining_light_free_buff) and HealthPercent() > 50) Spell(word_of_glory text=other)
 }
 
 ### User Interface ###
