@@ -303,6 +303,7 @@ AddFunction ProtectionPrecombatMainActions { }
 
 AddFunction ProtectionMainActions
 {
+	if Talent(booming_voice_talent) Spell(demoralizing_shout)
 	# Use Dragon Roar on cooldown.
 	Spell(dragon_roar)
 	# Use Shield Slam on cooldown.
@@ -343,8 +344,8 @@ AddFunction ProtectionOffensiveCdActions
 
 AddFunction ProtectionDefensiveCdActions
 {
-	Spell(demoralizing_shout)
-	if SpellCooldown(demoralizing_shout) > 0
+	if not Talent(booming_voice_talent) Spell(demoralizing_shout)
+	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0)
 	{
 		Spell(last_stand)
 		Spell(shield_wall)
@@ -354,8 +355,6 @@ AddFunction ProtectionDefensiveCdActions
 
 AddFunction ProtectionCdActions
 {
-	Item(Trinket0Slot usable=1 text=13)
-	Item(Trinket1Slot usable=1 text=14)
 	ProtectionDefensiveCdActions()
 }
 
@@ -449,6 +448,8 @@ AddIcon help=offensive size=small
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}
 	ProtectionOffensiveCdActions()
+	Item(Trinket0Slot usable=1 text=13)
+	Item(Trinket1Slot usable=1 text=14)
 }
 ]]
 	Private.scripts:registerScript("WARRIOR", "protection", name, desc, code, "script")
