@@ -190,12 +190,12 @@ AddFunction ProtectionUseJudgment
 	}
 }
 
-AddFunction ProtectionPrecombatShortCdActions
+AddFunction ProtectionPrecombatActiveMitigationActions
 {
 	PrecombatShortCdActions()
 }
 
-AddFunction ProtectionShortCdActions
+AddFunction ProtectionActiveMitigationActions
 {
 	if (BuffPresent(shining_light_free_buff) and HealthPercent() < 50) Spell(word_of_glory)
 	if (HolyPowerDeficit() <= 2)
@@ -313,10 +313,10 @@ AddIcon help=interrupt size=small
 	ProtectionHealActions()
 }
 
-AddIcon help=shortcd
+AddIcon help=active_mitigation
 {
-	if not InCombat() ProtectionPrecombatShortCdActions()
-	ProtectionShortCdActions()
+	if not InCombat() ProtectionPrecombatActiveMitigationActions()
+	ProtectionActiveMitigationActions()
 }
 
 AddIcon enemies=1 help=main
