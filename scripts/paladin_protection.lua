@@ -205,10 +205,16 @@ AddFunction ProtectionActiveMitigationActions
 	}
 }
 
+AddFunction ProtectionPrecombatAoEActions
+{
+	# AoE opener
+	Spell(avengers_shield)
+}
+
 AddFunction ProtectionPrecombatMainActions
 {
 	# Opener
-	Spell(avengers_shield)
+	Spell(judgment)
 }
 
 AddFunction ProtectionMainActions
@@ -327,7 +333,7 @@ AddIcon enemies=1 help=main
 
 AddIcon help=aoe
 {
-	if not InCombat() ProtectionPrecombatMainActions()
+	if not InCombat() ProtectionPrecombatAoEActions()
 	ProtectionMainActions()
 }
 
