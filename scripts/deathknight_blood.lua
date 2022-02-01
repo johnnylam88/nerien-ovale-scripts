@@ -316,6 +316,8 @@ AddFunction BloodMainActions
 	}
 	# Marrowrend if Bone Shield is not active or about to expire.
 	if (BuffRemaining(bone_shield) < GCD() + 2) Spell(marrowrend)
+	# [*] Use Blooddrinker if you will not need to interrupt the channel.
+	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
 	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist or (Necrolord) Abomination Limb is not active.
 	if DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)
 	{
@@ -367,7 +369,6 @@ AddFunction BloodMainActions
 	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
 	# [*] Fillers that don't consume Runes or Runic Power.
 	if (target.DebuffExpires(mark_of_blood) and target.IsTargetingPlayer()) Spell(mark_of_blood)
-	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
 	Spell(consumption)
 }
 
