@@ -165,7 +165,7 @@ Define(word_of_glory 85673)
 SpellList(protection_defensive_buff ardent_defender blessing_of_protection blessing_of_spellwarding divine_shield guardian_of_ancient_kings)
 
 # Covenant Abilities
-# TODO Check Venthyr and add Night Fae abilities
+# TODO Add Night Fae abilities
 AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
 Define(ashen_hallow 316958)
 	SpellInfo(ashen_hallow cd=240 duration=30 tick=2)
