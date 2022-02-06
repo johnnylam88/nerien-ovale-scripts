@@ -25,7 +25,7 @@ Define(moment_of_glory_talent 23468)
 Define(redoubt_talent 22558)
 Define(repentance_talent 22180)
 Define(sanctified_wrath_talent 23457)
-Define(seraphim_talent 17599)
+Define(seraphim_talent 17601)
 Define(unbreakable_spirit_talent 22433)
 
 # Class Abilities
