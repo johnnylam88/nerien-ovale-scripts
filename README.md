@@ -28,7 +28,7 @@ The following classes and specializations are up-to-date for Shadowlands 9.1:
 
 - Death Knight: Blood
 - Demon Hunter: Vengeance
-- Druid: Guardian
+- Druid: Balance, Guardian
 - Mage: Arcane, Frost
 - Monk: Brewmaster
 - Paladin: Protection

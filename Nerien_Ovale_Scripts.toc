@@ -20,6 +20,7 @@ localization.lua
 scripts/library.lua
 scripts/deathknight_blood.lua
 scripts/demonhunter_vengeance.lua
+scripts/druid_balance.lua
 scripts/druid_guardian.lua
 scripts/mage_arcane.lua
 scripts/mage_frost.lua
