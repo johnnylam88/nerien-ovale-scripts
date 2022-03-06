@@ -190,10 +190,7 @@ Define(seeing_red_buff 364006)
 	SpellInfo(seeing_red_buff duration=30)
 Define(outburst_buff 364010)
 	SpellInfo(outburst_buff duration=30)
-	SpellRequire(shield_slam rage add=-30 enabled=(BuffPresent(outburst_buff) and not Talent(heavy_repurcussions_talent) and not EquippedRuneforge(the_wall_runeforge)))
-	SpellRequire(shield_slam rage add=-36 enabled=(BuffPresent(outburst_buff) and Talent(heavy_repurcussions_talent) and not EquippedRuneforge(the_wall_runeforge)))
-	SpellRequire(shield_slam rage add=-40 enabled=(BuffPresent(outburst_buff) and not Talent(heavy_repurcussions_talent) and EquippedRuneforge(the_wall_runeforge)))
-	SpellRequire(shield_slam rage add=-48 enabled=(BuffPresent(outburst_buff) and Talent(heavy_repurcussions_talent) and EquippedRuneforge(the_wall_runeforge)))
+	SpellRequire(shield_slam rage add=-30 enabled=(BuffPresent(outburst_buff)))
 	SpellAddBuff(shield_slam outburst_buff set=0)
 	SpellAddBuff(shield_slam ignore_pain set=1 enabled=(BuffPresent(outburst_buff)))
 	SpellRequire(thunder_clap rage add=-10 enabled=(BuffPresent(outburst_buff)))
@@ -204,44 +201,47 @@ Define(outburst_buff 364010)
 
 AddFunction ProtectionInRange
 {
-	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel)) 
+	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel))
 }
 
 AddFunction ProtectionRavagerRemaining
 {
-	if (Talent(ravager_talent) and SpellCooldownDuration(ravager) - SpellCooldown(ravager) > 10)
+	# Ravager lasts 12 seconds but there is no buff to track its remaining duration.
+	if (Talent(ravager_talent) and SpellCooldownDuration(ravager) - SpellCooldown(ravager) < TimeWithHaste(12))
 	{
-		SpellCooldownDuration(ravager) - SpellCooldown(ravager)
+		TimeWithHaste(12) - (SpellCooldownDuration(ravager) - SpellCooldown(ravager))
 	}
 	0
 }
 
 AddFunction ProtectionRagePerSecondRavager
 {
-	# Ravager generates 10 rage every 2 seconds.
+	# Ravager generates 10 rage every 2 seconds over 12 seconds.
 	if (ProtectionRavagerRemaining() > 0) 5
 	0
-}
-
-AddFunction ProtectionRagePerSecondShieldSlam
-{
-	# In next N seconds, Shield Slam will generate rage each time it's off cooldown.
-	# Approximate rage until next Shield Slam as a linear function through two points:
-	#	-1 * RageCost(shield_slam) at SpellCooldown(shield_slam) seconds, and
-	#	-2 * RageCost(shield_slam) at SpellCooldown(shield_slam) + SpellCooldownDuration(shield_slam) seconds
-	RageCost(shield_slam) * (1 + (SpellCooldown(shield_block) - SpellCooldown(shield_slam)) / SpellCooldownDuration(shield_slam))
 }
 
 AddFunction ProtectionRagePerSecond
 {
 	# In N seconds, autoattacks will generate ~N Rage.
 	# In N seconds, damage taken will generate 3 rage per hit with a 1-second ICD.
-	1 + 3 + ProtectionRagePerSecondRavager() + ProtectionRagePerSecondShieldSlam()
+	1 + 3 + ProtectionRagePerSecondRavager()
 }
 
-AddFunction ProtectionRageUntilShieldBlock
+AddFunction ProtectionRageAtNextShieldBlockUncapped
 {
-	Rage() + ProtectionRagePerSecond() * SpellCooldown(shield_block)
+	if (SpellCooldown(shield_block) < SpellCooldown(shield_slam))
+	{
+		Rage() + SpellCooldown(shield_block) * ProtectionRagePerSecond()
+	}
+	# Include Rage from Shield Slams before Shield Block.
+	Rage() + SpellCooldown(shield_block) * ProtectionRagePerSecond() - RageCost(shield_slam) * SpellCooldown(shield_block) / SpellCooldownDuration(shield_slam)
+}
+
+AddFunction ProtectionRageAtNextShieldBlock
+{
+	if (ProtectionRageAtNextShieldBlockUncapped() > MaxRage()) MaxRage()
+	ProtectionRageAtNextShieldBlockUncapped()
 }
 
 AddFunction ProtectionShouldShieldBlock
@@ -286,7 +286,7 @@ AddFunction ProtectionIgnorePainCap
 	2 * ProtectionIgnorePainOnCastAbsorb()
 }
 
-AddFunction ProtectionShouldIgnorePain
+AddFunction ProtectionCanIgnorePain
 {
 	# Only use Ignore Pain if it won't reduce the current absorb,
 	# and it won't exceed the Ignore Pain cap by more than 30%.
@@ -294,37 +294,32 @@ AddFunction ProtectionShouldIgnorePain
 	(ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap())
 }
 
-AddListItem(opt_nerien_rage_pool pool_0  "Don't pool Rage")
-AddListItem(opt_nerien_rage_pool pool_10 "Pool Rage >= 10")
-AddListItem(opt_nerien_rage_pool pool_20 "Pool Rage >= 20")
-AddListItem(opt_nerien_rage_pool pool_30 "Pool Rage >= 30")
-AddListItem(opt_nerien_rage_pool pool_40 "Pool Rage >= 40" default)
-
-AddFunction ProtectionRageThreshold
+AddFunction ProtectionRagePoolSize
 {
-	if List(opt_nerien_rage_pool pool_40) (RageCost(shield_block) + 40)
-	if List(opt_nerien_rage_pool pool_30) (RageCost(shield_block) + 30)
-	if List(opt_nerien_rage_pool pool_20) (RageCost(shield_block) + 20)
-	if List(opt_nerien_rage_pool pool_10) (RageCost(shield_block) + 10)
-	RageCost(shield_block)
+	MaxRage() - RageCost(shield_block) - RageCost(ignore_pain) - 10
 }
 
-AddFunction ProtectionUseIgnorePain
+AddFunction ProtectionRageCapThreshold
 {
-	# Use Ignore Pain if it won't push back Shield Block.
-	if (ProtectionRageUntilShieldBlock() >= ProtectionRageThreshold() + RageCost(ignore_pain)) Spell(ignore_pain)
+	ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(ignore_pain)
 }
 
-AddFunction ProtectionUseExecute
+AddFunction ProtectionHasRageForIgnorePain
 {
-	# Use Execute if it won't push back Shield Block.
-	if (ProtectionRageUntilShieldBlock() >= ProtectionRageThreshold() + RageCost(execute max=1)) Spell(execute)
+	# There is enough rage for Ignore Pain only if it won't push back Shield Block.
+	ProtectionRageAtNextShieldBlock() >= ProtectionRageCapThreshold()
 }
 
-AddFunction ProtectionUseRevenge
+AddFunction ProtectionHasRageForExecute
 {
-	# Use Revenge if it won't push back Shield Block.
-	if (ProtectionRageUntilShieldBlock() >= ProtectionRageThreshold() + RageCost(revenge)) Spell(revenge)
+	# There is enough rage for Execute only if it won't push back Shield Block.
+	ProtectionRageAtNextShieldBlock() >= ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(execute max=1)
+}
+
+AddFunction ProtectionHasRageForRevenge
+{
+	# There is enough rage for Revenge only if it won't push back Shield Block.
+	ProtectionRageAtNextShieldBlock() >= ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(revenge)
 }
 
 AddFunction ProtectionPrecombatActiveMitigationActions
@@ -332,6 +327,16 @@ AddFunction ProtectionPrecombatActiveMitigationActions
 	PrecombatShortCdActions()
 	# Apply Shield Block using Charge with Reprisal.
 	if (EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge text=block)
+}
+
+AddFunction ProtectionRageWillOverCap
+{
+		(                            Rage()                              > ProtectionRageCapThreshold()) or
+		(Spell(avatar)           and Rage() - RageCost(avatar)           > ProtectionRageCapThreshold()) or
+		(Spell(dragon_roar)      and Rage() - RageCost(dragon_roar)      > ProtectionRageCapThreshold()) or
+		(Spell(shield_slam)      and Rage() - RageCost(shield_slam)      > ProtectionRageCapThreshold()) or
+		(Spell(spear_of_bastion) and Rage() - RageCost(spear_of_bastion) > ProtectionRageCapThreshold()) or
+		(Spell(thunder_clap)     and Rage() - RageCost(thunder_clap)     > ProtectionRageCapThreshold())
 }
 
 AddFunction ProtectionActiveMitigationActions
@@ -352,18 +357,12 @@ AddFunction ProtectionActiveMitigationActions
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if (IncomingDamage(5) > 0 and ProtectionShouldIgnorePain()) ProtectionUseIgnorePain()
-	# Use Ignore Pain to avoid capping on Rage with the next builder.
-	if (
-		(Rage() < RageCost(shield_block) + RageCost(ignore_pain)) or
-		(Spell(avatar)           and RageCost(avatar)           + RageDeficit() <= ProtectionRagePerSecond()) or
-		(Spell(dragon_roar)      and RageCost(dragon_roar)      + RageDeficit() <= ProtectionRagePerSecond()) or
-		(Spell(shield_slam)      and RageCost(shield_slam)      + RageDeficit() <= ProtectionRagePerSecond()) or
-		(Spell(spear_of_bastion) and RageCost(spear_of_bastion) + RageDeficit() <= ProtectionRagePerSecond()) or
-		(Spell(thunder_clap)     and RageCost(thunder_clap)     + RageDeficit() <= ProtectionRagePerSecond())
-	) {
-		Spell(ignore_pain)
+	if (IncomingDamage(5) > 0)
+	{
+		if (ProtectionCanIgnorePain() and ProtectionHasRageForIgnorePain()) Spell(ignore_pain)
 	}
+	# Use Ignore Pain to avoid capping on Rage with the next builder.
+	if ProtectionRageWillOverCap() Spell(ignore_pain text=cap)
 }
 
 AddFunction ProtectionPrecombatMainActions
@@ -380,18 +379,21 @@ AddFunction ProtectionMainActions
 		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
 		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=bonus)
 	}
+	if Talent(unstoppable_force_talent) and BuffPresent(avatar) Spell(thunder_clap)
 	# Use Shield Slam on cooldown.
 	Spell(shield_slam)
 	# Use Thunder Clap on cooldown.
 	Spell(thunder_clap)
 	# Use Revenge when it's free.
 	if BuffPresent(revenge_buff) Spell(revenge text=free)
-	if not ProtectionShouldIgnorePain()
+	# Use Victory Rush when it's free.
+	if BuffPresent(victorious_buff) Spell(victory_rush)
+	if not ProtectionCanIgnorePain()
 	{
 		# Use Execute to dump Rage.
-		ProtectionUseExecute()
+		if ProtectionHasRageForExecute() Spell(execute text=dump)
 		# Use Revenge to dump Rage outside of Execute phase.
-		ProtectionUseRevenge()
+		if ProtectionHasRageForRevenge() Spell(revenge text=dump)
 	}
 	# Use Devastate as filler.
 	Spell(devastate)
@@ -412,6 +414,7 @@ AddFunction ProtectionAoEActions
 		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
 		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=bonus)
 	}
+	if Talent(unstoppable_force_talent) and BuffPresent(avatar) Spell(thunder_clap)
 	# Use Booming Voice on cooldown.
 	if Talent(booming_voice_talent) Spell(demoralizing_shout)
 	# Use Dragon Roar on cooldown.
@@ -422,10 +425,12 @@ AddFunction ProtectionAoEActions
 	Spell(thunder_clap)
 	# Use Revenge when it's free.
 	if BuffPresent(revenge_buff) Spell(revenge text=free)
-	if not ProtectionShouldIgnorePain()
+	# Use Victory Rush when it's free.
+	if BuffPresent(victorious_buff) Spell(victory_rush)
+	if not ProtectionCanIgnorePain()
 	{
 		# Use Revenge to dump Rage.
-		ProtectionUseRevenge()
+		if ProtectionHasRageForRevenge() Spell(revenge text=dump)
 	}
 	# Use Devastate as filler.
 	Spell(devastate)
@@ -446,7 +451,8 @@ AddFunction ProtectionOffensiveCdActions
 	Spell(ravager)
 	# Apply Deep Wounds to multiple targets in melee range.
 	if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(deep_wounds_debuff) < 3) Spell(revenge)
-	if (Rage() >= RageCost(execute max=1)) ProtectionUseExecute()
+	if (Rage() >= RageCost(execute max=1)) Spell(execute)
+	Spell(revenge)
 }
 
 AddFunction ProtectionDefensiveCdActions
@@ -454,8 +460,9 @@ AddFunction ProtectionDefensiveCdActions
 	if not Talent(booming_voice_talent) Spell(demoralizing_shout)
 	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0)
 	{
-		Spell(last_stand)
-		Spell(shield_wall)
+		if EquippedRuneforge(the_wall_runeforge) Spell(shield_wall)
+		if not Talent(bolster_talent) Spell(last_stand)
+		if not EquippedRuneforge(the_wall_runeforge) Spell(shield_wall)
 	}
 	Spell(fleshcraft)
 }
@@ -506,7 +513,6 @@ AddFunction ProtectionDispelActions
 AddFunction ProtectionHealActions
 {
 	ItemHealActions()
-	if (HealthPercent() < 70) Spell(victory_rush)
 }
 
 ### User Interface ###
