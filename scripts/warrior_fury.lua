@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_warrior_fury"
-	local desc = string.format("[9.1] %s: Warrior - Fury", Private.name)
+	local desc = string.format("[9.2] %s: Warrior - Fury", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Fury Warrior Rotation Guide - Shadowlands 9.1"
+# Adapted from Wowhead's "Fury Warrior Rotation Guide - Shadowlands 9.2"
 #	by Archimtiros
 # https://www.wowhead.com/fury-warrior-rotation-guide
 
@@ -93,6 +93,8 @@ Define(intervene 3411)
 	SpellInfo(intervene cd=30 rage=0 gcd=0 offgcd=1)
 Define(intimidating_shout 5246)
 	SpellInfo(intimidating_shout cd=90)
+Define(merciless_bonegrinder_buff 346574)
+	SpellInfo(merciless_bonegrinder_buff duration=9)
 Define(onslaught 315720)
 	SpellInfo(onslaught cd=12 rage=-15)
 	SpellRequire(onslaught rage add=-15 enabled=(BuffPresent(recklessness)))
@@ -168,7 +170,7 @@ Define(ancient_aftershock 325886)
 	SpellRequire(ancient_aftershock unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(ancient_aftershock rage add=-4 enabled=(BuffPresent(recklessness)))
 	SpellRequire(ancient_aftershock unusable set=1 enabled=(not IsCovenant(night_fae)))
-Define(condemn 317349)
+Define(condemn 317485)
 	SpellInfo(condemn cd=6 cd_haste=1 rage=-20)
 	SpellRequire(condemn rage add=-20 enabled=(BuffPresent(recklessness)))
 	SpellRequire(condemn unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
@@ -211,6 +213,7 @@ Define(elysian_might_runeforge 7730)
 Define(elysian_might_buff 311193)
 	SpellInfo(elysian_might_buff duration=8)
 	SpellAddBuff(spear_of_bastion elysian_might_buff add=1 enabled=(EquippedRuneforge(elysian_might_runeforge)))
+Define(signet_of_tormented_kings_runeforge 6959)
 
 ### Functions ###
 
@@ -222,24 +225,21 @@ AddFunction FuryInRange
 AddFunction FuryPrecombatShortCdActions
 {
 	PrecombatShortCdActions()
+	Spell(charge)
 }
 
 AddFunction FuryShortCdActions
 {
-	Spell(siegebreaker)
+	unless (IsCovenant(venthyr) and Spell(condemn))
+	{
+		Spell(siegebreaker)
 
-	unless (
-		Spell(execute) or
-		Spell(onslaught) or
-		(IsEnraged() and Charges(raging_blow count=0) >= 1.8) or
-		Spell(bloodthirst)
-	) {
-		if IsEnraged()
+		unless (not IsEnraged() or Rage() > 90 or Spell(execute))
 		{
-			Spell(dragon_roar)
-			Spell(spear_of_bastion)
 			Spell(ancient_aftershock)
+			Spell(spear_of_bastion)
 			Spell(bladestorm)
+			Spell(dragon_roar)
 		}
 	}
 }
@@ -252,10 +252,15 @@ AddFunction FuryPrecombatMainActions
 AddFunction FuryMainActions
 {
 	if (Enemies(tagged=1) > 1 and not BuffPresent(whirlwind_buff)) Spell(whirlwind)
+	if IsCovenant(venthyr) Spell(condemn)
 	if (not IsEnraged() or Rage() > 90) Spell(rampage)
 	Spell(execute)
-	Spell(onslaught)
-	if (IsEnraged() and Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+	if IsEnraged()
+	{
+		Spell(onslaught)
+		if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+	}
+	if (Enemies(tagged=1) > 1 and BuffPresent(merciless_bonegrinder_buff)) Spell(whirlwind)
 	Spell(bloodthirst)
 	Spell(raging_blow)
 	Spell(whirlwind)
@@ -264,12 +269,15 @@ AddFunction FuryMainActions
 AddFunction FuryPrecombatCdActions
 {
 	PrecombatCdActions()
+	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) Spell(recklessness)
 }
 
 AddFunction FuryCdActions
 {
-	Spell(conquerors_banner)
-	Spell(recklessness)
+	if (Rage() > 70) Spell(conquerors_banner)
+	# With Signet of Tormented Kings, Recklessness may activate Bladestorm,
+	# so ensure Enrage is active first.
+	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) or IsEnraged() Spell(recklessness)
 }
 
 AddFunction FuryBuffActions
