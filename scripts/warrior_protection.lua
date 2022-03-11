@@ -347,13 +347,13 @@ AddFunction ProtectionActiveMitigationActions
 		if EquippedRuneforge(reprisal_runeforge)
 		{
 			if target.InRange(charge) Spell(charge text=block)
-			if (Charges(shield_block count=0) > 1.9) Spell(shield_block)
+			if (Charges(shield_block count=0) > 1.9) Spell(shield_block text=cap)
 		}
-		if not BuffPresent(shield_block_buff)
+		if BuffRemaining(shield_block_buff) < 1
 		{
-			# Apply Shield Block with either Shield Block or Bolster.
-			Spell(shield_block)
-			if Talent(bolster_talent) Spell(last_stand)
+			if (Charges(shield_block) == 2) Spell(shield_block text=cap)
+			if (Charges(shield_block) == 1) Spell(shield_block text=1)
+			if (Charges(shield_block) == 0 and Talent(bolster_talent)) Spell(last_stand)
 		}
 	}
 	# Ignore Pain if we've been taking damage.
