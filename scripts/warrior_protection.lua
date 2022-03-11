@@ -401,8 +401,8 @@ AddFunction ProtectionMainActions
 
 AddFunction ProtectionPrecombatAoEActions
 {
-	Spell(thunder_clap)
 	Spell(revenge)
+	Spell(thunder_clap)
 }
 
 AddFunction ProtectionAoEActions
@@ -444,11 +444,11 @@ AddFunction ProtectionPrecombatCdActions
 
 AddFunction ProtectionOffensiveCdActions
 {
+	Spell(ravager)
 	Spell(avatar)
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
-	Spell(ravager)
 	# Apply Deep Wounds to multiple targets in melee range.
 	if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(deep_wounds_debuff) < 3) Spell(revenge)
 	if (Rage() >= RageCost(execute max=1)) Spell(execute)
