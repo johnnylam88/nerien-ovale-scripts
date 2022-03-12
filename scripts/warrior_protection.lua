@@ -419,6 +419,8 @@ AddFunction ProtectionAoEActions
 	if Talent(booming_voice_talent) Spell(demoralizing_shout)
 	# Use Dragon Roar on cooldown.
 	Spell(dragon_roar)
+	# Apply Deep Wounds to targets in melee range.
+	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
 	# Use Shield Slam on cooldown.
 	Spell(shield_slam)
 	# Use Thunder Clap on cooldown.
@@ -449,8 +451,10 @@ AddFunction ProtectionOffensiveCdActions
 	Spell(spear_of_bastion)
 	Spell(conquerors_banner)
 	Spell(ancient_aftershock)
-	# Apply Deep Wounds to multiple targets in melee range.
-	if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(deep_wounds_debuff) < 3) Spell(revenge)
+}
+
+AddFunction ProtectionMaxDamageActions
+{
 	if (Rage() >= RageCost(execute max=1)) Spell(execute)
 	Spell(revenge)
 }
@@ -554,15 +558,16 @@ AddIcon help=cd
 AddIcon help=offensive size=small
 {
 	if not InCombat() ProtectionBuffActions()
+	ProtectionOffensiveCdActions()
 	if not ProtectionInRange()
 	{
 		if (not EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}
-	ProtectionOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
+	ProtectionMaxDamageActions()
 }
 ]]
 	Private.scripts:registerScript("WARRIOR", "protection", name, desc, code, "script")
