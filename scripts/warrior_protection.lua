@@ -253,7 +253,7 @@ AddFunction ProtectionShouldShieldBlock
 AddFunction ProtectionReprisalActions
 {
 	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
-	if BuffRemaining(shield_block_buff) < 2 and ProtectionShouldShieldBlock()
+	if BuffRemaining(shield_block_buff) < 4 and ProtectionShouldShieldBlock()
 	{
 		if (target.Distance() < 8) Spell(charge text=block)
 		Spell(intervene text=block)
@@ -526,9 +526,9 @@ AddCheckBox(opt_nerien_shield_block L(opt_nerien_shield_block))
 AddIcon help=interrupt size=small
 {
 	ProtectionInterruptActions()
+	if EquippedRuneforge(reprisal_runeforge) ProtectionReprisalActions()
 	ProtectionDispelActions()
 	ProtectionHealActions()
-	if EquippedRuneforge(reprisal_runeforge) ProtectionReprisalActions()
 }
 
 AddIcon help=active_mitigation
