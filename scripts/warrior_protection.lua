@@ -221,27 +221,21 @@ AddFunction ProtectionRagePerSecondRavager
 	0
 }
 
+AddFunction ProtectionRagePerSecondShieldSlam
+{
+	-1 * RageCost(shield_slam) / SpellCooldownDuration(shield_slam)
+}
+
 AddFunction ProtectionRagePerSecond
 {
 	# In N seconds, autoattacks will generate ~N Rage.
 	# In N seconds, damage taken will generate 3 rage per hit with a 1-second ICD.
-	1 + 3 + ProtectionRagePerSecondRavager()
+	1 + 3 + ProtectionRagePerSecondRavager() + ProtectionRagePerSecondShieldSlam()
 }
 
-AddFunction ProtectionRageAtNextShieldBlockUncapped
+AddFunction ProtectionRageGeneratedBeforeShieldBlock
 {
-	if (SpellCooldown(shield_block) < SpellCooldown(shield_slam))
-	{
-		Rage() + SpellCooldown(shield_block) * ProtectionRagePerSecond()
-	}
-	# Include Rage from Shield Slams before Shield Block.
-	Rage() + SpellCooldown(shield_block) * ProtectionRagePerSecond() - RageCost(shield_slam) * SpellCooldown(shield_block) / SpellCooldownDuration(shield_slam)
-}
-
-AddFunction ProtectionRageAtNextShieldBlock
-{
-	if (ProtectionRageAtNextShieldBlockUncapped() > MaxRage()) MaxRage()
-	ProtectionRageAtNextShieldBlockUncapped()
+	SpellCooldown(shield_block) * ProtectionRagePerSecond()
 }
 
 AddFunction ProtectionShouldShieldBlock
@@ -296,6 +290,7 @@ AddFunction ProtectionCanIgnorePain
 
 AddFunction ProtectionRagePoolSize
 {
+	# 100 - 30 - 40 - 10 = 20
 	MaxRage() - RageCost(shield_block) - RageCost(ignore_pain) - 10
 }
 
@@ -307,19 +302,22 @@ AddFunction ProtectionRageCapThreshold
 AddFunction ProtectionHasRageForIgnorePain
 {
 	# There is enough rage for Ignore Pain only if it won't push back Shield Block.
-	ProtectionRageAtNextShieldBlock() >= ProtectionRageCapThreshold()
+	(Rage() + ProtectionRageGeneratedBeforeShieldBlock() >= ProtectionRageCapThreshold()) and
+	(Rage() - RageCost(ignore_pain) >= ProtectionRagePoolSize())
 }
 
 AddFunction ProtectionHasRageForExecute
 {
 	# There is enough rage for Execute only if it won't push back Shield Block.
-	ProtectionRageAtNextShieldBlock() >= ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(execute max=1)
+	(Rage() + ProtectionRageGeneratedBeforeShieldBlock() >= ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(execute max=1)) and
+	(Rage() - RageCost(execute max=1) >= ProtectionRagePoolSize())
 }
 
 AddFunction ProtectionHasRageForRevenge
 {
 	# There is enough rage for Revenge only if it won't push back Shield Block.
-	ProtectionRageAtNextShieldBlock() >= ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(revenge)
+	(Rage() + ProtectionRageGeneratedBeforeShieldBlock() >= ProtectionRagePoolSize() + RageCost(shield_block) + RageCost(revenge))
+	(Rage() - RageCost(revenge) >= ProtectionRagePoolSize())
 }
 
 AddFunction ProtectionPrecombatActiveMitigationActions
