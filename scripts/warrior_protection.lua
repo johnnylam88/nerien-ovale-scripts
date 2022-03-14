@@ -244,16 +244,6 @@ AddFunction ProtectionShouldShieldBlock
 	CheckBoxOn(opt_nerien_shield_block) or Enemies(tagged=1) > 1 or target.IsTargetingPlayer()
 }
 
-AddFunction ProtectionReprisalActions
-{
-	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
-	if BuffRemaining(shield_block_buff) < 4 and ProtectionShouldShieldBlock()
-	{
-		if (target.Distance() < 8) Spell(charge text=block)
-		Spell(intervene text=block)
-	}
-}
-
 AddFunction ProtectionNeverSurrenderCoefficient
 {
 	# Never Surrender makes Ignore Pain prevent 40% to 100% more damage,
@@ -320,13 +310,6 @@ AddFunction ProtectionHasRageForRevenge
 	(Rage() - RageCost(revenge) >= ProtectionRagePoolSize())
 }
 
-AddFunction ProtectionPrecombatActiveMitigationActions
-{
-	PrecombatShortCdActions()
-	# Apply Shield Block using Charge with Reprisal.
-	if (EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge text=block)
-}
-
 AddFunction ProtectionRageWillOverCap
 {
 		(                            Rage()                              > ProtectionRageCapThreshold()) or
@@ -337,27 +320,54 @@ AddFunction ProtectionRageWillOverCap
 		(Spell(thunder_clap)     and Rage() - RageCost(thunder_clap)     > ProtectionRageCapThreshold())
 }
 
+AddFunction ProtectionReprisalActions
+{
+	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
+	if (EquippedRuneforge(reprisal_runeforge) and ProtectionShouldShieldBlock())
+	{
+		if (BuffRemaining(shield_block_buff) < 14)
+		{
+			Spell(intervene text=block)
+			if (target.Distance() < 8) Spell(charge text=block)
+		}
+	}
+}
+
+AddFunction ProtectionPrecombatActiveMitigationActions
+{
+	PrecombatShortCdActions()
+	# Apply Shield Block using Charge with Reprisal.
+	if EquippedRuneforge(reprisal_runeforge)
+	{
+		if target.InRange(charge) Spell(charge text=block)
+	}
+}
+
 AddFunction ProtectionActiveMitigationActions
 {
 	if ProtectionShouldShieldBlock()
 	{
-		# Don't cap Shield Block charges with Reprisal.
-		if EquippedRuneforge(reprisal_runeforge)
+		if (EquippedRuneforge(reprisal_runeforge) and BuffRemaining(shield_block_buff) < 14)
 		{
+			# Reprisal Charge extends Shield Block by 4 seconds.
 			if target.InRange(charge) Spell(charge text=block)
-			if (Charges(shield_block count=0) > 1.9) Spell(shield_block text=cap)
 		}
-		if BuffRemaining(shield_block_buff) < 1
+		if (BuffRemaining(shield_block_buff) < 6)
 		{
-			if (Charges(shield_block) == 2) Spell(shield_block text=cap)
-			if (Charges(shield_block) == 1) Spell(shield_block text=1)
-			if (Charges(shield_block) == 0 and Talent(bolster_talent)) Spell(last_stand)
+			# Shield Block extends its duration by 12 seconds.
+			if (Charges(shield_block count=0) > 1.9) Spell(shield_block text=cap)
+			if (Charges(shield_block count=0) >= 1)  Spell(shield_block text=1)
+		}
+		if (Talent(bolster_talent) and BuffRemaining(shield_block_buff) < 1)
+		{
+			# Last Stand applies Shield Block for 15 seconds.
+			if (Charges(shield_block) == 0) Spell(last_stand text=block)
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if (IncomingDamage(5) > 0)
+	if (IncomingDamage(5) > 0 and ProtectionCanIgnorePain())
 	{
-		if (ProtectionCanIgnorePain() and ProtectionHasRageForIgnorePain()) Spell(ignore_pain)
+		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
 	}
 	# Use Ignore Pain to avoid capping on Rage with the next builder.
 	if ProtectionRageWillOverCap() Spell(ignore_pain text=cap)
