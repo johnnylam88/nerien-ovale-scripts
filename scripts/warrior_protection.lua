@@ -4,15 +4,24 @@ if Private.initialized then
 	local name = "nerien_ovale_warrior_protection"
 	local desc = string.format("[9.2] %s: Warrior - Protection", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Protection Warrior Rotation Guide - Shadowlands 9.2.0"
-#	by Llarold-Area52
-# https://www.wowhead.com/protection-warrior-rotation-guide
+# Adapted from the following resources:
+#
+# - Mwahi:
+#   - Protection Warrior Tank Rotation, Cooldowns, and Abilities — Shadowlands 9.2
+#	  https://www.icy-veins.com/wow/protection-warrior-pve-tank-rotation-cooldowns-abilities
+#
+# - Plkatv:
+#   - Protection Warrior In-Depth Guide | Shadowlands 9.0.5
+#     https://www.youtube.com/watch?v=yR2Vy52kpEQ
+#   - Protection Warrior Guide PART 2 | Shadowlands 9.0.5
+#     https://www.youtube.com/watch?v=5zsKpcEnPdw
 
 Include(nerien_ovale_library)
 
 ### Definitions ###
 
 # Talents
+Define(anger_management_talent 23455)
 Define(bolster_talent 23099)
 Define(booming_voice_talent 22626)
 Define(bounding_stride_talent 22627)
@@ -204,6 +213,11 @@ AddFunction ProtectionInRange
 	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel))
 }
 
+AddFunction ProtectionHasCharged
+{
+	PreviousOffGCDSpell(charge)
+}
+
 AddFunction ProtectionRavagerRemaining
 {
 	# Ravager lasts 12 seconds but there is no buff to track its remaining duration.
@@ -320,6 +334,17 @@ AddFunction ProtectionRageWillOverCap
 		(Spell(thunder_clap)     and Rage() - RageCost(thunder_clap)     > ProtectionRageCapThreshold())
 }
 
+AddFunction ProtectionOutburstActions
+{
+	# Consume Outburst as quickly as possible.
+	if BuffPresent(outburst_buff)
+	{
+		Spell(shield_slam text=tier)
+		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
+		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=tier)
+	}
+}
+
 AddFunction ProtectionReprisalActions
 {
 	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
@@ -330,6 +355,30 @@ AddFunction ProtectionReprisalActions
 			Spell(intervene text=block)
 			if (target.Distance() < 8) Spell(charge text=block)
 		}
+	}
+}
+
+AddFunction ProtectionRavagerActions
+{
+	if (ProtectionRavagerRemaining() > 0 and BuffPresent(shield_block_buff))
+	{
+		# Apply Deep Wounds to targets in melee range.
+		if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+		if Talent(heavy_repercussions_talent) Spell(shield_slam text=heavy)
+		if (BuffRemaining(shield_block_buff) >= ProtectionRavagerRemaining()) Spell(revenge text=spam)
+	}
+}
+
+AddFunction ProtectionRevengeActions
+{
+	# Use Revenge when it's free.
+	if BuffPresent(revenge_buff) Spell(revenge text=free)
+	if not ProtectionCanIgnorePain()
+	{
+		# Use Execute to dump Rage.
+		if (Enemies(tagged=1) == 1 and ProtectionHasRageForExecute()) Spell(execute text=dump)
+		# Use Revenge to dump Rage outside of Execute phase.
+		if ProtectionHasRageForRevenge() Spell(revenge text=dump)
 	}
 }
 
@@ -347,6 +396,8 @@ AddFunction ProtectionActiveMitigationActions
 {
 	if ProtectionShouldShieldBlock()
 	{
+		# Use Shield Block immediately after Charge if at 2 charges.
+		if (ProtectionHasCharged() and Charges(shield_block count=0) > 1.9) Spell(shield_block text=cap)
 		if (EquippedRuneforge(reprisal_runeforge) and BuffRemaining(shield_block_buff) < 14)
 		{
 			# Reprisal Charge extends Shield Block by 4 seconds.
@@ -375,33 +426,26 @@ AddFunction ProtectionActiveMitigationActions
 
 AddFunction ProtectionPrecombatMainActions
 {
-	Spell(shield_slam)
+	Spell(shield_slam text=open)
 }
 
 AddFunction ProtectionMainActions
 {
-	# Consume Outburst as quickly as possible.
-	if BuffPresent(outburst_buff)
-	{
-		Spell(shield_slam text=bonus)
-		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
-		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=bonus)
-	}
+	# Use Shield Slam after Charge to apply single-target threat.
+	if ProtectionHasCharged() Spell(shield_slam text=open)
 	if Talent(unstoppable_force_talent) and BuffPresent(avatar) Spell(thunder_clap)
-	# Use Shield Slam on cooldown.
-	Spell(shield_slam)
-	# Use Thunder Clap on cooldown.
-	Spell(thunder_clap)
-	# Use Revenge when it's free.
-	if BuffPresent(revenge_buff) Spell(revenge text=free)
+	ProtectionOutburstActions()
 	# Use Victory Rush when it's free.
-	if BuffPresent(victorious_buff) Spell(victory_rush)
-	if not ProtectionCanIgnorePain()
+	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
+	ProtectionRavagerActions()
+	# Apply Deep Wounds to targets in melee range.
+	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+	if Always()
 	{
-		# Use Execute to dump Rage.
-		if ProtectionHasRageForExecute() Spell(execute text=dump)
-		# Use Revenge to dump Rage outside of Execute phase.
-		if ProtectionHasRageForRevenge() Spell(revenge text=dump)
+		# The single-target priority is SS > Revenge > TC.
+		Spell(shield_slam)
+		ProtectionRevengeActions()
+		Spell(thunder_clap)
 	}
 	# Use Devastate as filler.
 	Spell(devastate)
@@ -409,38 +453,38 @@ AddFunction ProtectionMainActions
 
 AddFunction ProtectionPrecombatAoEActions
 {
-	Spell(revenge)
-	Spell(thunder_clap)
+	Spell(revenge text=dot)
+	Spell(thunder_clap text=open)
 }
 
 AddFunction ProtectionAoEActions
 {
-	# Consume Outburst as quickly as possible.
-	if BuffPresent(outburst_buff)
-	{
-		Spell(shield_slam text=bonus)
-		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
-		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=bonus)
-	}
+	# Use Thunder Clap after Charge to apply AoE threat.
+	if ProtectionHasCharged() Spell(thunder_clap text=open)
 	if Talent(unstoppable_force_talent) and BuffPresent(avatar) Spell(thunder_clap)
+	ProtectionOutburstActions()
+	# Use Victory Rush when it's free.
+	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
+	ProtectionRavagerActions()
 	# Use Booming Voice on cooldown.
 	if Talent(booming_voice_talent) Spell(demoralizing_shout)
 	# Use Dragon Roar on cooldown.
 	Spell(dragon_roar)
 	# Apply Deep Wounds to targets in melee range.
 	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
-	# Use Shield Slam on cooldown.
-	Spell(shield_slam)
-	# Use Thunder Clap on cooldown.
-	Spell(thunder_clap)
-	# Use Revenge when it's free.
-	if BuffPresent(revenge_buff) Spell(revenge text=free)
-	# Use Victory Rush when it's free.
-	if BuffPresent(victorious_buff) Spell(victory_rush)
-	if not ProtectionCanIgnorePain()
+	if Talent(anger_management_talent)
 	{
-		# Use Revenge to dump Rage.
-		if ProtectionHasRageForRevenge() Spell(revenge text=dump)
+		# With Anger Management, the AoE priority is Revenge > SS > TC.
+		ProtectionRevengeActions()
+		Spell(shield_slam)
+		Spell(thunder_clap)
+	}
+	if not Talent(anger_management_talent)
+	{
+		# Without Anger Management, the AoE priority is SS > Revenge > TC.
+		Spell(shield_slam)
+		ProtectionRevengeActions()
+		Spell(thunder_clap)
 	}
 	# Use Devastate as filler.
 	Spell(devastate)
