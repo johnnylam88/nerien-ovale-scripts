@@ -284,7 +284,7 @@ AddFunction ProtectionIgnorePainCap
 	2 * ProtectionIgnorePainOnCastAbsorb()
 }
 
-AddFunction ProtectionCanIgnorePain
+AddFunction ProtectionWontOverwriteIgnorePain
 {
 	# Only use Ignore Pain if it won't reduce the current absorb,
 	# and it won't exceed the Ignore Pain cap by more than 30%.
@@ -373,7 +373,7 @@ AddFunction ProtectionRevengeActions
 {
 	# Use Revenge when it's free.
 	if BuffPresent(revenge_buff) Spell(revenge text=free)
-	if not ProtectionCanIgnorePain()
+	if not ProtectionWontOverwriteIgnorePain()
 	{
 		# Use Execute to dump Rage.
 		if (Enemies(tagged=1) == 1 and ProtectionHasRageForExecute()) Spell(execute text=dump)
@@ -416,7 +416,7 @@ AddFunction ProtectionActiveMitigationActions
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if (IncomingDamage(5) > 0 and ProtectionCanIgnorePain())
+	if (IncomingDamage(5) > 0 and ProtectionWontOverwriteIgnorePain())
 	{
 		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
 	}
