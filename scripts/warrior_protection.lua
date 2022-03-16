@@ -326,12 +326,14 @@ AddFunction ProtectionHasRageForRevenge
 
 AddFunction ProtectionRageWillOverCap
 {
-		(                            Rage()                              > ProtectionRageCapThreshold()) or
-		(Spell(avatar)           and Rage() - RageCost(avatar)           > ProtectionRageCapThreshold()) or
-		(Spell(dragon_roar)      and Rage() - RageCost(dragon_roar)      > ProtectionRageCapThreshold()) or
-		(Spell(shield_slam)      and Rage() - RageCost(shield_slam)      > ProtectionRageCapThreshold()) or
-		(Spell(spear_of_bastion) and Rage() - RageCost(spear_of_bastion) > ProtectionRageCapThreshold()) or
-		(Spell(thunder_clap)     and Rage() - RageCost(thunder_clap)     > ProtectionRageCapThreshold())
+	# Check whether any Rage-generating abilites are off cooldown and will cause Rage to over-cap.
+	(                              Rage()                                > ProtectionRageCapThreshold()) or
+	(Spell(avatar)             and Rage() - RageCost(avatar)             > ProtectionRageCapThreshold()) or
+	(Spell(demoralizing_shout) and Rage() - RageCost(demoralizing_shout) > ProtectionRageCapThreshold()) or
+	(Spell(dragon_roar)        and Rage() - RageCost(dragon_roar)        > ProtectionRageCapThreshold()) or
+	(Spell(shield_slam)        and Rage() - RageCost(shield_slam)        > ProtectionRageCapThreshold()) or
+	(Spell(spear_of_bastion)   and Rage() - RageCost(spear_of_bastion)   > ProtectionRageCapThreshold()) or
+	(Spell(thunder_clap)       and Rage() - RageCost(thunder_clap)       > ProtectionRageCapThreshold())
 }
 
 AddFunction ProtectionOutburstActions
