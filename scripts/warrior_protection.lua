@@ -422,8 +422,7 @@ AddFunction ProtectionActiveMitigationActions
 	{
 		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
 	}
-	# Use Ignore Pain to avoid capping on Rage with the next builder.
-	if ProtectionRageWillOverCap() Spell(ignore_pain text=cap)
+	ProtectionReprisalActions()
 }
 
 AddFunction ProtectionPrecombatMainActions
@@ -440,6 +439,12 @@ AddFunction ProtectionMainActions
 	# Use Victory Rush when it's free.
 	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
 	ProtectionRavagerActions()
+	# Don't overcap on Rage.
+	if ProtectionRageWillOverCap()
+	{
+		Spell(execute text=cap)
+		Spell(revenge text=cap)
+	}
 	if Always()
 	{
 		# The single-target priority is SS > Revenge > TC.
@@ -472,6 +477,8 @@ AddFunction ProtectionAoEActions
 	Spell(dragon_roar)
 	# Apply Deep Wounds to targets in melee range.
 	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+	# Don't overcap on Rage.
+	if ProtectionRageWillOverCap() Spell(revenge text=cap)
 	if Talent(anger_management_talent)
 	{
 		# With Anger Management, the AoE priority is Revenge > SS > TC.
@@ -578,7 +585,6 @@ AddCheckBox(opt_nerien_shield_block L(opt_nerien_shield_block))
 AddIcon help=interrupt size=small
 {
 	ProtectionInterruptActions()
-	if EquippedRuneforge(reprisal_runeforge) ProtectionReprisalActions()
 	ProtectionDispelActions()
 	ProtectionHealActions()
 }
