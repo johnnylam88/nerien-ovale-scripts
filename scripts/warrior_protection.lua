@@ -440,8 +440,6 @@ AddFunction ProtectionMainActions
 	# Use Victory Rush when it's free.
 	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
 	ProtectionRavagerActions()
-	# Apply Deep Wounds to targets in melee range.
-	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
 	if Always()
 	{
 		# The single-target priority is SS > Revenge > TC.
