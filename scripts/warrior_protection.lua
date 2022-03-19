@@ -472,7 +472,7 @@ AddFunction ProtectionAoEActions
 	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
 	ProtectionRavagerActions()
 	# Use Booming Voice on cooldown.
-	if Talent(booming_voice_talent) Spell(demoralizing_shout)
+	if (Talent(booming_voice_talent) and not SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout text=rage)
 	# Use Dragon Roar on cooldown.
 	Spell(dragon_roar)
 	# Apply Deep Wounds to targets in melee range.
@@ -524,7 +524,7 @@ AddFunction ProtectionMaxDamageActions
 
 AddFunction ProtectionDefensiveCdActions
 {
-	if not Talent(booming_voice_talent) Spell(demoralizing_shout)
+	if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
 	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
 	Spell(fleshcraft)
 }
