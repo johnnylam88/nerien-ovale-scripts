@@ -514,8 +514,12 @@ AddFunction ProtectionOffensiveCdActions
 
 AddFunction ProtectionMaxDamageActions
 {
-	if (Rage() >= RageCost(execute max=1)) Spell(execute)
+	if (Enemies(tagged=1) > 1) Spell(revenge text=aoe)
+	if (ProtectionInRange() and Rage() >= RageCost(execute max=1)) Spell(execute)
 	Spell(revenge)
+	if (Enemies(tagged=1) > 1) Spell(thunder_clap text=aoe)
+	if ProtectionInRange() Spell(shield_slam)
+	Spell(thunder_clap)
 }
 
 AddFunction ProtectionDefensiveCdActions
@@ -617,15 +621,15 @@ AddIcon help=offensive size=small
 {
 	if not InCombat() ProtectionBuffActions()
 	ProtectionOffensiveCdActions()
+	ProtectionMaxDamageActions()
+	Item(Trinket0Slot usable=1 text=13)
+	Item(Trinket1Slot usable=1 text=14)
 	if not ProtectionInRange()
 	{
 		if (not EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}
-	Item(Trinket0Slot usable=1 text=13)
-	Item(Trinket1Slot usable=1 text=14)
-	ProtectionMaxDamageActions()
 }
 ]]
 	Private.scripts:registerScript("WARRIOR", "protection", name, desc, code, "script")
