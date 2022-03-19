@@ -191,6 +191,7 @@ Define(reprisal_runeforge 6969)
 	SpellRequire(intervene rage add=-20 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellAddBuff(intervene shield_block add=1 enabled=(EquippedRuneforge(reprisal_runeforge)))
 	SpellAddBuff(intervene revenge_buff add=1 enabled=(EquippedRuneforge(reprisal_runeforge)))
+Define(sinful_surge_runeforge 7470)
 Define(the_wall_runeforge 6957)
 	SpellRequire(shield_slam rage add=-5 enabled=(EquippedRuneforge(the_wall_runeforge)))
 
@@ -366,6 +367,11 @@ AddFunction ProtectionRavagerActions
 	{
 		# Apply Deep Wounds to targets in melee range.
 		if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+		# Use Condemn to extend Avatar with Sinful Surge.
+		if (EquippedRuneforge(sinful_surge_runeforge) and BuffPresent(avatar))
+		{
+			if (Enemies(tagged=1) < 3) Spell(condemn text=plus)
+		}
 		if Talent(heavy_repercussions_talent) Spell(shield_slam text=heavy)
 		if (BuffRemaining(shield_block_buff) >= ProtectionRavagerRemaining()) Spell(revenge text=spam)
 	}
