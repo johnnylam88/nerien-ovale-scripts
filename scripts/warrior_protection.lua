@@ -525,12 +525,7 @@ AddFunction ProtectionMaxDamageActions
 AddFunction ProtectionDefensiveCdActions
 {
 	if not Talent(booming_voice_talent) Spell(demoralizing_shout)
-	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0)
-	{
-		if EquippedRuneforge(the_wall_runeforge) Spell(shield_wall)
-		if not Talent(bolster_talent) Spell(last_stand)
-		if not EquippedRuneforge(the_wall_runeforge) Spell(shield_wall)
-	}
+	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
 	Spell(fleshcraft)
 }
 
@@ -579,6 +574,7 @@ AddFunction ProtectionDispelActions
 
 AddFunction ProtectionHealActions
 {
+	if (not Talent(bolster_talent) and HealthPercent() < 50) Spell(last_stand)
 	ItemHealActions()
 }
 
