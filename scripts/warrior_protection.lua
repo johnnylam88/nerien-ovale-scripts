@@ -394,10 +394,7 @@ AddFunction ProtectionPrecombatActiveMitigationActions
 {
 	PrecombatShortCdActions()
 	# Apply Shield Block using Charge with Reprisal.
-	if EquippedRuneforge(reprisal_runeforge)
-	{
-		if target.InRange(charge) Spell(charge text=block)
-	}
+	if EquippedRuneforge(reprisal_runeforge) Spell(charge text=block)
 }
 
 AddFunction ProtectionActiveMitigationActions
