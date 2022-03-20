@@ -433,13 +433,13 @@ AddFunction ProtectionActiveMitigationActions
 
 AddFunction ProtectionPrecombatMainActions
 {
-	Spell(shield_slam text=open)
+	Spell(shield_slam)
 }
 
 AddFunction ProtectionMainActions
 {
 	# Use Shield Slam after Charge to apply single-target threat.
-	if ProtectionHasCharged() Spell(shield_slam text=open)
+	if ProtectionHasCharged() Spell(shield_slam)
 	if Talent(unstoppable_force_talent) and BuffPresent(avatar) Spell(thunder_clap)
 	ProtectionOutburstActions()
 	# Use Victory Rush when it's free.
@@ -464,14 +464,14 @@ AddFunction ProtectionMainActions
 
 AddFunction ProtectionPrecombatAoEActions
 {
-	Spell(revenge text=dot)
-	Spell(thunder_clap text=open)
+	Spell(revenge)
+	Spell(thunder_clap)
 }
 
 AddFunction ProtectionAoEActions
 {
 	# Use Thunder Clap after Charge to apply AoE threat.
-	if ProtectionHasCharged() Spell(thunder_clap text=open)
+	if ProtectionHasCharged() Spell(thunder_clap)
 	if Talent(unstoppable_force_talent) and BuffPresent(avatar) Spell(thunder_clap)
 	ProtectionOutburstActions()
 	# Use Victory Rush when it's free.
