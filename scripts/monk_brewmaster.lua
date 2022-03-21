@@ -2,11 +2,17 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_monk_brewmaster"
-	local desc = string.format("[9.1] %s: Monk - Brewmaster", Private.name)
+	local desc = string.format("[9.2] %s: Monk - Brewmaster", Private.name)
 	local code = [[
-# Adapted from Icy Vein's Brewmaster Monk Tank Guide for Shadowlands 9.1.5
-#	by Sinzhu
-# https://www.icy-veins.com/wow/brewmaster-monk-pve-tank-rotation-cooldowns-abilities
+# Adapted from the following resources:
+#
+# - Sinzhu:
+#   - Brewmaster Monk Tank Guide for Shadowlands 9.2
+#     https://www.icy-veins.com/wow/brewmaster-monk-pve-tank-rotation-cooldowns-abilities
+#
+# - Equinox:
+#   - Brewmaster Guide
+#     https://docs.google.com/document/d/14tE2ELDN64xaDwEGG8t82ZpDbJ1485ax5uSUCNulRLQ
 
 Include(nerien_ovale_library)
 
@@ -86,10 +92,16 @@ Define(leg_sweep 119381)
 Define(paralysis 115078)
 	SpellInfo(paralysis energy=20 cd=45)
 	SpellRequire(paralysis cd add=-15 enabled=(Level() >= 56))
+Define(purified_chi_buff 325092)
+	SpellInfo(purified_chi_buff duration=15)
+	SpellAddBuff(celestial_brew purified_chi_buff set=0)
 Define(purifying_brew 119582)
 	SpellInfo(purifying_brew cd=1 charge_cd=20 cd_haste=1 gcd=0 offgcd=1)
 	SpellRequire(purifying_brew charge_cd add=-4 enabled=(Talent(light_brewing_talent)))
 	SpellRequire(purifying_brew unusable set=1 enabled=(not DebuffPresent(any_stagger_debuff)))
+	SpellAddBuff(purifying_brew purified_chi_buff add=1 enabled=(BuffPresent(light_stagger_debuff)))
+	SpellAddBuff(purifying_brew purified_chi_buff add=2 enabled=(BuffPresent(medium_stagger_debuff)))
+	SpellAddBuff(purifying_brew purified_chi_buff add=3 enabled=(BuffPresent(heavy_stagger_debuff)))
 Define(rushing_jade_wind 116847)
 	SpellInfo(rushing_jade_wind cd=6)
 	SpellRequire(rushing_jade_wind unusable set=1 enabled=(not Talent(rushing_jade_wind_talent)))
@@ -126,7 +138,7 @@ SpellList(any_stagger_debuff light_stagger_debuff moderate_stagger_debuff heavy_
 # Covenant Abilities
 AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
 Define(bonedust_brew 325216)
-	SpellInfo(bonedust_brew cd=60)
+	SpellInfo(bonedust_brew cd=60 duration=10)
 	SpellRequire(bonedust_brew unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(bonedust_brew unusable set=1 enabled=(not IsCovenant(necrolord)))
 Define(faeline_stomp 327104)
@@ -167,50 +179,109 @@ AddFunction BrewmasterEnergyUntilKegSmashPlusFiller
 	if (SpellCooldown(keg_smash) <= GCDRemaining()) (Energy() + EnergyRegenRate() * (GCD() + GCDRemaining()))
 }
 
-AddFunction BrewmasterUseExpelHarm
+AddFunction BrewmasterHasEnergyForExpelHarm
 {
 	# Use Expel Harm if it won't push back Keg Smash.
-	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(expel_harm)) Spell(expel_harm)
+	BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(expel_harm)
 }
 
-AddFunction BrewmasterUseTigerPalm
+AddFunction BrewmasterHasEnergyForTigerPalm
 {
 	# Use Tiger Palm if it won't push back Keg Smash.
-	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(tiger_palm)) Spell(tiger_palm)
+	BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(tiger_palm)
 }
 
-AddFunction BrewmasterUseSpinningCraneKick
+AddFunction BrewmasterHasEnergyForSpinningCraneKick
 {
 	# Use Spinning Crane Kick if it won't push back Keg Smash.
-	if (BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(spinning_crane_kick)) Spell(spinning_crane_kick)
+	BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(spinning_crane_kick)
 }
 
-AddFunction BrewmasterPrecombatShortCdActions
+AddFunction BrewmasterShouldCelestialBrew
+{
+	Enemies(tagged=1) > 1 or target.IsTargetingPlayer() or IncomingDamage(5) > 0
+}
+
+AddListItem(opt_monk_purified_chi_threshold purified_chi_00 "Purified Chi >= 0")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_01 "Purified Chi >= 1")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_02 "Purified Chi >= 2")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_03 "Purified Chi >= 3")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_04 "Purified Chi >= 4")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_05 "Purified Chi >= 5" default)
+AddListItem(opt_monk_purified_chi_threshold purified_chi_06 "Purified Chi >= 6")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_07 "Purified Chi >= 7")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_08 "Purified Chi >= 8")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_09 "Purified Chi >= 9")
+AddListItem(opt_monk_purified_chi_threshold purified_chi_10 "Purified Chi >= 10")
+
+AddFunction BrewmasterPurifiedChiThreshold
+{
+	if List(opt_monk_purified_chi_threshold purified_chi_00) 0
+	if List(opt_monk_purified_chi_threshold purified_chi_01) 1
+	if List(opt_monk_purified_chi_threshold purified_chi_02) 2
+	if List(opt_monk_purified_chi_threshold purified_chi_03) 3
+	if List(opt_monk_purified_chi_threshold purified_chi_04) 4
+	if List(opt_monk_purified_chi_threshold purified_chi_05) 5
+	if List(opt_monk_purified_chi_threshold purified_chi_06) 6
+	if List(opt_monk_purified_chi_threshold purified_chi_07) 7
+	if List(opt_monk_purified_chi_threshold purified_chi_08) 8
+	if List(opt_monk_purified_chi_threshold purified_chi_09) 9
+	if List(opt_monk_purified_chi_threshold purified_chi_10) 10
+	# Default value
+	5
+}
+
+AddFunction BrewmasterPrecombatActiveMitigationActions
 {
 	PrecombatShortCdActions()
+	Spell(exploding_keg)
 }
 
-AddFunction BrewmasterShortCdActions
+AddFunction BrewmasterActiveMitigationActions
 {
 	# Use Black Ox Brew when Celestial Brew is on cooldown and Purifying Brew has no charges.
 	if (SpellCooldown(celestial_brew) > GCD() and SpellCharges(purifying_brew count=0) < 0.75) Spell(black_ox_brew)
-	# Never let Celestial Brew or Purifying Brew sit on cooldown while tanking.
+	# Never let Purifying Brew sit on cooldown while tanking.
 	if (SpellCharges(purifying_brew count=0) > 1.9) Spell(purifying_brew text=cap)
 	# Use up Purifying Brew charges if Black Ox Brew is coming off cooldown.
 	if (Talent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew text=dump)
-	if not BuffPresent(blackout_combo_buff) Spell(celestial_brew)
-	Spell(bonedust_brew)
+	# Try to refresh Purified Chi with Purifying Brew.
+	if (BuffPresent(purified_chi_buff) and BuffRemaining(purified_chi_buff) < 2 * GCD()) Spell(purifying_brew text=buff)
+	# Put up a max absorb Celestial Brew if it's available.
+	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff))
+	{
+		if (BuffStacks(purified_chi_buff) >= 10 and BrewmasterShouldCelestialBrew()) Spell(celestial_brew text=max)
+	}
+	if (target.DebuffRemaining(bonedust_brew) < 1) Spell(bonedust_brew)
 	# Faeline Stomp has higher priority than Keg Smash for AoE.
 	if (Enemies(tagged=1) >= 3) Spell(faeline_stomp)
-	unless (Spell(keg_smash) or Spell(blackout_kick))
+	unless Spell(keg_smash)
 	{
 		Spell(faeline_stomp)
-		unless Spell(breath_of_fire)
+		unless (Spell(blackout_kick) or Spell(breath_of_fire))
 		{
 			Spell(exploding_keg)
 		}
 	}
 	Spell(fleshcraft)
+	# Use Celestial Brew if it won't overlap other defensive buffs.
+	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff))
+	{
+		# Only suggest Celestial Brew with at least 5 stacks of Purified Chi for an extra 100% absorption.
+		if (BuffStacks(purified_chi_buff) >= BrewmasterPurifiedChiThreshold() and BrewmasterShouldCelestialBrew())
+		{
+			if (BuffStacks(purified_chi_buff) == 9) Spell(celestial_brew text=9)
+			if (BuffStacks(purified_chi_buff) == 8) Spell(celestial_brew text=8)
+			if (BuffStacks(purified_chi_buff) == 7) Spell(celestial_brew text=7)
+			if (BuffStacks(purified_chi_buff) == 6) Spell(celestial_brew text=6)
+			if (BuffStacks(purified_chi_buff) == 5) Spell(celestial_brew text=5)
+			if (BuffStacks(purified_chi_buff) == 4) Spell(celestial_brew text=4)
+			if (BuffStacks(purified_chi_buff) == 3) Spell(celestial_brew text=3)
+			if (BuffStacks(purified_chi_buff) == 2) Spell(celestial_brew text=2)
+			if (BuffStacks(purified_chi_buff) == 1) Spell(celestial_brew text=1)
+			if (BuffStacks(purified_chi_buff) == 1) Spell(celestial_brew text=0)
+		}
+	}
 }
 
 AddFunction BrewmasterPrecombatMainActions
@@ -227,31 +298,45 @@ AddFunction BrewmasterPrecombatMainActions
 AddFunction BrewmasterMainActions
 {
 	if BuffPresent(charred_passions_buff) Spell(blackout_kick)
-	if (SpellCharges(keg_smash count=0) >= SpellMaxCharges(keg_smash) - 0.2) Spell(keg_smash)
-	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3) BrewmasterUseTigerPalm()
+	if (SpellCharges(keg_smash count=0) >= SpellMaxCharges(keg_smash) - 0.2) Spell(keg_smash text=cap)
+	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3)
+	{
+		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=combo)
+	}
 	if not EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(breath_of_fire)
 	if EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(rushing_jade_wind)
 	Spell(chi_wave)
-	if BuffPresent(charred_passions_buff) BrewmasterUseSpinningCraneKick()
+	if BuffPresent(charred_passions_buff)
+	{
+		if BrewmasterHasEnergyForSpinningCraneKick() Spell(spinning_crane_kick text=plus)
+	}
 	Spell(chi_burst)
-	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff)) BrewmasterUseTigerPalm()
+	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff))
+	{
+		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=buff)
+	}
 	if BuffPresent(rushing_jade_wind) Spell(rushing_jade_wind)
 }
 
 AddFunction BrewmasterSingleTargetActions
 {
 	BrewmasterMainActions()
-	# Avoid energy-capping with Tiger Palm.
-	if (TimeToMaxEnergy() < GCD()) Spell(tiger_palm text=cap)
+	if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm)
 }
 
-AddFunction BrewmasterAoeActions
+AddFunction BrewmasterAoEActions
 {
 	BrewmasterMainActions()
-	if (Enemies(tagged=1) >= 3) BrewmasterUseSpinningCraneKick()
-	BrewmasterUseTigerPalm()
+	if (Enemies(tagged=1) >= 3)
+	{
+		if BrewmasterHasEnergyForSpinningCraneKick() Spell(spinning_crane_kick)
+	}
+	if (Enemies(tagged=1) < 3)
+	{
+		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm)
+	}
 }
 
 AddFunction BrewmasterPrecombatCdActions
@@ -320,7 +405,10 @@ AddFunction BrewmasterHealActions
 	if (HealthPercent() < 70 and SpellCount(expel_harm) > 2)
 	{
 		# Assume each Gift of the Ox orb heals for 10% health.
-		if (HealthPercent() + 10 * SpellCount(expel_harm) < 90) BrewmasterUseExpelHarm()
+		if (HealthPercent() + 10 * SpellCount(expel_harm) < 90)
+		{
+			if BrewmasterHasEnergyForExpelHarm() Spell(expel_harm)
+		}
 	}
 	ItemHealActions()
 	# Use Healing Elixir between 60% and 30% health.
@@ -336,10 +424,10 @@ AddIcon help=interrupt size=small
 	BrewmasterHealActions()
 }
 
-AddIcon help=shortcd
+AddIcon help=active_mitigation
 {
-	if not InCombat() BrewmasterPrecombatShortCdActions()
-	BrewmasterShortCdActions()
+	if not InCombat() BrewmasterPrecombatActiveMitigationActions()
+	BrewmasterActiveMitigationActions()
 }
 
 AddIcon enemies=1 help=main
@@ -351,7 +439,7 @@ AddIcon enemies=1 help=main
 AddIcon help=aoe
 {
 	if not InCombat() BrewmasterPrecombatMainActions()
-	BrewmasterAoeActions()
+	BrewmasterAoEActions()
 }
 
 AddIcon help=cd
@@ -360,7 +448,7 @@ AddIcon help=cd
 	BrewmasterCdActions()
 }
 
-AddIcon help=trinkets size=small
+AddIcon help=offensive size=small
 {
 	if not BrewmasterInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	BrewmasterOffensiveCdActions()
