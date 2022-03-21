@@ -24,7 +24,7 @@ Open up the **Ovale** code window and select the script you would like to use fo
 
 ### Status ###
 
-The following classes and specializations are up-to-date for Shadowlands 9.1:
+The following classes and specializations are supported for Shadowlands:
 
 - Death Knight: Blood
 - Demon Hunter: Vengeance
@@ -33,7 +33,7 @@ The following classes and specializations are up-to-date for Shadowlands 9.1:
 - Monk: Brewmaster
 - Paladin: Protection
 - Rogue: Assassination
-- Warrior: Fury, Protection
+- Warrior: Fury (9.2), Protection (9.2)
 
 ### Links ###
 
