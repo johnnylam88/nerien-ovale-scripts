@@ -346,6 +346,18 @@ AddFunction ProtectionOutburstActions
 		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
 		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=tier)
 	}
+	if (SpellCooldown(avatar) < 1)
+	{
+		# Put Thunder Clap on cooldown so Outburst from Avatar is consumed by Shield Slam instead.
+		Spell(thunder_clap text=cd)
+	}
+	if (BuffStacks(seeing_red_buff) == 7)
+	{
+		# Put Thunder Clap on cooldown so Outburst is consumed by Shield Slam instead.
+		Spell(thunder_clap text=cd)
+		# Use Revenge to proc Outburst (even free Revenges will proc it).
+		Spell(revenge text=red)
+	}
 }
 
 AddFunction ProtectionReprisalActions
@@ -423,6 +435,8 @@ AddFunction ProtectionActiveMitigationActions
 	# Ignore Pain if we've been taking damage.
 	if (IncomingDamage(5) > 0 and ProtectionWontOverwriteIgnorePain())
 	{
+		# When Seeing Red is at 7 stacks (210+ rage), one Ignore Pain will proc Outburst.
+		if (BuffStacks(seeing_red_buff) == 7) Spell(ignore_pain text=red)
 		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
 	}
 	ProtectionReprisalActions()
