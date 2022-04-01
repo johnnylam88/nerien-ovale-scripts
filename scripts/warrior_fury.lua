@@ -292,6 +292,7 @@ AddFunction FuryDefensiveActions
 	Spell(ignore_pain)
 	Spell(enraged_regeneration)
 	Spell(fleshcraft)
+	Spell(rallying_cry)
 }
 
 AddFunction FuryInterruptActions
