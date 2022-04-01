@@ -255,6 +255,8 @@ AddFunction FuryMainActions
 	if IsCovenant(venthyr) Spell(condemn)
 	if (not IsEnraged() or Rage() > 90) Spell(rampage)
 	Spell(execute)
+	# Prioritize self-healing through Bloodthirst below 50% health.
+	if (BuffPresent(enraged_regeneration) and HealthPercent() < 50) Spell(bloodthirst)
 	if IsEnraged()
 	{
 		Spell(onslaught)
