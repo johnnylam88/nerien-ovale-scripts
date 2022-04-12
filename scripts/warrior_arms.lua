@@ -436,10 +436,10 @@ AddFunction ArmsBuffActions
 
 AddFunction ArmsDefensiveActions
 {
-	Spell(ignore_pain)
 	Spell(die_by_the_sword)
 	Spell(fleshcraft)
 	Spell(rallying_cry)
+	Spell(ignore_pain)
 }
 
 AddFunction ArmsInterruptActions

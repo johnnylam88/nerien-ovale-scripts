@@ -289,10 +289,10 @@ AddFunction FuryBuffActions
 
 AddFunction FuryDefensiveActions
 {
-	Spell(ignore_pain)
 	Spell(enraged_regeneration)
 	Spell(fleshcraft)
 	Spell(rallying_cry)
+	Spell(ignore_pain)
 }
 
 AddFunction FuryInterruptActions
