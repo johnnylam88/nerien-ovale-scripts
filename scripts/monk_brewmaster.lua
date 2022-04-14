@@ -290,15 +290,15 @@ AddFunction BrewmasterPrecombatMainActions
 	# Ensure Shuffle is up when entering combat.
 	if not BuffPresent(shuffle)
 	{
-		Spell(keg_smash)
-		Spell(blackout_kick)
-		Spell(spinning_crane_kick)
+		Spell(keg_smash text=open)
+		Spell(blackout_kick text=open)
+		Spell(spinning_crane_kick text=open)
 	}
 }
 
 AddFunction BrewmasterMainActions
 {
-	if BuffPresent(charred_passions_buff) Spell(blackout_kick)
+	if BuffPresent(charred_passions_buff) Spell(blackout_kick text=plus)
 	if (SpellMaxCharges(keg_smash) == 1) Spell(keg_smash)
 	if (SpellMaxCharges(keg_smash) > 1)
 	{
