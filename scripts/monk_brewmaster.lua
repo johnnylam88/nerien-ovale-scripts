@@ -298,7 +298,15 @@ AddFunction BrewmasterPrecombatMainActions
 AddFunction BrewmasterMainActions
 {
 	if BuffPresent(charred_passions_buff) Spell(blackout_kick)
-	if (SpellCharges(keg_smash count=0) >= SpellMaxCharges(keg_smash) - 0.2) Spell(keg_smash text=cap)
+	if (SpellMaxCharges(keg_smash) == 1) Spell(keg_smash)
+	if (SpellMaxCharges(keg_smash) > 1)
+	{
+		# Don't cap on Keg Smash charges.
+		if (SpellCharges(keg_smash count=0) >= SpellMaxCharges(keg_smash) - 0.2) Spell(keg_smash text=cap)
+		# Build back up to banking one charge of Keg Smash.
+		# Hardcode the 8 second recharge time for Keg Smash.
+		if (TimeSincePreviousSpell(keg_smash) > TimeWithHaste(8) + 1) Spell(keg_smash)
+	}
 	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3)
 	{
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=combo)
