@@ -150,9 +150,10 @@ Define(fallen_order 326860)
 	SpellRequire(fallen_order unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(fallen_order unusable set=1 enabled=(not IsCovenant(venthyr)))
 Define(weapons_of_order 310454)
-	SpellInfo(weapons_of_order cd=120)
+	SpellInfo(weapons_of_order cd=120 duration=30)
 	SpellRequire(weapons_of_order unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(weapons_of_order unusable set=1 enabled=(not IsCovenant(kyrian)))
+	SpellAddBuff(weapons_of_order weapons_of_order add=1)
 
 # Runeforge Legendary Effects
 Define(charred_passions_runeforge 7076)
