@@ -37,7 +37,7 @@ Define(berserker_rage 18499)
 	SpellAddBuff(berserker_rage berserker_rage add=1)
 Define(bladestorm 46924)
 	SpellInfo(bladestorm cd=60 duration=4)
-	SpellRequire(bladestorm unusable set=1 enabled=(Talent(bladestorm_talent)))
+	SpellRequire(bladestorm unusable set=1 enabled=(not Talent(bladestorm_talent)))
 	SpellAddBuff(bladestorm bladestorm add=1)
 Define(bloodbath 335096)
 	SpellInfo(bloodbath cd=3 cd_haste=1 rage=-16)
@@ -222,56 +222,104 @@ AddFunction FuryInRange
 	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel)) 
 }
 
-AddFunction FuryPrecombatShortCdActions
+AddFunction FurySingleTargetActions
 {
-	PrecombatShortCdActions()
-	Spell(charge)
+	if BuffPresent(bladestorm) Spell(condemn text=cancel)
+	Spell(condemn)
+	if (not IsEnraged() or Rage() > 90)
+	{
+		if BuffPresent(bladestorm) Spell(rampage text=cancel)
+		Spell(rampage)
+	}
+	if (not IsEnraged() or (BuffPresent(enraged_regeneration) and HealthPercent() < 50)) Spell(bloodthirst)
+	Spell(crushing_blow)
+	Spell(execute)
+	Spell(bloodbath)
+	if IsEnraged()
+	{
+		if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+		Spell(onslaught)
+	}
+	Spell(raging_blow)
+	Spell(bloodthirst)
+	Spell(whirlwind)
 }
 
-AddFunction FuryShortCdActions
+AddFunction FurySingleTargetShortCdActions
 {
-	unless (IsCovenant(venthyr) and Spell(condemn))
+	unless Spell(condemn)
 	{
-		Spell(siegebreaker)
+		Spell(siegebreaker text=st)
 
-		unless (not IsEnraged() or Rage() > 90 or Spell(execute))
+		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage))
 		{
-			Spell(ancient_aftershock)
-			Spell(spear_of_bastion)
-			Spell(bladestorm)
-			Spell(dragon_roar)
+			if BuffPresent(recklessness) Spell(ancient_aftershock text=st)
+			if IsEnraged()
+			{
+				Spell(spear_of_bastion text=st)
+				Spell(bladestorm text=st)
+			}
+
+			unless (
+				((not IsEnraged() or (BuffPresent(enraged_regeneration) and HealthPercent() < 50)) and Spell(bloodthirst)) or
+				Spell(crushing_blow) or
+				Spell(execute) or
+				Spell(bloodbath) or
+				(IsEnraged() and Charges(raging_blow count=0) >= 1.8 and Spell(raging_blow))
+			) {
+				if IsEnraged() Spell(dragon_roar text=st)
+			}
 		}
 	}
 }
 
-AddFunction FuryPrecombatMainActions
+AddFunction FuryMultiTargetActions
 {
-	if Talent(fresh_meat_talent) Spell(bloodthirst)
-}
-
-AddFunction FuryMainActions
-{
-	if (Enemies(tagged=1) > 1 and not BuffPresent(whirlwind_buff)) Spell(whirlwind)
-	if IsCovenant(venthyr) Spell(condemn)
-	if (not IsEnraged() or Rage() > 90) Spell(rampage)
-	Spell(execute)
-	# Prioritize self-healing through Bloodthirst below 50% health.
-	if (BuffPresent(enraged_regeneration) and HealthPercent() < 50) Spell(bloodthirst)
-	if IsEnraged()
+	if not BuffPresent(bladestorm)
 	{
-		Spell(onslaught)
-		if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+		if not BuffPresent(whirlwind_buff) Spell(whirlwind text=cleave)
+		if (not IsEnraged() or Rage() > 90) Spell(rampage)
+		if (not IsEnraged() or (BuffPresent(enraged_regeneration) and HealthPercent() < 50)) Spell(bloodthirst)
+		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 6)
+		{
+			Spell(crushing_blow)
+			Spell(execute)
+			Spell(bloodbath)
+		}
+		if (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3)
+		{
+			Spell(whirlwind text=spam)
+		}
+		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3)
+		{
+			if IsEnraged()
+			{
+				if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+				Spell(onslaught)
+			}
+			Spell(raging_blow)
+			Spell(bloodthirst)
+			Spell(whirlwind)
+		}
 	}
-	if (Enemies(tagged=1) > 1 and BuffPresent(merciless_bonegrinder_buff)) Spell(whirlwind)
-	Spell(bloodthirst)
-	Spell(raging_blow)
-	Spell(whirlwind)
 }
 
-AddFunction FuryPrecombatCdActions
+AddFunction FuryMultiTargetShortCdActions
 {
-	PrecombatCdActions()
-	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) Spell(recklessness)
+	if not BuffPresent(bladestorm)
+	{
+		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage))
+		{
+			if BuffPresent(recklessness) Spell(ancient_aftershock text=aoe)
+			if IsEnraged()
+			{
+				Spell(spear_of_bastion text=aoe)
+				Spell(bladestorm text=aoe)
+				Spell(dragon_roar text=aoe)
+			}
+			Spell(siegebreaker text=aoe)
+		}
+	}
 }
 
 AddFunction FuryCdActions
@@ -280,6 +328,23 @@ AddFunction FuryCdActions
 	# With Signet of Tormented Kings, Recklessness may activate Bladestorm,
 	# so ensure Enrage is active first.
 	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) or IsEnraged() Spell(recklessness)
+}
+
+AddFunction FuryPrecombatShortCdActions
+{
+	PrecombatShortCdActions()
+	Spell(charge)
+}
+
+AddFunction FuryPrecombatMainActions
+{
+	if Talent(fresh_meat_talent) Spell(bloodthirst)
+}
+
+AddFunction FuryPrecombatCdActions
+{
+	PrecombatCdActions()
+	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) Spell(recklessness)
 }
 
 AddFunction FuryBuffActions
@@ -345,19 +410,20 @@ AddIcon help=interrupt size=small
 AddIcon help=shortcd
 {
 	if not InCombat() FuryPrecombatShortCdActions()
-	FuryShortCdActions()
+	if (Enemies(tagged=1) == 1) FurySingleTargetShortCdActions()
+	if (Enemies(tagged=1) > 1)  FuryMultiTargetShortCdActions()
 }
 
 AddIcon enemies=1 help=main
 {
 	if not InCombat() FuryPrecombatMainActions()
-	FuryMainActions()
+	FurySingleTargetActions()
 }
 
 AddIcon help=aoe
 {
 	if not InCombat() FuryPrecombatMainActions()
-	FuryMainActions()
+	FuryMultiTargetActions()
 }
 
 AddIcon help=cd
