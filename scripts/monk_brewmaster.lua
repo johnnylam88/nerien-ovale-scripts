@@ -142,9 +142,10 @@ Define(bonedust_brew 325216)
 	SpellRequire(bonedust_brew unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(bonedust_brew unusable set=1 enabled=(not IsCovenant(necrolord)))
 Define(faeline_stomp 327104)
-	SpellInfo(faeline_stomp cd=30)
+	SpellInfo(faeline_stomp cd=30 duration=30)
 	SpellRequire(faeline_stomp unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(faeline_stomp unusable set=1 enabled=(not IsCovenant(night_fae)))
+	SpellAddBuff(faeline_stomp faeline_stomp add=1)
 Define(fallen_order 326860)
 	SpellInfo(fallen_order cd=180)
 	SpellRequire(fallen_order unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
@@ -254,15 +255,11 @@ AddFunction BrewmasterActiveMitigationActions
 		if (BuffStacks(purified_chi_buff) >= 10 and BrewmasterShouldCelestialBrew()) Spell(celestial_brew text=max)
 	}
 	if (target.DebuffRemaining(bonedust_brew) < 1) Spell(bonedust_brew)
-	# Faeline Stomp has higher priority than Keg Smash for AoE.
-	if (Enemies(tagged=1) >= 3) Spell(faeline_stomp)
-	unless Spell(keg_smash)
+	unless Spell(keg_smash) or Spell(faeline_stomp) or
+		Spell(blackout_kick) or Spell(breath_of_fire) or
+		Spell(chi_burst) or Spell(chi_wave)
 	{
-		Spell(faeline_stomp)
-		unless (Spell(blackout_kick) or Spell(breath_of_fire))
-		{
-			Spell(exploding_keg)
-		}
+		Spell(exploding_keg)
 	}
 	Spell(fleshcraft)
 	# Use Celestial Brew if it won't overlap other defensive buffs.
@@ -299,6 +296,8 @@ AddFunction BrewmasterPrecombatMainActions
 AddFunction BrewmasterMainActions
 {
 	if BuffPresent(charred_passions_buff) Spell(blackout_kick text=plus)
+	# Faeline Stomp has higher priority than Keg Smash for AoE.
+	if (Enemies(tagged=1) >= 3) Spell(faeline_stomp)
 	if (SpellMaxCharges(keg_smash) == 1) Spell(keg_smash)
 	if (SpellMaxCharges(keg_smash) > 1)
 	{
@@ -308,6 +307,8 @@ AddFunction BrewmasterMainActions
 		# Hardcode the 8 second recharge time for Keg Smash.
 		if (TimeSincePreviousSpell(keg_smash) > TimeWithHaste(8) + 1) Spell(keg_smash)
 	}
+	if BuffPresent(faeline_stomp) Spell(chi_burst)
+	Spell(faeline_stomp)
 	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3)
 	{
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=combo)
@@ -321,7 +322,7 @@ AddFunction BrewmasterMainActions
 	{
 		if BrewmasterHasEnergyForSpinningCraneKick() Spell(spinning_crane_kick text=plus)
 	}
-	Spell(chi_burst)
+	if not IsCovenant(night_fae) Spell(chi_burst)
 	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff))
 	{
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=buff)
