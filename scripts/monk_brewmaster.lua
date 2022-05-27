@@ -121,7 +121,7 @@ Define(touch_of_death 322109)
 	SpellRequire(touch_of_death unusable set=0 enabled=(target.Health() < player.Health() or (Level() >= 44 and target.HealthPercent() < 15)))
 Define(zen_meditation 115176)
 	SpellInfo(zen_meditation cd=300 gcd=0 offgcd=1)
-SpellList(brewmaster_defensive_buff dampen_harm fortifying_brew_buff)
+SpellList(brewmaster_defensive_buff dampen_harm fortifying_brew_buff fleshcraft)
 
 # Stagger
 Define(heavy_stagger_debuff 124273)
@@ -261,7 +261,6 @@ AddFunction BrewmasterActiveMitigationActions
 	{
 		Spell(exploding_keg)
 	}
-	Spell(fleshcraft)
 	# Use Celestial Brew if it won't overlap other defensive buffs.
 	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff))
 	{
@@ -371,6 +370,7 @@ AddFunction BrewmasterDefensiveCdActions
 	{
 		Spell(dampen_harm)
 		Spell(fortifying_brew)
+		if InCombat() Spell(fleshcraft)
 		Spell(zen_meditation)
 	}
 }

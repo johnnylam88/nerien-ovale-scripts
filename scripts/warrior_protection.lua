@@ -543,8 +543,11 @@ AddFunction ProtectionDefensiveCdActions
 {
 	if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
 	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
-	Spell(fleshcraft)
-	Spell(rallying_cry)
+	if InCombat() Spell(fleshcraft)
+	if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0)
+	{
+		Spell(rallying_cry)
+	}
 }
 
 AddFunction ProtectionCdActions

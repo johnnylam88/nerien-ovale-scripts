@@ -162,7 +162,7 @@ Define(turn_evil 10326)
 Define(word_of_glory 85673)
 	SpellInfo(word_of_glory holypower=3)
 	SpellRequire(word_of_glory holypower set=0 enabled=(BuffPresent(shining_light_free_buff)))
-SpellList(protection_defensive_buff ardent_defender blessing_of_protection blessing_of_spellwarding divine_shield guardian_of_ancient_kings)
+SpellList(protection_defensive_buff ardent_defender blessing_of_protection blessing_of_spellwarding divine_shield guardian_of_ancient_kings fleshcraft)
 
 # Covenant Abilities
 AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
@@ -309,9 +309,13 @@ AddFunction ProtectionDefensiveCdActions
 	{
 		Spell(ardent_defender)
 		Spell(guardian_of_ancient_kings)
-		if Talent(final_stand_talent) Spell(divine_shield)
-		if (not Talent(blessing_of_spellwarding_talent) and IncomingPhysicalDamage(5) > 0) Spell(blessing_of_protection)
-		if (Talent(blessing_of_spellwarding_talent) and IncomingMagicDamage(5) > 0) Spell(blessing_of_spellwarding)
+		if InCombat() Spell(fleshcraft)
+		if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0)
+		{
+			if Talent(final_stand_talent) Spell(divine_shield)
+			if (not Talent(blessing_of_spellwarding_talent) and IncomingPhysicalDamage(5) > 0) Spell(blessing_of_protection)
+			if (Talent(blessing_of_spellwarding_talent) and IncomingMagicDamage(5) > 0) Spell(blessing_of_spellwarding)
+		}
 	}
 }
 
