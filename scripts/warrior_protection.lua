@@ -547,10 +547,6 @@ AddFunction ProtectionDefensiveCdActions
 		if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
 		if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
 		if InCombat() Spell(fleshcraft)
-		if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0)
-		{
-			Spell(rallying_cry)
-		}
 	}
 }
 
@@ -599,7 +595,14 @@ AddFunction ProtectionDispelActions
 
 AddFunction ProtectionHealActions
 {
-	if (not Talent(bolster_talent) and HealthPercent() < 50) Spell(last_stand)
+	if (HealthPercent() < 50)
+	{
+		if (not BuffPresent(last_stand) and not BuffPresent(rallying_cry))
+		{
+			if not Talent(bolster_talent) Spell(last_stand)
+			Spell(rallying_cry)
+		}
+	}
 	ItemHealActions()
 }
 
