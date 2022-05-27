@@ -81,8 +81,12 @@ Define(zeal_of_the_burning_blade 274740)
 
 # Covenant Signature Abilities
 Define(fleshcraft 324631)
-	SpellInfo(fleshcraft cd=120 unusable=1)
+	SpellInfo(fleshcraft cd=120 channel=1 tick=0.5 unusable=1)
 	SpellRequire(fleshcraft unusable set=0 enabled=(IsCovenant(necrolord)))
+	SpellAddBuff(fleshcraft fleshcraft add=1)
+Define(fleshcraft_shield_buff 324867)
+	SpellInfo(fleshcraft_shield_buff duration=120)
+	SpellAddBuff(fleshcraft fleshcraft_shield_buff add=1)
 Define(summon_steward 324739)
 	SpellInfo(summon_steward cd=300 unusable=1)
 	SpellRequire(summon_steward unusable set=0 enabled=(IsCovenant(kyrian)))
