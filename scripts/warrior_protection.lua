@@ -147,6 +147,7 @@ Define(victorious_buff 32216)
 Define(victory_rush 34428)
 	SpellRequire(victory_rush unusable set=1 enabled=(not BuffPresent(victorious_buff)))
 	SpellRequire(victory_rush replaced_by set=impending_victory enabled=(Talent(impending_victory_talent)))
+SpellList(protection_defensive_buff shield_wall fleshcraft)
 
 # Covenant Abilities
 AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
@@ -541,12 +542,15 @@ AddFunction ProtectionMaxDamageActions
 
 AddFunction ProtectionDefensiveCdActions
 {
-	if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
-	if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
-	if InCombat() Spell(fleshcraft)
-	if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0)
+	if not BuffPresent(protection_defensive_buff)
 	{
-		Spell(rallying_cry)
+		if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
+		if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
+		if InCombat() Spell(fleshcraft)
+		if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0)
+		{
+			Spell(rallying_cry)
+		}
 	}
 }
 
