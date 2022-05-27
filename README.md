@@ -26,7 +26,7 @@ Open up the **Ovale** code window and select the script you would like to use fo
 
 The following classes and specializations are supported for Shadowlands:
 
-- Death Knight: Blood
+- Death Knight: Blood (9.2)
 - Demon Hunter: Vengeance
 - Druid: Balance, Guardian
 - Mage: Arcane, Frost

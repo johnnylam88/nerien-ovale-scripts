@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_deathknight_blood"
-	local desc = string.format("[9.1] %s: Death Knight - Blood", Private.name)
+	local desc = string.format("[9.2] %s: Death Knight - Blood", Private.name)
 	local code = [[
-# Adapted from "[9.1.0] Advanced Blood Death Knight Guide for M+"
+# Adapted from "[9.2] Advanced Blood Death Knight Guide for M+"
 #	by Kyrasis-Stormreaver.
 # https://docs.google.com/document/d/1FJlB1T8ijaQLjY_cihyoyhLoi6lYRnT-N-ipVFCLidE
 
@@ -14,10 +14,16 @@ Include(nerien_ovale_library)
 
 # Talents
 Define(antimagic_barrier_talent 22014)
+Define(blooddrinker_talent 19166)
 Define(blood_tap_talent 22135)
+Define(bonestorm_talent 21209)
+Define(consumption_talent 19220)
 Define(heartbreaker_talent 19165)
+Define(hemostasis_talent 19219)
+Define(red_thirst_talent 21208)
 Define(relish_in_blood_talent 22134)
 Define(tightening_grasp_talent 19226)
+Define(tombstone_talent 23454)
 Define(voracious_talent 19230)
 
 # Class Abilities
@@ -31,7 +37,6 @@ Define(asphyxiate 221562)
 Define(blooddrinker 206931)
 	SpellInfo(blooddrinker runes=1 runicpower=-10 cd=30 channel=3 tick=1)
 	SpellRequire(blooddrinker unusable set=1 enabled=(not Talent(blooddrinker_talent)))
-Define(blooddrinker_talent 19166)
 Define(blood_boil 50842)
 	SpellInfo(blood_boil cd=7.5)
 Define(blood_plague_debuff 55078)
@@ -48,21 +53,11 @@ Define(bone_shield 195181)
 Define(bonestorm 194844)
 	SpellInfo(bonestorm runicpower=10 cd=60)
 	SpellRequire(bonestorm unusable set=1 enabled=(not Talent(bonestorm_talent)))
-Define(bonestorm_talent 21209)
 Define(consumption 274156)
 	SpellInfo(consumption cd=30)
 	SpellRequire(consumption unusable set=1 enabled=(not Talent(consumption_talent)))
-Define(consumption_talent 19220)
 Define(crimson_scourge_buff 81141)
 	SpellInfo(crimson_scourge_buff duration=15)
-	SpellAddBuff(death_and_decay crimson_scourge_buff set=0)
-	SpellRequire(death_and_decay runes set=0 enabled=(BuffPresent(crimson_scourge_buff)))
-	SpellRequire(death_and_decay runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not Talent(relish_in_blood_talent)))
-	SpellRequire(death_and_decay runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and Talent(relish_in_blood_talent)))
-	SpellAddBuff(deaths_due crimson_scourge_buff set=0)
-	SpellRequire(deaths_due runes set=0 enabled=(BuffPresent(crimson_scourge_buff)))
-	SpellRequire(deaths_due runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not Talent(relish_in_blood_talent)))
-	SpellRequire(deaths_due runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and Talent(relish_in_blood_talent)))
 Define(dancing_rune_weapon 49028)
 	SpellInfo(dancing_rune_weapon cd=120)
 Define(dancing_rune_weapon_buff 81256)
@@ -70,15 +65,14 @@ Define(dancing_rune_weapon_buff 81256)
 	SpellAddBuff(dancing_rune_weapon dancing_rune_weapon_buff add=1)
 Define(death_and_decay 43265)
 	SpellInfo(death_and_decay runes=1 runicpower=-10 cd=30)
+	SpellRequire(death_and_decay runes set=0 enabled=(BuffPresent(crimson_scourge_buff)))
+	SpellRequire(death_and_decay runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not Talent(relish_in_blood_talent)))
+	SpellRequire(death_and_decay runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and Talent(relish_in_blood_talent)))
+	SpellAddBuff(death_and_decay crimson_scourge_buff set=0)
 Define(death_coil 47541)
 Define(death_and_decay_buff 188290)
 	SpellInfo(death_and_decay_buff duration=10 tick=1)
 	SpellAddBuff(death_and_decay death_and_decay_buff add=1)
-Define(deaths_due_buff 324165)
-	SpellInfo(deaths_due_buff duration=12 tick=1)
-Define(deaths_due_debuff 324164)
-	SpellInfo(deaths_due_debuff duration=12)
-	SpellAddTargetDebuff(deaths_due deaths_due_debuff add=1)
 Define(death_grip 49576)
 	SpellInfo(death_grip cd=25)
 Define(death_strike 49998)
@@ -115,9 +109,9 @@ Define(sacrificial_pact 327574)
 Define(tombstone 219809)
 	SpellInfo(tombstone cd=60)
 	SpellRequire(tombstone unusable set=1 enabled=(not Talent(tombstone_talent)))
-Define(tombstone_talent 23454)
 Define(vampiric_blood 55233)
 	SpellInfo(vampiric_blood cd=90 gcd=0 offgcd=1)
+SpellList(blood_defensive_buff icebound_fortitude rune_tap fleshcraft)
 
 # Covenant Abilities
 AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
@@ -132,6 +126,17 @@ Define(deaths_due 324128)
 	SpellRequire(deaths_due unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(deaths_due unusable set=1 enabled=(not IsCovenant(night_fae)))
 	SpellRequire(death_and_decay replaced_by set=deaths_due enabled=(IsCovenant(night_fae) and SpellKnown(deaths_due)))
+	SpellRequire(deaths_due runes set=0 enabled=(BuffPresent(crimson_scourge_buff)))
+	SpellRequire(deaths_due runicpower set=0 enabled=(BuffPresent(crimson_scourge_buff) and not Talent(relish_in_blood_talent)))
+	SpellRequire(deaths_due runicpower add=-10 enabled=(BuffPresent(crimson_scourge_buff) and Talent(relish_in_blood_talent)))
+	SpellAddBuff(deaths_due crimson_scourge_buff set=0)
+Define(deaths_due_buff 324165)
+	SpellInfo(deaths_due_buff duration=12 tick=1)
+	SpellAddBuff(heart_strike deaths_due_buff add=1 enabled=(IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)))
+Define(deaths_due_debuff 324164)
+	SpellInfo(deaths_due_debuff duration=12)
+	SpellAddTargetDebuff(deaths_due deaths_due_debuff add=1)
+	SpellAddTargetDebuff(heart_strike deaths_due_debuff add=1 enabled=(IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)))
 Define(shackle_the_unworthy 312202)
 	SpellInfo(shackle_the_unworthy cd=60)
 	SpellRequire(shackle_the_unworthy unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
@@ -198,21 +203,253 @@ AddFunction BloodHeartStrikeTargets
 AddFunction BloodHeartStrikeRunicPower
 {
 	# Return the amount of runic power generated by Heart Strike.
-	if (Level() < 23) (10 + Talent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets())
-	15 + Talent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets()
+	-1 * RunicPowerCost(heart_strike) + Talent(heartbreaker_talent) * 2 * BloodHeartStrikeTargets()
 }
 
-AddFunction BloodOssuaryThreshold
+AddFunction BloodPriorityHealActions
 {
-	# Return the number of Bone Shield charges at which we should Marrowrend to maintain Ossuary.
-	# Marrowrend if below 8 stacks of Bone Shield (7 stacks with Crimson Rune Weapon).
-	# Bone Shield loses 1 stack every 2.5 seconds with incoming physical damage.
-	# Keep Bone Shield stacks low when Dancing Rune Weapon (with Crimson Rune Weapon) or Abomination Limb is coming off cooldown.
-	if (BuffPresent(dancing_rune_weapon_buff) or BuffRemaining(abomination_limb) > 6) (5)
-	if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) / 2.5 < 3) (4 + SpellCooldown(dancing_rune_weapon) / 2.5)
-	if (IsCovenant(necrolord) and SpellCooldown(abomination_limb) / 2.5 < 3) (4 + SpellCooldown(abomination_limb) / 2.5)
-	if EquippedRuneforge(crimson_rune_weapon_runeforge) (7)
-	8
+	if (HealthPercent() < 70)
+	{
+		if (Enemies(tagged=1) >= 3)
+		{
+			if BloodHasPooledForBonestorm() Spell(bonestorm)
+			Spell(consumption text=heal)
+		}
+		if (not BloodIsPoolingForBonestorm() and BloodDeathStrikeHealing() <= HealthMissing()) Spell(death_strike text=heal)
+	}
+}
+
+AddFunction BloodCoreMainActions
+{
+	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3) Spell(marrowrend)
+	if (Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5) Spell(marrowrend text=next)
+	Spell(blooddrinker)
+	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=buff)
+	if (Rune() < 3) Spell(shackle_the_unworthy)
+	if IsCovenant(night_fae)
+	{
+		if (2 * GCD() < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 3 * GCD()) Spell(deaths_due text=buff)
+		if (2 * GCD() < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 3 * GCD()) Spell(deaths_due text=buff)
+		if BuffPresent(death_and_decay_buff)
+		{
+			if (BuffRemaining(deaths_due_buff) < 2 * GCD()) Spell(heart_strike text=buff)
+			if (BuffRemaining(death_and_decay_buff) < 4) Spell(heart_strike text=buff)
+		}
+	}
+	if (Enemies(tagged=1) == 1)
+	{
+		if (RunicPowerDeficit() < 20) Spell(death_strike text=dmg)
+	}
+	if not BuffPresent(abomination_limb)
+	{
+		if (IsCovenant(necrolord) and SpellCooldown(abomination_limb) < 3)
+		{
+			if (BuffStacks(bone_shield) < 6) Spell(marrowrend)
+		}
+		if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) < 60)
+		{
+			if (BuffStacks(bone_shield) < 6) Spell(marrowrend)
+		}
+		if not EquippedRuneforge(crimson_rune_weapon_runeforge)
+		{
+			if (BuffStacks(bone_shield) < 8) Spell(marrowrend)
+		}
+	}
+	if EquippedRuneforge(crimson_rune_weapon_runeforge)
+	{
+		if (BuffStacks(bone_shield) > 6 and SpellCooldown(dancing_rune_weapon) > 25 + GCD())
+		{
+			if (Rune() > 1) Spell(tombstone)
+		}
+	}
+	Spell(deaths_due)
+	if (TimeToRunes(4) < GCD()) Spell(heart_strike)
+	if (Talent(hemostasis_talent) and BuffStacks(hemostasis_buff) < 5 and Charges(blood_boil count=0) > 1.8) Spell(blood_boil text=cap)
+	if (Rune() >= 3) Spell(heart_strike)
+	if (BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10)
+	{
+		if (BuffStacks(bone_shield) >= 6)
+		{
+			if IsCovenant(night_fae)
+			{
+				if BuffPresent(death_and_decay_buff) Spell(heart_strike)
+			}
+			if not IsCovenant(night_fae)
+			{
+				Spell(heart_strike)
+			}
+		}
+	}
+	if (Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5) Spell(blood_boil)
+	if (Charges(blood_boil count=0) > 1.8) Spell(blood_boil text=cap)
+	if (RunicPowerDeficit() < 20) Spell(death_strike text=cap)
+	if BuffPresent(crimson_scourge_buff) Spell(deaths_due text=free)
+}
+
+AddFunction BloodCoreShortCdActions
+{
+	unless
+		(BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3 and Spell(marrowrend)) or
+		(Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5 and Spell(marrowrend)) or
+		Spell(blooddrinker)
+	{
+		if EquippedRuneforge(bryndaors_might_runeforge)
+		{
+			if (RunicPowerDeficit() > 63) Spell(swarming_mist)
+		}
+		if not EquippedRuneforge(bryndaors_might_runeforge)
+		{
+			if (RunicPowerDeficit() > 57) Spell(swarming_mist)
+		}
+
+		unless
+			((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and Spell(blood_boil))
+		{
+			if (Rune() < 3) Spell(shackle_the_unworthy)
+
+			unless
+				IsCovenant(night_fae) or
+				(Enemies(tagged=1) == 1 and RunicPowerDeficit() < 20 and Spell(death_strike)) or
+				(not BuffPresent(abomination_limb) and Spell(marrowrend) and
+					((IsCovenant(necrolord) and SpellCooldown(abomination_limb) < 3 and BuffStacks(bone_shield) < 6) or
+					 (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) < 60 and BuffStacks(bone_shield) < 6) or
+					 (not EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffStacks(bone_shield) < 8))) or
+				(EquippedRuneforge(crimson_rune_weapon_runeforge) and Spell(tombstone) and
+					BuffStacks(bone_shield) > 6 and SpellCooldown(dancing_rune_weapon) > 25 + GCD() and Rune() > 1)
+			{
+				if (Enemies(tagged=1) >= 3) Spell(death_and_decay)
+
+				unless 
+					(TimeToRunes(4) < GCD() and Spell(heart_strike)) or
+					(Talent(hemostasis_talent) and BuffStacks(hemostasis_buff) < 5 and Charges(blood_boil count=0) > 1.8 and Spell(blood_boil)) or
+					(Rune() >= 3 and Spell(heart_strike)) or
+					(BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10 and
+						BuffStacks(bone_shield) >= 6 and Spell(heart_strike) and
+						((IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)) or not IsCovenant(night_fae))) or
+					(Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5 and Spell(blood_boil)) or
+					(Charges(blood_boil count=0) > 1.8 and Spell(blood_boil)) or
+					(RunicPowerDeficit() < 20 and Spell(death_strike))
+				{
+					if BuffPresent(crimson_scourge_buff) Spell(death_and_decay text=free)
+				}
+			}
+		}
+	}
+}
+
+AddFunction BloodDancingRuneWeaponMainActions
+{
+	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3) Spell(marrowrend)
+	if (Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5) Spell(marrowrend text=next)
+	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=buff)
+	if IsCovenant(night_fae)
+	{
+		if (2 * GCD() < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 3 * GCD()) Spell(deaths_due text=buff)
+		if (2 * GCD() < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 3 * GCD()) Spell(deaths_due text=buff)
+		if BuffPresent(death_and_decay_buff)
+		{
+			if (BuffRemaining(deaths_due_buff) < 2 * GCD()) Spell(heart_strike text=buff)
+			if (BuffRemaining(death_and_decay_buff) < 4) Spell(heart_strike text=buff)
+		}
+	}
+	if (Enemies(tagged=1) == 1)
+	{
+		if (RunicPowerDeficit() < 40 and Rune() < 3) Spell(death_strike text=dmg)
+	}
+	if EquippedRuneforge(crimson_rune_weapon_runeforge)
+	{
+		if (BuffStacks(bone_shield) > 6 and SpellCooldown(dancing_rune_weapon) > 25 + GCD())
+		{
+			if (Rune() > 1 or BuffStacks(bone_shield) > 7) Spell(tombstone)
+		}
+	}
+	if BuffPresent(crimson_scourge_buff) Spell(deaths_due text=free)
+	if (TimeToRunes(4) < GCD()) Spell(heart_strike)
+	if (Rune() >= 3) Spell(heart_strike)
+	if (BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10)
+	{
+		if (BuffStacks(bone_shield) >= 2)
+		{
+			if IsCovenant(night_fae)
+			{
+				if BuffPresent(death_and_decay_buff) Spell(heart_strike)
+			}
+			if not IsCovenant(night_fae)
+			{
+				Spell(heart_strike)
+			}
+		}
+	}
+	if (Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5) Spell(blood_boil)
+	if (Charges(blood_boil count=0) > 1.8) Spell(blood_boil text=cap)
+	if (RunicPowerDeficit() < 40) Spell(death_strike text=cap)
+}
+
+AddFunction BloodDancingRuneWeaponShortCdActions
+{
+	if (Charges(blood_tap count=0) > 1.9 and Rune() < 3) Spell(blood_tap text=cap)
+	if (Rune() < 2) Spell(blood_tap)
+
+	unless
+		(BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3 and Spell(marrowrend)) or
+		(Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5 and Spell(marrowrend)) or
+		(DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff) and Spell(blood_boil))
+	{
+		if (Rune() < 3) Spell(shackle_the_unworthy)
+
+		unless
+			IsCovenant(night_fae) or
+			(Enemies(tagged=1) == 1 and RunicPowerDeficit() < 40 and Rune() < 3 and Spell(death_strike)) or
+			(EquippedRuneforge(crimson_rune_weapon_runeforge) and Spell(tombstone) and
+				BuffStacks(bone_shield) > 6 and SpellCooldown(dancing_rune_weapon) > 25 + GCD() and
+				(Rune() > 1 or BuffStacks(bone_shield) > 7))
+		{
+			if BuffPresent(crimson_scourge_buff)
+			{
+				if (Enemies(tagged=1) >= 3) Spell(death_and_decay)
+			}
+
+			unless
+				(TimeToRunes(4) < GCD() and Spell(heart_strike)) or
+				(Rune() >= 3 and Spell(heart_strike)) or
+				(BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10 and
+					BuffStacks(bone_shield) >= 2 and Spell(heart_strike) and
+					((IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)) or not IsCovenant(night_fae))) or
+				(Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5 and Spell(blood_boil)) or
+				(Charges(blood_boil count=0) > 1.8 and Spell(blood_boil)) or
+				(RunicPowerDeficit() < 40 and Spell(death_strike))
+			{
+				if BuffPresent(crimson_scourge_buff) Spell(death_and_decay text=free)
+			}
+		}
+	}
+}
+
+AddFunction BloodPrecombatMainActions
+{
+	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
+	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3)
+	{
+		if EquippedRuneforge(crimson_rune_weapon_runeforge)
+		{
+			if (SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend)
+		}
+		if not EquippedRuneforge(crimson_rune_weapon_runeforge)
+		{
+			Spell(marrowrend)
+		}
+	}
+	Spell(deaths_due)
+}
+
+AddFunction BloodMainActions
+{
+	BloodPriorityHealActions()
+	if BuffPresent(dancing_rune_weapon_buff) BloodDancingRuneWeaponMainActions()
+	if not BuffPresent(dancing_rune_weapon_buff) BloodCoreMainActions()
+	# Fillers that don't consume Runes or Runic Power.
+	if (not target.DebuffPresent(mark_of_blood) and target.IsTargetingPlayer()) Spell(mark_of_blood)
+	Spell(consumption)
 }
 
 AddFunction BloodPrecombatShortCdActions
@@ -222,195 +459,74 @@ AddFunction BloodPrecombatShortCdActions
 	if (not BuffPresent(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap)
 }
 
-AddFunction BloodShortCdActions
-{
-	if Rune() < 3
-	{
-		# Blood Tap if you have 2 charges, or are less than 5 seconds away from 2 charges of Blood Tap, and you have less than 3 Runes.
-		if (Charges(blood_tap count=0) > 1.9) Spell(blood_tap)
-		# Bank 2nd charge of Blood Tap unless healing is needed.
-		if (HealthPercent() <= 60)
-		{
-			# Blood Tap if you have less than 3 Runes and less than 63 RP (57 RP with Bryndaor’s Might equipped).
-			if (not EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 63) Spell(blood_tap)
-			if (    EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 57) Spell(blood_tap)
-		}
-	}
-	# (Venthyr) Swarming Mist with less than 67 RP (61 RP with Bryndaor’s Might equipped).
-	if (not EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 67) Spell(swarming_mist)
-	if (EquippedRuneforge(bryndaors_might_runeforge) and RunicPower() < 61) Spell(swarming_mist)
-	# (Kyrian) Shackle the Unworthy (with Combat Meditation enabled).
-	Spell(shackle_the_unworthy)
-
-	unless
-		((BuffRemaining(bone_shield) < GCD() + 2) and Spell(marrowrend)) or
-		((DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) and
-			((not BuffPresent(swarming_mist) and not BuffPresent(abomination_limb)) and Spell(blood_boil))) or
-		((3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) and Spell(deaths_due)) or
-		((3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) and Spell(deaths_due)) or
-		(BuffPresent(death_and_decay_buff) and
-			(((BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3) and Spell(heart_strike)) or
-			 (BuffRemaining(death_and_decay_buff) < 3 and
-				(((BuffRemaining(deaths_due_buff) - BuffRemaining(death_and_decay_buff) < 9) and Spell(heart_strike)) or
-				 ((target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(death_and_decay_buff) < 9) and Spell(heart_strike)))))) or
-		(BloodHasPooledForBonestorm() and Spell(bonestorm)) or
-		((not BloodIsPoolingForBonestorm() and RunicPowerDeficit() < 20) and Spell(death_strike)) or
-		((BuffStacks(bone_shield) < BloodOssuaryThreshold()) and Spell(marrowrend))
-	{
-		# (Night Fae) Death and Decay
-		Spell(deaths_due)
-
-		unless ((TimeToRunes(3) < GCD()) and Spell(heart_strike))
-		{
-			# Death and Decay when Crimson Scourge procs with 3+ targets.
-			if (not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff) and Enemies(tagged=1) >= 3) Spell(death_and_decay)
-
-			unless
-				((Charges(blood_boil count=0) >= 1.8 and BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil)) or
-				((EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffPresent(dancing_rune_weapon_buff)) and Spell(heart_strike)) or
-				((Rune() >= 3) and Spell(heart_strike)) or
-				((BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5) and
-				 ((not IsCovenant(night_fae) and Rune() >= 2) or
-				  ((BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) and Spell(heart_strike)) or
-				  ((not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) and Spell(heart_strike)))) or
-				((BuffStacks(hemostasis_buff) < 5) and Spell(blood_boil))
-			{
-				# Death and Decay when Crimson Scourge procs.
-				if (not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(crimson_scourge_buff))
-				{
-					Spell(deaths_due)
-					Spell(death_and_decay)
-				}
-			}
-		}
-	}
-	# [*] (Necrolord) Fleshcraft.
-	Spell(fleshcraft)
-}
-
-AddFunction BloodPrecombatMainActions
-{
-	# [*] Blooddrinker when closing with the boss on the opener.
-	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
-	if (BuffRemaining(bone_shield) < GCD() + 2)
-	{
-		if not EquippedRuneforge(crimson_rune_weapon_runeforge) Spell(marrowrend)
-		# [*] Skip Marrowrend with Crimson Rune Weapon if Dancing Rune Weapon is available out of combat.
-		if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend)
-	}
-}
-
-AddFunction BloodMainActions
-{
-	if (HealthPercent() <= 60)
-	{
-		if (Enemies(tagged=1) >= 3)
-		{
-			# [*] Bonestorm if you are below 60% health.
-			if BloodHasPooledForBonestorm() Spell(bonestorm)
-			# [*] Consumption with 3+ targets.
-			Spell(consumption)
-		}
-		# Death Strike if you are below 60% Health.
-		if (not BloodIsPoolingForBonestorm() and BloodDeathStrikeHealing() <= HealthMissing()) Spell(death_strike)
-	}
-	# Marrowrend if Bone Shield is not active or about to expire.
-	if (BuffRemaining(bone_shield) < GCD() + 2) Spell(marrowrend)
-	# [*] Use Blooddrinker if you will not need to interrupt the channel.
-	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
-	# Blood Boil if a target does not have Blood Plague and (Venthyr) Swarming Mist or (Necrolord) Abomination Limb is not active.
-	if DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)
-	{
-		if (not BuffPresent(swarming_mist) and not BuffPresent(abomination_limb)) Spell(blood_boil)
-	}
-	# (Night Fae) Death and Decay when the duration of the Death’s Due buff/debuff is about to expire, but with enough remaining time to Heart Strike.
-	if (3 < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 5) Spell(deaths_due)
-	if (3 < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 5) Spell(deaths_due)
-	# (Night Fae) Heart Strike:
-	#   while in Death and Decay when the duration of the Death’s Due buff/debuff is about to expire or
-	#   (the duration of our Death and Decay ground effect is about to expire and
-	#       the Death’s Due buff/debuff won’t outlast the Death and Decay by at least ~9 seconds).
-	if BuffPresent(death_and_decay_buff)
-	{
-		if (BuffRemaining(deaths_due_buff) < 3 or target.DebuffRemaining(deaths_due_debuff) < 3) Spell(heart_strike)
-		if BuffRemaining(death_and_decay_buff) < 3
-		{
-			if (BuffRemaining(deaths_due_buff) - BuffRemaining(death_and_decay_buff) < 9) Spell(heart_strike)
-			if (target.DebuffRemaining(deaths_due_debuff) - BuffRemaining(death_and_decay_buff) < 9) Spell(heart_strike)
-		}
-	}
-	# [*] Use Bonestorm if we have pooled enough Runic Power.
-	if BloodHasPooledForBonestorm() Spell(bonestorm)
-	# Death Strike when Runic Power is above 105 (121 with Rune of Hysteria).
-	if (not BloodIsPoolingForBonestorm() and RunicPowerDeficit() < 20) Spell(death_strike)
-	# Marrowrend if below 8 stacks of Bone Shield (7 stacks with Crimson Rune Weapon).
-	if (BuffStacks(bone_shield) < BloodOssuaryThreshold()) Spell(marrowrend)
-	# Heart Strike with, or when 1.5 second away from, having more than 3 Runes.
-	if (TimeToRunes(3) < GCD()) Spell(heart_strike)
-	# Blood Boil with 2 charges and less than 5 stacks of Hemostasis.
-	if (Charges(blood_boil count=0) >= 1.8 and BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
-	# [*] Heart Strike with Crimson Rune Weapon and Dancing Rune Weapon is active.
-	# [*] This depletes runes ahead of gaining 40% increased rune regeneration for 10s after Dancing Rune Weapon expires.
-	if (EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffPresent(dancing_rune_weapon_buff)) Spell(heart_strike)
-	# Heart Strike with 3 Runes.
-	if (Rune() >= 3) Spell(heart_strike)
-	# Heart Strike with:
-	#   ((not Night Fae and with 2 runes) or
-	#    ([Dancing Rune Weapon] and less than 76 RP (86 RP with [Rune of Hysteria])) or
-	#    ([Death and Decay] with 3+ targets without [Dancing Rune Weapon] and less than 81 RP (92 RP with [Rune of Hysteria])))
-	#   and 8+ stacks of Bone Shield and 7.5+ seconds left of Bone Shield duration.
-	if (BuffStacks(bone_shield) >= 8 and BuffRemaining(bone_shield) >= 7.5)
-	{
-		if (not IsCovenant(night_fae) and Rune() >= 2) Spell(heart_strike)
-		if (BuffPresent(dancing_rune_weapon_buff) and RunicPowerDeficit() > 50) Spell(heart_strike)
-		if (not BuffPresent(dancing_rune_weapon_buff) and BuffPresent(death_and_decay_buff) and Enemies(tagged=1) >= 3 and RunicPowerDeficit() > 40) Spell(heart_strike)
-	}
-	# Blood Boil with 1 charge and less than 5 stacks of Hemostasis.
-	if (BuffStacks(hemostasis_buff) < 5) Spell(blood_boil)
-	# [*] Fillers that don't consume Runes or Runic Power.
-	if (target.DebuffExpires(mark_of_blood) and target.IsTargetingPlayer()) Spell(mark_of_blood)
-	Spell(consumption)
-}
-
 AddFunction BloodPrecombatCdActions
 {
 	PrecombatCdActions()
-	Spell(abomination_limb)
-	Spell(dancing_rune_weapon)
-	Spell(raise_dead)
+}
+
+AddFunction BloodShortCdActions
+{
+	if BuffPresent(dancing_rune_weapon_buff) BloodDancingRuneWeaponShortCdActions()
+	if not BuffPresent(dancing_rune_weapon_buff) BloodCoreShortCdActions()
 }
 
 AddFunction BloodOffensiveCdActions
 {
+	if not InCombat()
+	{
+		Spell(abomination_limb)
+		if not BuffPresent(dancing_rune_weapon) Spell(dancing_rune_weapon)
+		Spell(raise_dead)
+		# Sacrifice ghoul if 15 seconds left.
+		if (TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
+	}
+
 	if not BuffPresent(dancing_rune_weapon_buff)
 	{
 		Spell(abomination_limb)
-		Spell(dancing_rune_weapon)
+		if (not Talent(blooddrinker_talent) or SpellCooldown(blooddrinker) > 0) Spell(dancing_rune_weapon)
+		Spell(swarming_mist)
 		Spell(raise_dead)
 		# Sacrifice ghoul with at least 5 enemies or 15 seconds left.
 		if (Enemies(tagged=1) >= 5 or TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
 	}
 }
 
-AddFunction BloodDefensiveCdActions
-{
-	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
-	if (BuffStacks(bone_shield) >= 6) Spell(tombstone)
-
-	Spell(dancing_rune_weapon)
-	# (Necrolord) Abomination Limb if below 6 stacks of Bone Shield or for threat generation.
-	if (not BuffPresent(dancing_rune_weapon_buff) and BuffStacks(bone_shield) < 6) Spell(abomination_limb)
-	Spell(vampiric_blood)
-	Spell(icebound_fortitude)
-	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
-	# Only suggest Rune Tap if Heart Strike won't grant enough Runic Power
-	# for a Death Strike heal.
-	if (not BuffPresent(rune_tap) and RunicPower() < RunicPowerCost(death_strike) - BloodHeartStrikeRunicPower()) Spell(rune_tap)
-}
-
 AddFunction BloodCdActions
 {
-	BloodDefensiveCdActions()
+	if IsCovenant(necrolord)
+	{
+		if BuffPresent(dancing_rune_weapon_buff)
+		{
+			if (BuffStacks(bone_shield) < 3) Spell(abomination_limb)
+			if (BuffRemaining(dancing_rune_weapon_buff) < 5) Spell(abomination_limb)
+		}
+		if not BuffPresent(dancing_rune_weapon_buff)
+		{
+			if (BuffStacks(bone_shield) < 6) Spell(abomination_limb)
+		}
+	}
+	if (not IsCovenant(necrolord) or SpellCooldown(abomination_limb) > 0)
+	{
+		if (not EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffStacks(bone_shield) >= 6) Spell(tombstone)
+		unless (not EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffStacks(bone_shield) >= 6 and not SpellCooldown(tombstone) > 0)
+		{
+			if not BuffPresent(blood_defensive_buff)
+			{
+				Spell(icebound_fortitude)
+				if InCombat() Spell(fleshcraft)
+				if not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0
+				{
+					# Suggest Rune Tap if Heart Strike won't grant enough Runic Power for a DS heal.
+					if (RunicPower() + BloodHeartStrikeRunicPower() < RunicPowerCost(death_strike))
+					{
+						if not BuffPresent(rune_tap) Spell(rune_tap)
+					}
+					if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
+				}
+			}
+		}
+	}
 }
 
 AddFunction BloodInterruptActions
@@ -446,6 +562,15 @@ AddFunction BloodDispelActions
 
 AddFunction BloodHealActions
 {
+	if Talent(red_thirst_talent)
+	{
+		if (HealthPercent() < 90) Spell(vampiric_blood)
+	}
+	if not Talent(red_thirst_talent)
+	{
+		if (HealthPercent() < 70) Spell(vampiric_blood)
+	}
+	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
 	ItemHealActions()
 }
 
@@ -482,12 +607,12 @@ AddIcon help=cd
 	BloodCdActions()
 }
 
-AddIcon help=trinkets size=small
+AddIcon help=offensive size=small
 {
 	BloodOffensiveCdActions()
-	if not BloodInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
+	if not BloodInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 }
 ]]
 	Private.scripts:registerScript("DEATHKNIGHT", "blood", name, desc, code, "script")
