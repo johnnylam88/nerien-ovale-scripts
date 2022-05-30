@@ -351,7 +351,7 @@ AddFunction ArmsMultiTargetActions
 	if not BuffPresent(bladestorm)
 	{
 		if (Enemies(tagged=1) < 4 and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4) Spell(rend)
-		if (Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 3* GCD())) Spell(skullsplitter)
+		if (Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD())) Spell(skullsplitter)
 		Spell(cleave)
 		if (Enemies(tagged=1) < 4 or BuffPresent(sweeping_strikes)) Spell(execute)
 		if (Enemies(tagged=1) >= 4 and target.DebuffPresent(colossus_smash_debuff)) Spell(whirlwind)
@@ -374,7 +374,7 @@ AddFunction ArmsMultiTargetShortCdActions
 
 		unless
 			(Enemies(tagged=1) < 4 and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend)) or
-			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 3 * GCD()) and Spell(skullsplitter))
+			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD()) and Spell(skullsplitter))
 		{
 			if not EquippedRuneforge(signet_of_tormented_kings_runeforge)
 			{
@@ -405,7 +405,7 @@ AddFunction ArmsMultiTargetCdActions
 
 		unless
 			((Talent(ravager_talent) or SpellCooldown(bladestorm) > BuffDuration(sweeping_strikes)) and Spell(sweeping_strikes)) or
-			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 3 * GCD()) and Spell(skullsplitter))
+			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD()) and Spell(skullsplitter))
 		{
 			if target.DebuffPresent(colossus_smash_debuff)
 			{
