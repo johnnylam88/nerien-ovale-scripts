@@ -244,11 +244,17 @@ AddFunction ProtectionRagePerSecondShieldSlam
 	-1 * RageCost(shield_slam) / SpellCooldownDuration(shield_slam)
 }
 
+AddFunction ProtectionRagePerSecondConquerorsBanner
+{
+	if BuffPresent(conquerors_banner_buff) 4
+	0
+}
+
 AddFunction ProtectionRagePerSecond
 {
 	# In N seconds, autoattacks will generate ~N Rage.
 	# In N seconds, damage taken will generate 3 rage per hit with a 1-second ICD.
-	1 + 3 + ProtectionRagePerSecondRavager() + ProtectionRagePerSecondShieldSlam()
+	1 + 3 + ProtectionRagePerSecondRavager() + ProtectionRagePerSecondShieldSlam() + ProtectionRagePerSecondConquerorsBanner()
 }
 
 AddFunction ProtectionRageGeneratedBeforeShieldBlock
@@ -294,6 +300,12 @@ AddFunction ProtectionWontOverwriteIgnorePain
 	# and it won't exceed the Ignore Pain cap by more than 30%.
 	(ProtectionIgnorePainCurrentAbsorb() < ProtectionIgnorePainCap()) and
 	(ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap())
+}
+
+AddFunction ProtectionHasGloryConquerorsBanner
+{
+	# Assume that the Unity runeforge is always equipped.
+	BuffPresent(conquerors_banner_buff) and IsCovenant(necrolord) and (EquippedRuneforge(glory_runeforge) or EquippedRuneforge(unity_runeforge))
 }
 
 AddFunction ProtectionRagePoolSize
@@ -436,7 +448,7 @@ AddFunction ProtectionActiveMitigationActions
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if (IncomingDamage(5) > 0 and ProtectionWontOverwriteIgnorePain())
+	if (IncomingDamage(5) > 0 and (ProtectionWontOverwriteIgnorePain() or ProtectionHasGloryConquerorsBanner()))
 	{
 		# When Seeing Red is at 7 stacks (210+ rage), one Ignore Pain will proc Outburst.
 		if (BuffStacks(seeing_red_buff) == 7) Spell(ignore_pain text=red)
