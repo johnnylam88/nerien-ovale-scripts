@@ -209,11 +209,12 @@ Define(spear_of_bastion_debuff 307871)
 
 # Runeforge Legendary Effects
 Define(elysian_might_runeforge 7730)
-	SpellRequire(spear_of_bastion_debuff duration add=4 enabled=(EquippedRuneforge(elysian_might_runeforge)))
+	SpellRequire(spear_of_bastion_debuff duration add=4 enabled=(IsCovenant(kyrian) and (EquippedRuneforge(elysian_might_runeforge) or EquippedRuneforge(unity_runeforge))))
 Define(elysian_might_buff 311193)
 	SpellInfo(elysian_might_buff duration=8)
-	SpellAddBuff(spear_of_bastion elysian_might_buff add=1 enabled=(EquippedRuneforge(elysian_might_runeforge)))
+	SpellAddBuff(spear_of_bastion elysian_might_buff add=1 enabled=(IsCovenant(kyrian) and (EquippedRuneforge(elysian_might_runeforge) or EquippedRuneforge(unity_runeforge))))
 Define(signet_of_tormented_kings_runeforge 6959)
+Define(unity_runeforge 8130)
 
 ### Functions ###
 
