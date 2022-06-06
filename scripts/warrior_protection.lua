@@ -445,11 +445,20 @@ AddFunction ProtectionActiveMitigationActions
 		}
 	}
 	# Ignore Pain if we've been taking damage.
-	if (IncomingDamage(5) > 0 and (ProtectionWontOverwriteIgnorePain() or ProtectionHasGloryConquerorsBanner()))
+	if (IncomingDamage(5) > 0 and ProtectionWontOverwriteIgnorePain())
 	{
 		# When Seeing Red is at 7 stacks (210+ rage), one Ignore Pain will proc Outburst.
 		if (BuffStacks(seeing_red_buff) == 7) Spell(ignore_pain text=red)
 		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
+	}
+	# Ignore Pain to extend Conqueror's Banner with Glory runeforge.
+	if (SpellCooldown(conquerors_banner) > 5 and ProtectionHasGloryConquerorsBanner())
+	{
+		# If Ravager is up, dump Rage using attacks instead of Ignore Pain.
+		unless (BuffPresent(shield_block_buff) and ProtectionRavagerRemaining() > 0)
+		{
+			if ProtectionHasRageForIgnorePain() Spell(ignore_pain text=conq)
+		}
 	}
 	ProtectionReprisalActions()
 }
