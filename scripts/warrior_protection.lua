@@ -390,18 +390,15 @@ AddFunction ProtectionReprisalActions
 
 AddFunction ProtectionRavagerActions
 {
-	if (ProtectionRavagerRemaining() > 0 and BuffPresent(shield_block_buff))
+	# Apply Deep Wounds to targets in melee range.
+	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+	# Use Condemn to extend Avatar with Sinful Surge.
+	if (EquippedRuneforge(sinful_surge_runeforge) and BuffPresent(avatar))
 	{
-		# Apply Deep Wounds to targets in melee range.
-		if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
-		# Use Condemn to extend Avatar with Sinful Surge.
-		if (EquippedRuneforge(sinful_surge_runeforge) and BuffPresent(avatar))
-		{
-			if (Enemies(tagged=1) < 3) Spell(condemn text=plus)
-		}
-		if Talent(heavy_repercussions_talent) Spell(shield_slam text=heavy)
-		if (BuffRemaining(shield_block_buff) >= ProtectionRavagerRemaining()) Spell(revenge text=spam)
+		if (Enemies(tagged=1) < 3) Spell(condemn text=plus)
 	}
+	if Talent(heavy_repercussions_talent) Spell(shield_slam text=heavy)
+	if (BuffRemaining(shield_block_buff) >= ProtectionRavagerRemaining()) Spell(revenge text=spam)
 }
 
 AddFunction ProtectionRevengeActions
@@ -470,7 +467,8 @@ AddFunction ProtectionMainActions
 	ProtectionOutburstActions()
 	# Use Victory Rush when it's free.
 	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
-	ProtectionRavagerActions()
+	# When Shield Block is up and Ravager is generating a lot of Rage, dump Rage into attacks.
+	if (BuffPresent(shield_block_buff) and ProtectionRavagerRemaining() > 0) ProtectionRavagerActions()
 	# Don't overcap on Rage.
 	if ProtectionRageWillOverCap()
 	{
@@ -502,7 +500,8 @@ AddFunction ProtectionAoEActions
 	ProtectionOutburstActions()
 	# Use Victory Rush when it's free.
 	if (BuffPresent(victorious_buff) and HealthPercent() < 90) Spell(victory_rush)
-	ProtectionRavagerActions()
+	# When Shield Block is up and Ravager is generating a lot of Rage, dump Rage into attacks.
+	if (BuffPresent(shield_block_buff) and ProtectionRavagerRemaining() > 0) ProtectionRavagerActions()
 	# Use Booming Voice on cooldown.
 	if (Talent(booming_voice_talent) and not SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout text=rage)
 	# Use Dragon Roar on cooldown.
