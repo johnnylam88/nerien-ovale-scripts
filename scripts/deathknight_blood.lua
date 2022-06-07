@@ -225,7 +225,6 @@ AddFunction BloodCoreMainActions
 	if (Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5) Spell(marrowrend text=next)
 	Spell(blooddrinker)
 	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=buff)
-	if (Rune() < 3) Spell(shackle_the_unworthy)
 	if IsCovenant(night_fae)
 	{
 		if (2 * GCD() < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 3 * GCD()) Spell(deaths_due text=buff)
