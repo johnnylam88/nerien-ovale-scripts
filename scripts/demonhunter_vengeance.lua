@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_demonhunter_vengeance"
-	local desc = string.format("[9.1] %s: Demon Hunter - Vengeance", Private.name)
+	local desc = string.format("[9.2] %s: Demon Hunter - Vengeance", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Vengeance Demon Hunter Rotation Guide - Shadowlands 9.1.0"
+# Adapted from Wowhead's "Vengeance Demon Hunter Rotation Guide - Shadowlands 9.2.5"
 #	by Itamae.
 # https://www.wowhead.com/vengeance-demon-hunter-rotation-guide
 
@@ -19,6 +19,7 @@ Define(bulk_extraction_talent 21902)
 Define(burning_alive_talent 22507)
 Define(concentrated_sigils_talent 22546)
 Define(demonic_talent 22513)
+Define(fallout_talent 22766)
 Define(feast_of_souls_talent 22505)
 Define(felblade_talent 22504)
 Define(fracture_talent 22770)
@@ -138,8 +139,13 @@ Define(the_hunt 323639)
 	SpellRequire(the_hunt unusable set=1 enabled=(not IsCovenant(night_fae)))
 
 # Runeforge Legendary Effects
+Define(blind_faith_runeforge 7699)
+Define(blind_faith_buff 355894)
+	SpellInfo(blind_faith_buff duration=20)
+	SpellAddBuff(elysian_decree blind_faith_buff add=1 enabled=(IsCovenant(kyrian) and (EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge))))
 Define(fiery_soul_runeforge 7048)
 Define(razelikhs_defilement_runeforge 7046)
+Define(unity_runeforge 8120)
 
 ### Functions ###
 
@@ -185,13 +191,22 @@ AddFunction VengeanceBulkExtractionHealing
 
 AddFunction VengeanceImmolationAuraSoulFragments
 {
-	if (SoulFragments() + 0.7 * Enemies(tagged=1) > 5) 5
-	SoulFragments() + 0.7 * Enemies(tagged=1)
+	if Talent(fallout_talent)
+	{
+		if (SoulFragments() + 0.7 * Enemies(tagged=1) > 5) 5
+		SoulFragments() + 0.7 * Enemies(tagged=1)
+	}
+	0
 }
 
 AddFunction VengeanceShearSoulFragments
 {
 	SoulFragments() + 2 + BuffPresent(metamorphosis)
+}
+
+AddFunction VengeanceEquippedBlindFaithRuneforge
+{
+	EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge)
 }
 
 AddFunction VengeancePrecombatActiveMitigationActions
@@ -214,8 +229,12 @@ AddFunction VengeancePrecombatMainActions {}
 
 AddFunction VengeanceMainActions
 {
-	if (SoulFragments() >= 4) Spell(spirit_bomb)
-	if not target.InRange(soul_cleave) Spell(throw_glaive text=range)
+	unless
+		(VengeanceEquippedBlindFaithRuneforge() and
+			(SpellCooldown(elysian_decree) < 5 or TimeSincePreviousSpell(elysian_decree) < VengeanceSigilDuration()))
+	{
+		if (SoulFragments() >= 4) Spell(spirit_bomb)
+	}
 	if target.InRange(soul_cleave)
 	{
 		if (
@@ -229,9 +248,13 @@ AddFunction VengeanceMainActions
 		}
 		if (VengeanceFuryDeficit() < 20) Spell(soul_cleave)
 	}
+	if not target.InRange(soul_cleave) Spell(throw_glaive text=range)
 	if (VengeanceFuryDeficit() > 40) Spell(felblade)
 	if (Talent(fracture_talent) and VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5) Spell(fracture)
-	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5) Spell(immolation_aura)
+	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5)
+	{
+		if not BuffPresent(immolation_aura) Spell(immolation_aura)
+	}
 	if (not Talent(fracture_talent) and VengeanceFuryDeficit() > 10 and VengeanceShearSoulFragments() <= 5) Spell(shear)
 	Spell(throw_glaive)
 }
@@ -244,7 +267,16 @@ AddFunction VengeancePrecombatShortCdActions
 
 AddFunction VengeanceShortCdActions
 {
-	Spell(elysian_decree)
+	if VengeanceEquippedBlindFaithRuneforge()
+	{
+		# Be close to capping on Soul Fragments before casting Elysian Decree to instantly gain
+		# stacks of Blind Faith.
+		if (SoulFragments() >= 4) Spell(elysian_decree)
+	}
+	if not VengeanceEquippedBlindFaithRuneforge()
+	{
+		Spell(elysian_decree)
+	}
 	if EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent)
 	{
 		if (VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
@@ -256,7 +288,7 @@ AddFunction VengeanceShortCdActions
 		unless
 			(VengeanceFuryDeficit() < 20 and Spell(soul_cleave)) or
 			(VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5 and Spell(fracture)) or
-			(VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5 and Spell(immolation_aura))
+			(VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5 and not BuffPresent(immolation_aura) and Spell(immolation_aura))
 		{
 			if not EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
 		}
