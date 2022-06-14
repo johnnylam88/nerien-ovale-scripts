@@ -32,7 +32,7 @@ The following classes and specializations are supported for Shadowlands:
 - Mage: Arcane, Frost
 - Monk: Brewmaster (9.2)
 - Paladin: Protection
-- Rogue: Assassination
+- Rogue: Assassination (9.2)
 - Warrior: Arms (9.2), Fury (9.2), Protection (9.2)
 
 ### Links ###
