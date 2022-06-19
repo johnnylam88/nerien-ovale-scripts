@@ -149,77 +149,63 @@ Define(unity_runeforge 8120)
 
 ### Functions ###
 
-AddFunction VengeanceInRange
-{
+AddFunction VengeanceInRange {
 	target.InRange(soul_cleave)
 }
 
-AddFunction VengeanceIsTanking
-{
+AddFunction VengeanceIsTanking {
 	# Return true if AoE-tanking or if the target is targeting you.
 	Enemies(tagged=1) > 1 or target.IsTargetingPlayer()
 }
 
-AddFunction VengeanceFuryDeficit
-{
+AddFunction VengeanceFuryDeficit {
 	# Account for Fury gains from Immolation Aura and Metamorphosis.
 	MaxFury() - Fury() - GCDRemaining() * (20 * BuffPresent(immolation_aura) / 6 + 7 * BuffPresent(metamorphosis))
 }
 
-AddFunction VengeanceSigilDuration
-{
+AddFunction VengeanceSigilDuration {
 	2 - Talent(quickened_sigil_talent)
 }
 
-AddFunction VengeanceSoulFragmentHealing
-{
+AddFunction VengeanceSoulFragmentHealing {
 	if (IncomingDamage(5) * 6 > MaxHealth()) (IncomingDamage(5) * 6 / 100)
 	MaxHealth() / 100
 }
 
-AddFunction VengeanceSoulCleaveHealing
-{
+AddFunction VengeanceSoulCleaveHealing {
 	if (SoulFragments() >= 2) (2 * VengeanceSoulFragmentHealing())
 	SoulFragments() * VengeanceSoulFragmentHealing()
 }
 
-AddFunction VengeanceBulkExtractionHealing
-{
+AddFunction VengeanceBulkExtractionHealing {
 	if (Enemies(tagged=1) > 5) (5 * VengeanceSoulFragmentHealing())
 	Enemies(tagged=1) * VengeanceSoulFragmentHealing()
 }
 
-AddFunction VengeanceImmolationAuraSoulFragments
-{
-	if Talent(fallout_talent)
-	{
+AddFunction VengeanceImmolationAuraSoulFragments {
+	if Talent(fallout_talent) {
 		if (SoulFragments() + 0.7 * Enemies(tagged=1) > 5) 5
 		SoulFragments() + 0.7 * Enemies(tagged=1)
 	}
 	0
 }
 
-AddFunction VengeanceShearSoulFragments
-{
+AddFunction VengeanceShearSoulFragments {
 	SoulFragments() + 2 + BuffPresent(metamorphosis)
 }
 
-AddFunction VengeanceEquippedBlindFaithRuneforge
-{
+AddFunction VengeanceEquippedBlindFaithRuneforge {
 	EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge)
 }
 
-AddFunction VengeancePrecombatActiveMitigationActions
-{
+AddFunction VengeancePrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
 	# Use Demon Spikes heading into a pull if not already up.
 	if not BuffPresent(demon_spikes_buff) Spell(demon_spikes)
 }
 
-AddFunction VengeanceActiveMitigationActions
-{
-	if (not BuffPresent(metamorphosis) and VengeanceIsTanking())
-	{
+AddFunction VengeanceActiveMitigationActions {
+	if (not BuffPresent(metamorphosis) and VengeanceIsTanking()) {
 		# Don't cap on charges of Demon Spikes.
 		if (Charges(demon_spikes count=0) > 1.9) Spell(demon_spikes text=cap)
 	}
@@ -227,16 +213,14 @@ AddFunction VengeanceActiveMitigationActions
 
 AddFunction VengeancePrecombatMainActions {}
 
-AddFunction VengeanceMainActions
-{
-	unless
+AddFunction VengeanceMainActions {
+	unless (
 		(VengeanceEquippedBlindFaithRuneforge() and
 			(SpellCooldown(elysian_decree) < 5 or TimeSincePreviousSpell(elysian_decree) < VengeanceSigilDuration()))
-	{
+	) {
 		if (SoulFragments() >= 4) Spell(spirit_bomb)
 	}
-	if target.InRange(soul_cleave)
-	{
+	if target.InRange(soul_cleave) {
 		if (
 			not Talent(spirit_bomb_talent) and
 			HealthPercent() <= 70 and
@@ -251,57 +235,48 @@ AddFunction VengeanceMainActions
 	if not target.InRange(soul_cleave) Spell(throw_glaive text=range)
 	if (VengeanceFuryDeficit() > 40) Spell(felblade)
 	if (Talent(fracture_talent) and VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5) Spell(fracture)
-	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5)
-	{
+	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5) {
 		if not BuffPresent(immolation_aura) Spell(immolation_aura)
 	}
 	if (not Talent(fracture_talent) and VengeanceFuryDeficit() > 10 and VengeanceShearSoulFragments() <= 5) Spell(shear)
 	Spell(throw_glaive)
 }
 
-AddFunction VengeancePrecombatShortCdActions
-{
+AddFunction VengeancePrecombatShortCdActions {
 	Spell(elysian_decree)
 	if not EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
 }
 
-AddFunction VengeanceShortCdActions
-{
-	if VengeanceEquippedBlindFaithRuneforge()
-	{
+AddFunction VengeanceShortCdActions {
+	if VengeanceEquippedBlindFaithRuneforge() {
 		# Be close to capping on Soul Fragments before casting Elysian Decree to instantly gain
 		# stacks of Blind Faith.
 		if (SoulFragments() >= 4) Spell(elysian_decree)
 	}
-	if not VengeanceEquippedBlindFaithRuneforge()
-	{
+	if not VengeanceEquippedBlindFaithRuneforge() {
 		Spell(elysian_decree)
 	}
-	if EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent)
-	{
+	if EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent) {
 		if (VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
 	}
-	unless SoulFragments() >= 4 and Spell(spirit_bomb)
-	{
+	unless SoulFragments() >= 4 and Spell(spirit_bomb) {
 		Spell(fel_devastation)
 
-		unless
+		unless (
 			(VengeanceFuryDeficit() < 20 and Spell(soul_cleave)) or
 			(VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5 and Spell(fracture)) or
 			(VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5 and not BuffPresent(immolation_aura) and Spell(immolation_aura))
-		{
+		) {
 			if not EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
 		}
 	}
 }
 
-AddFunction VengeancePrecombatCdActions
-{
+AddFunction VengeancePrecombatCdActions {
 	PrecombatCdActions()
 }
 
-AddFunction VengeanceOffensiveCdActions
-{
+AddFunction VengeanceOffensiveCdActions {
 	if (Charges(infernal_strike count=0) >= 1.8) Spell(infernal_strike)
 	Spell(sinful_brand)
 	Spell(fodder_to_the_flame)
@@ -309,28 +284,22 @@ AddFunction VengeanceOffensiveCdActions
 	Spell(bulk_extraction)
 }
 
-AddFunction VengeanceDefensiveCdActions
-{
-	unless EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent)
-	{
+AddFunction VengeanceDefensiveCdActions {
+	unless EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent) {
 		if not BuffPresent(metamorphosis) and VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) Spell(fiery_brand)
 	}
 	if (SoulFragments() >= 4) Spell(soul_barrier)
 	if (SpellCooldown(fiery_brand) > 0 and (Talent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)) Spell(metamorphosis)
 }
 
-AddFunction VengeanceCdActions
-{
+AddFunction VengeanceCdActions {
 	VengeanceDefensiveCdActions()
 }
 
-AddFunction VengeanceInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction VengeanceInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if (focus.InRange(disrupt) and focus.IsInterruptible()) Spell(disrupt text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if (
 				focus.Distance() < 30 and
 				focus.RemainingCastTime() >= VengeanceSigilDuration() + GCDRemaining()
@@ -342,11 +311,9 @@ AddFunction VengeanceInterruptActions
 			if focus.CreatureType(Beast Demon Humanoid) Spell(imprison text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if (target.InRange(disrupt) and target.IsInterruptible()) Spell(disrupt)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if (
 				target.Distance() < 30 and
 				target.RemainingCastTime() >= VengeanceSigilDuration() + GCDRemaining()
@@ -361,54 +328,46 @@ AddFunction VengeanceInterruptActions
 	InterruptActions()
 }
 
-AddFunction VengeanceDispelActions
-{
+AddFunction VengeanceDispelActions {
 	if target.HasDebuffType(magic) Spell(consume_magic)
 	OffensiveDispelActions()
 	DefensiveDispelActions()
 }
 
-AddFunction VengeanceHealActions
-{
+AddFunction VengeanceHealActions {
 	ItemHealActions()
 	if (VengeanceBulkExtractionHealing() > HealthMissing()) Spell(bulk_extraction)
 }
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	VengeanceInterruptActions()
 	VengeanceDispelActions()
 	VengeanceHealActions()
 }
 
-AddIcon help=active_mitigation
-{
+AddIcon help=active_mitigation {
 	if not InCombat() VengeancePrecombatActiveMitigationActions()
 	VengeanceActiveMitigationActions()
 }
 
-AddIcon help=main
-{
+AddIcon help=main {
 	if not InCombat() VengeancePrecombatMainActions()
 	VengeanceMainActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() VengeancePrecombatShortCdActions()
 	VengeanceShortCdActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() VengeancePrecombatCdActions()
 	VengeanceCdActions()
 }
 
-AddIcon help=offensive size=small
-{
+AddIcon help=offensive size=small {
 	VengeanceOffensiveCdActions()
 	if not VengeanceInRange()
 	{

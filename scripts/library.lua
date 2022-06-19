@@ -108,26 +108,21 @@ Define(mistcaller_ocarina_versatility_buff 330067)
 	SpellInfo(mistcaller_ocarina_versatility_buff duration=900)
 SpellList(mistcaller_ocarina_buff mistcaller_ocarina_crit_buff mistcaller_ocarina_haste_buff mistcaller_ocarina_mastery_buff mistcaller_ocarina_versatility_buff)
 
-AddFunction ItemHealActions
-{
-	if (HealthPercent() < 35) 
-	{
+AddFunction ItemHealActions {
+	if (HealthPercent() < 35) {
 		Item(item_healthstone usable=1)
 		Item(item_spiritual_healing_potion usable=1)
 	}
 }
 
-AddFunction InterruptActions
-{
-	if (not focus.IsFriend() and focus.Casting() and not focus.Classification(worldboss))
-	{
+AddFunction InterruptActions {
+	if (not focus.IsFriend() and focus.Casting() and not focus.Classification(worldboss)) {
 		if (focus.Distance() < 6) Spell(bull_rush help=focus)
 		if (focus.Distance() < 6 and CastTime(haymaker) < focus.RemainingCastTime()) Spell(haymaker text=focus)
 		if focus.InRange(quaking_palm) Spell(quaking_palm text=focus)
 		if (focus.Distance() < 8) Spell(war_stomp text=focus)
 	}
-	if (not target.IsFriend() and target.Casting() and not target.Classification(worldboss))
-	{
+	if (not target.IsFriend() and target.Casting() and not target.Classification(worldboss)) {
 		if (target.Distance() < 6) Spell(bull_rush)
 		if (target.Distance() < 6 and CastTime(haymaker) < target.RemainingCastTime()) Spell(haymaker)
 		if target.InRange(quaking_palm) Spell(quaking_palm)
@@ -135,23 +130,18 @@ AddFunction InterruptActions
 	}
 }
 
-AddFunction DefensiveDispelActions
-{
-	if player.HasDebuffType(poison disease curse bleed)
-	{
+AddFunction DefensiveDispelActions {
+	if player.HasDebuffType(poison disease curse bleed) {
 		Item(item_phial_of_serenity usable=1)
 	}
-	if player.HasDebuffType(poison disease curse magic bleed)
-	{
+	if player.HasDebuffType(poison disease curse magic bleed) {
 		Spell(fireblood)
 		Spell(stoneform)
 	}
 }
 
-AddFunction OffensiveDispelActions
-{
-	if (target.Distance() < 8 and target.HasDebuffType(magic))
-	{
+AddFunction OffensiveDispelActions {
+	if (target.Distance() < 8 and target.HasDebuffType(magic)) {
 		Spell(arcane_torrent_deathknight)
 		Spell(arcane_torrent_demonhunter)
 		Spell(arcane_torrent_hunter)
@@ -163,14 +153,12 @@ AddFunction OffensiveDispelActions
 	}
 }
 
-AddFunction PrecombatShortCdActions
-{
+AddFunction PrecombatShortCdActions {
 	Spell(fleshcraft)
 	if (ItemCount(item_phial_of_serenity) < 2) Spell(summon_steward)
 }
 
-AddFunction PrecombatCdActions
-{
+AddFunction PrecombatCdActions {
 	# XXX HasTrinket() seems to always return true.
 	#if (HasTrinket(item_mistcaller_ocarina) and BuffRemaining(mistcaller_ocarina_buff) < 600) Item(item_mistcaller_ocarina)
 }

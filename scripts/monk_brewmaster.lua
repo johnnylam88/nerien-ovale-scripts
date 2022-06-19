@@ -161,13 +161,11 @@ Define(charred_passions_runeforge 7076)
 
 ### Functions ###
 
-AddFunction BrewmasterInRange
-{
+AddFunction BrewmasterInRange {
 	(not SpellCooldown(keg_smash) > 0 and target.InRange(keg_smash)) or (SpellCooldown(keg_smash) > 0 and target.InRange(tiger_palm))
 }
 
-AddFunction BrewmasterKegSmashCost
-{
+AddFunction BrewmasterKegSmashCost {
 	# Slowly scale up the perceived cost of Keg Smash so that when
 	# Weapons of Order is off cooldown, it will equal the cost of two
 	# Keg Smashes.
@@ -175,32 +173,27 @@ AddFunction BrewmasterKegSmashCost
 	if     (IsCovenant(kyrian) and SpellKnown(weapons_of_order)) PowerCost(keg_smash) * (1 + (1 - SpellCooldown(weapons_of_order) / SpellCooldownDuration(weapons_of_order)))
 }
 
-AddFunction BrewmasterEnergyUntilKegSmashPlusFiller
-{
+AddFunction BrewmasterEnergyUntilKegSmashPlusFiller {
 	if (SpellCooldown(keg_smash) >  GCDRemaining()) (Energy() + EnergyRegenRate() * (GCD() + SpellCooldown(keg_smash)))
 	if (SpellCooldown(keg_smash) <= GCDRemaining()) (Energy() + EnergyRegenRate() * (GCD() + GCDRemaining()))
 }
 
-AddFunction BrewmasterHasEnergyForExpelHarm
-{
+AddFunction BrewmasterHasEnergyForExpelHarm {
 	# Use Expel Harm if it won't push back Keg Smash.
 	BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(expel_harm)
 }
 
-AddFunction BrewmasterHasEnergyForTigerPalm
-{
+AddFunction BrewmasterHasEnergyForTigerPalm {
 	# Use Tiger Palm if it won't push back Keg Smash.
 	BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(tiger_palm)
 }
 
-AddFunction BrewmasterHasEnergyForSpinningCraneKick
-{
+AddFunction BrewmasterHasEnergyForSpinningCraneKick {
 	# Use Spinning Crane Kick if it won't push back Keg Smash.
 	BrewmasterEnergyUntilKegSmashPlusFiller() >= BrewmasterKegSmashCost() + PowerCost(spinning_crane_kick)
 }
 
-AddFunction BrewmasterShouldCelestialBrew
-{
+AddFunction BrewmasterShouldCelestialBrew {
 	Enemies(tagged=1) > 1 or target.IsTargetingPlayer() or IncomingDamage(5) > 0
 }
 
@@ -216,8 +209,7 @@ AddListItem(opt_monk_purified_chi_threshold purified_chi_08 "Purified Chi >= 8")
 AddListItem(opt_monk_purified_chi_threshold purified_chi_09 "Purified Chi >= 9")
 AddListItem(opt_monk_purified_chi_threshold purified_chi_10 "Purified Chi >= 10")
 
-AddFunction BrewmasterPurifiedChiThreshold
-{
+AddFunction BrewmasterPurifiedChiThreshold {
 	if List(opt_monk_purified_chi_threshold purified_chi_00) 0
 	if List(opt_monk_purified_chi_threshold purified_chi_01) 1
 	if List(opt_monk_purified_chi_threshold purified_chi_02) 2
@@ -233,14 +225,12 @@ AddFunction BrewmasterPurifiedChiThreshold
 	5
 }
 
-AddFunction BrewmasterPrecombatActiveMitigationActions
-{
+AddFunction BrewmasterPrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
 	Spell(exploding_keg)
 }
 
-AddFunction BrewmasterActiveMitigationActions
-{
+AddFunction BrewmasterActiveMitigationActions {
 	# Use Black Ox Brew when Celestial Brew is on cooldown and Purifying Brew has no charges.
 	if (SpellCooldown(celestial_brew) > GCD() and SpellCharges(purifying_brew count=0) < 0.75) Spell(black_ox_brew)
 	# Never let Purifying Brew sit on cooldown while tanking.
@@ -250,23 +240,21 @@ AddFunction BrewmasterActiveMitigationActions
 	# Try to refresh Purified Chi with Purifying Brew.
 	if (BuffPresent(purified_chi_buff) and BuffRemaining(purified_chi_buff) < 2 * GCD()) Spell(purifying_brew text=buff)
 	# Put up a max absorb Celestial Brew if it's available.
-	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff))
-	{
+	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff)) {
 		if (BuffStacks(purified_chi_buff) >= 10 and BrewmasterShouldCelestialBrew()) Spell(celestial_brew text=max)
 	}
 	if (target.DebuffRemaining(bonedust_brew) < 1) Spell(bonedust_brew)
-	unless Spell(keg_smash) or Spell(faeline_stomp) or
+	unless (
+		Spell(keg_smash) or Spell(faeline_stomp) or
 		Spell(blackout_kick) or Spell(breath_of_fire) or
 		Spell(chi_burst) or Spell(chi_wave)
-	{
+	) {
 		Spell(exploding_keg)
 	}
 	# Use Celestial Brew if it won't overlap other defensive buffs.
-	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff))
-	{
+	if (not BuffPresent(blackout_combo_buff) and not BuffPresent(brewmaster_defensive_buff)) {
 		# Only suggest Celestial Brew with at least 5 stacks of Purified Chi for an extra 100% absorption.
-		if (BuffStacks(purified_chi_buff) >= BrewmasterPurifiedChiThreshold() and BrewmasterShouldCelestialBrew())
-		{
+		if (BuffStacks(purified_chi_buff) >= BrewmasterPurifiedChiThreshold() and BrewmasterShouldCelestialBrew()) {
 			if (BuffStacks(purified_chi_buff) == 9) Spell(celestial_brew text=9)
 			if (BuffStacks(purified_chi_buff) == 8) Spell(celestial_brew text=8)
 			if (BuffStacks(purified_chi_buff) == 7) Spell(celestial_brew text=7)
@@ -281,25 +269,21 @@ AddFunction BrewmasterActiveMitigationActions
 	}
 }
 
-AddFunction BrewmasterPrecombatMainActions
-{
+AddFunction BrewmasterPrecombatMainActions {
 	# Ensure Shuffle is up when entering combat.
-	if not BuffPresent(shuffle)
-	{
+	if not BuffPresent(shuffle) {
 		Spell(keg_smash text=open)
 		Spell(blackout_kick text=open)
 		Spell(spinning_crane_kick text=open)
 	}
 }
 
-AddFunction BrewmasterMainActions
-{
+AddFunction BrewmasterMainActions {
 	if BuffPresent(charred_passions_buff) Spell(blackout_kick text=plus)
 	# Faeline Stomp has higher priority than Keg Smash for AoE.
 	if (Enemies(tagged=1) >= 3) Spell(faeline_stomp)
 	if (SpellMaxCharges(keg_smash) == 1) Spell(keg_smash)
-	if (SpellMaxCharges(keg_smash) > 1)
-	{
+	if (SpellMaxCharges(keg_smash) > 1) {
 		# Don't cap on Keg Smash charges.
 		if (SpellCharges(keg_smash count=0) >= SpellMaxCharges(keg_smash) - 0.2) Spell(keg_smash text=cap)
 		# Build back up to banking one charge of Keg Smash.
@@ -308,8 +292,7 @@ AddFunction BrewmasterMainActions
 	}
 	if BuffPresent(faeline_stomp) Spell(chi_burst)
 	Spell(faeline_stomp)
-	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3)
-	{
+	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3) {
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=combo)
 	}
 	if not EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
@@ -317,45 +300,37 @@ AddFunction BrewmasterMainActions
 	if EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(rushing_jade_wind)
 	Spell(chi_wave)
-	if BuffPresent(charred_passions_buff)
-	{
+	if BuffPresent(charred_passions_buff) {
 		if BrewmasterHasEnergyForSpinningCraneKick() Spell(spinning_crane_kick text=plus)
 	}
 	if not IsCovenant(night_fae) Spell(chi_burst)
-	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff))
-	{
+	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff)) {
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=buff)
 	}
 	if BuffPresent(rushing_jade_wind) Spell(rushing_jade_wind)
 }
 
-AddFunction BrewmasterSingleTargetActions
-{
+AddFunction BrewmasterSingleTargetActions {
 	BrewmasterMainActions()
 	if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm)
 }
 
-AddFunction BrewmasterAoEActions
-{
+AddFunction BrewmasterAoEActions {
 	BrewmasterMainActions()
-	if (Enemies(tagged=1) >= 3)
-	{
+	if (Enemies(tagged=1) >= 3) {
 		if BrewmasterHasEnergyForSpinningCraneKick() Spell(spinning_crane_kick)
 	}
-	if (Enemies(tagged=1) < 3)
-	{
+	if (Enemies(tagged=1) < 3) {
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm)
 	}
 }
 
-AddFunction BrewmasterPrecombatCdActions
-{
+AddFunction BrewmasterPrecombatCdActions {
 	PrecombatCdActions()
 	Spell(invoke_niuzao_the_black_ox)
 }
 
-AddFunction BrewmasterOffensiveCdActions
-{
+AddFunction BrewmasterOffensiveCdActions {
 	if (target.Health() <= player.Health()) Spell(touch_of_death text=kill)
 	if (target.TimeToDie() > 25 or Enemies(tagged=1) > 1) Spell(invoke_niuzao_the_black_ox)
 	# Weapons of Order resets the cooldown for one charge of Keg Smash.
@@ -364,10 +339,8 @@ AddFunction BrewmasterOffensiveCdActions
 	Spell(touch_of_death)
 }
 
-AddFunction BrewmasterDefensiveCdActions
-{
-	if not BuffPresent(brewmaster_defensive_buff)
-	{
+AddFunction BrewmasterDefensiveCdActions {
+	if not BuffPresent(brewmaster_defensive_buff) {
 		Spell(dampen_harm)
 		Spell(fortifying_brew)
 		if InCombat() Spell(fleshcraft)
@@ -375,27 +348,21 @@ AddFunction BrewmasterDefensiveCdActions
 	}
 }
 
-AddFunction BrewmasterCdActions
-{
+AddFunction BrewmasterCdActions {
 	BrewmasterDefensiveCdActions()
 }
 
-AddFunction BrewmasterInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction BrewmasterInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(spear_hand_strike) and focus.IsInterruptible() Spell(spear_hand_strike text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(paralysis) Spell(paralysis text=focus)
 			if (focus.Distance() < 6) Spell(leg_sweep text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(spear_hand_strike) and target.IsInterruptible() Spell(spear_hand_strike)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(paralysis) Spell(paralysis)
 			if (target.Distance() < 6) Spell(leg_sweep)
 		}
@@ -403,21 +370,17 @@ AddFunction BrewmasterInterruptActions
 	InterruptActions()
 }
 
-AddFunction BrewmasterDispelActions
-{
+AddFunction BrewmasterDispelActions {
 	OffensiveDispelActions()
 	if player.HasDebuffType(poison disease) Spell(detox)
 	DefensiveDispelActions()
 }
 
-AddFunction BrewmasterHealActions
-{
+AddFunction BrewmasterHealActions {
 	# Expel Harm if we have at least 3 Gift of the Ox orbs and won't overheal.
-	if (HealthPercent() < 70 and SpellCount(expel_harm) > 2)
-	{
+	if (HealthPercent() < 70 and SpellCount(expel_harm) > 2) {
 		# Assume each Gift of the Ox orb heals for 10% health.
-		if (HealthPercent() + 10 * SpellCount(expel_harm) < 90)
-		{
+		if (HealthPercent() + 10 * SpellCount(expel_harm) < 90) {
 			if BrewmasterHasEnergyForExpelHarm() Spell(expel_harm)
 		}
 	}
@@ -428,39 +391,33 @@ AddFunction BrewmasterHealActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	BrewmasterInterruptActions()
 	BrewmasterDispelActions()
 	BrewmasterHealActions()
 }
 
-AddIcon help=active_mitigation
-{
+AddIcon help=active_mitigation {
 	if not InCombat() BrewmasterPrecombatActiveMitigationActions()
 	BrewmasterActiveMitigationActions()
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	if not InCombat() BrewmasterPrecombatMainActions()
 	BrewmasterSingleTargetActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() BrewmasterPrecombatMainActions()
 	BrewmasterAoEActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() BrewmasterPrecombatCdActions()
 	BrewmasterCdActions()
 }
 
-AddIcon help=offensive size=small
-{
+AddIcon help=offensive size=small {
 	if not BrewmasterInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	BrewmasterOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)

@@ -193,38 +193,32 @@ Define(temporal_warp_buff 327355)
 
 ### Functions ###
 
-AddFunction FrostWintersChillLeft
-{
+AddFunction FrostWintersChillLeft {
 	if target.DebuffPresent(winters_chill_debuff) target.DebuffRemaining(winters_chill_debuff)
 	0
 }
 
-AddFunction FrostCanShatterIceLance
-{
+AddFunction FrostCanShatterIceLance {
 	BuffPresent(fingers_of_frost_buff) or target.DebuffPresent(frozen_debuff)
 }
 
 AddFunction FrostPrecombatShortCdActions { }
 
-AddFunction FrostShortCdActions
-{
+AddFunction FrostShortCdActions {
 	if not pet.Present() Spell(summon_water_elemental)
 	if (Talent(freezing_rain_talent) or Enemies(tagged=1) > 2) Spell(frozen_orb)
 	if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
-	unless BuffPresent(brain_freeze_buff)
-	{
+	unless BuffPresent(brain_freeze_buff) {
 		Spell(frozen_orb)
 	}
 }
 
-AddFunction FrostPrecombatMainActions
-{
+AddFunction FrostPrecombatMainActions {
 	Spell(ebonbolt)
 	Spell(frostbolt)
 }
 
-AddFunction FrostMainActions
-{
+AddFunction FrostMainActions {
 	# Shatter combo: Frostbolt/Ebonbolt > Flurry > Ice Lance x 2
 	if (
 		(PreviousSpell(ebonbolt) or PreviousSpell(frostbolt)) and
@@ -233,19 +227,16 @@ AddFunction FrostMainActions
 		Spell(flurry)
 	}
 	# AoE Shatter for Comet Storm
-	if PreviousSpell(comet_storm) and not target.DebuffPresent(frozen_debuff) and not target.Classification(worldboss)
-	{
+	if (PreviousSpell(comet_storm) and not target.DebuffPresent(frozen_debuff) and not target.Classification(worldboss)) {
 		Spell(freeze)
 		if (target.Distance() < 12) Spell(frost_nova)
 	}
 	if (BuffPresent(freezing_rain_buff) or Enemies(tagged=1) > 2) Spell(blizzard)
 	if (Enemies(tagged=1) > 1) Spell(glacial_spike)
-	if target.DebuffPresent(winters_chill_debuff)
-	{
+	if target.DebuffPresent(winters_chill_debuff) {
 		if (FrostWintersChillLeft() > 0 and target.DebuffStacks(winters_chill_debuff) < 2) Spell(ray_of_frost)
 		if (FrostWintersChillLeft() > CastTime(glacial_spike) + TravelTime(glacial_spike)) Spell(glacial_spike)
-		if EquippedRuneforge(glacial_fragments_runeforge) and target.DebuffStacks(winters_chill_debuff) < 2
-		{
+		if (EquippedRuneforge(glacial_fragments_runeforge) and target.DebuffStacks(winters_chill_debuff) < 2) {
 			if (FrostWintersChillLeft() > CastTime(blizzard)) Spell(blizzard)
 		}
 		if (FrostWintersChillLeft() > CastTime(ice_lance) + TravelTime(ice_lance)) Spell(ice_lance)
@@ -257,23 +248,19 @@ AddFunction FrostMainActions
 	Spell(frostbolt)
 }
 
-AddFunction FrostPrecombatAoEActions
-{
+AddFunction FrostPrecombatAoEActions {
 	Spell(blizzard)
 }
 
-AddFunction FrostAoEActions
-{
+AddFunction FrostAoEActions {
 	# When using Glacial Fragments, maintain Blizzard and spam Ice Lance
 	# at 3+ targets.
-	if EquippedRuneforge(glacial_fragments_runeforge) and Enemies(tagged=1) > 2
-	{
+	if (EquippedRuneforge(glacial_fragments_runeforge) and Enemies(tagged=1) > 2) {
 		Spell(blizzard)
 		Spell(ice_lance)
 	}
 	# AoE Shatter for Comet Storm
-	if PreviousSpell(comet_storm) and not target.DebuffPresent(frozen_debuff) and not target.Classification(worldboss)
-	{
+	if (PreviousSpell(comet_storm) and not target.DebuffPresent(frozen_debuff) and not target.Classification(worldboss)) {
 		Spell(freeze)
 		if (target.Distance() < 12) Spell(frost_nova)
 	}
@@ -291,8 +278,7 @@ AddFunction FrostAoEActions
 
 AddFunction FrostPrecombatCdActions { }
 
-AddFunction FrostCdActions
-{
+AddFunction FrostCdActions {
 	Spell(deathborne)
 	if (not BuffPresent(rune_of_power_buff) and not BuffPresent(icy_veins)) Spell(icy_veins)
 	unless (
@@ -310,35 +296,28 @@ AddFunction FrostCdActions
 	}
 }
 
-AddFunction FrostBuffActions
-{
+AddFunction FrostBuffActions {
 	if not BuffPresent(arcane_intellect mine=0) Spell(arcane_intellect)
 }
 
-AddFunction FrostDefensiveActions
-{
+AddFunction FrostDefensiveActions {
 	if not BuffPresent(ice_barrier) Spell(ice_barrier)
 	ItemHealActions()
 	Spell(ice_block)
 	Spell(invisibility)
 }
 
-AddFunction FrostInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction FrostInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(counterspell) and focus.IsInterruptible() Spell(counterspell text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(polymorph) Spell(polymorph text=focus)
 			Spell(ring_of_frost text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(counterspell) and target.IsInterruptible() Spell(counterspell)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(polymorph) Spell(polymorph)
 			Spell(ring_of_frost)
 		}
@@ -346,8 +325,7 @@ AddFunction FrostInterruptActions
 	InterruptActions()
 }
 
-AddFunction FrostDispelActions
-{
+AddFunction FrostDispelActions {
 	OffensiveDispelActions()
 	if player.HasDebuffType(curse) Spell(remove_curse)
 	DefensiveDispelActions()
@@ -355,39 +333,33 @@ AddFunction FrostDispelActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	FrostInterruptActions()
 	FrostDispelActions()
 	FrostDefensiveActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() FrostPrecombatShortCdActions()
 	FrostShortCdActions()
 }
 
-AddIcon help=main
-{
+AddIcon help=main {
 	if not InCombat() FrostPrecombatMainActions()
 	FrostMainActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() FrostPrecombatAoEActions()
 	FrostAoEActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() FrostPrecombatCdActions()
 	FrostCdActions()
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	if not InCombat() FrostBuffActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)

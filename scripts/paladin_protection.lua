@@ -206,33 +206,27 @@ Define(vanquishers_hammer 328204)
 
 ### Functions ###
 
-AddFunction ProtectionInRange
-{
+AddFunction ProtectionInRange {
 	target.InRange(rebuke)
 }
 
-AddFunction ProtectionUseJudgment
-{
+AddFunction ProtectionUseJudgment {
 	# Don't cap on Judgment charges.
-	if (SpellCharges(judgment count=0) > SpellMaxCharges(judgment) - 0.2)
-	{
+	if (SpellCharges(judgment count=0) > SpellMaxCharges(judgment) - 0.2) {
 		if (Enemies(tagged=1) == 1) Spell(judgment)
-		if (Enemies(tagged=1) > 1 and DebuffCountOnAny(judgment_debuff) < Enemies(tagged=1))
-		{
+		if (Enemies(tagged=1) > 1 and DebuffCountOnAny(judgment_debuff) < Enemies(tagged=1)) {
 			if target.DebuffPresent(judgment_debuff) Spell(judgment text=cycle)
 			Spell(judgment)
 		}
 	}
 }
 
-AddFunction ProtectionPrecombatActiveMitigationActions
-{
+AddFunction ProtectionPrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
 	if not BuffPresent(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
 }
 
-AddFunction ProtectionActiveMitigationActions
-{
+AddFunction ProtectionActiveMitigationActions {
 	Spell(seraphim)
 	# Use Word of Glory below 50% health if it's free.
 	if (BuffPresent(shining_light_free_buff) and HealthPercent() < 50) Spell(word_of_glory)
@@ -246,20 +240,17 @@ AddFunction ProtectionActiveMitigationActions
 	}
 }
 
-AddFunction ProtectionPrecombatAoEActions
-{
+AddFunction ProtectionPrecombatAoEActions {
 	# AoE opener
 	Spell(avengers_shield)
 }
 
-AddFunction ProtectionPrecombatMainActions
-{
+AddFunction ProtectionPrecombatMainActions {
 	# Opener
 	Spell(judgment)
 }
 
-AddFunction ProtectionMainActions
-{
+AddFunction ProtectionMainActions {
 	# Bump Avenger's Shield in priority if the target is casting.
 	if target.IsInterruptible() Spell(avengers_shield)
 
@@ -274,19 +265,15 @@ AddFunction ProtectionMainActions
 	Spell(consecration)
 }
 
-AddFunction ProtectionPrecombatCdActions
-{
+AddFunction ProtectionPrecombatCdActions {
 	PrecombatCdActions()
 	Spell(ashen_hallow)
 }
 
-AddFunction ProtectionOffensiveCdActions
-{
-	if not BuffPresent(avenging_wrath)
-	{
+AddFunction ProtectionOffensiveCdActions {
+	if not BuffPresent(avenging_wrath) {
 		if not Talent(seraphim_talent) Spell(avenging_wrath)
-		if Talent(seraphim_talent)
-		{
+		if Talent(seraphim_talent) {
 			# Synchronize Avenging Wrath with Seraphim.
 			if BuffPresent(seraphim) Spell(avenging_wrath)
 			if (not SpellCooldown(seraphim) > 0) Spell(avenging_wrath)
@@ -303,15 +290,12 @@ AddFunction ProtectionOffensiveCdActions
 	Spell(ashen_hallow)
 }
 
-AddFunction ProtectionDefensiveCdActions
-{
-	if not BuffPresent(protection_defensive_buff)
-	{
+AddFunction ProtectionDefensiveCdActions {
+	if not BuffPresent(protection_defensive_buff) {
 		Spell(ardent_defender)
 		Spell(guardian_of_ancient_kings)
 		if InCombat() Spell(fleshcraft)
-		if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0)
-		{
+		if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0) {
 			if Talent(final_stand_talent) Spell(divine_shield)
 			if (not Talent(blessing_of_spellwarding_talent) and IncomingPhysicalDamage(5) > 0) Spell(blessing_of_protection)
 			if (Talent(blessing_of_spellwarding_talent) and IncomingMagicDamage(5) > 0) Spell(blessing_of_spellwarding)
@@ -319,35 +303,29 @@ AddFunction ProtectionDefensiveCdActions
 	}
 }
 
-AddFunction ProtectionCdActions
-{
+AddFunction ProtectionCdActions {
 	ProtectionDefensiveCdActions()
 }
 
-AddFunction ProtectionInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction ProtectionInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.IsInterruptible() {
 			if focus.InRange(rebuke) Spell(rebuke text=focus)
 			if focus.InRange(avengers_shield) Spell(avengers_shield text=focus)
 			if focus.InRange(divine_toll) Spell(divine_toll text=focus)
 		}
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(hammer_of_justice) Spell(hammer_of_justice text=focus)
 			if (focus.Distance() < 10) Spell(blinding_light text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.IsInterruptible() {
 			if target.InRange(rebuke) Spell(rebuke)
 			if target.InRange(avengers_shield) Spell(avengers_shield)
 			if target.InRange(divine_toll) Spell(divine_toll)
 		}
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(hammer_of_justice) Spell(hammer_of_justice)
 			if (target.Distance() < 10) Spell(blinding_light)
 		}
@@ -355,15 +333,13 @@ AddFunction ProtectionInterruptActions
 	InterruptActions()
 }
 
-AddFunction ProtectionDispelActions
-{
+AddFunction ProtectionDispelActions {
 	OffensiveDispelActions()
 	if player.HasDebuffType(poison disease) Spell(cleanse_toxins)
 	DefensiveDispelActions()
 }
 
-AddFunction ProtectionHealActions
-{
+AddFunction ProtectionHealActions {
 	ItemHealActions()
 	# Use Lay on Hands below 25% health.
 	if (HealthPercent() < 25) Spell(lay_on_hands)
@@ -373,39 +349,33 @@ AddFunction ProtectionHealActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	ProtectionInterruptActions()
 	ProtectionDispelActions()
 	ProtectionHealActions()
 }
 
-AddIcon help=active_mitigation
-{
+AddIcon help=active_mitigation {
 	if not InCombat() ProtectionPrecombatActiveMitigationActions()
 	ProtectionActiveMitigationActions()
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	if not InCombat() ProtectionPrecombatMainActions()
 	ProtectionMainActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() ProtectionPrecombatAoEActions()
 	ProtectionMainActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() ProtectionPrecombatCdActions()
 	ProtectionCdActions()
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	if not ProtectionInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	ProtectionOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)

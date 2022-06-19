@@ -259,27 +259,23 @@ Define(unity_runeforge 8121)
 
 ### Functions ###
 
-AddFunction BalanceCelestialAlignmentPresent
-{
+AddFunction BalanceCelestialAlignmentPresent {
 	BuffPresent(celestial_alignment) or
 	(Talent(incarnation_chosen_of_elune_talent) and BuffPresent(incarnation_chosen_of_elune))
 }
 
-AddFunction BalanceCelestialAlignmentRemaining
-{
+AddFunction BalanceCelestialAlignmentRemaining {
 	if Talent(incarnation_chosen_of_elune_talent) BuffRemaining(incarnation_chosen_of_elune)
 	if not Talent(incarnation_chosen_of_elune_talent) BuffRemaining(celestial_alignment)
 }
 
-AddFunction BalanceEclipseRemaining
-{
+AddFunction BalanceEclipseRemaining {
 	if BuffPresent(eclipse_lunar_buff) BuffRemaining(eclipse_lunar_buff)
 	if BuffPresent(eclipse_solar_buff) BuffRemaining(eclipse_solar_buff)
 	0
 }
 
-AddFunction BalanceDotsAreOnTarget
-{
+AddFunction BalanceDotsAreOnTarget {
 	# For multi-target situations, only maintain the Sunfire DoT.
 	(target.DebuffPresent(sunfire_debuff) and not target.DebuffRefreshable(sunfire_debuff)) and
 	(Enemies(tagged=1) > 1 or
@@ -287,31 +283,25 @@ AddFunction BalanceDotsAreOnTarget
 		(not Talent(stellar_flare) or (target.DebuffPresent(stellar_flare) and not target.DebuffRefreshable(stellar_flare))))
 }
 
-AddFunction BalanceIsInEclipse
-{
+AddFunction BalanceIsInEclipse {
 	BuffPresent(eclipse_lunar_buff) or BuffPresent(eclipse_solar_buff)
 }
 
-AddFunction BalanceTimeToNextEclipse
-{
+AddFunction BalanceTimeToNextEclipse {
 	if BuffPresent(eclipse_lunar_buff) { BuffRemaining(eclipse_lunar_buff) + 2 * CastTime(starfire) }
 	if BuffPresent(eclipse_solar_buff) { BuffRemaining(eclipse_solar_buff) + 2 * CastTime(wrath) }
-	if not BalanceIsInEclipse()
-	{
+	if not BalanceIsInEclipse() {
 		if (EclipseAnyNext() or EclipseLunarNext()) { EclipseLunarIn() * CastTime(wrath) }
 		if (EclipseSolarNext()) { EclipseSolarIn() * CastTime(starfire) }
 	}
 }
 
-AddFunction BalancePrecombatShortCdActions
-{
+AddFunction BalancePrecombatShortCdActions {
 	PrecombatShortCdActions()
 }
 
-AddFunction BalanceShortCdActions
-{
-	if BalanceIsInEclipse()
-	{
+AddFunction BalanceShortCdActions {
+	if BalanceIsInEclipse() {
 		Spell(adaptive_swarm)
 		Spell(force_of_nature)
 		Spell(warrior_of_elune)
@@ -319,48 +309,40 @@ AddFunction BalanceShortCdActions
 	}
 }
 
-AddFunction BalanceFillerActions
-{
-	if BalanceIsInEclipse()
-	{
+AddFunction BalanceFillerActions {
+	if BalanceIsInEclipse() {
 		# Prefer Starfire during Celestial Alignment for multi-target.
 		if (Enemies(tagged=1) > 1 and BuffPresent(eclipse_lunar_buff)) Spell(starfire)
 		if BuffPresent(eclipse_solar_buff) Spell(wrath)
 		if BuffPresent(eclipse_lunar_buff) Spell(starfire)
 	}
-	if (EclipseAnyNext() or EclipseLunarNext())
-	{
+	if (EclipseAnyNext() or EclipseLunarNext()) {
 		if (EclipseLunarIn() == 2) Spell(wrath text=2)
 		if (EclipseLunarIn() == 1) Spell(wrath text=1)
 	}
-	if EclipseSolarNext()
-	{
+	if EclipseSolarNext() {
 		if (EclipseSolarIn() == 2) Spell(starfire text=2)
 		if (EclipseSolarIn() == 1) Spell(starfire text=1)
 	}
 }
 
-AddFunction BalanceMaintainDoTActions
-{
+AddFunction BalanceMaintainDoTActions {
 	if not target.DebuffPresent(sunfire_debuff) Spell(sunfire)
 	if target.DebuffRefreshable(sunfire_debuff) Spell(sunfire text=refresh)
 	if not target.DebuffPresent(moonfire_debuff) Spell(moonfire)
 	if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire text=refresh)
 	if not target.DebuffPresent(stellar_flare) Spell(stellar_flare)
 	if target.DebuffRefreshable(stellar_flare) Spell(stellar_flare text=refresh)
-	if (BalanceEclipseRemaining() < 6)
-	{
+	if (BalanceEclipseRemaining() < 6) {
 		if (target.DebuffRemaining(sunfire_debuff) < BalanceTimeToNextEclipse()) Spell(sunfire text=early)
 		if (target.DebuffRemaining(moonfire_debuff) < BalanceTimeToNextEclipse()) Spell(moonfire text=early)
 		if (target.DebuffRemaining(stellar_flare) < BalanceTimeToNextEclipse()) Spell(stellar_flare text=early)
 	}
 }
 
-AddFunction BalanceNewMoonActions
-{
+AddFunction BalanceNewMoonActions {
 	# Don't cap on charges of New/Half/Full Moon.
-	if (Talent(new_moon_talent) and SpellCharges(new_moon) >= 2.8)
-	{
+	if (Talent(new_moon_talent) and SpellCharges(new_moon) >= 2.8) {
 		Spell(full_moon)
 		Spell(half_moon)
 		Spell(new_moon)
@@ -369,37 +351,29 @@ AddFunction BalanceNewMoonActions
 
 AddFunction BalancePrecombatMainActions { }
 
-AddFunction BalanceMainActions
-{
-	if BalanceIsInEclipse()
-	{
+AddFunction BalanceMainActions {
+	if BalanceIsInEclipse() {
 		if BuffPresent(sinful_hysteria_buff) Spell(starsurge text=burn)
-		if BuffPresent(ravenous_frenzy)
-		{
+		if BuffPresent(ravenous_frenzy) {
 			# Keep astral power between 60 and 90.
 			if (AstralPowerDeficit() <= 10) Spell(starsurge text=cap)
 			# Depending on if Sinful Hysteria is equipped, spam Starsurge when the stacks of Ravenous Frenzy are highest.
-			if EquippedRuneforge(sinful_hysteria_runeforge)
-			{
+			if EquippedRuneforge(sinful_hysteria_runeforge) {
 				if (BuffRemaining(ravenous_frenzy) < 1) Spell(starsurge text=burn)
 			}
-			if not EquippedRuneforge(sinful_hysteria_runeforge)
-			{
+			if not EquippedRuneforge(sinful_hysteria_runeforge) {
 				if (BuffRemaining(ravenous_frenzy) < 1 + BuffDuration(sinful_hysteria_buff)) Spell(starsurge text=burn)
 			}
 		}
-		if not BuffPresent(ravenous_frenzy)
-		{
+		if not BuffPresent(ravenous_frenzy) {
 			BalanceMaintainDoTActions()
-			if (IsCovenant(night_fae) and BalanceCelestialAlignmentPresent())
-			{
+			if (IsCovenant(night_fae) and BalanceCelestialAlignmentPresent()) {
 				if (Spell(convoke_the_spirits) and AstralPowerDeficit() < 50) Spell(starsurge text=dump)
 			}
 			if (BuffPresent(eclipse_lunar_buff) and AstralPowerDeficit() <= 16) Spell(starsurge)
 			if (BuffPresent(eclipse_solar_buff) and AstralPowerDeficit() <= 12) Spell(starsurge)
 			if BalanceEclipseRemaining() > 10 Spell(starsurge)
-			if Talent(new_moon_talent) and BuffPresent(eclipse_lunar_buff)
-			{
+			if Talent(new_moon_talent) and BuffPresent(eclipse_lunar_buff) {
 				Spell(full_moon)
 				Spell(half_moon)
 			}
@@ -411,79 +385,62 @@ AddFunction BalanceMainActions
 
 AddFunction BalancePrecombatAoEActions { }
 
-AddFunction BalanceAoEActions
-{
+AddFunction BalanceAoEActions {
 	if (not target.DebuffPresent(sunfire_debuff) or target.DebuffRefreshable(sunfire_debuff)) Spell(sunfire)
 	if not BuffPresent(starfall) or BuffRefreshable(starfall) Spell(starfall)
-	if BalanceIsInEclipse()
-	{
+	if BalanceIsInEclipse() {
 		if (AstralPower() >= AstralPowerCost(starfall) + AstralPowerCost(starsurge)) Spell(starsurge)
-		if BuffPresent(eclipse_solar_buff) and not BuffPresent(eclipse_lunar_buff)
-		{
+		if BuffPresent(eclipse_solar_buff) and not BuffPresent(eclipse_lunar_buff) {
 			if (not target.DebuffPresent(moonfire_debuff) or target.DebuffRefreshable(moonfire_debuff)) Spell(moonfire text=cycle)
 		}
 	}
 	BalanceFillerActions()
 }
 
-AddFunction BalancePrecombatCdActions
-{
+AddFunction BalancePrecombatCdActions {
 	PrecombatCdActions()
 }
 
-AddFunction BalanceCdActions
-{
-	if (BalanceIsInEclipse() and not BalanceMaintainDoTActions())
-	{
-		if IsCovenant(venthyr)
-		{
+AddFunction BalanceCdActions {
+	if (BalanceIsInEclipse() and not BalanceMaintainDoTActions()) {
+		if IsCovenant(venthyr) {
 			# Always use Ravenous Frenzy with Celestial Alignment.
-			if (Spell(ravenous_frenzy) and Spell(celestial_alignment))
-			{
+			if (Spell(ravenous_frenzy) and Spell(celestial_alignment)) {
 				Spell(ravenous_frenzy)
 			}
 			if BuffPresent(ravenous_frenzy) Spell(celestial_alignment)
 		}
-		if not IsCovenant(venthyr)
-		{
+		if not IsCovenant(venthyr) {
 			Spell(celestial_alignment)
 			if (AstralPowerDeficit() > 50) Spell(convoke_the_spirits)
 		}
 	}
 }
 
-AddFunction BalanceDefensiveActions
-{
+AddFunction BalanceDefensiveActions {
 	if not BuffPresent(barkskin) Spell(barkskin)
 	ItemHealActions()
 	if not Stance(druid_bear_form) Spell(bear_form)
 	Spell(frenzied_regeneration)
 }
 
-AddFunction BalanceInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
-		if focus.IsInterruptible()
-		{
+AddFunction BalanceInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
+		if focus.IsInterruptible() {
 			if focus.InRange(solar_beam) Spell(solar_beam text=focus)
 		}
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(maim) Spell(maim text=focus)
 			if (focus.Distance() < 10) Spell(incapacitating_roar text=focus)
 			if (focus.Distance() < 15) Spell(typhoon text=focus)
 			if focus.InRange(mighty_bash) Spell(mighty_bash text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
-		if target.IsInterruptible()
-		{
+	if (not target.IsFriend() and target.Casting()) {
+		if target.IsInterruptible() {
 			if target.InRange(solar_beam) Spell(solar_beam)
 		}
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(maim) Spell(maim)
 			if (target.Distance() < 10) Spell(incapacitating_roar)
 			if (target.Distance() < 15) Spell(typhoon)
@@ -492,8 +449,7 @@ AddFunction BalanceInterruptActions
 	}
 }
 
-AddFunction BalanceDispelActions
-{
+AddFunction BalanceDispelActions {
 	OffensiveDispelActions()
 	if target.HasDebuffType(enrage) Spell(soothe)
 	if player.HasDebuffType(curse poison) Spell(remove_corruption)
@@ -502,40 +458,34 @@ AddFunction BalanceDispelActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	BalanceInterruptActions()
 	BalanceDispelActions()
 	BalanceDefensiveActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() BalancePrecombatShortCdActions()
 	BalanceShortCdActions()
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	if not InCombat() BalancePrecombatMainActions()
 	BalanceMainActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() BalancePrecombatAoEActions()
 	BalanceAoEActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not Stance(druid_moonkin_form) Spell(moonkin_form)
 	if not InCombat() BalancePrecombatCdActions()
 	BalanceCdActions()
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket0Slot usable=1 text=14)
 }

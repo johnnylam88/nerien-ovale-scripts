@@ -169,103 +169,84 @@ Define(tiny_toxic_blade_runeforge 7112)
 
 ### Functions ###
 
-AddFunction SubtletyInRange
-{
+AddFunction SubtletyInRange {
 	((Stealthed() and target.InRange(shadowstrike)) or (not Stealthed() and target.InRange(backstab)))
 }
 
-AddFunction SubtletyBuilderCondition
-{
+AddFunction SubtletyBuilderCondition {
 	(ComboPointsDeficit() > 1)
 }
 
-AddFunction SubtletyFinisherCondition
-{
+AddFunction SubtletyFinisherCondition {
 	(ComboPointsDeficit() <= 1)
 }
 
-AddFunction SubtletySymbolsOfDeathIsReady
-{
+AddFunction SubtletySymbolsOfDeathIsReady {
 	Spell(symbols_of_death) or BuffPresent(symbols_of_death)
 }
 
-AddFunction SubtletyShadowDanceWindowCondition
-{
+AddFunction SubtletyShadowDanceWindowCondition {
 	(SubtletySymbolsOfDeathIsReady() and not BuffPresent(shadow_dance_buff) and Spell(shadow_dance))
 }
 
-AddFunction SubtletyEnergyPoolingBaseThreshold
-{
+AddFunction SubtletyEnergyPoolingBaseThreshold {
 	(MaxEnergy() - 25 - Talent(vigor_talent) * 20 - Talent(master_of_shadows_talent) * 20 - Talent(shadow_focus_talent) * 25 - Talent(alacrity_talent) * 20)
 }
 
-AddFunction SubtletyEnergyPoolingThreshold
-{
+AddFunction SubtletyEnergyPoolingThreshold {
 	if (Enemies(tagged=1) > 3) (SubtletyEnergyPoolingBaseThreshold() - 25)
 	SubtletyEnergyPoolingBaseThreshold()
 }
 
-AddFunction SubtletySliceAndDiceNeedsEarlyRefresh
-{
+AddFunction SubtletySliceAndDiceNeedsEarlyRefresh {
 	(BuffRemaining(slice_and_dice) < BaseDuration(symbols_of_death))
 }
 
-AddFunction SubtletyRuptureNeedsEarlyRefresh
-{
+AddFunction SubtletyRuptureNeedsEarlyRefresh {
 	(target.DebuffRemaining(rupture) < BaseDuration(symbols_of_death))
 }
 
-AddFunction SubtletyPrecombatShortCdActions
-{
+AddFunction SubtletyPrecombatShortCdActions {
 	Spell(stealth)
 }
 
-AddFunction SubtletyPrecombatMainActions
-{
+AddFunction SubtletyPrecombatMainActions {
 	if (BuffRemaining(lethal_poison_buff) < 1200) Spell(instant_poison)
 	Spell(marked_for_death)
 	Spell(slice_and_dice)
 	Spell(shadowstrike)
 }
 
-AddFunction SubtletyPrecombatCdActions
-{
+AddFunction SubtletyPrecombatCdActions {
 	PrecombatCdActions()
 	if EquippedRuneforge(mark_of_the_master_assassin_runeforge) Spell(shadow_blades)
 }
 
-AddFunction SubtletyDefensiveActions
-{
+AddFunction SubtletyDefensiveActions {
 	ItemHealActions()
 	if (HealthPercent() < 70) Spell(crimson_vial)
 	if (target.IsTargetingPlayer() and IncomingPhysicalDamage(1.5) > 0) Spell(evasion)
 }
 
-AddFunction SubtletyShortCdActions
-{
+AddFunction SubtletyShortCdActions {
 	if (SpellMaxCharges(shadow_dance) > 1 and Charges(shadow_dance count=0) > SpellMaxCharges(shadow_dance) - 0.1) Spell(shadow_dance)
-	if (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge))
-	{
-		if SubtletyShadowDanceWindowCondition()
-		{
+	if (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge)) {
+		if SubtletyShadowDanceWindowCondition() {
 			if (EquippedRuneforge(deathly_shadows_runeforge) and ComboPoints() < 1) Spell(vanish)
 			if (EquippedRuneforge(mark_of_the_master_assassin_runeforge) and not BuffPresent(master_assassins_mark)) Spell(vanish)
 		}
 	}
-	if (ComboPoints() < 3 and not SubtletySliceAndDiceNeedsEarlyRefresh() and not SubtletyRuptureNeedsEarlyRefresh())
-	{
+	if (ComboPoints() < 3 and not SubtletySliceAndDiceNeedsEarlyRefresh() and not SubtletyRuptureNeedsEarlyRefresh()) {
 		if SubtletyShadowDanceWindowCondition() Spell(shadow_dance)
 		Spell(symbols_of_death)
 	}
-	if not (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge))
-	{
+	if not (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge)) {
 		if (SubtletyBuilderCondition() and target.DebuffRemaining(find_weakness) < 1) Spell(vanish)
 	}
 	if (SubtletyBuilderCondition() and not Spell(sepsis)) Spell(shadowmeld)
 }
 
-AddFunction SubtletyCdActions
-{
+AddFunction SubtletyCdActions {
 	# Use Flagellation (Venthyr) on cooldown to apply the debuff and start
 	# the lashing. Use it again right before the debuff expires to convert
 	# the stacks into the Haste buff.
@@ -275,8 +256,7 @@ AddFunction SubtletyCdActions
 	if ((Spell(symbols_of_death) or SpellCooldown(symbols_of_death) > 10) and SubtletyBuilderCondition()) Spell(sepsis)
 	if (ComboPoints() < 1 or target.TimeToDie() < 10) Spell(marked_for_death)
 	if (SubtletySymbolsOfDeathIsReady() and SubtletyBuilderCondition()) Spell(shadow_blades)
-	if EquippedRuneforge(tiny_toxic_blade_runeforge)
-	{
+	if EquippedRuneforge(tiny_toxic_blade_runeforge) {
 		if (Talent(nightstalker_talent) and BuffPresent(shadow_dance_buff)) Spell(shiv)
 		if (not Talent(nightstalker_talent) and not BuffPresent(shadow_dance_buff)) Spell(shiv)
 	}
@@ -284,42 +264,34 @@ AddFunction SubtletyCdActions
 	if (BuffPresent(shadow_dance_buff) and BuffPresent(symbols_of_death)) Spell(shuriken_tornado)
 }
 
-AddFunction SubtletySliceAndDiceActions
-{
-	if (Enemies(tagged=1) < 6)
-	{
+AddFunction SubtletySliceAndDiceActions {
+	if (Enemies(tagged=1) < 6) {
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
-		if (SubtletyShadowDanceWindowCondition() and SubtletySliceAndDiceNeedsEarlyRefresh())
-		{
+		if (SubtletyShadowDanceWindowCondition() and SubtletySliceAndDiceNeedsEarlyRefresh()) {
 			if not Talent(premeditation_talent) Spell(slice_and_dice)
 		}
 		if (not BuffPresent(shadow_dance_buff) and BuffRefreshable(slice_and_dice)) Spell(slice_and_dice)
 	}
 }
 
-AddFunction SubtletyPriorityRuptureActions
-{
-	if (Enemies(tagged=1) < 5 and not BuffPresent(master_assassins_mark))
-	{
+AddFunction SubtletyPriorityRuptureActions {
+	if (Enemies(tagged=1) < 5 and not BuffPresent(master_assassins_mark)) {
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
-		if (SubtletyShadowDanceWindowCondition() and SubtletyRuptureNeedsEarlyRefresh())
-		{
+		if (SubtletyShadowDanceWindowCondition() and SubtletyRuptureNeedsEarlyRefresh()) {
 			Spell(rupture)
 		}
 		if target.DebuffRefreshable(rupture) Spell(rupture)
 	}
 }
 
-AddFunction SubtletyPriorityFinisherActions
-{
+AddFunction SubtletyPriorityFinisherActions {
 	SubtletySliceAndDiceActions()
 	SubtletyPriorityRuptureActions()
 	Spell(secret_technique)
 	Spell(eviscerate)
 }
 
-AddFunction SubtletyFinisherActions
-{
+AddFunction SubtletyFinisherActions {
 	SubtletySliceAndDiceActions()
 	SubtletyPriorityRuptureActions()
 	Spell(secret_technique)
@@ -327,17 +299,14 @@ AddFunction SubtletyFinisherActions
 	Spell(eviscerate)
 }
 
-AddFunction SubtletyFillerBuilderActions
-{
+AddFunction SubtletyFillerBuilderActions {
 	Spell(gloomblade)
 	Spell(backstab)
 	if (not target.InRange(backstab) and EnergyDeficit() < 20) Spell(shuriken_toss)
 }
 
-AddFunction SubtletyPriorityBuilderActions
-{
-	if (BuffPresent(premeditation) or Talent(weaponmaster_talent))
-	{
+AddFunction SubtletyPriorityBuilderActions {
+	if (BuffPresent(premeditation) or Talent(weaponmaster_talent)) {
 		if (Enemies(tagged=1) < 5 and DebuffCountOnAny(find_weakness) < Enemies(tagged=1)) Spell(shadowstrike text=cycle)
 		if (Enemies(tagged=1) >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
 	}
@@ -346,10 +315,8 @@ AddFunction SubtletyPriorityBuilderActions
 	SubtletyFillerBuilderActions()
 }
 
-AddFunction SubtletyBuilderActions
-{
-	if BuffPresent(premeditation)
-	{
+AddFunction SubtletyBuilderActions {
+	if BuffPresent(premeditation) {
 		if (Enemies(tagged=1) < 5 and DebuffCountOnAny(find_weakness) < Enemies(tagged=1)) Spell(shadowstrike text=cycle)
 		if (Enemies(tagged=1) >= 5 and DebuffCountOnAny(find_weakness) < 5) Spell(shadowstrike text=cycle)
 	}
@@ -359,45 +326,36 @@ AddFunction SubtletyBuilderActions
 	SubtletyFillerBuilderActions()
 }
 
-AddFunction SubtletyMainActions
-{
+AddFunction SubtletyMainActions {
 	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
-	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold())
-	{
+	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold()) {
 		if SubtletyFinisherCondition() SubtletyPriorityFinisherActions()
 		if SubtletyBuilderCondition() SubtletyPriorityBuilderActions()
 	}
 }
 
-AddFunction SubtletyAoEActions
-{
+AddFunction SubtletyAoEActions {
 	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
-	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold())
-	{
+	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold()) {
 		if SubtletyFinisherCondition() SubtletyFinisherActions()
 		if SubtletyBuilderCondition() SubtletyBuilderActions()
 	}
 }
 
-AddFunction SubtletyInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction SubtletyInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(kick) and focus.IsInterruptible() Spell(kick text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(cheap_shot) Spell(cheap_shot text=focus)
 			if focus.InRange(kidney_shot) Spell(kidney_shot text=focus)
 			if focus.InRange(blind) Spell(blind text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(kick) and target.IsInterruptible() Spell(kick)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(cheap_shot) Spell(cheap_shot)
 			if target.InRange(kidney_shot) Spell(kidney_shot)
 			if target.InRange(blind) Spell(blind)
@@ -406,8 +364,7 @@ AddFunction SubtletyInterruptActions
 	InterruptActions()
 }
 
-AddFunction SubtletyDispelActions
-{
+AddFunction SubtletyDispelActions {
 	if (target.HasDebuffType(enrage) and BuffPresent(numbing_poison)) Spell(shiv)
 	OffensiveDispelActions()
 	if player.HasDebuffType(poison disease curse magic) Spell(cloak_of_shadows)
@@ -416,46 +373,38 @@ AddFunction SubtletyDispelActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	SubtletyInterruptActions()
 	SubtletyDispelActions()
 	SubtletyDefensiveActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() SubtletyPrecombatShortCdActions()
 	if InCombat() SubtletyShortCdActions()
 }
 
-AddIcon help=main
-{
+AddIcon help=main {
 	if not InCombat() SubtletyPrecombatMainActions()
 	SubtletyMainActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() SubtletyPrecombatMainActions()
 	SubtletyAoEActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() SubtletyPrecombatCdActions()
 	if InCombat() SubtletyCdActions()
 }
 
-AddIcon help=trinkets size=small
-{
-	if not SubtletyInRange()
-	{
+AddIcon help=trinkets size=small {
+	if not SubtletyInRange() {
 		Spell(shadowstep)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}
-	if SubtletySymbolsOfDeathIsReady()
-	{
+	if SubtletySymbolsOfDeathIsReady() {
 		Item(Trinket0Slot usable=1 text=13)
 		Item(Trinket1Slot usable=1 text=14)
 	}

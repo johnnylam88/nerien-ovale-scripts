@@ -178,22 +178,19 @@ Define(temporal_warp_buff 327355)
 
 ### Functions ###
 
-AddFunction ArcaneTimeToZeroMana
-{
+AddFunction ArcaneTimeToZeroMana {
 	# It takes approximately 30 seconds to deplete a full mana bar using
 	# Arcane Blast.
 	TimeWithHaste(30 haste=spell) * (ManaPercent() / 100)
 }
 
-AddFunction ArcaneShouldEnterEvocationBurn
-{
+AddFunction ArcaneShouldEnterEvocationBurn {
 	# If Evocation is off cooldown, we are free to completely burn our
 	# mana bar and use Evocation to regenerate it.
 	SpellCooldown(evocation) < ArcaneTimeToZeroMana()
 }
 
-AddFunction ArcaneEvocationBurnActions
-{
+AddFunction ArcaneEvocationBurnActions {
 	if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest text=evo)
 	if (ArcaneCharges() <= 2) Spell(arcane_orb text=evo)
 	if BuffPresent(rule_of_threes_buff) Spell(arcane_blast text=free)
@@ -202,8 +199,7 @@ AddFunction ArcaneEvocationBurnActions
 	Spell(arcane_blast text=evo)
 }
 
-AddFunction ArcaneShouldBeFishing
-{
+AddFunction ArcaneShouldBeFishing {
 	# Fish for Clearcasting procs before entering Arcane Power burn phase.
 	# Enter Arcane Power burn phase if we hit 0 mana and use Evocation, or
 	# we hit 3 Clearcasting procs before dropping below 30% mana.
@@ -213,15 +209,13 @@ AddFunction ArcaneShouldBeFishing
 	not (BuffStacks(clearcasting_buff) >= 3 and ManaPercent() > 30)
 }
 
-AddFunction ArcaneFishingActions
-{
+AddFunction ArcaneFishingActions {
 	if (ArcaneCharges() <= 2) Spell(arcane_orb text=fish)
 	if (ManaPercent() < 5) Spell(evocation text=fish)
 	Spell(arcane_blast text=fish)
 }
 
-AddFunction ArcaneShouldEnterArcanePowerBurn
-{
+AddFunction ArcaneShouldEnterArcanePowerBurn {
 	# Enter the burn phase when Arcane Power and preferably Touch of the
 	# Magi are off cooldown. If Touch of the Magi is more than 15 seconds
 	# away then you should not bother to wait and just enter the burn
@@ -233,8 +227,7 @@ AddFunction ArcaneShouldEnterArcanePowerBurn
 	(not SpellCooldown(touch_of_the_magi) > 0 or SpellCooldown(touch_of_the_magi) > 15)
 }
 
-AddFunction ArcaneWithinArcanePowerBurn
-{
+AddFunction ArcaneWithinArcanePowerBurn {
 	BuffPresent(arcane_power) or
 	(
 		# Check in case Arcane Power is shorter than Rune of Power.
@@ -243,16 +236,14 @@ AddFunction ArcaneWithinArcanePowerBurn
 	)
 }
 
-AddFunction ArcaneArcanePowerBurnActions
-{
+AddFunction ArcaneArcanePowerBurnActions {
 	# Cast Mirrors of Torment about 8 seconds prior to TotM to get two activations inside the TotM window.
 	if (SpellCooldown(touch_of_the_magi) < 8) Spell(mirrors_of_torment)
 
 	# Fish for Clearcasting procs before entering Arcane Burn phase.
 	if ArcaneShouldBeFishing() ArcaneFishingActions()
 
-	if (ArcaneShouldEnterArcanePowerBurn() or ArcaneWithinArcanePowerBurn())
-	{
+	if (ArcaneShouldEnterArcanePowerBurn() or ArcaneWithinArcanePowerBurn()) {
 		if (ArcaneCharges() > 0 and SpellCooldown(touch_of_the_magi) < GCD()) Spell(arcane_barrage text=totm)
 		if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest)
 		Spell(touch_of_the_magi)
@@ -271,19 +262,16 @@ AddFunction ArcaneArcanePowerBurnActions
 		if BuffPresent(clearcasting_buff) Spell(arcane_missiles)
 		Spell(arcane_blast)
 	}
-	if not (ArcaneShouldEnterArcanePowerBurn() or ArcaneWithinArcanePowerBurn())
-	{
+	if not (ArcaneShouldEnterArcanePowerBurn() or ArcaneWithinArcanePowerBurn()) {
 		# Enter Evocation burn immediately after exiting Arcane Power burn
 		# to utilize any buffs or cooldowns that may still be rolling.
-		if SpellCooldown(arcane_power) > 60
-		{
+		if (SpellCooldown(arcane_power) > 60) {
 			if ArcaneShouldEnterEvocationBurn() ArcaneEvocationBurnActions()
 		}
 	}
 }
 
-AddFunction ArcaneShouldEnterMiniBurn
-{
+AddFunction ArcaneShouldEnterMiniBurn {
 	# Enter the mini burn phase when Touch of the Magi and Rune of Power
 	# are off cooldown. If Touch of the Magi is ready, Rune of Power is
 	# not, and Arcane Power is roughly 45 seconds away; you should enter
@@ -303,8 +291,7 @@ AddFunction ArcaneShouldEnterMiniBurn
 	)
 }
 
-AddFunction ArcaneWithinMiniBurn
-{
+AddFunction ArcaneWithinMiniBurn {
 	target.DebuffPresent(touch_of_the_magi_debuff) or
 	(
 		Talent(rune_of_power_talent) and
@@ -313,12 +300,9 @@ AddFunction ArcaneWithinMiniBurn
 	)
 }
 
-AddFunction ArcaneMiniBurnActions
-{
-	if not BuffPresent(arcane_power)
-	{
-		if (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn())
-		{
+AddFunction ArcaneMiniBurnActions {
+	if not BuffPresent(arcane_power) {
+		if (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 			if (ArcaneCharges() > 0 and SpellCooldown(touch_of_the_magi) < GCD()) Spell(arcane_barrage text=totm)
 			if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest)
 			Spell(touch_of_the_magi)
@@ -338,19 +322,16 @@ AddFunction ArcaneMiniBurnActions
 			if BuffPresent(clearcasting_buff) Spell(arcane_missiles)
 			Spell(arcane_blast)
 		}
-		if not (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn())
-		{
+		if not (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 			# Finish Evocation burn.
-			if SpellCooldown(touch_of_the_magi) > 0
-			{
+			if (SpellCooldown(touch_of_the_magi) > 0) {
 				if ArcaneShouldEnterEvocationBurn() ArcaneEvocationBurnActions()
 			}
 		}
 	}
 }
 
-AddFunction ArcaneConserveActions
-{
+AddFunction ArcaneConserveActions {
 	# Toegrinder recommends using Rune of Power unless you need to hold it
 	# for a mini burn, but we will always use it with the mini burn.
 	#if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
@@ -364,23 +345,19 @@ AddFunction ArcaneConserveActions
 	if (ArcaneCharges() == MaxArcaneCharges()) Spell(arcane_barrage)
 }
 
-AddFunction ArcaneAoEConserveActions
-{
+AddFunction ArcaneAoEConserveActions {
 	if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest)
 	if BuffPresent(rule_of_threes_buff) Spell(arcane_blast text=free)
 	if (ArcaneCharges() == MaxArcaneCharges()) Spell(arcane_barrage)
 	if (ArcaneCharges() <= 2) Spell(arcane_orb)
-	if ArcaneCharges() < MaxArcaneCharges()
-	{
+	if (ArcaneCharges() < MaxArcaneCharges()) {
 		if (ManaPercent() < 80 and ArcaneCharges() < 3) Spell(arcane_blast)
 		Spell(arcane_explosion)
 	}
 }
 
-AddFunction ArcaneAoEActions
-{
-	if (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn())
-	{
+AddFunction ArcaneAoEActions {
+	if (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 		# AoE burn phase
 		if (ArcaneCharges() > 0 and SpellCooldown(touch_of_the_magi) < GCD()) Spell(arcane_barrage text=totm)
 		if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest text=burn)
@@ -392,36 +369,30 @@ AddFunction ArcaneAoEActions
 		if (BuffPresent(clearcasting_buff) and ManaPercent() < 95) Spell(arcane_missiles text=burn)
 		Spell(arcane_explosion text=burn)
 	}
-	if not (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn())
-	{
+	if not (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 		# AoE conserve phase
 		ArcaneAoEConserveActions()
 	}
 }
 
-AddFunction ArcanePrecombatActions
-{
+AddFunction ArcanePrecombatActions {
 	PrecombatShortCdActions()
 	PrecombatCdActions()
 }
 
-AddFunction ArcaneBuffActions
-{
+AddFunction ArcaneBuffActions {
 	if not BuffPresent(arcane_intellect mine=0) Spell(arcane_intellect)
 }
 
-AddFunction ArcaneDefensiveActions
-{
+AddFunction ArcaneDefensiveActions {
 	if not BuffPresent(prismatic_barrier) Spell(prismatic_barrier)
 	ItemHealActions()
 	Spell(ice_block)
 	Spell(greater_invisibility)
 }
 
-AddFunction ArcaneInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction ArcaneInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(counterspell) and focus.IsInterruptible() Spell(counterspell text=focus)
 		if not focus.Classification(worldboss)
 		{
@@ -429,11 +400,9 @@ AddFunction ArcaneInterruptActions
 			Spell(ring_of_frost text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(counterspell) and target.IsInterruptible() Spell(counterspell)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(polymorph) Spell(polymorph)
 			Spell(ring_of_frost)
 		}
@@ -441,8 +410,7 @@ AddFunction ArcaneInterruptActions
 	InterruptActions()
 }
 
-AddFunction ArcaneDispelActions
-{
+AddFunction ArcaneDispelActions {
 	OffensiveDispelActions()
 	if player.HasDebuffType(curse) Spell(remove_curse)
 	DefensiveDispelActions()
@@ -450,39 +418,33 @@ AddFunction ArcaneDispelActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	ArcaneInterruptActions()
 	ArcaneDispelActions()
 	ArcaneDefensiveActions()
 }
 
-AddIcon help=mage_arcane_ap_burn
-{
+AddIcon help=mage_arcane_ap_burn {
 	if not InCombat() ArcanePrecombatActions()
 	ArcaneArcanePowerBurnActions()
 }
 
-AddIcon help=mage_arcane_mini_burn
-{
+AddIcon help=mage_arcane_mini_burn {
 	if not InCombat() ArcanePrecombatActions()
 	ArcaneMiniBurnActions()
 }
 
-AddIcon help=mage_arcane_conserve
-{
+AddIcon help=mage_arcane_conserve {
 	if not InCombat() ArcanePrecombatActions()
 	ArcaneConserveActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() ArcanePrecombatActions()
 	ArcaneAoEActions()
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	if not InCombat() ArcaneBuffActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)

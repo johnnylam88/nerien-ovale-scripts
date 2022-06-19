@@ -218,17 +218,14 @@ Define(unity_runeforge 8130)
 
 ### Functions ###
 
-AddFunction FuryInRange
-{
+AddFunction FuryInRange {
 	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel)) 
 }
 
-AddFunction FurySingleTargetActions
-{
+AddFunction FurySingleTargetActions {
 	if BuffPresent(bladestorm) Spell(condemn text=cancel)
 	Spell(condemn)
-	if (not IsEnraged() or Rage() > 90)
-	{
+	if (not IsEnraged() or Rage() > 90) {
 		if BuffPresent(bladestorm) Spell(rampage text=cancel)
 		Spell(rampage)
 	}
@@ -236,8 +233,7 @@ AddFunction FurySingleTargetActions
 	Spell(crushing_blow)
 	Spell(execute)
 	Spell(bloodbath)
-	if IsEnraged()
-	{
+	if IsEnraged() {
 		if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
 		Spell(onslaught)
 	}
@@ -246,17 +242,13 @@ AddFunction FurySingleTargetActions
 	Spell(whirlwind)
 }
 
-AddFunction FurySingleTargetShortCdActions
-{
-	unless Spell(condemn)
-	{
+AddFunction FurySingleTargetShortCdActions {
+	unless Spell(condemn) {
 		Spell(siegebreaker text=st)
 
-		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage))
-		{
+		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage)) {
 			if BuffPresent(recklessness) Spell(ancient_aftershock text=st)
-			if IsEnraged()
-			{
+			if IsEnraged() {
 				Spell(spear_of_bastion text=st)
 				Spell(bladestorm text=st)
 			}
@@ -274,27 +266,21 @@ AddFunction FurySingleTargetShortCdActions
 	}
 }
 
-AddFunction FuryMultiTargetActions
-{
-	if not BuffPresent(bladestorm)
-	{
+AddFunction FuryMultiTargetActions {
+	if not BuffPresent(bladestorm) {
 		if not BuffPresent(whirlwind_buff) Spell(whirlwind text=cleave)
 		if (not IsEnraged() or Rage() > 90) Spell(rampage)
 		if (not IsEnraged() or (BuffPresent(enraged_regeneration) and HealthPercent() < 50)) Spell(bloodthirst)
-		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 6)
-		{
+		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 6) {
 			Spell(crushing_blow)
 			Spell(execute)
 			Spell(bloodbath)
 		}
-		if (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3)
-		{
+		if (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3) {
 			Spell(whirlwind text=spam)
 		}
-		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3)
-		{
-			if IsEnraged()
-			{
+		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3) {
+			if IsEnraged() {
 				if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
 				Spell(onslaught)
 			}
@@ -305,15 +291,11 @@ AddFunction FuryMultiTargetActions
 	}
 }
 
-AddFunction FuryMultiTargetShortCdActions
-{
-	if not BuffPresent(bladestorm)
-	{
-		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage))
-		{
+AddFunction FuryMultiTargetShortCdActions {
+	if not BuffPresent(bladestorm) {
+		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage)) {
 			if BuffPresent(recklessness) Spell(ancient_aftershock text=aoe)
-			if IsEnraged()
-			{
+			if IsEnraged() {
 				Spell(spear_of_bastion text=aoe)
 				Spell(bladestorm text=aoe)
 				Spell(dragon_roar text=aoe)
@@ -323,62 +305,51 @@ AddFunction FuryMultiTargetShortCdActions
 	}
 }
 
-AddFunction FuryCdActions
-{
+AddFunction FuryCdActions {
 	if (Rage() > 70) Spell(conquerors_banner)
 	# With Signet of Tormented Kings, Recklessness may activate Bladestorm,
 	# so ensure Enrage is active first.
 	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) or IsEnraged() Spell(recklessness)
 }
 
-AddFunction FuryPrecombatShortCdActions
-{
+AddFunction FuryPrecombatShortCdActions {
 	PrecombatShortCdActions()
 	Spell(charge)
 }
 
-AddFunction FuryPrecombatMainActions
-{
+AddFunction FuryPrecombatMainActions {
 	if Talent(fresh_meat_talent) Spell(bloodthirst)
 }
 
-AddFunction FuryPrecombatCdActions
-{
+AddFunction FuryPrecombatCdActions {
 	PrecombatCdActions()
 	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) Spell(recklessness)
 }
 
-AddFunction FuryBuffActions
-{
+AddFunction FuryBuffActions {
 	if not BuffPresent(battle_shout mine=0) Spell(battle_shout)
 }
 
-AddFunction FuryDefensiveActions
-{
+AddFunction FuryDefensiveActions {
 	Spell(enraged_regeneration)
 	Spell(fleshcraft)
 	Spell(rallying_cry)
 	Spell(ignore_pain)
 }
 
-AddFunction FuryInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction FuryInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(pummel) and focus.IsInterruptible() Spell(pummel text=focus)
 		if focus.IsTargetingPlayer() Spell(spell_reflection text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(storm_bolt) Spell(storm_bolt text=focus)
 			if (focus.Distance() < 8) Spell(intimidating_shout text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(pummel) and target.IsInterruptible() Spell(pummel)
 		if target.IsTargetingPlayer() Spell(spell_reflection)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(storm_bolt) Spell(storm_bolt)
 			if (target.Distance() < 8) Spell(intimidating_shout)
 		}
@@ -386,58 +357,49 @@ AddFunction FuryInterruptActions
 	InterruptActions()
 }
 
-AddFunction FuryDispelActions
-{
+AddFunction FuryDispelActions {
 	OffensiveDispelActions()
 	DefensiveDispelActions()
 }
 
-AddFunction FuryHealActions
-{
+AddFunction FuryHealActions {
 	ItemHealActions()
 	if (HealthPercent() < 70) Spell(victory_rush)
 }
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	FuryInterruptActions()
 	FuryDispelActions()
 	FuryHealActions()
 	FuryDefensiveActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() FuryPrecombatShortCdActions()
 	if (Enemies(tagged=1) == 1) FurySingleTargetShortCdActions()
 	if (Enemies(tagged=1) > 1)  FuryMultiTargetShortCdActions()
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	if not InCombat() FuryPrecombatMainActions()
 	FurySingleTargetActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() FuryPrecombatMainActions()
 	FuryMultiTargetActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() FuryPrecombatCdActions()
 	FuryCdActions()
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	if not InCombat() FuryBuffActions()
-	if not FuryInRange()
-	{
+	if not FuryInRange() {
 		if target.InRange(charge) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))

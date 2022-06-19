@@ -256,50 +256,42 @@ Define(ursols_fury_remembered_runeforge 7094)
 
 ### Functions ###
 
-AddFunction GuardianInRange
-{
+AddFunction GuardianInRange {
 	(Stance(druid_bear_form) and target.InRange(mangle)) or
 	(Stance(druid_cat_form)  and target.InRange(shred)) or
 	(Stance(druid_moonkin_form) and target.InRange(moonfire))
 }
 
-AddFunction GuardianThrashMaxStacks
-{
+AddFunction GuardianThrashMaxStacks {
 	if EquippedRuneforge(luffainfused_embrace_runeforge) (4)
 	3
 }
 
-AddFunction GuardianMoonfireCycle
-{
+AddFunction GuardianMoonfireCycle {
 	# Suggest Moonfire on another target if already present on the current one.
 	if target.DebuffPresent(moonfire_debuff) Spell(moonfire text=cycle)
 	Spell(moonfire)
 }
 
-AddFunction GuardianUseRageForActiveMitigation
-{
+AddFunction GuardianUseRageForActiveMitigation {
 	# Condition for when Rage should be used for active mitigation.
 	IncomingPhysicalDamage(5) > 0 or HealthPercent() < 50
 }
 
-AddFunction GuardianShapeshiftActions
-{
+AddFunction GuardianShapeshiftActions {
 	# Cast Bear Form if the player is being targeted for damage.
 	if target.IsTargetingPlayer() Spell(bear_form)
 
 	# Shapeshift for DPS when Mangle and Thrash are all on cooldown and
 	# you have no Rage to spend.
-	if Stance(druid_bear_form)
-	{
+	if Stance(druid_bear_form) {
 		# Use Ravenous Frenzy with Berserk/Incarnation to boost the power of
 		# both abilities, and the cooldown syncs up perfectly.
 		if BuffPresent(bs_inc_buff) Spell(ravenous_frenzy)
-		if not BuffPresent(bs_inc_buff) and SpellCooldown(mangle) > 0 and SpellCooldown(thrash_bear) > 0
-		{
+		if (not BuffPresent(bs_inc_buff) and SpellCooldown(mangle) > 0 and SpellCooldown(thrash_bear) > 0) {
 			# Begin a catweave cycle at full energy. Also check that empowered
 			# Moonfire is used before entering catweave cycle.
-			if Talent(feral_affinity_talent) and TimeToEnergy(100) < 1 and not BuffPresent(galactic_guardian_buff)
-			{
+			if Talent(feral_affinity_talent) and TimeToEnergy(100) < 1 and not BuffPresent(galactic_guardian_buff) {
 				# [*] Dump Rage so it's not wasted.
 				if BuffPresent(tooth_and_claw_buff) Spell(maul text=dump)
 				if not BuffPresent(tooth_and_claw_buff) Spell(ironfur text=dump)
@@ -308,8 +300,7 @@ AddFunction GuardianShapeshiftActions
 				Spell(cat_form)
 			}
 			# Owlweave.
-			if Talent(balance_affinity_talent)
-			{
+			if Talent(balance_affinity_talent) {
 				# [*] Dump Rage so it's not wasted.
 				if BuffPresent(tooth_and_claw_buff) Spell(maul text=dump)
 				if not BuffPresent(tooth_and_claw_buff) Spell(ironfur text=dump)
@@ -323,17 +314,14 @@ AddFunction GuardianShapeshiftActions
 			Spell(berserk)
 		}
 	}
-	if not Stance(druid_bear_form)
-	{
-		if not (SpellCooldown(mangle) > 0 and SpellCooldown(thrash_bear) > 0)
-		{
+	if not Stance(druid_bear_form) {
+		if not (SpellCooldown(mangle) > 0 and SpellCooldown(thrash_bear) > 0) {
 			Spell(bear_form)
 		}
 	}
 }
 
-AddFunction GuardianBearActions
-{
+AddFunction GuardianBearActions {
 	# [*] Use Maul if Tooth and Claw is up.
 	if BuffPresent(tooth_and_claw_buff) Spell(maul)
 	# [*] Spam Thrash on more than 4 targets when Berserk is up and using Ursol's Fury Remembered.
@@ -348,16 +336,14 @@ AddFunction GuardianBearActions
 	# Use Thrash.
 	Spell(thrash_bear)
 	# Use Moonfire with a Galactic Guardian on up to 3 targets.
-	if BuffPresent(galactic_guardian_buff)
-	{
+	if BuffPresent(galactic_guardian_buff) {
 		if (Enemies(tagged=1) == 1) Spell(moonfire)
 		if (Enemies(tagged=1) <  3 and DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) GuardianMoonfireCycle()
 		if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(moonfire_debuff) < 3) GuardianMoonfireCycle()
 	}
 	# Use Maul to dump Rage on up to 3 targets, if you do not need the
 	# Rage for Ironfur or Frenzied Regeneration.
-	if RageDeficit() < 40 and not GuardianUseRageForActiveMitigation()
-	{
+	if RageDeficit() < 40 and not GuardianUseRageForActiveMitigation() {
 		if (Enemies(tagged=1) <= 3) Spell(maul)
 	}
 	# Use Swipe as filler.
@@ -366,13 +352,11 @@ AddFunction GuardianBearActions
 	if not BuffPresent(bs_inc_buff) Spell(swipe_bear)
 }
 
-AddFunction GuardianCatweaveActions
-{
+AddFunction GuardianCatweaveActions {
 	# Actions to cast from Cat Form.
 	# [*] Always apply Empowered Rake if available.
 	if Stealthed() Spell(rake)
-	if ComboPoints() >= 5
-	{
+	if (ComboPoints() >= 5) {
 		# Cast Rip if you are at 5 Combo Points and Rip is either not ticking,
 		# or will fall off before you have another chance to re-apply it.
 		if (target.DebuffExpires(rip) or target.DebuffRefreshable(rip)) Spell(rip)
@@ -389,14 +373,12 @@ AddFunction GuardianCatweaveActions
 	Spell(shred)
 }
 
-AddFunction GuardianOwlweaveActions
-{
+AddFunction GuardianOwlweaveActions {
 	# Actions to cast from Moonkin Form.
 	# Refresh DoTs.
 	if target.DebuffRefreshable(sunfire_debuff) Spell(sunfire)
 	if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
-	if BuffPresent(galactic_guardian_buff)
-	{
+	if BuffPresent(galactic_guardian_buff) {
 		if (Enemies(tagged=1) == 1) Spell(moonfire)
 		GuardianMoonfireCycle()
 	}
@@ -406,8 +388,7 @@ AddFunction GuardianOwlweaveActions
 	if BuffPresent(eclipse_lunar_buff) Spell(starfire)
 	if BuffPresent(eclipse_solar_buff) Spell(wrath)
 	# Use Starfire or Wrath to move into the next Eclipse state.
-	if EclipseAnyNext()
-	{
+	if EclipseAnyNext() {
 		if IsCovenant(night_fae) Spell(starfire)
 		Spell(wrath)
 	}
@@ -415,53 +396,43 @@ AddFunction GuardianOwlweaveActions
 	if EclipseSolarNext() Spell(starfire)
 }
 
-AddFunction GuardianPrecombatShortCdActions
-{
+AddFunction GuardianPrecombatShortCdActions {
 	PrecombatShortCdActions()
 	# Use Bristling Fur to generate Rage when entering a new pull.
 	Spell(bristling_fur)
 	Spell(adaptive_swarm)
 }
 
-AddFunction GuardianShortCdActions
-{
+AddFunction GuardianShortCdActions {
 	Spell(adaptive_swarm)
 	# Maintain at least one stack of Ironfur and don't cap on Rage.
 	if (BuffRemaining(ironfur) < 1 or RageDeficit() < 40) Spell(ironfur)
 	# Use Frenzied Regeneration between 50% and 20% health.
-	if HealthPercent() < (50 - 20 * (2 - Charges(frenzied_regeneration count=0)))
-	{
+	if (HealthPercent() < (50 - 20 * (2 - Charges(frenzied_regeneration count=0)))) {
 		if not BuffPresent(frenzied_regeneration) Spell(frenzied_regeneration)
 	}
 	Spell(bristling_fur)
 }
 
-AddFunction GuardianPrecombatMainActions
-{
-	if Stance(druid_moonkin_form)
-	{
+AddFunction GuardianPrecombatMainActions {
+	if Stance(druid_moonkin_form) {
 		if IsCovenant(night_fae) Spell(starfire)
 		Spell(wrath)
 	}
 }
 
-AddFunction GuardianMainActions
-{
-	if Stance(druid_bear_form)
-	{
+AddFunction GuardianMainActions {
+	if Stance(druid_bear_form) {
 		GuardianBearActions()
 	}
-	if Stance(druid_cat_form)
-	{
+	if Stance(druid_cat_form) {
 		if Talent(feral_affinity_talent) GuardianCatweaveActions()
 		if not Talent(feral_affinity_talent) Spell(bear_form)
 	}
-	if Stance(druid_moonkin_form)
-	{
+	if Stance(druid_moonkin_form) {
 		GuardianOwlweaveActions()
 	}
-	if not Stance(druid_bear_form) and not Stance(druid_cat_form) and not Stance(druid_moonkin_form)
-	{
+	if not Stance(druid_bear_form) and not Stance(druid_cat_form) and not Stance(druid_moonkin_form) {
 		Spell(wild_growth)
 		Spell(swiftmend)
 		if BuffRefreshable(rejuvenation) Spell(rejuvenation)
@@ -469,57 +440,45 @@ AddFunction GuardianMainActions
 	}
 }
 
-AddFunction GuardianPrecombatCdActions
-{
+AddFunction GuardianPrecombatCdActions {
 	PrecombatCdActions()
 }
 
-AddFunction GuardianOffensiveCdActions
-{
-	if (Stance(druid_cat_form) and Talent(feral_affinity_talent)) or Stance(druid_moonkin_form)
-	{
+AddFunction GuardianOffensiveCdActions {
+	if (Stance(druid_cat_form) and Talent(feral_affinity_talent)) or Stance(druid_moonkin_form) {
 		Spell(heart_of_the_wild)
 		Spell(convoke_the_spirits)
 	}
 }
 
-AddFunction GuardianDefensiveCdActions
-{
-	if Stance(druid_bear_form)
-	{
+AddFunction GuardianDefensiveCdActions {
+	if Stance(druid_bear_form) {
 		Spell(pulverize)
-		if not BuffPresent(damage_reduction_cooldown_buff)
-		{
+		if not BuffPresent(damage_reduction_cooldown_buff) {
 			Spell(barkskin)
 			Spell(survival_instincts)
 		}
 	}
 }
 
-AddFunction GuardianCdActions
-{
+AddFunction GuardianCdActions {
 	GuardianDefensiveCdActions()
 	GuardianOffensiveCdActions()
 }
 
-AddFunction GuardianInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction GuardianInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if (focus.InRange(skull_bash) and focus.IsInterruptible()) Spell(skull_bash text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.inRange(maim) Spell(maim text=focus)
 			if (focus.Distance() < 10) Spell(incapacitating_roar text=focus)
 			if (focus.Distance() < 15) Spell(typhoon text=focus)
 			if focus.InRange(mighty_bash) Spell(mighty_bash text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if (target.InRange(skull_bash) and target.IsInterruptible()) Spell(skull_bash)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.inRange(maim) Spell(maim text=focus)
 			if (target.Distance() < 10) Spell(incapacitating_roar)
 			if (target.Distance() < 15) Spell(typhoon)
@@ -529,66 +488,55 @@ AddFunction GuardianInterruptActions
 	InterruptActions()
 }
 
-AddFunction GuardianDispelActions
-{
+AddFunction GuardianDispelActions {
 	OffensiveDispelActions()
 	if target.HasDebuffType(enrage) Spell(soothe)
 	if player.HasDebuffType(poison curse) Spell(remove_corruption)
 	DefensiveDispelActions()
 }
 
-AddFunction GuardianHealActions
-{
+AddFunction GuardianHealActions {
 	ItemHealActions()
 	if (HealthPercent() < 50) Spell(renewal)
 }
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	GuardianInterruptActions()
 	GuardianDispelActions()
 	GuardianHealActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() GuardianPrecombatShortCdActions()
 	GuardianShortCdActions()
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	if not InCombat() GuardianPrecombatMainActions()
 	GuardianMainActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() GuardianPrecombatMainActions()
 	GuardianMainActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() GuardianPrecombatCdActions()
 	GuardianCdActions()
 }
 
-AddIcon help=offensive size=small
-{
-	if not InCombat()
-	{
+AddIcon help=offensive size=small {
+	if not InCombat() {
 		Spell(moonkin_form)
 		if Talent(feral_affinity_talent) Spell(prowl)
 	}
-	if InCombat()
-	{
+	if InCombat() {
 		GuardianShapeshiftActions()
 	}
-	if not GuardianInRange()
-	{
+	if not GuardianInRange() {
 		if (Stance(druid_bear_form) and target.InRange(wild_charge_bear)) Spell(wild_charge_bear)
 		if (Stance(druid_cat_form) and target.InRange(wild_charge_cat)) Spell(wild_charge_cat)
 		if (Stance(druid_bear_form) or Stance(druid_cat_form)) Texture(misc_arrowlup help=L(not_in_melee_range))

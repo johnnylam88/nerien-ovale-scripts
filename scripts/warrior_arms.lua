@@ -246,20 +246,16 @@ Define(unity_runeforge 8130)
 
 ### Functions ###
 
-AddFunction ArmsInRange
-{
+AddFunction ArmsInRange {
 	(InFlightToTarget(charge) or InFlightToTarget(intervene) or InFlightToTarget(heroic_leap) or target.InRange(pummel)) 
 }
 
-AddFunction ArmsInExecuteRange
-{
+AddFunction ArmsInExecuteRange {
 	HasTalent(massacre_talent) and target.HealthPercent() < 35 or target.HealthPercent() < 20
 }
 
-AddFunction ArmsSingleTargetActions
-{
-	if not BuffPresent(bladestorm)
-	{
+AddFunction ArmsSingleTargetActions {
+	if not BuffPresent(bladestorm) {
 		if (not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4) Spell(rend)
 		if (Charges(overpower count=0) >= 1.8) Spell(overpower)
 		if (BuffStacks(overpower) == 2) Spell(mortal_strike text=plus)
@@ -267,12 +263,10 @@ AddFunction ArmsSingleTargetActions
 		if (Rage() < 55 or (ArmsInExecuteRange() and Rage() < 60)) Spell(skullsplitter)
 		if BuffPresent(sudden_death_buff) Spell(execute)
 		Spell(overpower)
-		if ArmsInExecuteRange()
-		{
+		if ArmsInExecuteRange() {
 			Spell(execute)
 		}
-		if not ArmsInExecuteRange()
-		{
+		if not ArmsInExecuteRange() {
 			Spell(mortal_strike)
 			Spell(condemn)
 			if not HasTalent(fervor_of_battle_talent) Spell(slam)
@@ -281,48 +275,42 @@ AddFunction ArmsSingleTargetActions
 	}
 }
 
-AddFunction ArmsSingleTargetShortCdActions
-{
-	if not BuffPresent(bladestorm)
-	{
-		unless (not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend))
-		{
-			if not EquippedRuneforge(signet_of_tormented_kings_runeforge)
-			{
+AddFunction ArmsSingleTargetShortCdActions {
+	if not BuffPresent(bladestorm) {
+		unless (not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend)) {
+			if not EquippedRuneforge(signet_of_tormented_kings_runeforge) {
 				if (SpellCooldown(colossus_smash) < 8) Spell(avatar text=st)
 			}
-			if EquippedRuneforge(signet_of_tormented_kings_runeforge)
-			{
+			if EquippedRuneforge(signet_of_tormented_kings_runeforge) {
 				if target.DebuffPresent(colossus_smash_debuff) Spell(avatar text=st)
 			}
 			if ArmsInExecuteRange() Spell(deadly_calm text=st)
-			if not (IsCovenant(kyrian) or IsCovenant(night_fae)) or
+			if (
+				not (IsCovenant(kyrian) or IsCovenant(night_fae)) or
 				(IsCovenant(kyrian) and (SpellCooldown(spear_of_bastion) > 40 or SpellCooldown(spear_of_bastion) < GCD())) or
 				(IsCovenant(night_fae) and (SpellCooldown(ancient_aftershock) > 40 or SpellCooldown(ancient_aftershock) < GCD()))
-			{
+			) {
 				if (SpellCooldown(colossus_smash) < GCD()) Spell(ravager text=st)
 				Spell(colossus_smash text=st)
 			}
 
-			unless
+			unless (
 				(Charges(overpower count=0) >= 1.8 and Spell(overpower)) or
 				((BuffStacks(overpower) == 2 or BuffPresent(battlelord_buff) or EquippedRuneforge(enduring_blow_runeforge)) and Spell(mortal_strike)) or
 				((Rage() < 55 or (ArmsInExecuteRange() and Rage() < 60)) and Spell(skullsplitter)) or
 				(BuffPresent(sudden_death_buff) and Spell(execute))
-			{
+			) {
 				Spell(deadly_calm text=st)
 			}
 		}
 	}
 }
 
-AddFunction ArmsSingleTargetCdActions
-{
-	if not BuffPresent(bladestorm)
-	{
+AddFunction ArmsSingleTargetCdActions {
+	if not BuffPresent(bladestorm) {
 		Spell(conquerors_banner text=st)
 
-		unless
+		unless (
 			(not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend)) or
 			((not (IsCovenant(kyrian) or IsCovenant(night_fae)) or
 				(IsCovenant(kyrian) and (SpellCooldown(spear_of_bastion) > 40 or SpellCooldown(spear_of_bastion) < GCD())) or
@@ -331,34 +319,29 @@ AddFunction ArmsSingleTargetCdActions
 					Spell(colossus_smash))) or
 			(Charges(overpower count=0) >= 1.8 and Spell(overpower)) or
 			((BuffStacks(overpower) == 2 or BuffPresent(battlelord_buff) or EquippedRuneforge(enduring_blow_runeforge)) and Spell(mortal_strike))
-		{
-			if target.DebuffPresent(colossus_smash_debuff)
-			{
+		) {
+			if target.DebuffPresent(colossus_smash_debuff) {
 				Spell(ancient_aftershock text=st)
 				Spell(spear_of_bastion text=st)
 			}
 			if (not Talent(ravager_talent) and ArmsInExecuteRange() and Rage() < 30) Spell(bladestorm text=st)
 
-			unless ((Rage() < 55 or (ArmsInExecuteRange() and Rage() < 60)) and Spell(skullsplitter))
-			{
+			unless ((Rage() < 55 or (ArmsInExecuteRange() and Rage() < 60)) and Spell(skullsplitter)) {
 				if (not Talent(ravager_talent) and not ArmsInExecuteRange() and Rage() < 50) Spell(bladestorm text=st)
 			}
 		}
 	}
 }
 
-AddFunction ArmsMultiTargetActions
-{
-	if not BuffPresent(bladestorm)
-	{
+AddFunction ArmsMultiTargetActions {
+	if not BuffPresent(bladestorm) {
 		if (Enemies(tagged=1) < 4 and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4) Spell(rend)
 		if (Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD())) Spell(skullsplitter)
 		Spell(cleave)
 		if (Enemies(tagged=1) < 4 or BuffPresent(sweeping_strikes)) Spell(execute)
 		if (Enemies(tagged=1) >= 4 and target.DebuffPresent(colossus_smash_debuff)) Spell(whirlwind)
 		Spell(overpower)
-		if (Enemies(tagged=1) < 4)
-		{
+		if (Enemies(tagged=1) < 4) {
 			if (BuffStacks(overpower) == 2) Spell(mortal_strike text=plus)
 			Spell(mortal_strike)
 			if (not HasTalent(fervor_of_battle_talent) and BuffPresent(sweeping_strikes)) Spell(slam)
@@ -367,28 +350,25 @@ AddFunction ArmsMultiTargetActions
 	}
 }
 
-AddFunction ArmsMultiTargetShortCdActions
-{
-	if not BuffPresent(bladestorm)
-	{
+AddFunction ArmsMultiTargetShortCdActions {
+	if not BuffPresent(bladestorm) {
 		if (Talent(ravager_talent) or SpellCooldown(bladestorm) > BuffDuration(sweeping_strikes)) Spell(sweeping_strikes text=aoe)
 
-		unless
+		unless (
 			(Enemies(tagged=1) < 4 and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend)) or
 			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD()) and Spell(skullsplitter))
-		{
-			if not EquippedRuneforge(signet_of_tormented_kings_runeforge)
-			{
+		) {
+			if not EquippedRuneforge(signet_of_tormented_kings_runeforge) {
 				if (SpellCooldown(colossus_smash) < 8) Spell(avatar text=aoe)
 			}
-			if EquippedRuneforge(signet_of_tormented_kings_runeforge)
-			{
+			if EquippedRuneforge(signet_of_tormented_kings_runeforge) {
 				if target.DebuffPresent(colossus_smash_debuff) Spell(avatar text=aoe)
 			}
-			if not (IsCovenant(kyrian) or IsCovenant(night_fae)) or
+			if (
+				not (IsCovenant(kyrian) or IsCovenant(night_fae)) or
 				(IsCovenant(kyrian) and (SpellCooldown(spear_of_bastion) > 40 or SpellCooldown(spear_of_bastion) < GCD())) or
 				(IsCovenant(night_fae) and (SpellCooldown(ancient_aftershock) > 40 or SpellCooldown(ancient_aftershock) < GCD()))
-			{
+			) {
 				if (SpellCooldown(colossus_smash) < GCD()) Spell(ravager text=aoe)
 				if Talent(ravager_talent) Spell(colossus_smash text=aoe)
 				if (SpellCooldown(bladestorm) > 40 or SpellCooldown(bladestorm) < GCD()) Spell(colossus_smash text=aoe)
@@ -398,18 +378,15 @@ AddFunction ArmsMultiTargetShortCdActions
 	}
 }
 
-AddFunction ArmsMultiTargetCdActions
-{
-	if not BuffPresent(bladestorm)
-	{
+AddFunction ArmsMultiTargetCdActions {
+	if not BuffPresent(bladestorm) {
 		Spell(conquerors_banner text=aoe)
 
-		unless
+		unless (
 			((Talent(ravager_talent) or SpellCooldown(bladestorm) > BuffDuration(sweeping_strikes)) and Spell(sweeping_strikes)) or
 			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD()) and Spell(skullsplitter))
-		{
-			if target.DebuffPresent(colossus_smash_debuff)
-			{
+		) {
+			if target.DebuffPresent(colossus_smash_debuff) {
 				Spell(ancient_aftershock text=aoe)
 				Spell(spear_of_bastion text=aoe)
 				if not Talent(ravager_talent) Spell(bladestorm text=aoe)
@@ -418,49 +395,40 @@ AddFunction ArmsMultiTargetCdActions
 	}
 }
 
-AddFunction ArmsPrecombatShortCdActions
-{
+AddFunction ArmsPrecombatShortCdActions {
 	PrecombatShortCdActions()
 }
 
 AddFunction ArmsPrecombatMainActions { }
 
-AddFunction ArmsPrecombatCdActions
-{
+AddFunction ArmsPrecombatCdActions {
 	PrecombatCdActions()
 }
 
-AddFunction ArmsBuffActions
-{
+AddFunction ArmsBuffActions {
 	if not BuffPresent(battle_shout mine=0) Spell(battle_shout)
 }
 
-AddFunction ArmsDefensiveActions
-{
+AddFunction ArmsDefensiveActions {
 	Spell(die_by_the_sword)
 	Spell(fleshcraft)
 	Spell(rallying_cry)
 	Spell(ignore_pain)
 }
 
-AddFunction ArmsInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction ArmsInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(pummel) and focus.IsInterruptible() Spell(pummel text=focus)
 		if focus.IsTargetingPlayer() Spell(spell_reflection text=focus)
-		if not focus.Classification(worldboss)
-		{
+		if not focus.Classification(worldboss) {
 			if focus.InRange(storm_bolt) Spell(storm_bolt text=focus)
 			if (focus.Distance() < 8) Spell(intimidating_shout text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(pummel) and target.IsInterruptible() Spell(pummel)
 		if target.IsTargetingPlayer() Spell(spell_reflection)
-		if not target.Classification(worldboss)
-		{
+		if not target.Classification(worldboss) {
 			if target.InRange(storm_bolt) Spell(storm_bolt)
 			if (target.Distance() < 8) Spell(intimidating_shout)
 		}
@@ -468,59 +436,50 @@ AddFunction ArmsInterruptActions
 	InterruptActions()
 }
 
-AddFunction ArmsDispelActions
-{
+AddFunction ArmsDispelActions {
 	OffensiveDispelActions()
 	DefensiveDispelActions()
 }
 
-AddFunction ArmsHealActions
-{
+AddFunction ArmsHealActions {
 	ItemHealActions()
 	if (HealthPercent() < 70) Spell(victory_rush)
 }
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	ArmsInterruptActions()
 	ArmsDispelActions()
 	ArmsHealActions()
 	ArmsDefensiveActions()
 }
 
-AddIcon help=shortcd
-{
+AddIcon help=shortcd {
 	if not InCombat() ArmsPrecombatShortCdActions()
 	if (Enemies(tagged=1) == 1) ArmsSingleTargetShortCdActions()
 	if (Enemies(tagged=1) > 1)  ArmsMultiTargetShortCdActions()
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	if not InCombat() ArmsPrecombatMainActions()
 	ArmsSingleTargetActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	if not InCombat() ArmsPrecombatMainActions()
 	ArmsMultiTargetActions()
 }
 
-AddIcon help=cd
-{
+AddIcon help=cd {
 	if not InCombat() ArmsPrecombatCdActions()
 	if (Enemies(tagged=1) == 1) ArmsSingleTargetCdActions()
 	if (Enemies(tagged=1) > 1)  ArmsMultiTargetCdActions()
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	if not InCombat() ArmsBuffActions()
-	if not ArmsInRange()
-	{
+	if not ArmsInRange() {
 		if target.InRange(charge) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))

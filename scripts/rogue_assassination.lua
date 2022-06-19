@@ -252,30 +252,25 @@ Define(master_assassins_mark 340094)
 
 ### Functions ###
 
-AddFunction AssassinationInCombat
-{
+AddFunction AssassinationInCombat {
 	InCombat() or BuffPresent(vanish_buff)
 }
 
-AddFunction AssassinationInRange
-{
+AddFunction AssassinationInRange {
 	((Stealthed() and target.InRange(ambush)) or (not Stealthed() and target.InRange(mutilate)))
 }
 
-AddFunction AssassinationUpToThreeTargets
-{
+AddFunction AssassinationUpToThreeTargets {
 	if (Enemies(tagged=1) > 3) 3
 	Enemies(tagged=1)
 }
 
-AddFunction AssassinationUpToFourTargets
-{
+AddFunction AssassinationUpToFourTargets {
 	if (Enemies(tagged=1) > 4) 4
 	Enemies(tagged=1)
 }
 
-AddFunction AssassinationOnAnimachargedComboPoint
-{
+AddFunction AssassinationOnAnimachargedComboPoint {
 	IsCovenant(kyrian) and (
 		(BuffPresent(echoing_reprimand_2) and ComboPoints() == 2) or
 		(BuffPresent(echoing_reprimand_3) and ComboPoints() == 3) or
@@ -284,71 +279,52 @@ AddFunction AssassinationOnAnimachargedComboPoint
 	)
 }
 
-AddFunction AssassinationSliceAndDiceMaintenanceActions
-{
-	if (BuffPresent(slice_and_dice) and BuffRefreshable(slice_and_dice))
-	{
-		if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint())
-		{
+AddFunction AssassinationSliceAndDiceMaintenanceActions {
+	if (BuffPresent(slice_and_dice) and BuffRefreshable(slice_and_dice)) {
+		if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
 			if SpellKnown(cut_to_the_chase) Spell(envenom text=snd)
 			Spell(slice_and_dice)
 		}
 	}
 }
 
-AddFunction AssassinationExsanguinateActions
-{
-	if Talent(exsanguinate_talent)
-	{
+AddFunction AssassinationExsanguinateActions {
+	if Talent(exsanguinate_talent) {
 		#actions.cds+=/exsanguinate,if=!stealthed.rogue&(!dot.garrote.refreshable&dot.rupture.remains>4+4*cp_max_spend|dot.rupture.remains*0.5>target.time_to_die)&target.time_to_die>4
-		if (target.DebuffPresent(rupture) and target.TimeToDie() > 4)
-		{
+		if (target.DebuffPresent(rupture) and target.TimeToDie() > 4) {
 			if (target.DebuffRemaining(rupture) > 24) Spell(exsanguinate)
 			if (target.DebuffRemaining(rupture) * 0.5 > target.TimeToDie()) Spell(exsanguinate)
 		}
 	}
 }
 
-AddFunction AssassinationSingleTargetGarroteActions
-{
-	if (ComboPointsDeficit() > 0)
-	{
-		unless target.DebuffPresent(garrote)
-		{
+AddFunction AssassinationSingleTargetGarroteActions {
+	if (ComboPointsDeficit() > 0) {
+		unless target.DebuffPresent(garrote) {
 			Spell(garrote text=new)
 		}
-		if target.DebuffPresent(garrote)
-		{
-			if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote))
-			{
+		if target.DebuffPresent(garrote) {
+			if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) {
 				Spell(garrote text=plus)
 			}
-			unless (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote))
-			{
+			unless (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) {
 				if target.DebuffRefreshable(garrote) Spell(garrote)
 			}
 		}
 	}
 }
 
-AddFunction AssassinationSingleTargetRuptureActions
-{
-	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint())
-	{
-		if (BaseDuration(rupture) >= target.TimeToDie())
-		{
-			unless target.DebuffPresent(rupture)
-			{
+AddFunction AssassinationSingleTargetRuptureActions {
+	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
+		if (BaseDuration(rupture) >= target.TimeToDie()) {
+			unless target.DebuffPresent(rupture) {
 				Spell(rupture text=new)
 			}
-			if target.DebuffPresent(rupture)
-			{
-				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture))
-				{
+			if target.DebuffPresent(rupture) {
+				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					Spell(rupture text=plus)
 				}
-				unless (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture))
-				{
+				unless (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					if target.DebuffRefreshable(rupture) Spell(rupture)
 				}
 			}
@@ -356,33 +332,26 @@ AddFunction AssassinationSingleTargetRuptureActions
 	}
 }
 
-AddFunction AssassinationSingleTargetSerratedBoneSpikeActions
-{
-	if IsCovenant(necrolord)
-	{
-		unless target.DebuffPresent(serrated_bone_spike_debuff)
-		{
+AddFunction AssassinationSingleTargetSerratedBoneSpikeActions {
+	if IsCovenant(necrolord) {
+		unless target.DebuffPresent(serrated_bone_spike_debuff) {
 			if (ComboPointsDeficit() > 0) Spell(serrated_bone_spike)
 		}
-		if target.DebuffPresent(serrated_bone_spike_debuff)
-		{
+		if target.DebuffPresent(serrated_bone_spike_debuff) {
 			if (ComboPointsDeficit() > 1) Spell(serrated_bone_spike)
 		}
 	}
 }
 
-AddFunction AssassinationSingleTargetActions
-{
-	unless BuffPresent(slice_and_dice)
-	{
+AddFunction AssassinationSingleTargetActions {
+	unless BuffPresent(slice_and_dice) {
 		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice)
 	}
 	AssassinationSliceAndDiceMaintenanceActions()
 	AssassinationSingleTargetRuptureActions()
 	AssassinationSingleTargetGarroteActions()
 	AssassinationSingleTargetSerratedBoneSpikeActions()
-	if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint())
-	{
+	if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
 		# Pool to 80 energy if single-target before casting Envenom.
 		Spell(envenom extra_energy=45 text=pool)
 	}
@@ -391,14 +360,12 @@ AddFunction AssassinationSingleTargetActions
 	Spell(mutilate)
 }
 
-AddFunction AssassinationMarkedForDeathActions
-{
+AddFunction AssassinationMarkedForDeathActions {
 	if (ComboPoints() <= 1) Spell(marked_for_death)
 	if (ComboPointsDeficit() >= 2 and target.TimeToDie() < 10) Spell(marked_for_death text=snipe)
 }
 
-AddFunction AssassinationSingleTargetShortCdActions
-{
+AddFunction AssassinationSingleTargetShortCdActions {
 	AssassinationMarkedForDeathActions()
 
 	unless (
@@ -412,29 +379,22 @@ AddFunction AssassinationSingleTargetShortCdActions
 		if (ComboPointsDeficit() <= 1 and BaseDuration(flagellation) <= target.TimeToDie()) Spell(flagellation text=st)
 		if (ComboPointsDeficit() > 0) Spell(sepsis text=st)
 
-		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis))
-		{
-			if Talent(subterfuge_talent)
-			{
+		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis)) {
+			if Talent(subterfuge_talent) {
 				# Use Vanish on cooldown with Subterfuge to apply Empowered Garrote.
-				unless target.DebuffPresent(garrote)
-				{
+				unless target.DebuffPresent(garrote) {
 					Spell(vanish text=st)
 				}
-				if target.DebuffPresent(garrote)
-				{
-					if (target.DebuffPersistentMultiplier(garrote) < 1.8)
-					{
+				if target.DebuffPresent(garrote) {
+					if (target.DebuffPersistentMultiplier(garrote) < 1.8) {
 						Spell(vanish text=st)
 					}
-					unless (target.DebuffPersistentMultiplier(garrote) < 1.8)
-					{
+					unless (target.DebuffPersistentMultiplier(garrote) < 1.8) {
 						if target.DebuffRefreshable(garrote) Spell(vanish text=st)
 					}
 				}
 			}
-			if Talent(nightstalker_talent) or Talent(master_assassin_talent)
-			{
+			if Talent(nightstalker_talent) or Talent(master_assassin_talent) {
 				# Use Vanish at full combo points with Nightstalker or Master Assassin.
 				if (ComboPointsDeficit() <= 1 and Energy() >= 25) Spell(vanish text=st)
 			}
@@ -443,8 +403,7 @@ AddFunction AssassinationSingleTargetShortCdActions
 	}
 }
 
-AddFunction AssassinationSingleTargetCdActions
-{
+AddFunction AssassinationSingleTargetCdActions {
 	unless (
 		not BuffPresent(slice_and_dice) or
 		AssassinationSliceAndDiceMaintenanceActions() or
@@ -455,22 +414,16 @@ AddFunction AssassinationSingleTargetCdActions
 	}
 }
 
-AddFunction AssassinationCrimsonTempestActions
-{
-	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint())
-	{
-		unless target.DebuffPresent(crimson_tempest)
-		{
+AddFunction AssassinationCrimsonTempestActions {
+	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
+		unless target.DebuffPresent(crimson_tempest) {
 			Spell(crimson_tempest text=new)
 		}
-		if target.DebuffPresent(crimson_tempest)
-		{
-			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest))
-			{
+		if target.DebuffPresent(crimson_tempest) {
+			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
 				Spell(crimson_tempest text=plus)
 			}
-			unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest))
-			{
+			unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
 				# Only refresh Crimson Tempest in the final 2 seconds so combo points can
 				# be spent instead on maintaining Slice and Dice and Rupture.
 				if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
@@ -479,25 +432,18 @@ AddFunction AssassinationCrimsonTempestActions
 	}
 }
 
-AddFunction AssassinationMultiTargetGarroteActions
-{
-	if (ComboPointsDeficit() > 0)
-	{
-		if (DebuffCountOnAny(garrote) < AssassinationUpToThreeTargets())
-		{
+AddFunction AssassinationMultiTargetGarroteActions {
+	if (ComboPointsDeficit() > 0) {
+		if (DebuffCountOnAny(garrote) < AssassinationUpToThreeTargets()) {
 			unless target.DebuffPresent(garrote) Spell(garrote text=new)
 			Spell(garrote text=other)
 		}
-		unless (DebuffCountOnAny(garrote) < AssassinationUpToThreeTargets())
-		{
-			if target.DebuffPresent(garrote)
-			{
-				if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote))
-				{
+		unless (DebuffCountOnAny(garrote) < AssassinationUpToThreeTargets()) {
+			if target.DebuffPresent(garrote) {
+				if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) {
 					Spell(garrote text=plus)
 				}
-				unless (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote))
-				{
+				unless (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) {
 					if target.DebuffRefreshable(garrote) Spell(garrote)
 				}
 			}
@@ -505,25 +451,18 @@ AddFunction AssassinationMultiTargetGarroteActions
 	}
 }
 
-AddFunction AssassinationMultiTargetRuptureActions
-{
-	if (ComboPoints() >= 3 or AssassinationOnAnimachargedComboPoint())
-	{
-		if (DebuffCountOnAny(rupture) < AssassinationUpToFourTargets())
-		{
+AddFunction AssassinationMultiTargetRuptureActions {
+	if (ComboPoints() >= 3 or AssassinationOnAnimachargedComboPoint()) {
+		if (DebuffCountOnAny(rupture) < AssassinationUpToFourTargets()) {
 			unless target.DebuffPresent(rupture) Spell(rupture text=new)
 			Spell(rupture text=other)
 		}
-		unless (DebuffCountOnAny(rupture) < AssassinationUpToFourTargets())
-		{
-			if target.DebuffPresent(rupture)
-			{
-				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture))
-				{
+		unless (DebuffCountOnAny(rupture) < AssassinationUpToFourTargets()) {
+			if target.DebuffPresent(rupture) {
+				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					Spell(rupture text=plus)
 				}
-				unless (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture))
-				{
+				unless (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					if target.DebuffRefreshable(rupture) Spell(rupture)
 				}
 			}
@@ -531,36 +470,29 @@ AddFunction AssassinationMultiTargetRuptureActions
 	}
 }
 
-AddFunction AssassinationMultiTargetSerratedBoneSpikeActions
-{
-	if IsCovenant(necrolord)
-	{
+AddFunction AssassinationMultiTargetSerratedBoneSpikeActions {
+	if IsCovenant(necrolord) {
 		if (
 			(DebuffCountOnAny(serrated_bone_spike_debuff) < ComboPointsDeficit()) or
 			(DebuffCountOnAny(serrated_bone_spike_debuff) - 1 >= MaxComboPoints() and ComboPoints() <= 1)
 		) {
-			if (DebuffCountOnAny(serrated_bone_spike_debuff) < Enemies(tagged=1))
-			{
+			if (DebuffCountOnAny(serrated_bone_spike_debuff) < Enemies(tagged=1)) {
 				unless target.DebuffPresent(serrated_bone_spike_debuff) Spell(serrated_bone_spike text=new)
 				Spell(serrated_bone_spike text=other)
 			}
-			if (SpellCharges(serrated_bone_spike count=0) < SpellMaxCharges(serrated_bone_spike) - 0.1)
-			{
+			if (SpellCharges(serrated_bone_spike count=0) < SpellMaxCharges(serrated_bone_spike) - 0.1) {
 				Spell(serrated_bone_spike text=cap)
 			}
 		}
 	}
 }
 
-AddFunction AssassinationMultiTargetActions
-{
-	if (Talent(subterfuge_talent) and BuffPresent(stealth_subterfuge))
-	{
+AddFunction AssassinationMultiTargetActions {
+	if (Talent(subterfuge_talent) and BuffPresent(stealth_subterfuge)) {
 		# If Subterfuge is up, apply Empowered Garrote.
 		AssassinationMultiTargetGarroteActions()
 	}
-	unless BuffPresent(slice_and_dice)
-	{
+	unless BuffPresent(slice_and_dice) {
 		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice)
 	}
 	AssassinationCrimsonTempestActions()
@@ -569,27 +501,22 @@ AddFunction AssassinationMultiTargetActions
 	AssassinationMultiTargetSerratedBoneSpikeActions()
 	AssassinationMultiTargetGarroteActions()
 	if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) Spell(envenom)
-	if (Enemies(tagged=1) >= 4)
-	{
+	if (Enemies(tagged=1) >= 4) {
 		Spell(fan_of_knives)
 	}
-	if (Enemies(tagged=1) < 4)
-	{
-		if (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff))
-		{
+	if (Enemies(tagged=1) < 4) {
+		if (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
 			if BuffPresent(blindside) Spell(ambush text=other)
 			Spell(mutilate text=other)
 		}
-		unless (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff))
-		{
+		unless (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
 			if BuffPresent(blindside) Spell(ambush)
 			Spell(mutilate)
 		}
 	}
 }
 
-AddFunction AssassinationMultiTargetShortCdActions
-{
+AddFunction AssassinationMultiTargetShortCdActions {
 	AssassinationMarkedForDeathActions()
 
 	unless (
@@ -604,15 +531,12 @@ AddFunction AssassinationMultiTargetShortCdActions
 		if (ComboPointsDeficit() <= 1 and BaseDuration(flagellation) <= target.TimeToDie()) Spell(flagellation text=aoe)
 		if (ComboPointsDeficit() > 0) Spell(sepsis text=aoe)
 
-		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis))
-		{
-			if Talent(subterfuge_talent)
-			{
+		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis)) {
+			if Talent(subterfuge_talent) {
 				# Use Vanish with Vendetta to have enough Energy to apply multiple Empowered Garrotes.
 				if (not SpellCooldown(vendetta) > 0 or BuffPresent(vendetta_buff)) Spell(vanish text=aoe)
 			}
-			if Talent(nightstalker_talent) or Talent(master_assassin_talent)
-			{
+			if (Talent(nightstalker_talent) or Talent(master_assassin_talent)) {
 				# Use Vanish at full combo points with Nightstalker or Master Assassin.
 				if (ComboPointsDeficit() <= 1 and Energy() >= 25) Spell(vanish text=aoe)
 			}
@@ -621,47 +545,39 @@ AddFunction AssassinationMultiTargetShortCdActions
 	}
 }
 
-AddFunction AssassinationMultiTargetCdActions
-{
+AddFunction AssassinationMultiTargetCdActions {
 	unless (
 		not BuffPresent(slice_and_dice) or
 		AssassinationCrimsonTempestActions() or
 		AssassinationMultiTargetRuptureActions() or
 		AssassinationSliceAndDiceMaintenanceActions()
 	) {
-		if Talent(subterfuge_talent)
-		{
+		if Talent(subterfuge_talent) {
 			# Delay Vendetta for up to 20 seconds to line up with Vanish to have
 			# enough Energy to apply multiple Empowered Garrotes.
 
- 			if (SpellCooldown(vanish) < 20)
-			{
+			if (SpellCooldown(vanish) < 20) {
 				unless (SpellCooldown(vanish) > 0) Spell(vendetta text=aoe)
 			}
- 			unless (SpellCooldown(vanish) < 20)
-			{
+			unless (SpellCooldown(vanish) < 20) {
 				if (BuffPresent(stealth_subterfuge) or BuffPresent(subterfuge)) Spell(vendetta text=aoe)
 				if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta text=aoe)
 			}
 		}
-		unless Talent(subterfuge_talent)
-		{
+		unless Talent(subterfuge_talent) {
 			if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta text=aoe)
 		}
 	}
 }
 
-AddFunction AssassinationShivActions
-{
-	unless (Enemies(tagged=1) > 1)
-	{
+AddFunction AssassinationShivActions {
+	unless (Enemies(tagged=1) > 1) {
 		unless (ComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
 		{
 			if (target.DebuffRemaining(rupture) > 16 and target.DebuffRemaining(slice_and_dice) > 18) Spell(shiv text=st)
 		}
 	}
-	if (Enemies(tagged=1) > 1)
-	{
+	if (Enemies(tagged=1) > 1) {
 		unless (
 			not BuffPresent(slice_and_dice) or
 			AssassinationCrimsonTempestActions() or
@@ -674,23 +590,18 @@ AddFunction AssassinationShivActions
 	}
 }
 
-AddFunction AssassinationPrecombatShortCdActions
-{
+AddFunction AssassinationPrecombatShortCdActions {
 	Spell(stealth)
 	if (ComboPoints() <= 1) Spell(marked_for_death text=open)
 	Spell(slice_and_dice text=open)
 }
 
-AddFunction AssassinationPrecombatMainActions
-{
-	if (Talent(nightstalker_talent) or Talent(subterfuge_talent))
-	{
+AddFunction AssassinationPrecombatMainActions {
+	if (Talent(nightstalker_talent) or Talent(subterfuge_talent)) {
 		AssassinationSingleTargetGarroteActions()
 	}
-	if Talent(master_assassin_talent)
-	{
-		if (ComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice))
-		{
+	if Talent(master_assassin_talent) {
+		if (ComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice)) {
 			AssassinationSingleTargetRuptureActions()
 		}
 		Spell(serrated_bone_spike text=open)
@@ -698,16 +609,12 @@ AddFunction AssassinationPrecombatMainActions
 	}
 }
 
-AddFunction AssassinationPrecombatAoEActions
-{
-	if (Talent(nightstalker_talent) or Talent(subterfuge_talent))
-	{
+AddFunction AssassinationPrecombatAoEActions {
+	if (Talent(nightstalker_talent) or Talent(subterfuge_talent)) {
 		AssassinationMultiTargetGarroteActions()
 	}
-	if Talent(master_assassin_talent)
-	{
-		if (ComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice))
-		{
+	if Talent(master_assassin_talent) {
+		if (ComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice)) {
 			AssassinationSingleTargetRuptureActions()
 		}
 		Spell(serrated_bone_spike text=open)
@@ -715,33 +622,26 @@ AddFunction AssassinationPrecombatAoEActions
 	}
 }
 
-AddFunction AssassinationPrecombatCdActions
-{
+AddFunction AssassinationPrecombatCdActions {
 	PrecombatCdActions()
 }
 
-AddFunction AssassinationCdActions
-{
+AddFunction AssassinationCdActions {
 	if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta)
 }
 
-AddFunction AssassinationInterruptActions
-{
-	if not focus.IsFriend() and focus.Casting()
-	{
+AddFunction AssassinationInterruptActions {
+	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(kick) and focus.IsInterruptible() Spell(kick text=focus)
-		unless focus.Classification(worldboss)
-		{
+		unless focus.Classification(worldboss) {
 			if focus.InRange(cheap_shot) Spell(cheap_shot text=focus)
 			if focus.InRange(kidney_shot) Spell(kidney_shot text=focus)
 			if focus.InRange(blind) Spell(blind text=focus)
 		}
 	}
-	if not target.IsFriend() and target.Casting()
-	{
+	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(kick) and target.IsInterruptible() Spell(kick)
-		unless target.Classification(worldboss)
-		{
+		unless target.Classification(worldboss) {
 			if target.InRange(cheap_shot) Spell(cheap_shot)
 			if target.InRange(kidney_shot) Spell(kidney_shot)
 			if target.InRange(blind) Spell(blind)
@@ -750,22 +650,19 @@ AddFunction AssassinationInterruptActions
 	InterruptActions()
 }
 
-AddFunction AssassinationDispelActions
-{
+AddFunction AssassinationDispelActions {
 	if target.HasDebuffType(enrage) Spell(shiv)
 	OffensiveDispelActions()
 	if player.HasDebuffType(poison disease curse magic) Spell(cloak_of_shadows)
 	DefensiveDispelActions()
 }
 
-AddFunction AssassinationHealActions
-{
+AddFunction AssassinationHealActions {
 	ItemHealActions()
 	if (HealthPercent() < 70) Spell(crimson_vial)
 }
 
-AddFunction AssassinationDefensiveActions
-{
+AddFunction AssassinationDefensiveActions {
 	unless BuffPresent(feint) Spell(feint)
 	Spell(fleshcraft)
 	if target.IsTargetingPlayer() Spell(evasion)
@@ -773,69 +670,54 @@ AddFunction AssassinationDefensiveActions
 
 ### User Interface ###
 
-AddIcon help=interrupt size=small
-{
+AddIcon help=interrupt size=small {
 	AssassinationInterruptActions()
 	AssassinationDispelActions()
 	AssassinationHealActions()
 	AssassinationDefensiveActions()
 }
 
-AddIcon help=shortcd
-{
-	unless AssassinationInCombat()
-	{
+AddIcon help=shortcd {
+	unless AssassinationInCombat() {
 		AssassinationPrecombatShortCdActions()
 	}
-	if AssassinationInCombat()
-	{
-		if (Enemies(tagged=1) > 1)
-		{
+	if AssassinationInCombat() {
+		if (Enemies(tagged=1) > 1) {
 			AssassinationMultiTargetShortCdActions()
 		}
-		unless (Enemies(tagged=1) > 1)
-		{
+		unless (Enemies(tagged=1) > 1) {
 			AssassinationSingleTargetShortCdActions()
 		}
 	}
 }
 
-AddIcon enemies=1 help=main
-{
+AddIcon enemies=1 help=main {
 	unless AssassinationInCombat() AssassinationPrecombatMainActions()
 	AssassinationSingleTargetActions()
 }
 
-AddIcon help=aoe
-{
+AddIcon help=aoe {
 	unless AssassinationInCombat() AssassinationPrecombatAoEActions()
 	AssassinationMultiTargetActions()
 }
 
-AddIcon help=cd
-{
-	unless AssassinationInCombat()
-	{
+AddIcon help=cd {
+	unless AssassinationInCombat() {
 		AssassinationPrecombatCdActions()
 	}
-	if AssassinationInCombat()
-	{
-		if (Enemies(tagged=1) > 1)
-		{
+	if AssassinationInCombat() {
+		if (Enemies(tagged=1) > 1) {
 			AssassinationMultiTargetCdActions()
 		}
-		unless (Enemies(tagged=1) > 1)
-		{
+		unless (Enemies(tagged=1) > 1) {
 			AssassinationSingleTargetCdActions()
 		}
 	}
 }
 
-AddIcon help=trinkets size=small
-{
+AddIcon help=trinkets size=small {
 	if (BuffRemaining(lethal_poison) < 900) Spell(deadly_poison)
-	unless AssassinationInRange()
-	{
+	unless AssassinationInRange() {
 		Spell(shadowstep)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}
