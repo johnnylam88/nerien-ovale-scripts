@@ -201,7 +201,7 @@ AddFunction VengeanceEquippedBlindFaithRuneforge {
 AddFunction VengeancePrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
 	# Use Demon Spikes heading into a pull if not already up.
-	if not BuffPresent(demon_spikes_buff) Spell(demon_spikes)
+	unless BuffPresent(demon_spikes_buff) Spell(demon_spikes)
 }
 
 AddFunction VengeanceActiveMitigationActions {
@@ -232,11 +232,11 @@ AddFunction VengeanceMainActions {
 		}
 		if (VengeanceFuryDeficit() < 20) Spell(soul_cleave)
 	}
-	if not target.InRange(soul_cleave) Spell(throw_glaive text=range)
+	unless target.InRange(soul_cleave) Spell(throw_glaive text=range)
 	if (VengeanceFuryDeficit() > 40) Spell(felblade)
 	if (Talent(fracture_talent) and VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5) Spell(fracture)
 	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5) {
-		if not BuffPresent(immolation_aura) Spell(immolation_aura)
+		unless BuffPresent(immolation_aura) Spell(immolation_aura)
 	}
 	if (not Talent(fracture_talent) and VengeanceFuryDeficit() > 10 and VengeanceShearSoulFragments() <= 5) Spell(shear)
 	Spell(throw_glaive)
@@ -244,7 +244,7 @@ AddFunction VengeanceMainActions {
 
 AddFunction VengeancePrecombatShortCdActions {
 	Spell(elysian_decree)
-	if not EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
+	unless EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
 }
 
 AddFunction VengeanceShortCdActions {
@@ -253,13 +253,13 @@ AddFunction VengeanceShortCdActions {
 		# stacks of Blind Faith.
 		if (SoulFragments() >= 4) Spell(elysian_decree)
 	}
-	if not VengeanceEquippedBlindFaithRuneforge() {
+	unless VengeanceEquippedBlindFaithRuneforge() {
 		Spell(elysian_decree)
 	}
 	if EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent) {
 		if (VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
 	}
-	unless SoulFragments() >= 4 and Spell(spirit_bomb) {
+	unless (SoulFragments() >= 4 and Spell(spirit_bomb)) {
 		Spell(fel_devastation)
 
 		unless (
@@ -267,7 +267,7 @@ AddFunction VengeanceShortCdActions {
 			(VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5 and Spell(fracture)) or
 			(VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5 and not BuffPresent(immolation_aura) and Spell(immolation_aura))
 		) {
-			if not EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
+			unless EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
 		}
 	}
 }
@@ -285,8 +285,8 @@ AddFunction VengeanceOffensiveCdActions {
 }
 
 AddFunction VengeanceDefensiveCdActions {
-	unless EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent) {
-		if not BuffPresent(metamorphosis) and VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) Spell(fiery_brand)
+	unless (EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent)) {
+		if (not BuffPresent(metamorphosis) and VengeanceIsTanking() and not target.DebuffPresent(fiery_brand)) Spell(fiery_brand)
 	}
 	if (SoulFragments() >= 4) Spell(soul_barrier)
 	if (SpellCooldown(fiery_brand) > 0 and (Talent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)) Spell(metamorphosis)
@@ -299,7 +299,7 @@ AddFunction VengeanceCdActions {
 AddFunction VengeanceInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if (focus.InRange(disrupt) and focus.IsInterruptible()) Spell(disrupt text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if (
 				focus.Distance() < 30 and
 				focus.RemainingCastTime() >= VengeanceSigilDuration() + GCDRemaining()
@@ -313,7 +313,7 @@ AddFunction VengeanceInterruptActions {
 	}
 	if (not target.IsFriend() and target.Casting()) {
 		if (target.InRange(disrupt) and target.IsInterruptible()) Spell(disrupt)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if (
 				target.Distance() < 30 and
 				target.RemainingCastTime() >= VengeanceSigilDuration() + GCDRemaining()
@@ -348,29 +348,28 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=active_mitigation {
-	if not InCombat() VengeancePrecombatActiveMitigationActions()
+	unless InCombat() VengeancePrecombatActiveMitigationActions()
 	VengeanceActiveMitigationActions()
 }
 
 AddIcon help=main {
-	if not InCombat() VengeancePrecombatMainActions()
+	unless InCombat() VengeancePrecombatMainActions()
 	VengeanceMainActions()
 }
 
 AddIcon help=shortcd {
-	if not InCombat() VengeancePrecombatShortCdActions()
+	unless InCombat() VengeancePrecombatShortCdActions()
 	VengeanceShortCdActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() VengeancePrecombatCdActions()
+	unless InCombat() VengeancePrecombatCdActions()
 	VengeanceCdActions()
 }
 
 AddIcon help=offensive size=small {
 	VengeanceOffensiveCdActions()
-	if not VengeanceInRange()
-	{
+	unless VengeanceInRange() {
 		Spell(infernal_strike)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}

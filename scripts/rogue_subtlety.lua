@@ -240,7 +240,7 @@ AddFunction SubtletyShortCdActions {
 		if SubtletyShadowDanceWindowCondition() Spell(shadow_dance)
 		Spell(symbols_of_death)
 	}
-	if not (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge)) {
+	unless (EquippedRuneforge(deathly_shadows_runeforge) or EquippedRuneforge(mark_of_the_master_assassin_runeforge)) {
 		if (SubtletyBuilderCondition() and target.DebuffRemaining(find_weakness) < 1) Spell(vanish)
 	}
 	if (SubtletyBuilderCondition() and not Spell(sepsis)) Spell(shadowmeld)
@@ -268,7 +268,7 @@ AddFunction SubtletySliceAndDiceActions {
 	if (Enemies(tagged=1) < 6) {
 		# Refresh early to avoid needing to refresh within a Shadow Dance window.
 		if (SubtletyShadowDanceWindowCondition() and SubtletySliceAndDiceNeedsEarlyRefresh()) {
-			if not Talent(premeditation_talent) Spell(slice_and_dice)
+			unless Talent(premeditation_talent) Spell(slice_and_dice)
 		}
 		if (not BuffPresent(shadow_dance_buff) and BuffRefreshable(slice_and_dice)) Spell(slice_and_dice)
 	}
@@ -327,7 +327,7 @@ AddFunction SubtletyBuilderActions {
 }
 
 AddFunction SubtletyMainActions {
-	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
+	unless BuffPresent(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
 	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold()) {
 		if SubtletyFinisherCondition() SubtletyPriorityFinisherActions()
@@ -336,7 +336,7 @@ AddFunction SubtletyMainActions {
 }
 
 AddFunction SubtletyAoEActions {
-	if not BuffPresent(slice_and_dice) Spell(slice_and_dice)
+	unless BuffPresent(slice_and_dice) Spell(slice_and_dice)
 	if target.DebuffExpires(rupture) Spell(rupture)
 	if (Stealthed() or Energy() > SubtletyEnergyPoolingThreshold()) {
 		if SubtletyFinisherCondition() SubtletyFinisherActions()
@@ -347,7 +347,7 @@ AddFunction SubtletyAoEActions {
 AddFunction SubtletyInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(kick) and focus.IsInterruptible() Spell(kick text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(cheap_shot) Spell(cheap_shot text=focus)
 			if focus.InRange(kidney_shot) Spell(kidney_shot text=focus)
 			if focus.InRange(blind) Spell(blind text=focus)
@@ -355,7 +355,7 @@ AddFunction SubtletyInterruptActions {
 	}
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(kick) and target.IsInterruptible() Spell(kick)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(cheap_shot) Spell(cheap_shot)
 			if target.InRange(kidney_shot) Spell(kidney_shot)
 			if target.InRange(blind) Spell(blind)
@@ -380,27 +380,27 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=shortcd {
-	if not InCombat() SubtletyPrecombatShortCdActions()
+	unless InCombat() SubtletyPrecombatShortCdActions()
 	if InCombat() SubtletyShortCdActions()
 }
 
 AddIcon help=main {
-	if not InCombat() SubtletyPrecombatMainActions()
+	unless InCombat() SubtletyPrecombatMainActions()
 	SubtletyMainActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() SubtletyPrecombatMainActions()
+	unless InCombat() SubtletyPrecombatMainActions()
 	SubtletyAoEActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() SubtletyPrecombatCdActions()
+	unless InCombat() SubtletyPrecombatCdActions()
 	if InCombat() SubtletyCdActions()
 }
 
 AddIcon help=trinkets size=small {
-	if not SubtletyInRange() {
+	unless SubtletyInRange() {
 		Spell(shadowstep)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
 	}

@@ -255,7 +255,7 @@ AddFunction ArmsInExecuteRange {
 }
 
 AddFunction ArmsSingleTargetActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		if (not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4) Spell(rend)
 		if (Charges(overpower count=0) >= 1.8) Spell(overpower)
 		if (BuffStacks(overpower) == 2) Spell(mortal_strike text=plus)
@@ -266,23 +266,23 @@ AddFunction ArmsSingleTargetActions {
 		if ArmsInExecuteRange() {
 			Spell(execute)
 		}
-		if not ArmsInExecuteRange() {
+		unless ArmsInExecuteRange() {
 			Spell(mortal_strike)
 			Spell(condemn)
-			if not HasTalent(fervor_of_battle_talent) Spell(slam)
 			if HasTalent(fervor_of_battle_talent) Spell(whirlwind)
+			unless HasTalent(fervor_of_battle_talent) Spell(slam)
 		}
 	}
 }
 
 AddFunction ArmsSingleTargetShortCdActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		unless (not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend)) {
-			if not EquippedRuneforge(signet_of_tormented_kings_runeforge) {
-				if (SpellCooldown(colossus_smash) < 8) Spell(avatar text=st)
-			}
 			if EquippedRuneforge(signet_of_tormented_kings_runeforge) {
 				if target.DebuffPresent(colossus_smash_debuff) Spell(avatar text=st)
+			}
+			unless EquippedRuneforge(signet_of_tormented_kings_runeforge) {
+				if (SpellCooldown(colossus_smash) < 8) Spell(avatar text=st)
 			}
 			if ArmsInExecuteRange() Spell(deadly_calm text=st)
 			if (
@@ -307,7 +307,7 @@ AddFunction ArmsSingleTargetShortCdActions {
 }
 
 AddFunction ArmsSingleTargetCdActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		Spell(conquerors_banner text=st)
 
 		unless (
@@ -334,7 +334,7 @@ AddFunction ArmsSingleTargetCdActions {
 }
 
 AddFunction ArmsMultiTargetActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		if (Enemies(tagged=1) < 4 and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4) Spell(rend)
 		if (Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD())) Spell(skullsplitter)
 		Spell(cleave)
@@ -351,18 +351,18 @@ AddFunction ArmsMultiTargetActions {
 }
 
 AddFunction ArmsMultiTargetShortCdActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		if (Talent(ravager_talent) or SpellCooldown(bladestorm) > BuffDuration(sweeping_strikes)) Spell(sweeping_strikes text=aoe)
 
 		unless (
 			(Enemies(tagged=1) < 4 and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4 and Spell(rend)) or
 			(Rage() < 60 and (Talent(ravager_talent) or SpellCooldown(bladestorm) > 2 * GCD()) and Spell(skullsplitter))
 		) {
-			if not EquippedRuneforge(signet_of_tormented_kings_runeforge) {
-				if (SpellCooldown(colossus_smash) < 8) Spell(avatar text=aoe)
-			}
 			if EquippedRuneforge(signet_of_tormented_kings_runeforge) {
 				if target.DebuffPresent(colossus_smash_debuff) Spell(avatar text=aoe)
+			}
+			unless EquippedRuneforge(signet_of_tormented_kings_runeforge) {
+				if (SpellCooldown(colossus_smash) < 8) Spell(avatar text=aoe)
 			}
 			if (
 				not (IsCovenant(kyrian) or IsCovenant(night_fae)) or
@@ -379,7 +379,7 @@ AddFunction ArmsMultiTargetShortCdActions {
 }
 
 AddFunction ArmsMultiTargetCdActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		Spell(conquerors_banner text=aoe)
 
 		unless (
@@ -389,7 +389,7 @@ AddFunction ArmsMultiTargetCdActions {
 			if target.DebuffPresent(colossus_smash_debuff) {
 				Spell(ancient_aftershock text=aoe)
 				Spell(spear_of_bastion text=aoe)
-				if not Talent(ravager_talent) Spell(bladestorm text=aoe)
+				unless Talent(ravager_talent) Spell(bladestorm text=aoe)
 			}
 		}
 	}
@@ -406,7 +406,7 @@ AddFunction ArmsPrecombatCdActions {
 }
 
 AddFunction ArmsBuffActions {
-	if not BuffPresent(battle_shout mine=0) Spell(battle_shout)
+	unless BuffPresent(battle_shout) Spell(battle_shout)
 }
 
 AddFunction ArmsDefensiveActions {
@@ -420,7 +420,7 @@ AddFunction ArmsInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(pummel) and focus.IsInterruptible() Spell(pummel text=focus)
 		if focus.IsTargetingPlayer() Spell(spell_reflection text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(storm_bolt) Spell(storm_bolt text=focus)
 			if (focus.Distance() < 8) Spell(intimidating_shout text=focus)
 		}
@@ -428,7 +428,7 @@ AddFunction ArmsInterruptActions {
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(pummel) and target.IsInterruptible() Spell(pummel)
 		if target.IsTargetingPlayer() Spell(spell_reflection)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(storm_bolt) Spell(storm_bolt)
 			if (target.Distance() < 8) Spell(intimidating_shout)
 		}
@@ -456,30 +456,30 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=shortcd {
-	if not InCombat() ArmsPrecombatShortCdActions()
+	unless InCombat() ArmsPrecombatShortCdActions()
 	if (Enemies(tagged=1) == 1) ArmsSingleTargetShortCdActions()
 	if (Enemies(tagged=1) > 1)  ArmsMultiTargetShortCdActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() ArmsPrecombatMainActions()
+	unless InCombat() ArmsPrecombatMainActions()
 	ArmsSingleTargetActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() ArmsPrecombatMainActions()
+	unless InCombat() ArmsPrecombatMainActions()
 	ArmsMultiTargetActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() ArmsPrecombatCdActions()
+	unless InCombat() ArmsPrecombatCdActions()
 	if (Enemies(tagged=1) == 1) ArmsSingleTargetCdActions()
 	if (Enemies(tagged=1) > 1)  ArmsMultiTargetCdActions()
 }
 
 AddIcon help=trinkets size=small {
-	if not InCombat() ArmsBuffActions()
-	if not ArmsInRange() {
+	unless InCombat() ArmsBuffActions()
+	unless ArmsInRange() {
 		if target.InRange(charge) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))

@@ -262,7 +262,7 @@ AddFunction ArcaneArcanePowerBurnActions {
 		if BuffPresent(clearcasting_buff) Spell(arcane_missiles)
 		Spell(arcane_blast)
 	}
-	if not (ArcaneShouldEnterArcanePowerBurn() or ArcaneWithinArcanePowerBurn()) {
+	unless (ArcaneShouldEnterArcanePowerBurn() or ArcaneWithinArcanePowerBurn()) {
 		# Enter Evocation burn immediately after exiting Arcane Power burn
 		# to utilize any buffs or cooldowns that may still be rolling.
 		if (SpellCooldown(arcane_power) > 60) {
@@ -301,12 +301,12 @@ AddFunction ArcaneWithinMiniBurn {
 }
 
 AddFunction ArcaneMiniBurnActions {
-	if not BuffPresent(arcane_power) {
+	unless BuffPresent(arcane_power) {
 		if (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 			if (ArcaneCharges() > 0 and SpellCooldown(touch_of_the_magi) < GCD()) Spell(arcane_barrage text=totm)
 			if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest)
 			Spell(touch_of_the_magi)
-			if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
+			unless BuffPresent(rune_of_power_buff) Spell(rune_of_power)
 			if (Talent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
 			if (
 				ArcaneCharges() == MaxArcaneCharges() or
@@ -322,7 +322,7 @@ AddFunction ArcaneMiniBurnActions {
 			if BuffPresent(clearcasting_buff) Spell(arcane_missiles)
 			Spell(arcane_blast)
 		}
-		if not (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
+		unless (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 			# Finish Evocation burn.
 			if (SpellCooldown(touch_of_the_magi) > 0) {
 				if ArcaneShouldEnterEvocationBurn() ArcaneEvocationBurnActions()
@@ -334,7 +334,7 @@ AddFunction ArcaneMiniBurnActions {
 AddFunction ArcaneConserveActions {
 	# Toegrinder recommends using Rune of Power unless you need to hold it
 	# for a mini burn, but we will always use it with the mini burn.
-	#if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
+	#unless BuffPresent(rune_of_power_buff) Spell(rune_of_power)
 	if (ArcaneCharges() <= 2) Spell(arcane_orb)
 	if BuffPresent(rule_of_threes_buff) Spell(arcane_blast text=free)
 	if BuffPresent(nether_precision_buff) Spell(arcane_blast text=np)
@@ -362,14 +362,14 @@ AddFunction ArcaneAoEActions {
 		if (ArcaneCharges() > 0 and SpellCooldown(touch_of_the_magi) < GCD()) Spell(arcane_barrage text=totm)
 		if (ArcaneCharges() == MaxArcaneCharges() or target.DebuffRemaining(nether_tempest) < 3) Spell(nether_tempest text=burn)
 		Spell(touch_of_the_magi text=burn)
-		if not BuffPresent(rune_of_power_buff) Spell(rune_of_power text=burn)
+		unless BuffPresent(rune_of_power_buff) Spell(rune_of_power text=burn)
 		if (Talent(arcane_echo_talent) and target.DebuffPresent(touch_of_the_magi_debuff)) Spell(arcane_missiles text=echo)
 		if (ArcaneCharges() <= 2) Spell(arcane_orb text=burn)
 		if (ArcaneCharges() == MaxArcaneCharges()) Spell(arcane_barrage text=burn)
 		if (BuffPresent(clearcasting_buff) and ManaPercent() < 95) Spell(arcane_missiles text=burn)
 		Spell(arcane_explosion text=burn)
 	}
-	if not (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
+	unless (ArcaneShouldEnterMiniBurn() or ArcaneWithinMiniBurn()) {
 		# AoE conserve phase
 		ArcaneAoEConserveActions()
 	}
@@ -381,11 +381,11 @@ AddFunction ArcanePrecombatActions {
 }
 
 AddFunction ArcaneBuffActions {
-	if not BuffPresent(arcane_intellect mine=0) Spell(arcane_intellect)
+	unless BuffPresent(arcane_intellect) Spell(arcane_intellect)
 }
 
 AddFunction ArcaneDefensiveActions {
-	if not BuffPresent(prismatic_barrier) Spell(prismatic_barrier)
+	unless BuffPresent(prismatic_barrier) Spell(prismatic_barrier)
 	ItemHealActions()
 	Spell(ice_block)
 	Spell(greater_invisibility)
@@ -394,7 +394,7 @@ AddFunction ArcaneDefensiveActions {
 AddFunction ArcaneInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(counterspell) and focus.IsInterruptible() Spell(counterspell text=focus)
-		if not focus.Classification(worldboss)
+		unless focus.Classification(worldboss)
 		{
 			if focus.InRange(polymorph) Spell(polymorph text=focus)
 			Spell(ring_of_frost text=focus)
@@ -402,7 +402,7 @@ AddFunction ArcaneInterruptActions {
 	}
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(counterspell) and target.IsInterruptible() Spell(counterspell)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(polymorph) Spell(polymorph)
 			Spell(ring_of_frost)
 		}
@@ -425,27 +425,27 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=mage_arcane_ap_burn {
-	if not InCombat() ArcanePrecombatActions()
+	unless InCombat() ArcanePrecombatActions()
 	ArcaneArcanePowerBurnActions()
 }
 
 AddIcon help=mage_arcane_mini_burn {
-	if not InCombat() ArcanePrecombatActions()
+	unless InCombat() ArcanePrecombatActions()
 	ArcaneMiniBurnActions()
 }
 
 AddIcon help=mage_arcane_conserve {
-	if not InCombat() ArcanePrecombatActions()
+	unless InCombat() ArcanePrecombatActions()
 	ArcaneConserveActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() ArcanePrecombatActions()
+	unless InCombat() ArcanePrecombatActions()
 	ArcaneAoEActions()
 }
 
 AddIcon help=trinkets size=small {
-	if not InCombat() ArcaneBuffActions()
+	unless InCombat() ArcaneBuffActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
 }

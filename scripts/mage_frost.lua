@@ -205,9 +205,9 @@ AddFunction FrostCanShatterIceLance {
 AddFunction FrostPrecombatShortCdActions { }
 
 AddFunction FrostShortCdActions {
-	if not pet.Present() Spell(summon_water_elemental)
+	unless pet.Present() Spell(summon_water_elemental)
 	if (Talent(freezing_rain_talent) or Enemies(tagged=1) > 2) Spell(frozen_orb)
-	if not BuffPresent(rune_of_power_buff) Spell(rune_of_power)
+	unless BuffPresent(rune_of_power_buff) Spell(rune_of_power)
 	unless BuffPresent(brain_freeze_buff) {
 		Spell(frozen_orb)
 	}
@@ -297,11 +297,11 @@ AddFunction FrostCdActions {
 }
 
 AddFunction FrostBuffActions {
-	if not BuffPresent(arcane_intellect mine=0) Spell(arcane_intellect)
+	unless BuffPresent(arcane_intellect) Spell(arcane_intellect)
 }
 
 AddFunction FrostDefensiveActions {
-	if not BuffPresent(ice_barrier) Spell(ice_barrier)
+	unless BuffPresent(ice_barrier) Spell(ice_barrier)
 	ItemHealActions()
 	Spell(ice_block)
 	Spell(invisibility)
@@ -310,14 +310,14 @@ AddFunction FrostDefensiveActions {
 AddFunction FrostInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(counterspell) and focus.IsInterruptible() Spell(counterspell text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(polymorph) Spell(polymorph text=focus)
 			Spell(ring_of_frost text=focus)
 		}
 	}
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(counterspell) and target.IsInterruptible() Spell(counterspell)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(polymorph) Spell(polymorph)
 			Spell(ring_of_frost)
 		}
@@ -340,27 +340,27 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=shortcd {
-	if not InCombat() FrostPrecombatShortCdActions()
+	unless InCombat() FrostPrecombatShortCdActions()
 	FrostShortCdActions()
 }
 
 AddIcon help=main {
-	if not InCombat() FrostPrecombatMainActions()
+	unless InCombat() FrostPrecombatMainActions()
 	FrostMainActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() FrostPrecombatAoEActions()
+	unless InCombat() FrostPrecombatAoEActions()
 	FrostAoEActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() FrostPrecombatCdActions()
+	unless InCombat() FrostPrecombatCdActions()
 	FrostCdActions()
 }
 
 AddIcon help=trinkets size=small {
-	if not InCombat() FrostBuffActions()
+	unless InCombat() FrostBuffActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
 }

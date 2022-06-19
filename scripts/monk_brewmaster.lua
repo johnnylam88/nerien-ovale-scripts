@@ -169,7 +169,7 @@ AddFunction BrewmasterKegSmashCost {
 	# Slowly scale up the perceived cost of Keg Smash so that when
 	# Weapons of Order is off cooldown, it will equal the cost of two
 	# Keg Smashes.
-	if not (IsCovenant(kyrian) and SpellKnown(weapons_of_order)) PowerCost(keg_smash)
+	unless (IsCovenant(kyrian) and SpellKnown(weapons_of_order)) PowerCost(keg_smash)
 	if     (IsCovenant(kyrian) and SpellKnown(weapons_of_order)) PowerCost(keg_smash) * (1 + (1 - SpellCooldown(weapons_of_order) / SpellCooldownDuration(weapons_of_order)))
 }
 
@@ -271,7 +271,7 @@ AddFunction BrewmasterActiveMitigationActions {
 
 AddFunction BrewmasterPrecombatMainActions {
 	# Ensure Shuffle is up when entering combat.
-	if not BuffPresent(shuffle) {
+	unless BuffPresent(shuffle) {
 		Spell(keg_smash text=open)
 		Spell(blackout_kick text=open)
 		Spell(spinning_crane_kick text=open)
@@ -295,7 +295,7 @@ AddFunction BrewmasterMainActions {
 	if (BuffPresent(blackout_combo_buff) and Enemies(tagged=1) < 3) {
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=combo)
 	}
-	if not EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
+	unless EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(breath_of_fire)
 	if EquippedRuneforge(charred_passions_runeforge) Spell(blackout_kick)
 	Spell(rushing_jade_wind)
@@ -303,7 +303,7 @@ AddFunction BrewmasterMainActions {
 	if BuffPresent(charred_passions_buff) {
 		if BrewmasterHasEnergyForSpinningCraneKick() Spell(spinning_crane_kick text=plus)
 	}
-	if not IsCovenant(night_fae) Spell(chi_burst)
+	unless IsCovenant(night_fae) Spell(chi_burst)
 	if (Talent(eye_of_the_tiger_talent) and BuffRefreshable(eye_of_the_tiger_buff)) {
 		if BrewmasterHasEnergyForTigerPalm() Spell(tiger_palm text=buff)
 	}
@@ -340,7 +340,7 @@ AddFunction BrewmasterOffensiveCdActions {
 }
 
 AddFunction BrewmasterDefensiveCdActions {
-	if not BuffPresent(brewmaster_defensive_buff) {
+	unless BuffPresent(brewmaster_defensive_buff) {
 		Spell(dampen_harm)
 		Spell(fortifying_brew)
 		if InCombat() Spell(fleshcraft)
@@ -355,14 +355,14 @@ AddFunction BrewmasterCdActions {
 AddFunction BrewmasterInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(spear_hand_strike) and focus.IsInterruptible() Spell(spear_hand_strike text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(paralysis) Spell(paralysis text=focus)
 			if (focus.Distance() < 6) Spell(leg_sweep text=focus)
 		}
 	}
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(spear_hand_strike) and target.IsInterruptible() Spell(spear_hand_strike)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(paralysis) Spell(paralysis)
 			if (target.Distance() < 6) Spell(leg_sweep)
 		}
@@ -398,27 +398,27 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=active_mitigation {
-	if not InCombat() BrewmasterPrecombatActiveMitigationActions()
+	unless InCombat() BrewmasterPrecombatActiveMitigationActions()
 	BrewmasterActiveMitigationActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() BrewmasterPrecombatMainActions()
+	unless InCombat() BrewmasterPrecombatMainActions()
 	BrewmasterSingleTargetActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() BrewmasterPrecombatMainActions()
+	unless InCombat() BrewmasterPrecombatMainActions()
 	BrewmasterAoEActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() BrewmasterPrecombatCdActions()
+	unless InCombat() BrewmasterPrecombatCdActions()
 	BrewmasterCdActions()
 }
 
 AddIcon help=offensive size=small {
-	if not BrewmasterInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
+	unless BrewmasterInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	BrewmasterOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)

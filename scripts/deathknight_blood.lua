@@ -223,14 +223,14 @@ AddFunction BloodCoreMainActions {
 	if (Enemies(tagged=1) == 1) {
 		if (RunicPowerDeficit() < 20) Spell(death_strike text=dmg)
 	}
-	if not BuffPresent(abomination_limb) {
+	unless BuffPresent(abomination_limb) {
 		if (IsCovenant(necrolord) and SpellCooldown(abomination_limb) < 3) {
 			if (BuffStacks(bone_shield) < 6) Spell(marrowrend)
 		}
-		if (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) < 60) {
-			if (BuffStacks(bone_shield) < 6) Spell(marrowrend)
+		if EquippedRuneforge(crimson_rune_weapon_runeforge) {
+			if (BuffStacks(bone_shield) < 6 and SpellCooldown(dancing_rune_weapon) < 60) Spell(marrowrend)
 		}
-		if not EquippedRuneforge(crimson_rune_weapon_runeforge) {
+		unless EquippedRuneforge(crimson_rune_weapon_runeforge) {
 			if (BuffStacks(bone_shield) < 8) Spell(marrowrend)
 		}
 	}
@@ -248,7 +248,7 @@ AddFunction BloodCoreMainActions {
 			if IsCovenant(night_fae) {
 				if BuffPresent(death_and_decay_buff) Spell(heart_strike)
 			}
-			if not IsCovenant(night_fae) {
+			unless IsCovenant(night_fae) {
 				Spell(heart_strike)
 			}
 		}
@@ -268,7 +268,7 @@ AddFunction BloodCoreShortCdActions {
 		if EquippedRuneforge(bryndaors_might_runeforge) {
 			if (RunicPowerDeficit() > 63) Spell(swarming_mist)
 		}
-		if not EquippedRuneforge(bryndaors_might_runeforge) {
+		unless EquippedRuneforge(bryndaors_might_runeforge) {
 			if (RunicPowerDeficit() > 57) Spell(swarming_mist)
 		}
 
@@ -335,7 +335,7 @@ AddFunction BloodDancingRuneWeaponMainActions {
 			if IsCovenant(night_fae) {
 				if BuffPresent(death_and_decay_buff) Spell(heart_strike)
 			}
-			if not IsCovenant(night_fae) {
+			unless IsCovenant(night_fae) {
 				Spell(heart_strike)
 			}
 		}
@@ -384,12 +384,12 @@ AddFunction BloodDancingRuneWeaponShortCdActions {
 }
 
 AddFunction BloodPrecombatMainActions {
-	if not BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
+	unless BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
 	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3) {
 		if EquippedRuneforge(crimson_rune_weapon_runeforge) {
 			if (SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend)
 		}
-		if not EquippedRuneforge(crimson_rune_weapon_runeforge) {
+		unless EquippedRuneforge(crimson_rune_weapon_runeforge) {
 			Spell(marrowrend)
 		}
 	}
@@ -399,7 +399,7 @@ AddFunction BloodPrecombatMainActions {
 AddFunction BloodMainActions {
 	BloodPriorityHealActions()
 	if BuffPresent(dancing_rune_weapon_buff) BloodDancingRuneWeaponMainActions()
-	if not BuffPresent(dancing_rune_weapon_buff) BloodCoreMainActions()
+	unless BuffPresent(dancing_rune_weapon_buff) BloodCoreMainActions()
 	# Fillers that don't consume Runes or Runic Power.
 	if (not target.DebuffPresent(mark_of_blood) and target.IsTargetingPlayer()) Spell(mark_of_blood)
 	Spell(consumption)
@@ -417,18 +417,18 @@ AddFunction BloodPrecombatCdActions {
 
 AddFunction BloodShortCdActions {
 	if BuffPresent(dancing_rune_weapon_buff) BloodDancingRuneWeaponShortCdActions()
-	if not BuffPresent(dancing_rune_weapon_buff) BloodCoreShortCdActions()
+	unless BuffPresent(dancing_rune_weapon_buff) BloodCoreShortCdActions()
 }
 
 AddFunction BloodOffensiveCdActions {
-	if not InCombat() {
+	unless InCombat() {
 		Spell(abomination_limb)
-		if not BuffPresent(dancing_rune_weapon) Spell(dancing_rune_weapon)
+		unless BuffPresent(dancing_rune_weapon) Spell(dancing_rune_weapon)
 		Spell(raise_dead)
 		# Sacrifice ghoul if 15 seconds left.
 		if (TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
 	}
-	if not BuffPresent(dancing_rune_weapon_buff) {
+	unless BuffPresent(dancing_rune_weapon_buff) {
 		Spell(abomination_limb)
 		if (not Talent(blooddrinker_talent) or SpellCooldown(blooddrinker) > 0) Spell(dancing_rune_weapon)
 		Spell(swarming_mist)
@@ -444,20 +444,20 @@ AddFunction BloodCdActions {
 			if (BuffStacks(bone_shield) < 3) Spell(abomination_limb)
 			if (BuffRemaining(dancing_rune_weapon_buff) < 5) Spell(abomination_limb)
 		}
-		if not BuffPresent(dancing_rune_weapon_buff) {
+		unless BuffPresent(dancing_rune_weapon_buff) {
 			if (BuffStacks(bone_shield) < 6) Spell(abomination_limb)
 		}
 	}
 	if (not IsCovenant(necrolord) or SpellCooldown(abomination_limb) > 0) {
 		if (not EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffStacks(bone_shield) >= 6) Spell(tombstone)
 		unless (not EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffStacks(bone_shield) >= 6 and not SpellCooldown(tombstone) > 0) {
-			if not BuffPresent(blood_defensive_buff) {
+			unless BuffPresent(blood_defensive_buff) {
 				Spell(icebound_fortitude)
 				if InCombat() Spell(fleshcraft)
 				if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0) {
 					# Suggest Rune Tap if Heart Strike won't grant enough Runic Power for a DS heal.
 					if (RunicPower() + BloodHeartStrikeRunicPower() < RunicPowerCost(death_strike)) {
-						if not BuffPresent(rune_tap) Spell(rune_tap)
+						unless BuffPresent(rune_tap) Spell(rune_tap)
 					}
 					if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_zone)
 				}
@@ -469,7 +469,7 @@ AddFunction BloodCdActions {
 AddFunction BloodInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if (focus.InRange(mind_freeze) and focus.IsInterruptible()) Spell(mind_freeze text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(asphyxiate) Spell(asphyxiate text=focus)
 			if focus.InRange(death_grip) Spell(death_grip text=focus)
 			if (focus.Distance() < 15) Spell(gorefiends_grasp text=focus)
@@ -477,7 +477,7 @@ AddFunction BloodInterruptActions {
 	}
 	if (not target.IsFriend() and target.Casting()) {
 		if (target.InRange(mind_freeze) and target.IsInterruptible()) Spell(mind_freeze)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(asphyxiate) Spell(asphyxiate)
 			if target.InRange(death_grip) Spell(death_grip)
 			if (target.Distance() < 15) Spell(gorefiends_grasp)
@@ -495,7 +495,7 @@ AddFunction BloodHealActions {
 	if Talent(red_thirst_talent) {
 		if (HealthPercent() < 90) Spell(vampiric_blood)
 	}
-	if not Talent(red_thirst_talent) {
+	unless Talent(red_thirst_talent) {
 		if (HealthPercent() < 70) Spell(vampiric_blood)
 	}
 	if (IncomingMagicDamage(1.5) > 0) Spell(antimagic_shell)
@@ -511,22 +511,22 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=shortcd {
-	if not InCombat() BloodPrecombatShortCdActions()
+	unless InCombat() BloodPrecombatShortCdActions()
 	BloodShortCdActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() BloodPrecombatMainActions()
+	unless InCombat() BloodPrecombatMainActions()
 	BloodMainActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() BloodPrecombatMainActions()
+	unless InCombat() BloodPrecombatMainActions()
 	BloodMainActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() BloodPrecombatCdActions()
+	unless InCombat() BloodPrecombatCdActions()
 	BloodCdActions()
 }
 
@@ -534,7 +534,7 @@ AddIcon help=offensive size=small {
 	BloodOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
-	if not BloodInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
+	unless BloodInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 }
 ]]
 	Private.scripts:registerScript("DEATHKNIGHT", "blood", name, desc, code, "script")

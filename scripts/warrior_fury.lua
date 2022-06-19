@@ -267,8 +267,8 @@ AddFunction FurySingleTargetShortCdActions {
 }
 
 AddFunction FuryMultiTargetActions {
-	if not BuffPresent(bladestorm) {
-		if not BuffPresent(whirlwind_buff) Spell(whirlwind text=cleave)
+	unless BuffPresent(bladestorm) {
+		unless BuffPresent(whirlwind_buff) Spell(whirlwind text=cleave)
 		if (not IsEnraged() or Rage() > 90) Spell(rampage)
 		if (not IsEnraged() or (BuffPresent(enraged_regeneration) and HealthPercent() < 50)) Spell(bloodthirst)
 		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 6) {
@@ -292,7 +292,7 @@ AddFunction FuryMultiTargetActions {
 }
 
 AddFunction FuryMultiTargetShortCdActions {
-	if not BuffPresent(bladestorm) {
+	unless BuffPresent(bladestorm) {
 		unless ((not IsEnraged() or Rage() > 90) and Spell(rampage)) {
 			if BuffPresent(recklessness) Spell(ancient_aftershock text=aoe)
 			if IsEnraged() {
@@ -323,11 +323,11 @@ AddFunction FuryPrecombatMainActions {
 
 AddFunction FuryPrecombatCdActions {
 	PrecombatCdActions()
-	if not EquippedRuneforge(signet_of_tormented_kings_runeforge) Spell(recklessness)
+	unless EquippedRuneforge(signet_of_tormented_kings_runeforge) Spell(recklessness)
 }
 
 AddFunction FuryBuffActions {
-	if not BuffPresent(battle_shout mine=0) Spell(battle_shout)
+	unless BuffPresent(battle_shout mine=0) Spell(battle_shout)
 }
 
 AddFunction FuryDefensiveActions {
@@ -341,7 +341,7 @@ AddFunction FuryInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(pummel) and focus.IsInterruptible() Spell(pummel text=focus)
 		if focus.IsTargetingPlayer() Spell(spell_reflection text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(storm_bolt) Spell(storm_bolt text=focus)
 			if (focus.Distance() < 8) Spell(intimidating_shout text=focus)
 		}
@@ -349,7 +349,7 @@ AddFunction FuryInterruptActions {
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(pummel) and target.IsInterruptible() Spell(pummel)
 		if target.IsTargetingPlayer() Spell(spell_reflection)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(storm_bolt) Spell(storm_bolt)
 			if (target.Distance() < 8) Spell(intimidating_shout)
 		}
@@ -377,29 +377,29 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=shortcd {
-	if not InCombat() FuryPrecombatShortCdActions()
+	unless InCombat() FuryPrecombatShortCdActions()
 	if (Enemies(tagged=1) == 1) FurySingleTargetShortCdActions()
 	if (Enemies(tagged=1) > 1)  FuryMultiTargetShortCdActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() FuryPrecombatMainActions()
+	unless InCombat() FuryPrecombatMainActions()
 	FurySingleTargetActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() FuryPrecombatMainActions()
+	unless InCombat() FuryPrecombatMainActions()
 	FuryMultiTargetActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() FuryPrecombatCdActions()
+	unless InCombat() FuryPrecombatCdActions()
 	FuryCdActions()
 }
 
 AddIcon help=trinkets size=small {
-	if not InCombat() FuryBuffActions()
-	if not FuryInRange() {
+	unless InCombat() FuryBuffActions()
+	unless FuryInRange() {
 		if target.InRange(charge) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))

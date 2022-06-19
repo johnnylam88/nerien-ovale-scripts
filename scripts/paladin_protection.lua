@@ -223,7 +223,7 @@ AddFunction ProtectionUseJudgment {
 
 AddFunction ProtectionPrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
-	if not BuffPresent(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
+	unless BuffPresent(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
 }
 
 AddFunction ProtectionActiveMitigationActions {
@@ -271,13 +271,15 @@ AddFunction ProtectionPrecombatCdActions {
 }
 
 AddFunction ProtectionOffensiveCdActions {
-	if not BuffPresent(avenging_wrath) {
-		if not Talent(seraphim_talent) Spell(avenging_wrath)
+	unless BuffPresent(avenging_wrath) {
 		if Talent(seraphim_talent) {
 			# Synchronize Avenging Wrath with Seraphim.
 			if BuffPresent(seraphim) Spell(avenging_wrath)
 			if (not SpellCooldown(seraphim) > 0) Spell(avenging_wrath)
 			if (SpellCooldown(seraphim) > 30) Spell(avenging_wrath)
+		}
+		unless Talent(seraphim_talent) {
+			Spell(avenging_wrath)
 		}
 	}
 	Spell(holy_avenger)
@@ -291,7 +293,7 @@ AddFunction ProtectionOffensiveCdActions {
 }
 
 AddFunction ProtectionDefensiveCdActions {
-	if not BuffPresent(protection_defensive_buff) {
+	unless BuffPresent(protection_defensive_buff) {
 		Spell(ardent_defender)
 		Spell(guardian_of_ancient_kings)
 		if InCombat() Spell(fleshcraft)
@@ -314,7 +316,7 @@ AddFunction ProtectionInterruptActions {
 			if focus.InRange(avengers_shield) Spell(avengers_shield text=focus)
 			if focus.InRange(divine_toll) Spell(divine_toll text=focus)
 		}
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(hammer_of_justice) Spell(hammer_of_justice text=focus)
 			if (focus.Distance() < 10) Spell(blinding_light text=focus)
 		}
@@ -325,7 +327,7 @@ AddFunction ProtectionInterruptActions {
 			if target.InRange(avengers_shield) Spell(avengers_shield)
 			if target.InRange(divine_toll) Spell(divine_toll)
 		}
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(hammer_of_justice) Spell(hammer_of_justice)
 			if (target.Distance() < 10) Spell(blinding_light)
 		}
@@ -356,27 +358,27 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=active_mitigation {
-	if not InCombat() ProtectionPrecombatActiveMitigationActions()
+	unless InCombat() ProtectionPrecombatActiveMitigationActions()
 	ProtectionActiveMitigationActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() ProtectionPrecombatMainActions()
+	unless InCombat() ProtectionPrecombatMainActions()
 	ProtectionMainActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() ProtectionPrecombatAoEActions()
+	unless InCombat() ProtectionPrecombatAoEActions()
 	ProtectionMainActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() ProtectionPrecombatCdActions()
+	unless InCombat() ProtectionPrecombatCdActions()
 	ProtectionCdActions()
 }
 
 AddIcon help=trinkets size=small {
-	if not ProtectionInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
+	unless ProtectionInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	ProtectionOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)

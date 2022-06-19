@@ -262,7 +262,7 @@ AddFunction ProtectionNeverSurrenderCoefficient {
 	# Never Surrender makes Ignore Pain prevent 40% to 100% more damage,
 	# based on missing health.
 	if Talent(never_surrender_talent)     (1.4 + 0.6 * (1 - HealthPercent() / 100))
-	if not Talent(never_surrender_talent) (1)
+	unless Talent(never_surrender_talent) (1)
 }
 
 AddFunction ProtectionIgnorePainCurrentAbsorb {
@@ -361,7 +361,7 @@ AddFunction ProtectionReprisalActions {
 
 AddFunction ProtectionRavagerActions {
 	# Apply Deep Wounds to targets in melee range.
-	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+	unless target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
 	# Use Condemn to extend Avatar with Sinful Surge.
 	if (EquippedRuneforge(sinful_surge_runeforge) and BuffPresent(avatar)) {
 		if (Enemies(tagged=1) < 3) Spell(condemn text=plus)
@@ -373,7 +373,7 @@ AddFunction ProtectionRavagerActions {
 AddFunction ProtectionRevengeActions {
 	# Use Revenge when it's free.
 	if BuffPresent(revenge_buff) Spell(revenge text=free)
-	if not ProtectionWontOverwriteIgnorePain() {
+	unless ProtectionWontOverwriteIgnorePain() {
 		# Use Execute to dump Rage.
 		if (Enemies(tagged=1) == 1 and ProtectionHasRageForExecute()) Spell(execute text=dump)
 		# Use Revenge to dump Rage outside of Execute phase.
@@ -468,7 +468,7 @@ AddFunction ProtectionAoEActions {
 	# Use Dragon Roar on cooldown.
 	Spell(dragon_roar)
 	# Apply Deep Wounds to targets in melee range.
-	if not target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
+	unless target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
 	# Don't overcap on Rage.
 	if ProtectionRageWillOverCap() Spell(revenge text=cap)
 	if Talent(anger_management_talent) {
@@ -477,7 +477,7 @@ AddFunction ProtectionAoEActions {
 		Spell(shield_slam)
 		Spell(thunder_clap)
 	}
-	if not Talent(anger_management_talent) {
+	unless Talent(anger_management_talent) {
 		# Without Anger Management, the AoE priority is SS > Revenge > TC.
 		Spell(shield_slam)
 		ProtectionRevengeActions()
@@ -510,7 +510,7 @@ AddFunction ProtectionMaxDamageActions {
 }
 
 AddFunction ProtectionDefensiveCdActions {
-	if not BuffPresent(protection_defensive_buff) {
+	unless BuffPresent(protection_defensive_buff) {
 		if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
 		if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
 		if InCombat() Spell(fleshcraft)
@@ -522,14 +522,14 @@ AddFunction ProtectionCdActions {
 }
 
 AddFunction ProtectionBuffActions {
-	if not BuffPresent(battle_shout mine=0) Spell(battle_shout)
+	unless BuffPresent(battle_shout) Spell(battle_shout)
 }
 
 AddFunction ProtectionInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(pummel) and focus.IsInterruptible() Spell(pummel text=focus)
 		if focus.IsTargetingPlayer() Spell(spell_reflection text=focus)
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(storm_bolt) Spell(storm_bolt text=focus)
 			if (focus.Distance() < 10) Spell(shockwave text=focus)
 			if (focus.Distance() < 8) Spell(intimidating_shout text=focus)
@@ -538,7 +538,7 @@ AddFunction ProtectionInterruptActions {
 	if (not target.IsFriend() and target.Casting()) {
 		if target.InRange(pummel) and target.IsInterruptible() Spell(pummel)
 		if target.IsTargetingPlayer() Spell(spell_reflection)
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(storm_bolt) Spell(storm_bolt)
 			if (target.Distance() < 10) Spell(shockwave)
 			if (target.Distance() < 8) Spell(intimidating_shout)
@@ -554,8 +554,8 @@ AddFunction ProtectionDispelActions {
 
 AddFunction ProtectionHealActions {
 	if (HealthPercent() < 50) {
-		if (not BuffPresent(last_stand) and not BuffPresent(rallying_cry)) {
-			if not Talent(bolster_talent) Spell(last_stand)
+		unless (BuffPresent(last_stand) or BuffPresent(rallying_cry)) {
+			unless Talent(bolster_talent) Spell(last_stand)
 			Spell(rallying_cry)
 		}
 	}
@@ -573,32 +573,32 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=active_mitigation {
-	if not InCombat() ProtectionPrecombatActiveMitigationActions()
+	unless InCombat() ProtectionPrecombatActiveMitigationActions()
 	ProtectionActiveMitigationActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() ProtectionPrecombatMainActions()
+	unless InCombat() ProtectionPrecombatMainActions()
 	ProtectionMainActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() ProtectionPrecombatAoEActions()
+	unless InCombat() ProtectionPrecombatAoEActions()
 	ProtectionAoEActions()
 }
 
 AddIcon help=cd {
-	if not InCombat() ProtectionPrecombatCdActions()
+	unless InCombat() ProtectionPrecombatCdActions()
 	ProtectionCdActions()
 }
 
 AddIcon help=offensive size=small {
-	if not InCombat() ProtectionBuffActions()
+	unless InCombat() ProtectionBuffActions()
 	ProtectionOffensiveCdActions()
 	ProtectionMaxDamageActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
-	if not ProtectionInRange() {
+	unless ProtectionInRange() {
 		if (not EquippedRuneforge(reprisal_runeforge) and target.InRange(charge)) Spell(charge)
 		if (8 <= target.Distance() and target.Distance() <= 40) Spell(heroic_leap)
 		Texture(misc_arrowlup help=L(not_in_melee_range))

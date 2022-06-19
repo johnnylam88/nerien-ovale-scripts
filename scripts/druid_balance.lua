@@ -266,7 +266,7 @@ AddFunction BalanceCelestialAlignmentPresent {
 
 AddFunction BalanceCelestialAlignmentRemaining {
 	if Talent(incarnation_chosen_of_elune_talent) BuffRemaining(incarnation_chosen_of_elune)
-	if not Talent(incarnation_chosen_of_elune_talent) BuffRemaining(celestial_alignment)
+	unless Talent(incarnation_chosen_of_elune_talent) BuffRemaining(celestial_alignment)
 }
 
 AddFunction BalanceEclipseRemaining {
@@ -290,7 +290,7 @@ AddFunction BalanceIsInEclipse {
 AddFunction BalanceTimeToNextEclipse {
 	if BuffPresent(eclipse_lunar_buff) { BuffRemaining(eclipse_lunar_buff) + 2 * CastTime(starfire) }
 	if BuffPresent(eclipse_solar_buff) { BuffRemaining(eclipse_solar_buff) + 2 * CastTime(wrath) }
-	if not BalanceIsInEclipse() {
+	unless BalanceIsInEclipse() {
 		if (EclipseAnyNext() or EclipseLunarNext()) { EclipseLunarIn() * CastTime(wrath) }
 		if (EclipseSolarNext()) { EclipseSolarIn() * CastTime(starfire) }
 	}
@@ -327,11 +327,11 @@ AddFunction BalanceFillerActions {
 }
 
 AddFunction BalanceMaintainDoTActions {
-	if not target.DebuffPresent(sunfire_debuff) Spell(sunfire)
+	unless target.DebuffPresent(sunfire_debuff) Spell(sunfire)
 	if target.DebuffRefreshable(sunfire_debuff) Spell(sunfire text=refresh)
-	if not target.DebuffPresent(moonfire_debuff) Spell(moonfire)
+	unless target.DebuffPresent(moonfire_debuff) Spell(moonfire)
 	if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire text=refresh)
-	if not target.DebuffPresent(stellar_flare) Spell(stellar_flare)
+	unless target.DebuffPresent(stellar_flare) Spell(stellar_flare)
 	if target.DebuffRefreshable(stellar_flare) Spell(stellar_flare text=refresh)
 	if (BalanceEclipseRemaining() < 6) {
 		if (target.DebuffRemaining(sunfire_debuff) < BalanceTimeToNextEclipse()) Spell(sunfire text=early)
@@ -361,11 +361,11 @@ AddFunction BalanceMainActions {
 			if EquippedRuneforge(sinful_hysteria_runeforge) {
 				if (BuffRemaining(ravenous_frenzy) < 1) Spell(starsurge text=burn)
 			}
-			if not EquippedRuneforge(sinful_hysteria_runeforge) {
+			unless EquippedRuneforge(sinful_hysteria_runeforge) {
 				if (BuffRemaining(ravenous_frenzy) < 1 + BuffDuration(sinful_hysteria_buff)) Spell(starsurge text=burn)
 			}
 		}
-		if not BuffPresent(ravenous_frenzy) {
+		unless BuffPresent(ravenous_frenzy) {
 			BalanceMaintainDoTActions()
 			if (IsCovenant(night_fae) and BalanceCelestialAlignmentPresent()) {
 				if (Spell(convoke_the_spirits) and AstralPowerDeficit() < 50) Spell(starsurge text=dump)
@@ -387,7 +387,7 @@ AddFunction BalancePrecombatAoEActions { }
 
 AddFunction BalanceAoEActions {
 	if (not target.DebuffPresent(sunfire_debuff) or target.DebuffRefreshable(sunfire_debuff)) Spell(sunfire)
-	if not BuffPresent(starfall) or BuffRefreshable(starfall) Spell(starfall)
+	if (not BuffPresent(starfall) or BuffRefreshable(starfall)) Spell(starfall)
 	if BalanceIsInEclipse() {
 		if (AstralPower() >= AstralPowerCost(starfall) + AstralPowerCost(starsurge)) Spell(starsurge)
 		if BuffPresent(eclipse_solar_buff) and not BuffPresent(eclipse_lunar_buff) {
@@ -410,7 +410,7 @@ AddFunction BalanceCdActions {
 			}
 			if BuffPresent(ravenous_frenzy) Spell(celestial_alignment)
 		}
-		if not IsCovenant(venthyr) {
+		unless IsCovenant(venthyr) {
 			Spell(celestial_alignment)
 			if (AstralPowerDeficit() > 50) Spell(convoke_the_spirits)
 		}
@@ -418,9 +418,9 @@ AddFunction BalanceCdActions {
 }
 
 AddFunction BalanceDefensiveActions {
-	if not BuffPresent(barkskin) Spell(barkskin)
+	unless BuffPresent(barkskin) Spell(barkskin)
 	ItemHealActions()
-	if not Stance(druid_bear_form) Spell(bear_form)
+	unless Stance(druid_bear_form) Spell(bear_form)
 	Spell(frenzied_regeneration)
 }
 
@@ -429,7 +429,7 @@ AddFunction BalanceInterruptActions {
 		if focus.IsInterruptible() {
 			if focus.InRange(solar_beam) Spell(solar_beam text=focus)
 		}
-		if not focus.Classification(worldboss) {
+		unless focus.Classification(worldboss) {
 			if focus.InRange(maim) Spell(maim text=focus)
 			if (focus.Distance() < 10) Spell(incapacitating_roar text=focus)
 			if (focus.Distance() < 15) Spell(typhoon text=focus)
@@ -440,7 +440,7 @@ AddFunction BalanceInterruptActions {
 		if target.IsInterruptible() {
 			if target.InRange(solar_beam) Spell(solar_beam)
 		}
-		if not target.Classification(worldboss) {
+		unless target.Classification(worldboss) {
 			if target.InRange(maim) Spell(maim)
 			if (target.Distance() < 10) Spell(incapacitating_roar)
 			if (target.Distance() < 15) Spell(typhoon)
@@ -465,23 +465,23 @@ AddIcon help=interrupt size=small {
 }
 
 AddIcon help=shortcd {
-	if not InCombat() BalancePrecombatShortCdActions()
+	unless InCombat() BalancePrecombatShortCdActions()
 	BalanceShortCdActions()
 }
 
 AddIcon enemies=1 help=main {
-	if not InCombat() BalancePrecombatMainActions()
+	unless InCombat() BalancePrecombatMainActions()
 	BalanceMainActions()
 }
 
 AddIcon help=aoe {
-	if not InCombat() BalancePrecombatAoEActions()
+	unless InCombat() BalancePrecombatAoEActions()
 	BalanceAoEActions()
 }
 
 AddIcon help=cd {
-	if not Stance(druid_moonkin_form) Spell(moonkin_form)
-	if not InCombat() BalancePrecombatCdActions()
+	unless Stance(druid_moonkin_form) Spell(moonkin_form)
+	unless InCombat() BalancePrecombatCdActions()
 	BalanceCdActions()
 }
 

@@ -300,9 +300,6 @@ AddFunction AssassinationExsanguinateActions {
 
 AddFunction AssassinationSingleTargetGarroteActions {
 	if (ComboPointsDeficit() > 0) {
-		unless target.DebuffPresent(garrote) {
-			Spell(garrote text=new)
-		}
 		if target.DebuffPresent(garrote) {
 			if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) {
 				Spell(garrote text=plus)
@@ -311,15 +308,15 @@ AddFunction AssassinationSingleTargetGarroteActions {
 				if target.DebuffRefreshable(garrote) Spell(garrote)
 			}
 		}
+		unless target.DebuffPresent(garrote) {
+			Spell(garrote text=new)
+		}
 	}
 }
 
 AddFunction AssassinationSingleTargetRuptureActions {
 	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
 		if (BaseDuration(rupture) >= target.TimeToDie()) {
-			unless target.DebuffPresent(rupture) {
-				Spell(rupture text=new)
-			}
 			if target.DebuffPresent(rupture) {
 				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					Spell(rupture text=plus)
@@ -328,17 +325,20 @@ AddFunction AssassinationSingleTargetRuptureActions {
 					if target.DebuffRefreshable(rupture) Spell(rupture)
 				}
 			}
+			unless target.DebuffPresent(rupture) {
+				Spell(rupture text=new)
+			}
 		}
 	}
 }
 
 AddFunction AssassinationSingleTargetSerratedBoneSpikeActions {
 	if IsCovenant(necrolord) {
-		unless target.DebuffPresent(serrated_bone_spike_debuff) {
-			if (ComboPointsDeficit() > 0) Spell(serrated_bone_spike)
-		}
 		if target.DebuffPresent(serrated_bone_spike_debuff) {
 			if (ComboPointsDeficit() > 1) Spell(serrated_bone_spike)
+		}
+		unless target.DebuffPresent(serrated_bone_spike_debuff) {
+			if (ComboPointsDeficit() > 0) Spell(serrated_bone_spike)
 		}
 	}
 }
@@ -382,9 +382,6 @@ AddFunction AssassinationSingleTargetShortCdActions {
 		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis)) {
 			if Talent(subterfuge_talent) {
 				# Use Vanish on cooldown with Subterfuge to apply Empowered Garrote.
-				unless target.DebuffPresent(garrote) {
-					Spell(vanish text=st)
-				}
 				if target.DebuffPresent(garrote) {
 					if (target.DebuffPersistentMultiplier(garrote) < 1.8) {
 						Spell(vanish text=st)
@@ -392,6 +389,9 @@ AddFunction AssassinationSingleTargetShortCdActions {
 					unless (target.DebuffPersistentMultiplier(garrote) < 1.8) {
 						if target.DebuffRefreshable(garrote) Spell(vanish text=st)
 					}
+				}
+				unless target.DebuffPresent(garrote) {
+					Spell(vanish text=st)
 				}
 			}
 			if Talent(nightstalker_talent) or Talent(master_assassin_talent) {
@@ -416,9 +416,6 @@ AddFunction AssassinationSingleTargetCdActions {
 
 AddFunction AssassinationCrimsonTempestActions {
 	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
-		unless target.DebuffPresent(crimson_tempest) {
-			Spell(crimson_tempest text=new)
-		}
 		if target.DebuffPresent(crimson_tempest) {
 			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
 				Spell(crimson_tempest text=plus)
@@ -428,6 +425,9 @@ AddFunction AssassinationCrimsonTempestActions {
 				# be spent instead on maintaining Slice and Dice and Rupture.
 				if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
 			}
+		}
+		unless target.DebuffPresent(crimson_tempest) {
+			Spell(crimson_tempest text=new)
 		}
 	}
 }
