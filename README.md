@@ -26,14 +26,14 @@ Open up the **Ovale** code window and select the script you would like to use fo
 
 The following classes and specializations are supported for Shadowlands:
 
-- Death Knight: Blood (9.2)
-- Demon Hunter: Vengeance (9.2)
-- Druid: Balance, Guardian
-- Mage: Arcane, Frost
-- Monk: Brewmaster (9.2)
-- Paladin: Protection
-- Rogue: Assassination (9.2)
-- Warrior: Arms (9.2), Fury (9.2), Protection (9.2)
+- Death Knight: Blood
+- Demon Hunter: Vengeance
+- Druid: *Balance (9.1)*, *Guardian (9.1)*
+- Mage: *Arcane (9.1)*, *Frost (9.1)*
+- Monk: Brewmaster
+- Paladin: *Protection (9.1)*
+- Rogue: Assassination
+- Warrior: Arms, Fury, Protection
 
 ### Links ###
 
