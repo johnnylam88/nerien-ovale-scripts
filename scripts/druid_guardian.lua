@@ -244,10 +244,14 @@ Define(ravenous_frenzy 323546)
 	SpellAddBuff(ravenous_frenzy ravenous_frenzy add=1)
 
 # Runeforge Legendary Effects
+Define(celestial_spirits_runeforge 7571)
+	SpellRequire(convoke_the_spirits cd add=-60 enabled=(IsCovenant(night_fae) and (EquippedRuneforge(celestial_spirits_runeforge) or EquippedRuneforge(unity_runeforge))))
+	SpellRequire(convoke_the_spirits duration add=-1 enabled=(IsCovenant(night_fae) and (EquippedRuneforge(celestial_spirits_runeforge) or EquippedRuneforge(unity_runeforge))))
 Define(legacy_of_the_sleeper_runeforge 7095)
 	SpellRequire(barkskin duration add=-30 enabled=(EquippedRuneforge(legacy_of_the_sleeper_runeforge)))
 Define(luffainfused_embrace_runeforge 7092)
 	SpellRequire(thrash_bear_debuff max_stacks add=1 enabled=(EquippedRuneforge(luffainfused_embrace_runeforge)))
+Define(unity_runeforge 8121)
 Define(ursols_fury_remembered_runeforge 7094)
 
 ### Functions ###
