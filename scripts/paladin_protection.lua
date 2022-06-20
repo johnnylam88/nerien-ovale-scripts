@@ -210,7 +210,8 @@ Define(vanquishers_hammer 328204)
 
 # Runeforge Legendary Effects
 Define(radiant_embers_runeforge 7701)
-	SpellRequire(ashen_hallow duration add=15 enabled=(IsCovenant(venthyr) and (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge))))
+	SpellRequire(ashen_hallow duration add=15
+		enabled=(IsCovenant(venthyr) and (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))))
 Define(the_mad_paragon_runeforge 7054)
 Define(the_magistrates_judgment_runeforge 7056)
 Define(the_magistrates_judgment 337682)
@@ -221,6 +222,7 @@ Define(the_magistrates_judgment 337682)
 	SpellAddBuff(seraphim the_magistrates_judgment set=0 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge)))
 	SpellAddBuff(shield_of_the_righteous the_magistrates_judgment set=0 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge)))
 	SpellAddBuff(word_of_glory the_magistrates_judgment set=0 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge)))
+Define(unity_belt 190474)
 Define(unity_runeforge 8125)
 
 ### Functions ###
@@ -267,14 +269,14 @@ AddFunction ProtectionHolyPowerWillOverCap {
 }
 
 AddFunction ProtectionAshenHallowPresent {
-	# There is no way to detect standing in Ashen Hallow.
+	# There is no way to detect if the player is standing in Ashen Hallow.
 	# Fake this by checking if the player has recently cast Ashen Hallow,
 	# and assume the player is standing in the ground effect.
 	if IsCovenant(venthyr) {
-		if (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge)) {
+		if (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt)) {
 			TimeSincePreviousSpell(ashen_hallow) < 45
 		}
-		unless (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge)) {
+		unless (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt)) {
 			TimeSincePreviousSpell(ashen_hallow) < 30
 		}
 	}

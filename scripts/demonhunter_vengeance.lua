@@ -142,9 +142,11 @@ Define(the_hunt 323639)
 Define(blind_faith_runeforge 7699)
 Define(blind_faith_buff 355894)
 	SpellInfo(blind_faith_buff duration=20)
-	SpellAddBuff(elysian_decree blind_faith_buff add=1 enabled=(IsCovenant(kyrian) and (EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge))))
+	SpellAddBuff(elysian_decree blind_faith_buff add=1
+		enabled=(IsCovenant(kyrian) and (EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))))
 Define(fiery_soul_runeforge 7048)
 Define(razelikhs_defilement_runeforge 7046)
+Define(unity_belt 190470)
 Define(unity_runeforge 8120)
 
 ### Functions ###
@@ -195,7 +197,7 @@ AddFunction VengeanceShearSoulFragments {
 }
 
 AddFunction VengeanceEquippedBlindFaithRuneforge {
-	EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge)
+	EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt)
 }
 
 AddFunction VengeancePrecombatActiveMitigationActions {

@@ -250,11 +250,14 @@ Define(balance_of_all_things_runeforge 7107)
 Define(balance_of_all_things_buff 339943)
 	SpellInfo(balance_of_all_things_buff duration=8)
 Define(celestial_spirits_runeforge 7571)
-	SpellRequire(convoke_the_spirits cd add=-60 enabled=(IsCovenant(night_fae) and (EquippedRuneforge(celestial_spirits_runeforge) or EquippedRuneforge(unity_runeforge))))
-	SpellRequire(convoke_the_spirits duration add=-1 enabled=(IsCovenant(night_fae) and (EquippedRuneforge(celestial_spirits_runeforge) or EquippedRuneforge(unity_runeforge))))
+	SpellRequire(convoke_the_spirits cd add=-60
+		enabled=(IsCovenant(night_fae) and (EquippedRuneforge(celestial_spirits_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))))
+	SpellRequire(convoke_the_spirits duration add=-1
+		enabled=(IsCovenant(night_fae) and (EquippedRuneforge(celestial_spirits_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))))
 Define(sinful_hysteria_runeforge 7474)
 Define(sinful_hysteria_buff 355315)
 	SpellInfo(sinful_hysteria_buff duration=3)
+Define(unity_belt 190465)
 Define(unity_runeforge 8121)
 
 ### Functions ###

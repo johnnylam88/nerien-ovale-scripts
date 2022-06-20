@@ -181,10 +181,12 @@ Define(spear_of_bastion_debuff 307871)
 
 # Runeforge Legendary Effects
 Define(elysian_might_runeforge 7730)
-	SpellRequire(spear_of_bastion_debuff duration add=4 enabled=(IsCovenant(kyrian) and (EquippedRuneforge(elysian_might_runeforge) or EquippedRuneforge(unity_runeforge))))
+	SpellRequire(spear_of_bastion_debuff duration add=4
+		enabled=(IsCovenant(kyrian) and (EquippedRuneforge(elysian_might_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))))
 Define(elysian_might_buff 311193)
 	SpellInfo(elysian_might_buff duration=8)
-	SpellAddBuff(spear_of_bastion elysian_might_buff add=1 enabled=(IsCovenant(kyrian) and (EquippedRuneforge(elysian_might_runeforge) or EquippedRuneforge(unity_runeforge))))
+	SpellAddBuff(spear_of_bastion elysian_might_buff add=1
+		enabled=(IsCovenant(kyrian) and (EquippedRuneforge(elysian_might_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))))
 Define(glory_runeforge 7469)
 Define(reprisal_runeforge 6969)
 	SpellRequire(charge rage add=-20 enabled=(EquippedRuneforge(reprisal_runeforge)))
@@ -196,6 +198,7 @@ Define(reprisal_runeforge 6969)
 Define(sinful_surge_runeforge 7470)
 Define(the_wall_runeforge 6957)
 	SpellRequire(shield_slam rage add=-5 enabled=(EquippedRuneforge(the_wall_runeforge)))
+Define(unity_belt 190475)
 Define(unity_runeforge 8130)
 
 # Tier Bonus Effects
@@ -288,8 +291,9 @@ AddFunction ProtectionWontOverwriteIgnorePain {
 }
 
 AddFunction ProtectionHasGloryConquerorsBanner {
-	# Assume that the Unity runeforge is always equipped.
-	BuffPresent(conquerors_banner_buff) and IsCovenant(necrolord) and (EquippedRuneforge(glory_runeforge) or EquippedRuneforge(unity_runeforge))
+	BuffPresent(conquerors_banner_buff) and
+	IsCovenant(necrolord) and
+	(EquippedRuneforge(glory_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))
 }
 
 AddFunction ProtectionRagePoolSize {
