@@ -31,7 +31,7 @@ The following classes and specializations are supported for Shadowlands:
 - Druid: *Balance (9.1)*, Guardian
 - Mage: *Arcane (9.1)*, *Frost (9.1)*
 - Monk: Brewmaster
-- Paladin: *Protection (9.1)*
+- Paladin: Protection
 - Rogue: Assassination
 - Warrior: Arms, Fury, Protection
 

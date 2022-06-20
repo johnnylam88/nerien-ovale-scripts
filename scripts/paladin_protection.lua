@@ -2,9 +2,9 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_paladin_protection"
-	local desc = string.format("[9.1.5] %s: Paladin - Protection", Private.name)
+	local desc = string.format("[9.2] %s: Paladin - Protection", Private.name)
 	local code = [[
-# Adapted from Wowhead's "Protection Paladin Rotation Guide - Shadowlands 9.1.5"
+# Adapted from Wowhead's "Protection Paladin Rotation Guide"
 #	by Lincoln
 # https://www.wowhead.com/protection-paladin-rotation-guide
 
@@ -192,9 +192,13 @@ Define(blessing_of_winter 328281)
 	SpellAddTargetBuff(blessing_of_winter blessing_of_winter add=1)
 Define(divine_toll 304971)
 	SpellInfo(divine_toll cd=60 holypower=-1 interrupt=1)
-	SpellRequire(divine_toll holypower add=-2 enabled=(BuffPresent(holy_avenger)))
 	SpellRequire(divine_toll unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(divine_toll unusable set=1 enabled=(not IsCovenant(kyrian)))
+	SpellRequire(divine_toll holypower add=-2 enabled=(BuffPresent(holy_avenger)))
+	SpellRequire(divine_toll holypower add=-1 enabled=(Enemies(tagged=1) == 2))
+	SpellRequire(divine_toll holypower add=-2 enabled=(Enemies(tagged=1) == 3))
+	SpellRequire(divine_toll holypower add=-3 enabled=(Enemies(tagged=1) == 4))
+	SpellRequire(divine_toll holypower add=-4 enabled=(Enemies(tagged=1) >= 5))
 Define(vanquishers_hammer 328204)
 	SpellInfo(vanquishers_hammer cd=30 duration=20 holypower=-1)
 	SpellRequire(vanquishers_hammer holypower add=-2 enabled=(BuffPresent(holy_avenger)))
@@ -203,6 +207,21 @@ Define(vanquishers_hammer 328204)
 	SpellAddBuff(vanquishers_hammer vanquishers_hammer add=1)
 	SpellAddBuff(word_of_glory shield_of_the_righteous_buff add=1 enabled=(BuffPresent(vanquishers_hammer)))
 	SpellAddBuff(word_of_glory vanquishers_hammer set=0)
+
+# Runeforge Legendary Effects
+Define(radiant_embers_runeforge 7701)
+	SpellRequire(ashen_hallow duration add=15 enabled=(IsCovenant(venthyr) and (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge))))
+Define(the_mad_paragon_runeforge 7054)
+Define(the_magistrates_judgment_runeforge 7056)
+Define(the_magistrates_judgment 337682)
+	SpellInfo(the_magistrates_judgment duration=15)
+	SpellRequire(seraphim holypower add=-1 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge) and BuffPresent(the_magistrates_judgment)))
+	SpellRequire(shield_of_the_righteous holypower add=-1 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge) and BuffPresent(the_magistrates_judgment)))
+	SpellRequire(word_of_glory holypower add=-1 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge) and BuffPresent(the_magistrates_judgment)))
+	SpellAddBuff(seraphim the_magistrates_judgment set=0 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge)))
+	SpellAddBuff(shield_of_the_righteous the_magistrates_judgment set=0 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge)))
+	SpellAddBuff(word_of_glory the_magistrates_judgment set=0 enabled=(EquippedRuneforge(the_magistrates_judgment_runeforge)))
+Define(unity_runeforge 8125)
 
 ### Functions ###
 
@@ -223,75 +242,144 @@ AddFunction ProtectionUseJudgment {
 	}
 }
 
+AddFunction ProtectionHolyPowerWillOverCap {
+	# Check whether any Holy Power generators are off cooldown and will cause Holy Power to over-cap.
+	(
+		(HolyPowerDeficit() < (1 + 2 * BuffPresent(holy_avenger))) and (
+			Spell(avengers_shield) or
+			Spell(blessed_hammer) or
+			Spell(hammer_of_the_righteous) or
+			Spell(hammer_of_wrath) or
+			Spell(vanquishers_hammer)
+		)
+	) or
+	(
+		Spell(divine_toll) and (
+			(HolyPowerDeficit() < Enemies(tagged=1) + (1 + 2 * BuffPresent(holy_avenger)))
+		)
+	) or
+	(
+		ProtectionUseJudgment() and (
+			(HolyPowerDeficit() < (1 + 2 * BuffPresent(holy_avenger))) or
+			(Talent(sanctified_wrath_talent) and HolyPowerDeficit() < 2)
+		)
+	)
+}
+
+AddFunction ProtectionAshenHallowPresent {
+	# There is no way to detect standing in Ashen Hallow.
+	# Fake this by checking if the player has recently cast Ashen Hallow,
+	# and assume the player is standing in the ground effect.
+	if IsCovenant(venthyr) {
+		if (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge)) {
+			TimeSincePreviousSpell(ashen_hallow) < 45
+		}
+		unless (EquippedRuneforge(radiant_embers_runeforge) or EquippedRuneforge(unity_runeforge)) {
+			TimeSincePreviousSpell(ashen_hallow) < 30
+		}
+	}
+	Never()
+}
+
 AddFunction ProtectionPrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
-	unless BuffPresent(shield_of_the_righteous_buff) Spell(shield_of_the_righteous)
+	unless BuffPresent(shield_of_the_righteous_buff) Spell(shield_of_the_righteous text=open)
 }
 
 AddFunction ProtectionActiveMitigationActions {
+	if BuffPresent(divine_purpose) Spell(seraphim text=free)
 	Spell(seraphim)
 	# Use Word of Glory below 50% health if it's free.
-	if (BuffPresent(shining_light_free_buff) and HealthPercent() < 50) Spell(word_of_glory)
+	if (BuffPresent(shining_light_free_buff) and HealthPercent() < 50) Spell(word_of_glory text=free)
 	unless (
 		(Talent(seraphim_talent) and not SpellCooldown(seraphim) > 0) or
 		(BuffPresent(shining_light_free_buff) and HealthPercent() < 50)
 	) {
-		# Avoid capping on Holy Power.
-		if (HealthPercent() > 70 and HolyPowerDeficit() <= 2 or HolyPowerDeficit() < 2) Spell(shield_of_the_righteous)
-		if (BuffRemaining(shield_of_the_righteous_buff) < 2) Spell(shield_of_the_righteous)
+		if BuffPresent(divine_purpose) Spell(shield_of_the_righteous text=free)
+		if (HolyPowerDeficit() == 0) Spell(shield_of_the_righteous text=cap)
+		# Don't over-cap on Holy Power.
+		if ProtectionHolyPowerWillOverCap() Spell(shield_of_the_righteous text=cap)
+		# Extend the SotR buff if it's about to drop.
+		if (BuffRemaining(shield_of_the_righteous_buff) < GCDRemaining()) Spell(shield_of_the_righteous text=buff)
 	}
 }
 
 AddFunction ProtectionPrecombatAoEActions {
 	# AoE opener
-	Spell(avengers_shield)
+	Spell(avengers_shield text=open)
 }
 
 AddFunction ProtectionPrecombatMainActions {
 	# Opener
-	Spell(judgment)
+	Spell(judgment text=open)
 }
 
 AddFunction ProtectionMainActions {
-	# Bump Avenger's Shield in priority if the target is casting.
-	if target.IsInterruptible() Spell(avengers_shield)
-
-	# Only suggest Consecration for the damage reduction buff if standing still.
-	if (not BuffPresent(consecration_buff) and not Speed() > 0) Spell(consecration text=buff)
-	if (Enemies(tagged=1) > 2) Spell(avengers_shield)
+	unless BuffPresent(consecration_buff) {
+		# Only suggest Consecration for the damage reduction buff if standing still.
+		unless (Speed() > 0) Spell(consecration text=buff)
+	}
+	if (Enemies(tagged=1) >= 3) Spell(avengers_shield)
 	Spell(vanquishers_hammer)
+	if EquippedRuneforge(the_mad_paragon_runeforge) Spell(hammer_of_wrath)
 	ProtectionUseJudgment()
-	Spell(hammer_of_wrath)
-	Spell(avengers_shield)
+	unless EquippedRuneforge(the_mad_paragon_runeforge) Spell(hammer_of_wrath)
+	unless (Enemies(tagged=1) >= 3) Spell(avengers_shield)
 	Spell(hammer_of_the_righteous)
-	Spell(consecration)
+	if BuffPresent(consecration_buff) Spell(consecration)
 }
 
 AddFunction ProtectionPrecombatCdActions {
 	PrecombatCdActions()
-	Spell(ashen_hallow)
 }
 
 AddFunction ProtectionOffensiveCdActions {
-	unless BuffPresent(avenging_wrath) {
-		if Talent(seraphim_talent) {
-			# Synchronize Avenging Wrath with Seraphim.
-			if BuffPresent(seraphim) Spell(avenging_wrath)
-			if (not SpellCooldown(seraphim) > 0) Spell(avenging_wrath)
-			if (SpellCooldown(seraphim) > 30) Spell(avenging_wrath)
-		}
-		unless Talent(seraphim_talent) {
-			Spell(avenging_wrath)
+	unless InCombat() Spell(ashen_hallow text=open)
+	if IsCovenant(venthyr) {
+		# Synchronize Ashen Hallow with Avenging Wrath.
+		if (BuffPresent(avenging_wrath) or not SpellCooldown(avenging_wrath) > 0) {
+			Spell(ashen_hallow)
 		}
 	}
-	Spell(holy_avenger)
-	if (SpellCooldown(avengers_shield) > GCD()) Spell(moment_of_glory)
-	Spell(blessing_of_autumn)
-	Spell(blessing_of_spring)
-	Spell(blessing_of_summer)
-	Spell(blessing_of_winter)
-	Spell(divine_toll)
-	Spell(ashen_hallow)
+
+	unless (
+		IsCovenant(venthyr) and
+		(BuffPresent(avenging_wrath) or not SpellCooldown(avenging_wrath) > 0) and
+		(not SpellCooldown(ashen_hallow) > 0)
+	) {
+		unless BuffPresent(avenging_wrath) {
+			if ProtectionAshenHallowPresent() Spell(avenging_wrath text=ashen)
+			if Talent(seraphim_talent) {
+				# Synchronize Avenging Wrath with Seraphim.
+				if (BuffPresent(seraphim) or Spell(seraphim)) {
+					Spell(avenging_wrath text=burst)
+				}
+				if (SpellCooldown(seraphim) > 30) Spell(avenging_wrath)
+			}
+			unless Talent(seraphim_talent) {
+				Spell(avenging_wrath)
+			}
+		}
+		unless (
+			(Talent(seraphim_talent) and not SpellCooldown(seraphim) > 0) or
+			(HolyPowerDeficit() == 0) or
+			ProtectionHolyPowerWillOverCap() or
+			(BuffRemaining(shield_of_the_righteous_buff) < GCDRemaining())
+		) {
+			# Don't go over the AM cap (13.5s total duration).
+			if (BuffRemaining(shield_of_the_righteous_buff) < 9) Spell(shield_of_the_righteous)
+		}
+		Spell(divine_toll)
+
+		unless (IsCovenant(kyrian) and not SpellCooldown(divine_toll) > 0) {
+			Spell(holy_avenger)
+			if (SpellCooldown(avengers_shield) > GCD()) Spell(moment_of_glory)
+			Spell(blessing_of_autumn)
+			Spell(blessing_of_spring)
+			Spell(blessing_of_summer)
+			Spell(blessing_of_winter)
+		}
+	}
 }
 
 AddFunction ProtectionDefensiveCdActions {
@@ -299,7 +387,7 @@ AddFunction ProtectionDefensiveCdActions {
 		Spell(ardent_defender)
 		Spell(guardian_of_ancient_kings)
 		if InCombat() Spell(fleshcraft)
-		if (not IsCovenant(necrolord) or SpellCooldown(fleshcraft) > 0) {
+		unless (IsCovenant(necrolord) and not SpellCooldown(fleshcraft) > 0) {
 			if Talent(final_stand_talent) Spell(divine_shield)
 			if (not Talent(blessing_of_spellwarding_talent) and IncomingPhysicalDamage(5) > 0) Spell(blessing_of_protection)
 			if (Talent(blessing_of_spellwarding_talent) and IncomingMagicDamage(5) > 0) Spell(blessing_of_spellwarding)
@@ -380,10 +468,10 @@ AddIcon help=cd {
 }
 
 AddIcon help=trinkets size=small {
-	unless ProtectionInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 	ProtectionOffensiveCdActions()
 	Item(Trinket0Slot usable=1 text=13)
 	Item(Trinket1Slot usable=1 text=14)
+	unless ProtectionInRange() Texture(misc_arrowlup help=L(not_in_melee_range))
 }
 ]]
 	Private.scripts:registerScript("PALADIN", "protection", name, desc, code, "script")
