@@ -262,15 +262,19 @@ AddFunction GuardianInRange {
 	(Stance(druid_moonkin_form) and target.InRange(moonfire))
 }
 
+AddFunction GuardianUpToTwoTargets {
+	if (Enemies(tagged=1) > 2) 2
+	Enemies(tagged=1)
+}
+
+AddFunction GuardianUpToThreeTargets {
+	if (Enemies(tagged=1) > 3) 3
+	Enemies(tagged=1)
+}
+
 AddFunction GuardianThrashMaxStacks {
 	if EquippedRuneforge(luffainfused_embrace_runeforge) (4)
 	3
-}
-
-AddFunction GuardianMoonfireCycle {
-	# Suggest Moonfire on another target if already present on the current one.
-	if target.DebuffPresent(moonfire_debuff) Spell(moonfire text=cycle)
-	Spell(moonfire)
 }
 
 AddFunction GuardianUseRageForActiveMitigation {
@@ -327,8 +331,15 @@ AddFunction GuardianBearActions {
 	# [*] Spam Thrash on more than 4 targets when Berserk is up and using Ursol's Fury Remembered.
 	if (Enemies(tagged=1) >= 4 and BuffPresent(bs_inc_buff) and EquippedRuneforge(ursols_fury_remembered_runeforge)) Spell(thrash_bear)
 	# Keep Moonfire ticking on up to 2 targets.
-	if (Enemies(tagged=1) == 1 and target.DebuffRefreshable(moonfire_debuff)) Spell(moonfire)
-	if (Enemies(tagged=1) >= 2 and DebuffCountOnAny(moonfire_debuff) < 2) GuardianMoonfireCycle()
+	if (DebuffCountOnAny(moonfire_debuff) < GuardianUpToTwoTargets()) {
+		unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
+		Spell(moonfire text=other)
+	}
+	unless (DebuffCountOnAny(moonfire_debuff) < GuardianUpToTwoTargets()) {
+		if target.DebuffPresent(moonfire_debuff) {
+			if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
+		}
+	}
 	# Use Thrash on more than 1 target or if your target does not have 3 stacks of the bleed yet.
 	if (Enemies(tagged=1) > 1 or target.DebuffStacks(thrash_bear_debuff) < GuardianThrashMaxStacks()) Spell(thrash_bear)
 	# Use Mangle on up to 4 targets.
@@ -337,9 +348,13 @@ AddFunction GuardianBearActions {
 	Spell(thrash_bear)
 	# Use Moonfire with a Galactic Guardian on up to 3 targets.
 	if BuffPresent(galactic_guardian_buff) {
-		if (Enemies(tagged=1) == 1) Spell(moonfire)
-		if (Enemies(tagged=1) <  3 and DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) GuardianMoonfireCycle()
-		if (Enemies(tagged=1) >= 3 and DebuffCountOnAny(moonfire_debuff) < 3) GuardianMoonfireCycle()
+		if (DebuffCountOnAny(moonfire_debuff) < GuardianUpToThreeTargets()) {
+			unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
+			Spell(moonfire text=other)
+		}
+		unless (DebuffCountOnAny(moonfire_debuff) < GuardianUpToThreeTargets()) {
+			Spell(moonfire)
+		}
 	}
 	# Use Maul to dump Rage on up to 3 targets, if you do not need the
 	# Rage for Ironfur or Frenzied Regeneration.
@@ -379,8 +394,13 @@ AddFunction GuardianOwlweaveActions {
 	if target.DebuffRefreshable(sunfire_debuff) Spell(sunfire)
 	if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
 	if BuffPresent(galactic_guardian_buff) {
-		if (Enemies(tagged=1) == 1) Spell(moonfire)
-		GuardianMoonfireCycle()
+		if (DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) {
+			unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
+			Spell(moonfire text=other)
+		}
+		unless (DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) {
+			Spell(moonfire)
+		}
 	}
 	# Use Starsurge during Eclipse.
 	if BuffPresent(eclipse_lunar_buff) or BuffPresent(eclipse_solar_buff) Spell(starsurge)

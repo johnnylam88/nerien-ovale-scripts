@@ -391,7 +391,15 @@ AddFunction BalanceAoEActions {
 	if BalanceIsInEclipse() {
 		if (AstralPower() >= AstralPowerCost(starfall) + AstralPowerCost(starsurge)) Spell(starsurge)
 		if BuffPresent(eclipse_solar_buff) and not BuffPresent(eclipse_lunar_buff) {
-			if (not target.DebuffPresent(moonfire_debuff) or target.DebuffRefreshable(moonfire_debuff)) Spell(moonfire text=cycle)
+			if (DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) {
+				unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
+				Spell(moonfire text=other)
+			}
+			unless (DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) {
+				if target.DebuffPresent(moonfire_debuff) {
+					if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
+				}
+			}
 		}
 	}
 	BalanceFillerActions()
