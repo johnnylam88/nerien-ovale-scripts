@@ -2,10 +2,10 @@ local _, Private = ...
 
 if Private.initialized then
 	local name = "nerien_ovale_druid_guardian"
-	local desc = string.format("[9.1] %s: Druid - Guardian", Private.name)
+	local desc = string.format("[9.2] %s: Druid - Guardian", Private.name)
 	local code = [[
-# Adapted from Icy Vein's "Guardian Druid Tank Rotation, Cooldowns,
-#   and Abilities — Shadowlands 9.1.0" by Pumpsw-Frostmourne
+# Adapted from Icy Vein's "Guardian Druid Tank Rotation, Cooldowns, and Abilities"
+#   by Pumps
 # https://www.icy-veins.com/wow/guardian-druid-pve-tank-rotation-cooldowns-abilities
 
 Include(nerien_ovale_library)
@@ -262,13 +262,13 @@ AddFunction GuardianInRange {
 	(Stance(druid_moonkin_form) and target.InRange(moonfire))
 }
 
-AddFunction GuardianUpToTwoTargets {
-	if (Enemies(tagged=1) > 2) 2
+AddFunction GuardianUpToFourTargets {
+	if (Enemies(tagged=1) > 4) 4
 	Enemies(tagged=1)
 }
 
-AddFunction GuardianUpToThreeTargets {
-	if (Enemies(tagged=1) > 3) 3
+AddFunction GuardianUpToFiveTargets {
+	if (Enemies(tagged=1) > 5) 5
 	Enemies(tagged=1)
 }
 
@@ -330,36 +330,36 @@ AddFunction GuardianBearActions {
 	if BuffPresent(tooth_and_claw_buff) Spell(maul)
 	# [*] Spam Thrash on more than 4 targets when Berserk is up and using Ursol's Fury Remembered.
 	if (Enemies(tagged=1) >= 4 and BuffPresent(bs_inc_buff) and EquippedRuneforge(ursols_fury_remembered_runeforge)) Spell(thrash_bear)
-	# Keep Moonfire ticking on up to 2 targets.
-	if (DebuffCountOnAny(moonfire_debuff) < GuardianUpToTwoTargets()) {
+	# Keep Moonfire ticking on up to 4 targets.
+	if (DebuffCountOnAny(moonfire_debuff) < GuardianUpToFourTargets()) {
 		unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
 		Spell(moonfire text=other)
 	}
-	unless (DebuffCountOnAny(moonfire_debuff) < GuardianUpToTwoTargets()) {
+	unless (DebuffCountOnAny(moonfire_debuff) < GuardianUpToFourTargets()) {
 		if target.DebuffPresent(moonfire_debuff) {
 			if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
 		}
 	}
 	# Use Thrash on more than 1 target or if your target does not have 3 stacks of the bleed yet.
 	if (Enemies(tagged=1) > 1 or target.DebuffStacks(thrash_bear_debuff) < GuardianThrashMaxStacks()) Spell(thrash_bear)
-	# Use Mangle on up to 4 targets.
-	if (Enemies(tagged=1) <= 4) Spell(mangle)
+	# Use Mangle on up to 3 targets.
+	if (Enemies(tagged=1) <= 3) Spell(mangle)
 	# Use Thrash.
-	Spell(thrash_bear)
-	# Use Moonfire with a Galactic Guardian on up to 3 targets.
+	unless (Enemies(tagged=1) > 1) Spell(thrash_bear)
+	# Use Moonfire with a Galactic Guardian on up to 5 targets.
 	if BuffPresent(galactic_guardian_buff) {
-		if (DebuffCountOnAny(moonfire_debuff) < GuardianUpToThreeTargets()) {
+		if (DebuffCountOnAny(moonfire_debuff) < GuardianUpToFiveTargets()) {
 			unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
 			Spell(moonfire text=other)
 		}
-		unless (DebuffCountOnAny(moonfire_debuff) < GuardianUpToThreeTargets()) {
+		unless (DebuffCountOnAny(moonfire_debuff) < GuardianUpToFiveTargets()) {
 			Spell(moonfire)
 		}
 	}
 	# Use Maul to dump Rage on up to 3 targets, if you do not need the
 	# Rage for Ironfur or Frenzied Regeneration.
-	if RageDeficit() < 40 and not GuardianUseRageForActiveMitigation() {
-		if (Enemies(tagged=1) <= 3) Spell(maul)
+	if (Enemies(tagged=1) <= 3) {
+		if (RageDeficit() < 40 and not GuardianUseRageForActiveMitigation()) Spell(maul)
 	}
 	# Use Swipe as filler.
 	# [*] Only use Swipe as a filler when Berserk is down. Otherwise,
@@ -370,19 +370,29 @@ AddFunction GuardianBearActions {
 AddFunction GuardianCatweaveActions {
 	# Actions to cast from Cat Form.
 	# [*] Always apply Empowered Rake if available.
-	if Stealthed() Spell(rake)
+	if Stealthed() Spell(rake text=plus)
 	if (ComboPoints() >= 5) {
 		# Cast Rip if you are at 5 Combo Points and Rip is either not ticking,
 		# or will fall off before you have another chance to re-apply it.
-		if (target.DebuffExpires(rip) or target.DebuffRefreshable(rip)) Spell(rip)
+		unless target.DebuffPresent(rip) Spell(rip text=new)
+		if target.DebuffRefreshable(rip) Spell(rip)
 		# Cast Ferocious Bite if you are at 5 Combo Points.
 		Spell(ferocious_bite)
 	}
 	# Cast Rake if Rake is either not ticking, or will fall off before you
 	# have another chance to re-apply it. If possible, allow Empowered Rake
 	# to tick all the way to completion.
-	if target.DebuffExpires(rake_debuff) Spell(rake)
-	if (target.DebuffRefreshable(rake_debuff) and target.DebuffPersistentMultiplier(rake_debuff) < PersistentMultiplier(rake_debuff)) Spell(rake)
+	if target.DebuffPresent(rake_debuff) {
+		if (PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff)) {
+			Spell(rake text=plus)
+		}
+		unless (PersistentMultiplier(rake_debuff) > target.DebuffPersistentMultiplier(rake_debuff)) {
+			if target.DebuffRefreshable(rake_debuff) Spell(rake)
+		}
+	}
+	unless target.DebuffPresent(rake_debuff) {
+		Spell(rake text=new)
+	}
 	# Generate Combo Points with fillers.
 	if (Enemies(tagged=1) > 1) Spell(swipe_cat)
 	Spell(shred)
@@ -391,7 +401,9 @@ AddFunction GuardianCatweaveActions {
 AddFunction GuardianOwlweaveActions {
 	# Actions to cast from Moonkin Form.
 	# Refresh DoTs.
+	unless target.DebuffPresent(sunfire_debuff) Spell(sunfire text=new)
 	if target.DebuffRefreshable(sunfire_debuff) Spell(sunfire)
+	unless target.DebuffPresent(moonfire_debuff) Spell(moonfire text=new)
 	if target.DebuffRefreshable(moonfire_debuff) Spell(moonfire)
 	if BuffPresent(galactic_guardian_buff) {
 		if (DebuffCountOnAny(moonfire_debuff) < Enemies(tagged=1)) {
@@ -403,7 +415,7 @@ AddFunction GuardianOwlweaveActions {
 		}
 	}
 	# Use Starsurge during Eclipse.
-	if BuffPresent(eclipse_lunar_buff) or BuffPresent(eclipse_solar_buff) Spell(starsurge)
+	if (BuffPresent(eclipse_lunar_buff) or BuffPresent(eclipse_solar_buff)) Spell(starsurge)
 	# Use Starfire or Wrath depending on the Eclipse.
 	if BuffPresent(eclipse_lunar_buff) Spell(starfire)
 	if BuffPresent(eclipse_solar_buff) Spell(wrath)
@@ -465,7 +477,10 @@ AddFunction GuardianPrecombatCdActions {
 }
 
 AddFunction GuardianOffensiveCdActions {
-	if (Stance(druid_cat_form) and Talent(feral_affinity_talent)) or Stance(druid_moonkin_form) {
+	if (
+		(Stance(druid_cat_form) and Talent(feral_affinity_talent)) or
+		Stance(druid_moonkin_form)
+	) {
 		Spell(heart_of_the_wild)
 		Spell(convoke_the_spirits)
 	}

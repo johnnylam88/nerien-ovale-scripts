@@ -28,7 +28,7 @@ The following classes and specializations are supported for Shadowlands:
 
 - Death Knight: Blood
 - Demon Hunter: Vengeance
-- Druid: *Balance (9.1)*, *Guardian (9.1)*
+- Druid: *Balance (9.1)*, Guardian
 - Mage: *Arcane (9.1)*, *Frost (9.1)*
 - Monk: Brewmaster
 - Paladin: *Protection (9.1)*
