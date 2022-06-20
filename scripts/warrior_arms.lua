@@ -457,8 +457,12 @@ AddIcon help=interrupt size=small {
 
 AddIcon help=shortcd {
 	unless InCombat() ArmsPrecombatShortCdActions()
-	if (Enemies(tagged=1) == 1) ArmsSingleTargetShortCdActions()
-	if (Enemies(tagged=1) > 1)  ArmsMultiTargetShortCdActions()
+	if (Enemies(tagged=1) > 1) {
+		ArmsMultiTargetShortCdActions()
+	}
+	unless (Enemies(tagged=1) > 1) {
+		ArmsSingleTargetShortCdActions()
+	}
 }
 
 AddIcon enemies=1 help=main {
@@ -473,8 +477,12 @@ AddIcon help=aoe {
 
 AddIcon help=cd {
 	unless InCombat() ArmsPrecombatCdActions()
-	if (Enemies(tagged=1) == 1) ArmsSingleTargetCdActions()
-	if (Enemies(tagged=1) > 1)  ArmsMultiTargetCdActions()
+	if (Enemies(tagged=1) > 1) {
+		ArmsMultiTargetCdActions()
+	}
+	unless (Enemies(tagged=1) > 1) {
+		ArmsSingleTargetCdActions()
+	}
 }
 
 AddIcon help=trinkets size=small {

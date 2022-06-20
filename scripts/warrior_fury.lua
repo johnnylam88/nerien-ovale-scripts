@@ -378,8 +378,12 @@ AddIcon help=interrupt size=small {
 
 AddIcon help=shortcd {
 	unless InCombat() FuryPrecombatShortCdActions()
-	if (Enemies(tagged=1) == 1) FurySingleTargetShortCdActions()
-	if (Enemies(tagged=1) > 1)  FuryMultiTargetShortCdActions()
+	if (Enemies(tagged=1) > 1) {
+		FuryMultiTargetShortCdActions()
+	}
+	unless (Enemies(tagged=1) > 1) {
+		FurySingleTargetShortCdActions()
+	}
 }
 
 AddIcon enemies=1 help=main {

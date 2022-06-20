@@ -504,7 +504,7 @@ AddFunction AssassinationMultiTargetActions {
 	if (Enemies(tagged=1) >= 4) {
 		Spell(fan_of_knives)
 	}
-	if (Enemies(tagged=1) < 4) {
+	unless (Enemies(tagged=1) >= 4) {
 		if (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
 			if BuffPresent(blindside) Spell(ambush text=other)
 			Spell(mutilate text=other)
@@ -571,12 +571,6 @@ AddFunction AssassinationMultiTargetCdActions {
 }
 
 AddFunction AssassinationShivActions {
-	unless (Enemies(tagged=1) > 1) {
-		unless (ComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
-		{
-			if (target.DebuffRemaining(rupture) > 16 and target.DebuffRemaining(slice_and_dice) > 18) Spell(shiv text=st)
-		}
-	}
 	if (Enemies(tagged=1) > 1) {
 		unless (
 			not BuffPresent(slice_and_dice) or
@@ -586,6 +580,12 @@ AddFunction AssassinationShivActions {
 			(Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis))
 		) {
 			Spell(shiv text=aoe)
+		}
+	}
+	unless (Enemies(tagged=1) > 1) {
+		unless (ComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
+		{
+			if (target.DebuffRemaining(rupture) > 16 and target.DebuffRemaining(slice_and_dice) > 18) Spell(shiv text=st)
 		}
 	}
 }

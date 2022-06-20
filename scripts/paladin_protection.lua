@@ -213,9 +213,13 @@ AddFunction ProtectionInRange {
 AddFunction ProtectionUseJudgment {
 	# Don't cap on Judgment charges.
 	if (SpellCharges(judgment count=0) > SpellMaxCharges(judgment) - 0.2) {
-		if (Enemies(tagged=1) == 1) Spell(judgment)
-		if (Enemies(tagged=1) > 1 and DebuffCountOnAny(judgment_debuff) < Enemies(tagged=1)) {
-			if target.DebuffPresent(judgment_debuff) Spell(judgment text=cycle)
+		if (Enemies(tagged=1) > 1) {
+			if (DebuffCountOnAny(judgment_debuff) < Enemies(tagged=1)) {
+				if target.DebuffPresent(judgment_debuff) Spell(judgment text=cycle)
+				Spell(judgment)
+			}
+		}
+		unless (Enemies(tagged=1) > 1) {
 			Spell(judgment)
 		}
 	}
