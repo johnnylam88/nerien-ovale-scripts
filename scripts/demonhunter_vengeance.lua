@@ -161,8 +161,9 @@ AddFunction VengeanceIsTanking {
 }
 
 AddFunction VengeanceFuryDeficit {
-	# Account for Fury gains from Immolation Aura and Metamorphosis.
-	MaxFury() - Fury() - GCDRemaining() * (20 * BuffPresent(immolation_aura) / 6 + 7 * BuffPresent(metamorphosis))
+	# Account for Fury gains from Immolation Aura.
+	if (MaxFury() - Fury() - GCDRemaining() * (20 * BuffRemaining(immolation_aura) / 6) < 0) 0
+	MaxFury() - Fury() - GCDRemaining() * (20 * BuffRemaining(immolation_aura) / 6)
 }
 
 AddFunction VengeanceSigilDuration {
@@ -184,16 +185,53 @@ AddFunction VengeanceBulkExtractionHealing {
 	Enemies(tagged=1) * VengeanceSoulFragmentHealing()
 }
 
-AddFunction VengeanceImmolationAuraSoulFragments {
+AddFunction VengeanceFuryDeficitAfterFelblade {
+	if Talent(felblade_talent) {
+		if (VengeanceFuryDeficit() + PowerCost(felblade) < 0) 0
+		VengeanceFuryDeficit() + PowerCost(felblade)
+	}
+	VengeanceFuryDeficit()
+}
+
+AddFunction VengeanceFuryDeficitAfterFracture {
+	if Talent(fracture_talent) {
+		if (VengeanceFuryDeficit() + PowerCost(fracture) < 0) 0
+		VengeanceFuryDeficit() + PowerCost(fracture)
+	}
+	VengeanceFuryDeficit()
+}
+
+AddFunction VengeanceFuryWillOverCap {
+	(VengeanceFuryDeficit() == 0) or
+	(VengeanceFuryDeficitAfterFelblade() == 0 and not SpellCooldown(felblade) > 0) or
+	(VengeanceFuryDeficitAfterFracture() == 0 and not SpellCooldown(fracture) > 0) or
+	(VengeanceFuryDeficitAfterShear() == 0 and not SpellCooldown(shear) > 0)
+}
+
+AddFunction VengeanceFuryDeficitAfterShear {
+	unless Talent(fracture_talent) {
+		if (VengeanceFuryDeficit() + PowerCost(shear) < 0) 0
+		VengeanceFuryDeficit() + PowerCost(shear)
+	}
+	VengeanceFuryDeficit()
+}
+
+AddFunction VengeanceSoulsAfterImmolationAura {
 	if Talent(fallout_talent) {
 		if (SoulFragments() + 0.7 * Enemies(tagged=1) > 5) 5
 		SoulFragments() + 0.7 * Enemies(tagged=1)
 	}
-	0
+	SoulFragments()
 }
 
-AddFunction VengeanceShearSoulFragments {
+AddFunction VengeanceSoulsAfterFracture {
+	if (SoulFragments() + 2 + BuffPresent(metamorphosis) > 5) 5
 	SoulFragments() + 2 + BuffPresent(metamorphosis)
+}
+
+AddFunction VengeanceSoulsAfterShear {
+	if (SoulFragments() + 1 + BuffPresent(metamorphosis) > 5) 5
+	SoulFragments() + 1 + BuffPresent(metamorphosis)
 }
 
 AddFunction VengeanceEquippedBlindFaithRuneforge {
@@ -203,28 +241,19 @@ AddFunction VengeanceEquippedBlindFaithRuneforge {
 AddFunction VengeancePrecombatActiveMitigationActions {
 	PrecombatShortCdActions()
 	# Use Demon Spikes heading into a pull if not already up.
-	unless BuffPresent(demon_spikes_buff) Spell(demon_spikes)
+	unless BuffPresent(demon_spikes_buff) Spell(demon_spikes text=open)
 }
 
 AddFunction VengeanceActiveMitigationActions {
 	if (not BuffPresent(metamorphosis) and VengeanceIsTanking()) {
 		# Don't cap on charges of Demon Spikes.
-		if (Charges(demon_spikes count=0) > 1.9) Spell(demon_spikes text=cap)
+		if (SpellCharges(demon_spikes count=0) > SpellMaxCharges(demon_spikes) - 0.1) Spell(demon_spikes text=cap)
 	}
 }
 
-AddFunction VengeancePrecombatMainActions {}
-
-AddFunction VengeanceMainActions {
-	unless (
-		(VengeanceEquippedBlindFaithRuneforge() and
-			(SpellCooldown(elysian_decree) < 5 or TimeSincePreviousSpell(elysian_decree) < VengeanceSigilDuration()))
-	) {
-		if (SoulFragments() >= 4) Spell(spirit_bomb)
-	}
-	if target.InRange(soul_cleave) {
+AddFunction VengeanceSoulCleaveActions {
+	unless Talent(spirit_bomb_talent) {
 		if (
-			not Talent(spirit_bomb_talent) and
 			HealthPercent() <= 70 and
 			Fury() >= PowerCost(soul_cleave) and
 			SoulFragments() >= 2 and
@@ -232,21 +261,59 @@ AddFunction VengeanceMainActions {
 		) {
 			Spell(soul_cleave)
 		}
-		if (VengeanceFuryDeficit() < 20) Spell(soul_cleave)
 	}
-	unless target.InRange(soul_cleave) Spell(throw_glaive text=range)
-	if (VengeanceFuryDeficit() > 40) Spell(felblade)
-	if (Talent(fracture_talent) and VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5) Spell(fracture)
-	if (VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5) {
+	if VengeanceFuryWillOverCap() Spell(soul_cleave text=cap)
+}
+
+AddFunction VengeanceUseFelblade {
+	if (VengeanceFuryDeficitAfterFelblade() > 0) Spell(felblade)
+}
+
+AddFunction VengeanceUseFracture {
+	if (VengeanceFuryDeficitAfterFracture() > 0 and VengeanceSoulsAfterFracture() <= 5) Spell(fracture)
+}
+
+AddFunction VengeanceUseImmolationAura {
+	if (VengeanceFuryDeficit() > 0 and VengeanceSoulsAfterImmolationAura() <= 5) {
 		unless BuffPresent(immolation_aura) Spell(immolation_aura)
 	}
-	if (not Talent(fracture_talent) and VengeanceFuryDeficit() > 10 and VengeanceShearSoulFragments() <= 5) Spell(shear)
+}
+
+AddFunction VengeanceUseShear {
+	if (VengeanceFuryDeficitAfterShear() > 0 and VengeanceSoulsAfterShear() <= 5) Spell(shear)
+}
+
+AddFunction VengeancePrecombatMainActions {}
+
+AddFunction VengeanceMainActions {
+	unless VengeanceInRange() Spell(throw_glaive text=range)
+	unless (
+		VengeanceEquippedBlindFaithRuneforge() and (
+			(TimeSincePreviousSpell(elysian_decree) < VengeanceSigilDuration()) or
+			(SpellCooldown(elysian_decree) < 5)
+		)
+	) {
+		if (SoulFragments() >= 4) Spell(spirit_bomb)
+	}
+	unless (
+		VengeanceEquippedBlindFaithRuneforge() and (
+			(TimeSincePreviousSpell(elysian_decree) < VengeanceSigilDuration()) or
+			(SpellCooldown(elysian_decree) < 2)
+		)
+	) {
+		VengeanceSoulCleaveActions()
+	}
+	# Use Fury builders if they won't cap Fury/Souls.
+	VengeanceUseFelblade()
+	VengeanceUseFracture()
+	VengeanceUseImmolationAura()
+	VengeanceUseShear()
 	Spell(throw_glaive)
 }
 
 AddFunction VengeancePrecombatShortCdActions {
-	Spell(elysian_decree)
-	unless EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
+	Spell(elysian_decree text=open)
+	unless EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame text=open)
 }
 
 AddFunction VengeanceShortCdActions {
@@ -258,6 +325,7 @@ AddFunction VengeanceShortCdActions {
 	unless VengeanceEquippedBlindFaithRuneforge() {
 		Spell(elysian_decree)
 	}
+	Spell(sinful_brand)
 	if EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent) {
 		if (VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
 	}
@@ -265,9 +333,10 @@ AddFunction VengeanceShortCdActions {
 		Spell(fel_devastation)
 
 		unless (
-			(VengeanceFuryDeficit() < 20 and Spell(soul_cleave)) or
-			(VengeanceFuryDeficit() > 25 and VengeanceShearSoulFragments() <= 5 and Spell(fracture)) or
-			(VengeanceFuryDeficit() > 10 and VengeanceImmolationAuraSoulFragments() <= 5 and not BuffPresent(immolation_aura) and Spell(immolation_aura))
+			VengeanceSoulCleaveActions() or
+			VengeanceUseFelblade() or
+			VengeanceUseFracture() or
+			VengeanceUseImmolationAura()
 		) {
 			unless EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame)
 		}
@@ -279,8 +348,9 @@ AddFunction VengeancePrecombatCdActions {
 }
 
 AddFunction VengeanceOffensiveCdActions {
-	if (Charges(infernal_strike count=0) >= 1.8) Spell(infernal_strike)
-	Spell(sinful_brand)
+	unless InCombat() Spell(infernal_strike text=open)
+	if (SpellCharges(infernal_strike count=0) >= SpellMaxCharges(infernal_strike) - 0.1) Spell(infernal_strike)
+	Spell(soul_cleave)
 	Spell(fodder_to_the_flame)
 	Spell(the_hunt)
 	Spell(bulk_extraction)
@@ -291,7 +361,12 @@ AddFunction VengeanceDefensiveCdActions {
 		if (not BuffPresent(metamorphosis) and VengeanceIsTanking() and not target.DebuffPresent(fiery_brand)) Spell(fiery_brand)
 	}
 	if (SoulFragments() >= 4) Spell(soul_barrier)
-	if (SpellCooldown(fiery_brand) > 0 and (Talent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)) Spell(metamorphosis)
+	if (
+		(SpellCooldown(fiery_brand) > 0) and
+		(Talent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)
+	) {
+		Spell(metamorphosis)
+	}
 }
 
 AddFunction VengeanceCdActions {
