@@ -283,7 +283,7 @@ AddFunction AssassinationSliceAndDiceMaintenanceActions {
 	if (BuffPresent(slice_and_dice) and BuffRefreshable(slice_and_dice)) {
 		if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
 			if SpellKnown(cut_to_the_chase) Spell(envenom text=snd)
-			Spell(slice_and_dice)
+			unless SpellKnown(cut_to_the_chase) Spell(slice_and_dice)
 		}
 	}
 }
@@ -593,7 +593,13 @@ AddFunction AssassinationShivActions {
 AddFunction AssassinationPrecombatShortCdActions {
 	Spell(stealth)
 	if (ComboPoints() <= 1) Spell(marked_for_death text=open)
-	Spell(slice_and_dice text=open)
+	if SpellKnown(cut_to_the_chase) {
+		if (BuffRemaining(slice_and_dice) < 12) Spell(slice_and_dice text=open)
+	}
+	unless SpellKnown(cut_to_the_chase) {
+		# Try to have at least a 3-CP Slice and Dice already active.
+		if (BuffRemaining(slice_and_dice) < 24) Spell(slice_and_dice text=open)
+	}
 }
 
 AddFunction AssassinationPrecombatMainActions {
