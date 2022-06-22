@@ -59,7 +59,7 @@ Define(fracture 263642)
 	SpellInfo(fracture charge_cd=4.5 cd_haste=1 fury=-25)
 	SpellRequire(fracture unusable set=1 enabled=(not Talent(fracture_talent)))
 	SpellRequire(fracture fury add=-20 enabled=(Level() >= 48 and BuffPresent(metamorphosis)))
-Define(frailty_debuff 224509)
+Define(frailty_debuff 247456)
 	SpellInfo(frailty_debuff duration=20)
 	SpellAddTargetDebuff(spirit_bomb frailty_debuff add=1)
 Define(immolation_aura 258920)
@@ -115,6 +115,7 @@ Define(uncontained_fel_debuff 209261)
 Define(void_reaver_debuff 268178)
 	SpellInfo(void_reaver_debuff duration=12)
 	SpellAddTargetDebuff(soul_cleave void_reaver_debuff add=1)
+SpellList(vengeance_defensive_buff demon_spikes_buff fleshcraft metamorphosis)
 
 # Covenant Abilities
 AddCheckBox(opt_suggest_covenant_ability L(opt_suggest_covenant_ability) default)
@@ -238,31 +239,13 @@ AddFunction VengeanceEquippedBlindFaithRuneforge {
 	EquippedRuneforge(blind_faith_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt)
 }
 
-AddFunction VengeancePrecombatActiveMitigationActions {
-	PrecombatShortCdActions()
-	# Use Demon Spikes heading into a pull if not already up.
-	unless BuffPresent(demon_spikes_buff) Spell(demon_spikes text=open)
-}
-
-AddFunction VengeanceActiveMitigationActions {
-	if (not BuffPresent(metamorphosis) and VengeanceIsTanking()) {
-		# Don't cap on charges of Demon Spikes.
-		if (SpellCharges(demon_spikes count=0) > SpellMaxCharges(demon_spikes) - 0.1) Spell(demon_spikes text=cap)
-	}
-}
-
 AddFunction VengeanceSoulCleaveActions {
+	if VengeanceFuryWillOverCap() Spell(soul_cleave text=cap)
 	unless Talent(spirit_bomb_talent) {
-		if (
-			HealthPercent() <= 70 and
-			Fury() >= PowerCost(soul_cleave) and
-			SoulFragments() >= 2 and
-			VengeanceSoulCleaveHealing() <= HealthMissing()
-		) {
-			Spell(soul_cleave)
+		if (HealthPercent() <= 70 and VengeanceSoulCleaveHealing() <= HealthMissing()) {
+			if (SoulFragments() >= 2) Spell(soul_cleave)
 		}
 	}
-	if VengeanceFuryWillOverCap() Spell(soul_cleave text=cap)
 }
 
 AddFunction VengeanceUseFelblade {
@@ -283,10 +266,43 @@ AddFunction VengeanceUseShear {
 	if (VengeanceFuryDeficitAfterShear() > 0 and VengeanceSoulsAfterShear() <= 5) Spell(shear)
 }
 
-AddFunction VengeancePrecombatMainActions {}
+AddFunction VengeanceHasDefensiveBuff {
+	BuffPresent(vengeance_defensive_buff) or
+	(Enemies(tagged=1) == 1 and target.DebuffPresent(fiery_brand))
+}
+
+AddFunction VengeancePrecombatActiveMitigationActions {
+	PrecombatShortCdActions()
+	unless VengeanceHasDefensiveBuff() {
+		# Use Demon Spikes heading into a pull if not already up.
+		unless BuffPresent(demon_spikes_buff) Spell(demon_spikes text=open)
+	}
+}
+
+AddFunction VengeanceActiveMitigationActions {
+	unless VengeanceHasDefensiveBuff() {
+		if VengeanceIsTanking() {
+			# Don't cap on charges of Demon Spikes.
+			if (SpellCharges(demon_spikes count=0) > SpellMaxCharges(demon_spikes) - 0.1) Spell(demon_spikes text=cap)
+			unless BuffPresent(demon_spikes_buff) Spell(demon_spikes)
+		}
+	}
+}
+
+AddFunction VengeancePrecombatMainActions {
+	if Talent(spirit_bomb_talent) {
+		Spell(spirit_bomb text=open)
+		Spell(fracture text=open)
+	}
+	Spell(soul_cleave text=open)
+	Spell(immolation_aura text=open)
+}
 
 AddFunction VengeanceMainActions {
 	unless VengeanceInRange() Spell(throw_glaive text=range)
+	unless target.DebuffPresent(frailty_debuff) {
+		if (SoulFragments() >= 2) Spell(spirit_bomb text=buff)
+	}
 	unless (
 		VengeanceEquippedBlindFaithRuneforge() and (
 			(TimeSincePreviousSpell(elysian_decree) < VengeanceSigilDuration()) or
@@ -314,6 +330,7 @@ AddFunction VengeanceMainActions {
 AddFunction VengeancePrecombatShortCdActions {
 	Spell(elysian_decree text=open)
 	unless EquippedRuneforge(razelikhs_defilement_runeforge) Spell(sigil_of_flame text=open)
+	Spell(fel_devastation text=open)
 }
 
 AddFunction VengeanceShortCdActions {
@@ -326,8 +343,10 @@ AddFunction VengeanceShortCdActions {
 		Spell(elysian_decree)
 	}
 	Spell(sinful_brand)
-	if EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent) {
-		if (VengeanceIsTanking() and not target.DebuffPresent(fiery_brand) and target.TimeToDie() > 12) Spell(fiery_brand)
+	if (EquippedRuneforge(fiery_soul_runeforge) or Talent(burning_alive_talent)) {
+		if (target.TimeToDie() > BaseDuration(fiery_brand)) {
+			unless target.DebuffPresent(fiery_brand) Spell(fiery_brand text=dot)
+		}
 	}
 	unless (SoulFragments() >= 4 and Spell(spirit_bomb)) {
 		Spell(fel_devastation)
@@ -357,15 +376,17 @@ AddFunction VengeanceOffensiveCdActions {
 }
 
 AddFunction VengeanceDefensiveCdActions {
-	unless (EquippedRuneforge(fiery_soul_runeforge) and Talent(burning_alive_talent)) {
-		if (not BuffPresent(metamorphosis) and VengeanceIsTanking() and not target.DebuffPresent(fiery_brand)) Spell(fiery_brand)
-	}
-	if (SoulFragments() >= 4) Spell(soul_barrier)
-	if (
-		(SpellCooldown(fiery_brand) > 0) and
-		(Talent(soul_barrier_talent) and SpellCooldown(soul_barrier) > 0)
-	) {
-		Spell(metamorphosis)
+	unless VengeanceHasDefensiveBuff() {
+		unless (EquippedRuneforge(fiery_soul_runeforge) or not VengeanceIsTanking()) {
+			unless target.DebuffPresent(fiery_brand) Spell(fiery_brand)
+		}
+		if (SoulFragments() >= 4) Spell(soul_barrier)
+		unless (
+			(VengeanceIsTanking() and not SpellCooldown(fiery_brand) > 0) or
+			(Talent(soul_barrier_talent) and not SpellCooldown(soul_barrier) > 0)
+		) {
+			Spell(metamorphosis)
+		}
 	}
 }
 
