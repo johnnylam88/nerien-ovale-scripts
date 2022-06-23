@@ -136,7 +136,6 @@ Define(shiv_debuff 319504)
 Define(slice_and_dice 315496)
 	SpellInfo(slice_and_dice energy=25 combopoints=1 set_combopoints=0)
 	SpellInfo(slice_and_dice duration=6 add_duration_combopoints=6 tick=2)
-	SpellRequire(slice_and_dice unusable set=1 enabled=(BuffRemaining(slice_and_dice) > BaseDuration(slice_and_dice)))
 	SpellAddBuff(slice_and_dice slice_and_dice add=1)
 Define(stealth 1784)
 	SpellInfo(stealth cd=2 gcd=0 offgcd=1)
@@ -280,10 +279,12 @@ AddFunction AssassinationOnAnimachargedComboPoint {
 }
 
 AddFunction AssassinationSliceAndDiceMaintenanceActions {
-	if (BuffPresent(slice_and_dice) and BuffRefreshable(slice_and_dice)) {
-		if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
-			if SpellKnown(cut_to_the_chase) Spell(envenom text=snd)
-			unless SpellKnown(cut_to_the_chase) Spell(slice_and_dice)
+	if BuffPresent(slice_and_dice) and (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
+		if SpellKnown(cut_to_the_chase) {
+			if (BuffRemaining(slice_and_dice) < 9) Spell(envenom text=snd)
+		}
+		unless SpellKnown(cut_to_the_chase) {
+			if (BuffRemaining(slice_and_dice) < 0.3 * BaseDuration(slice_and_dice)) Spell(slice_and_dice)
 		}
 	}
 }
@@ -345,7 +346,7 @@ AddFunction AssassinationSingleTargetSerratedBoneSpikeActions {
 
 AddFunction AssassinationSingleTargetActions {
 	unless BuffPresent(slice_and_dice) {
-		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice)
+		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice text=buff)
 	}
 	AssassinationSliceAndDiceMaintenanceActions()
 	AssassinationSingleTargetRuptureActions()
@@ -493,7 +494,7 @@ AddFunction AssassinationMultiTargetActions {
 		AssassinationMultiTargetGarroteActions()
 	}
 	unless BuffPresent(slice_and_dice) {
-		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice)
+		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice text=buff)
 	}
 	AssassinationCrimsonTempestActions()
 	AssassinationMultiTargetRuptureActions()
