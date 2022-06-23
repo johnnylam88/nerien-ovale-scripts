@@ -586,7 +586,7 @@ AddFunction AssassinationShivActions {
 	unless (Enemies(tagged=1) > 1) {
 		unless (ComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
 		{
-			if (target.DebuffRemaining(rupture) > 16 and target.DebuffRemaining(slice_and_dice) > 18) Spell(shiv text=st)
+			if (target.DebuffRemaining(rupture) > 16 and BuffRemaining(slice_and_dice) > 12) Spell(shiv text=st)
 		}
 	}
 }
