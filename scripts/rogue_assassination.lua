@@ -637,6 +637,13 @@ AddFunction AssassinationCdActions {
 	if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta)
 }
 
+AddFunction AssassinationBuffActions {
+	unless BuffPresent(lethal_poison) Spell(deadly_poison text=buff)
+	unless InCombat() {
+		if (BuffRemaining(deadly_poison) < 900 and BuffRemaining(wound_poison) < 900) Spell(deadly_poison)
+	}
+}
+
 AddFunction AssassinationInterruptActions {
 	if (not focus.IsFriend() and focus.Casting()) {
 		if focus.InRange(kick) and focus.IsInterruptible() Spell(kick text=focus)
@@ -723,7 +730,7 @@ AddIcon help=cd {
 }
 
 AddIcon help=trinkets size=small {
-	if (BuffRemaining(lethal_poison) < 900) Spell(deadly_poison)
+	AssassinationBuffActions()
 	unless AssassinationInRange() {
 		Spell(shadowstep)
 		Texture(misc_arrowlup help=L(not_in_melee_range))
