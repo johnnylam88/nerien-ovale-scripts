@@ -317,7 +317,7 @@ AddFunction AssassinationSingleTargetGarroteActions {
 
 AddFunction AssassinationSingleTargetRuptureActions {
 	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
-		if (BaseDuration(rupture) >= target.TimeToDie()) {
+		if (BaseDuration(rupture) <= target.TimeToDie()) {
 			if target.DebuffPresent(rupture) {
 				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					Spell(rupture text=plus)
