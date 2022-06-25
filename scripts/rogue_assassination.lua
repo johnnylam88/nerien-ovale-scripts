@@ -278,13 +278,27 @@ AddFunction AssassinationOnAnimachargedComboPoint {
 	)
 }
 
+AddFunction AssassinationEffectiveComboPoints {
+	if AssassinationOnAnimachargedComboPoint() 7
+	ComboPoints()
+}
+
+AddFunction AssassinationEffectiveComboPointsDeficit {
+	if AssassinationOnAnimachargedComboPoint() 0
+	ComboPointsDeficit()
+}
+
+AddFunction AssassinationRuptureDuration {
+	4 + 4 * AssassinationEffectiveComboPoints()
+}
+
 AddFunction AssassinationSliceAndDiceMaintenanceActions {
-	if BuffPresent(slice_and_dice) and (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
+	if BuffPresent(slice_and_dice) {
 		if SpellKnown(cut_to_the_chase) {
-			if (BuffRemaining(slice_and_dice) < 9) Spell(envenom text=snd)
+			if (BuffRemaining(slice_and_dice) < 9 and AssassinationEffectiveComboPointsDeficit() <= 1) Spell(envenom text=snd)
 		}
 		unless SpellKnown(cut_to_the_chase) {
-			if (BuffRemaining(slice_and_dice) < 0.3 * BaseDuration(slice_and_dice)) Spell(slice_and_dice)
+			if (BuffRemaining(slice_and_dice) < 0.3 * BaseDuration(slice_and_dice) and ComboPointsDeficit() <= 1) Spell(slice_and_dice)
 		}
 	}
 }
@@ -300,7 +314,7 @@ AddFunction AssassinationExsanguinateActions {
 }
 
 AddFunction AssassinationSingleTargetGarroteActions {
-	if (ComboPointsDeficit() > 0) {
+	if (AssassinationEffectiveComboPointsDeficit() > 0) {
 		if target.DebuffPresent(garrote) {
 			if (PersistentMultiplier(garrote) > target.DebuffPersistentMultiplier(garrote)) {
 				Spell(garrote text=plus)
@@ -316,8 +330,8 @@ AddFunction AssassinationSingleTargetGarroteActions {
 }
 
 AddFunction AssassinationSingleTargetRuptureActions {
-	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
-		if (BaseDuration(rupture) <= target.TimeToDie()) {
+	if (AssassinationEffectiveComboPoints() >= 4) {
+		if (AssassinationRuptureDuration() <= target.TimeToDie()) {
 			if target.DebuffPresent(rupture) {
 				if (PersistentMultiplier(rupture) > target.DebuffPersistentMultiplier(rupture)) {
 					Spell(rupture text=plus)
@@ -352,7 +366,7 @@ AddFunction AssassinationSingleTargetActions {
 	AssassinationSingleTargetRuptureActions()
 	AssassinationSingleTargetGarroteActions()
 	AssassinationSingleTargetSerratedBoneSpikeActions()
-	if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) {
+	if (AssassinationEffectiveComboPointsDeficit() <= 1) {
 		# Pool to 80 energy if single-target before casting Envenom.
 		Spell(envenom extra_energy=45 text=pool)
 	}
@@ -362,8 +376,8 @@ AddFunction AssassinationSingleTargetActions {
 }
 
 AddFunction AssassinationMarkedForDeathActions {
-	if (ComboPoints() <= 1) Spell(marked_for_death)
-	if (ComboPointsDeficit() >= 2 and target.TimeToDie() < 10) Spell(marked_for_death text=snipe)
+	if (AssassinationEffectiveComboPoints() <= 1) Spell(marked_for_death)
+	if (AssassinationEffectiveComboPointsDeficit() >= 2 and target.TimeToDie() < 10) Spell(marked_for_death text=snipe)
 }
 
 AddFunction AssassinationSingleTargetShortCdActions {
@@ -375,10 +389,10 @@ AddFunction AssassinationSingleTargetShortCdActions {
 		AssassinationSingleTargetRuptureActions() or
 		AssassinationSingleTargetGarroteActions()
 	) {
-		if (ComboPointsDeficit() > 1) Spell(echoing_reprimand text=st)
+		if (AssassinationEffectiveComboPointsDeficit() > 1) Spell(echoing_reprimand text=st)
 		# Pool combo points to spend during Flagellation.
-		if (ComboPointsDeficit() <= 1 and BaseDuration(flagellation) <= target.TimeToDie()) Spell(flagellation text=st)
-		if (ComboPointsDeficit() > 0) Spell(sepsis text=st)
+		if (AssassinationEffectiveComboPointsDeficit() <= 1 and BaseDuration(flagellation) <= target.TimeToDie()) Spell(flagellation text=st)
+		if (AssassinationEffectiveComboPointsDeficit() > 0) Spell(sepsis text=st)
 
 		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis)) {
 			if Talent(subterfuge_talent) {
@@ -397,7 +411,7 @@ AddFunction AssassinationSingleTargetShortCdActions {
 			}
 			if Talent(nightstalker_talent) or Talent(master_assassin_talent) {
 				# Use Vanish at full combo points with Nightstalker or Master Assassin.
-				if (ComboPointsDeficit() <= 1 and Energy() >= 25) Spell(vanish text=st)
+				if (AssassinationEffectiveComboPointsDeficit() <= 1 and Energy() >= 25) Spell(vanish text=st)
 			}
 			AssassinationExsanguinateActions()
 		}
@@ -416,7 +430,7 @@ AddFunction AssassinationSingleTargetCdActions {
 }
 
 AddFunction AssassinationCrimsonTempestActions {
-	if (ComboPoints() >= 4 or AssassinationOnAnimachargedComboPoint()) {
+	if (AssassinationEffectiveComboPoints() >= 4) {
 		if target.DebuffPresent(crimson_tempest) {
 			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
 				Spell(crimson_tempest text=plus)
@@ -434,7 +448,7 @@ AddFunction AssassinationCrimsonTempestActions {
 }
 
 AddFunction AssassinationMultiTargetGarroteActions {
-	if (ComboPointsDeficit() > 0) {
+	if (AssassinationEffectiveComboPointsDeficit() > 0) {
 		if (DebuffCountOnAny(garrote) < AssassinationUpToThreeTargets()) {
 			unless target.DebuffPresent(garrote) Spell(garrote text=new)
 			Spell(garrote text=other)
@@ -453,7 +467,7 @@ AddFunction AssassinationMultiTargetGarroteActions {
 }
 
 AddFunction AssassinationMultiTargetRuptureActions {
-	if (ComboPoints() >= 3 or AssassinationOnAnimachargedComboPoint()) {
+	if (AssassinationEffectiveComboPoints() >= 3) {
 		if (DebuffCountOnAny(rupture) < AssassinationUpToFourTargets()) {
 			unless target.DebuffPresent(rupture) Spell(rupture text=new)
 			Spell(rupture text=other)
@@ -501,7 +515,7 @@ AddFunction AssassinationMultiTargetActions {
 	AssassinationSliceAndDiceMaintenanceActions()
 	AssassinationMultiTargetSerratedBoneSpikeActions()
 	AssassinationMultiTargetGarroteActions()
-	if (ComboPointsDeficit() <= 1 or AssassinationOnAnimachargedComboPoint()) Spell(envenom)
+	if (AssassinationEffectiveComboPointsDeficit() <= 1) Spell(envenom)
 	if (Enemies(tagged=1) >= 4) {
 		Spell(fan_of_knives)
 	}
@@ -527,10 +541,10 @@ AddFunction AssassinationMultiTargetShortCdActions {
 		AssassinationSliceAndDiceMaintenanceActions() or
 		AssassinationMultiTargetSerratedBoneSpikeActions()
 	) {
-		if (ComboPointsDeficit() > 1) Spell(echoing_reprimand text=aoe)
+		if (AssassinationEffectiveComboPointsDeficit() > 1) Spell(echoing_reprimand text=aoe)
 		# Pool combo points to spend during Flagellation.
-		if (ComboPointsDeficit() <= 1 and BaseDuration(flagellation) <= target.TimeToDie()) Spell(flagellation text=aoe)
-		if (ComboPointsDeficit() > 0) Spell(sepsis text=aoe)
+		if (AssassinationEffectiveComboPointsDeficit() <= 1 and BaseDuration(flagellation) <= target.TimeToDie()) Spell(flagellation text=aoe)
+		if (AssassinationEffectiveComboPointsDeficit() > 0) Spell(sepsis text=aoe)
 
 		unless (Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis)) {
 			if Talent(subterfuge_talent) {
@@ -539,7 +553,7 @@ AddFunction AssassinationMultiTargetShortCdActions {
 			}
 			if (Talent(nightstalker_talent) or Talent(master_assassin_talent)) {
 				# Use Vanish at full combo points with Nightstalker or Master Assassin.
-				if (ComboPointsDeficit() <= 1 and Energy() >= 25) Spell(vanish text=aoe)
+				if (AssassinationEffectiveComboPointsDeficit() <= 1 and Energy() >= 25) Spell(vanish text=aoe)
 			}
 			AssassinationExsanguinateActions()
 		}
@@ -584,7 +598,7 @@ AddFunction AssassinationShivActions {
 		}
 	}
 	unless (Enemies(tagged=1) > 1) {
-		unless (ComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
+		unless (AssassinationEffectiveComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
 		{
 			if (target.DebuffRemaining(rupture) > 16 and BuffRemaining(slice_and_dice) > 12) Spell(shiv text=st)
 		}
@@ -593,7 +607,7 @@ AddFunction AssassinationShivActions {
 
 AddFunction AssassinationPrecombatShortCdActions {
 	Spell(stealth)
-	if (ComboPoints() <= 1) Spell(marked_for_death text=open)
+	if (AssassinationEffectiveComboPoints() <= 1) Spell(marked_for_death text=open)
 	if SpellKnown(cut_to_the_chase) {
 		if (BuffRemaining(slice_and_dice) < 12) Spell(slice_and_dice text=open)
 	}
@@ -608,7 +622,7 @@ AddFunction AssassinationPrecombatMainActions {
 		AssassinationSingleTargetGarroteActions()
 	}
 	if Talent(master_assassin_talent) {
-		if (ComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice)) {
+		if (AssassinationEffectiveComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice)) {
 			AssassinationSingleTargetRuptureActions()
 		}
 		Spell(serrated_bone_spike text=open)
@@ -621,7 +635,7 @@ AddFunction AssassinationPrecombatAoEActions {
 		AssassinationMultiTargetGarroteActions()
 	}
 	if Talent(master_assassin_talent) {
-		if (ComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice)) {
+		if (AssassinationEffectiveComboPointsDeficit() <= 1 and BuffPresent(slice_and_dice)) {
 			AssassinationSingleTargetRuptureActions()
 		}
 		Spell(serrated_bone_spike text=open)
