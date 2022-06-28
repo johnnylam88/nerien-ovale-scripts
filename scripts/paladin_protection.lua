@@ -132,6 +132,9 @@ Define(redoubt_buff 280375)
 Define(repentance 327193)
 	SpellInfo(repentance cd=15)
 	SpellRequire(repentance unusable set=1 enabled=(not Talent(repentance_talent)))
+Define(royal_decree_buff 340147)
+	SpellInfo(royal_decree_buff duration=15)
+	SpellAddBuff(word_of_glory royal_decree_buff set=0)
 Define(seraphim 152262)
 	SpellInfo(seraphim cd=45 duration=15 holypower=3)
 	SpellRequire(seraphim unusable set=1 enabled=(not Talent(seraphim_talent)))
@@ -161,7 +164,7 @@ Define(turn_evil 10326)
 	SpellInfo(turn_evil cd=15)
 Define(word_of_glory 85673)
 	SpellInfo(word_of_glory holypower=3)
-	SpellRequire(word_of_glory holypower set=0 enabled=(BuffPresent(shining_light_free_buff)))
+	SpellRequire(word_of_glory holypower set=0 enabled=(BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)))
 SpellList(protection_defensive_buff ardent_defender blessing_of_protection blessing_of_spellwarding divine_shield guardian_of_ancient_kings fleshcraft)
 
 # Covenant Abilities
@@ -292,10 +295,12 @@ AddFunction ProtectionActiveMitigationActions {
 	if BuffPresent(divine_purpose) Spell(seraphim text=free)
 	Spell(seraphim)
 	# Use Word of Glory below 50% health if it's free.
-	if (BuffPresent(shining_light_free_buff) and HealthPercent() < 50) Spell(word_of_glory text=free)
+	if (HealthPercent() < 50) {
+		if (BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)) Spell(word_of_glory text=free)
+	}
 	unless (
 		(Talent(seraphim_talent) and not SpellCooldown(seraphim) > 0) or
-		(BuffPresent(shining_light_free_buff) and HealthPercent() < 50)
+		(HealthPercent() < 50 and (BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)))
 	) {
 		if BuffPresent(divine_purpose) Spell(shield_of_the_righteous text=free)
 		if (HolyPowerDeficit() == 0) Spell(shield_of_the_righteous text=cap)
@@ -438,7 +443,9 @@ AddFunction ProtectionHealActions {
 	# Use Lay on Hands below 25% health.
 	if (HealthPercent() < 25) Spell(lay_on_hands)
 	# Use Shining Light procs on others if not personally needed.
-	if (BuffPresent(shining_light_free_buff) and HealthPercent() > 50) Spell(word_of_glory text=other)
+	if (HealthPercent() > 50) {
+		if (BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)) Spell(word_of_glory text=other)
+	}
 }
 
 ### User Interface ###
