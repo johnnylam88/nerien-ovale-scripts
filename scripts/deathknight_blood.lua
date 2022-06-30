@@ -224,7 +224,7 @@ AddFunction BloodCoreMainActions {
 		if (RunicPowerDeficit() < 20) Spell(death_strike text=dmg)
 	}
 	unless BuffPresent(abomination_limb) {
-		if (IsCovenant(necrolord) and SpellCooldown(abomination_limb) < 3) {
+		if (IsCovenant(necrolord) and SpellCooldown(abomination_limb) > 3) {
 			if (BuffStacks(bone_shield) < 6) Spell(marrowrend)
 		}
 		if EquippedRuneforge(crimson_rune_weapon_runeforge) {
@@ -243,14 +243,12 @@ AddFunction BloodCoreMainActions {
 	if (TimeToRunes(4) < GCD()) Spell(heart_strike)
 	if (Talent(hemostasis_talent) and BuffStacks(hemostasis_buff) < 5 and Charges(blood_boil count=0) > SpellMaxCharges(blood_boil) - 0.2) Spell(blood_boil text=cap)
 	if (Rune() >= 3) Spell(heart_strike)
-	if (BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10) {
-		if (BuffStacks(bone_shield) >= 6) {
-			if IsCovenant(night_fae) {
-				if BuffPresent(death_and_decay_buff) Spell(heart_strike)
-			}
-			unless IsCovenant(night_fae) {
-				Spell(heart_strike)
-			}
+	if (BuffStacks(bone_shield) >= 6 and BuffRemaining(bone_shield) > 4.5 and SpellCooldown(dancing_rune_weapon) > 10) {
+		if IsCovenant(night_fae) {
+			if BuffPresent(death_and_decay_buff) Spell(heart_strike)
+		}
+		unless IsCovenant(night_fae) {
+			Spell(heart_strike)
 		}
 	}
 	if (Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5) Spell(blood_boil)
@@ -281,7 +279,7 @@ AddFunction BloodCoreShortCdActions {
 				IsCovenant(night_fae) or
 				(Enemies(tagged=1) == 1 and RunicPowerDeficit() < 20 and Spell(death_strike)) or
 				(not BuffPresent(abomination_limb) and Spell(marrowrend) and
-					((IsCovenant(necrolord) and SpellCooldown(abomination_limb) < 3 and BuffStacks(bone_shield) < 6) or
+					((IsCovenant(necrolord) and SpellCooldown(abomination_limb) > 3 and BuffStacks(bone_shield) < 6) or
 					 (EquippedRuneforge(crimson_rune_weapon_runeforge) and SpellCooldown(dancing_rune_weapon) < 60 and BuffStacks(bone_shield) < 6) or
 					 (not EquippedRuneforge(crimson_rune_weapon_runeforge) and BuffStacks(bone_shield) < 8))) or
 				(EquippedRuneforge(crimson_rune_weapon_runeforge) and Spell(tombstone) and
@@ -293,8 +291,7 @@ AddFunction BloodCoreShortCdActions {
 					(TimeToRunes(4) < GCD() and Spell(heart_strike)) or
 					(Talent(hemostasis_talent) and BuffStacks(hemostasis_buff) < 5 and Charges(blood_boil count=0) > SpellMaxCharges(blood_boil) - 0.2 and Spell(blood_boil)) or
 					(Rune() >= 3 and Spell(heart_strike)) or
-					(BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10 and
-						BuffStacks(bone_shield) >= 6 and Spell(heart_strike) and
+					(BuffStacks(bone_shield) >= 6 and BuffRemaining(bone_shield) > 4.5 and SpellCooldown(dancing_rune_weapon) > 10 and Spell(heart_strike) and
 						((IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)) or not IsCovenant(night_fae))) or
 					(Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5 and Spell(blood_boil)) or
 					(Charges(blood_boil count=0) > SpellMaxCharges(blood_boil) - 0.2 and Spell(blood_boil)) or
@@ -330,15 +327,8 @@ AddFunction BloodDancingRuneWeaponMainActions {
 	if BuffPresent(crimson_scourge_buff) Spell(deaths_due text=free)
 	if (TimeToRunes(4) < GCD()) Spell(heart_strike)
 	if (Rune() >= 3) Spell(heart_strike)
-	if (BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10) {
-		if (BuffStacks(bone_shield) >= 2) {
-			if IsCovenant(night_fae) {
-				if BuffPresent(death_and_decay_buff) Spell(heart_strike)
-			}
-			unless IsCovenant(night_fae) {
-				Spell(heart_strike)
-			}
-		}
+	if (BuffStacks(bone_shield) >= 2 and BuffRemaining(bone_shield) > 4.5) {
+		Spell(heart_strike)
 	}
 	if (Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5) Spell(blood_boil)
 	if (Charges(blood_boil count=0) > SpellMaxCharges(blood_boil) - 0.2) Spell(blood_boil text=cap)
@@ -370,9 +360,7 @@ AddFunction BloodDancingRuneWeaponShortCdActions {
 			unless (
 				(TimeToRunes(4) < GCD() and Spell(heart_strike)) or
 				(Rune() >= 3 and Spell(heart_strike)) or
-				(BuffRemaining(bone_shield) < 4.5 and SpellCooldown(dancing_rune_weapon) > 10 and
-					BuffStacks(bone_shield) >= 2 and Spell(heart_strike) and
-					((IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)) or not IsCovenant(night_fae))) or
+				(BuffStacks(bone_shield) >= 2 and BuffRemaining(bone_shield) > 4.5 and Spell(heart_strike)) or
 				(Talent(hemostasis_talent) and BuffStacks(hemostasis) < 5 and Spell(blood_boil)) or
 				(Charges(blood_boil count=0) > SpellMaxCharges(blood_boil) - 0.2 and Spell(blood_boil)) or
 				(RunicPowerDeficit() < 40 and Spell(death_strike))
