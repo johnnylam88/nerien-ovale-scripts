@@ -260,7 +260,7 @@ AddFunction ArmsInExecuteRange {
 AddFunction ArmsSingleTargetActions {
 	unless BuffPresent(bladestorm) {
 		if (not ArmsInExecuteRange() and not target.DebuffPresent(colossus_smash_debuff) and target.DebuffRemaining(rend) < 4) Spell(rend)
-		if (Charges(overpower count=0) >= 1.8) Spell(overpower)
+		if (Charges(overpower count=0) > SpellMaxCharges(overpower) - 0.2) Spell(overpower)
 		if (BuffStacks(overpower) == 2) Spell(mortal_strike text=plus)
 		if (BuffPresent(battlelord_buff) or EquippedRuneforge(enduring_blow_runeforge)) Spell(mortal_strike text=lego)
 		if (Rage() < 55 or (ArmsInExecuteRange() and Rage() < 60)) Spell(skullsplitter)
@@ -298,7 +298,7 @@ AddFunction ArmsSingleTargetShortCdActions {
 			}
 
 			unless (
-				(Charges(overpower count=0) >= 1.8 and Spell(overpower)) or
+				(Charges(overpower count=0) > SpellMaxCharges(overpower) - 0.2 and Spell(overpower)) or
 				((BuffStacks(overpower) == 2 or BuffPresent(battlelord_buff) or EquippedRuneforge(enduring_blow_runeforge)) and Spell(mortal_strike)) or
 				((Rage() < 55 or (ArmsInExecuteRange() and Rage() < 60)) and Spell(skullsplitter)) or
 				(BuffPresent(sudden_death_buff) and Spell(execute))
@@ -320,7 +320,7 @@ AddFunction ArmsSingleTargetCdActions {
 				(IsCovenant(night_fae) and (SpellCooldown(ancient_aftershock) > 40 or SpellCooldown(ancient_aftershock) < GCD()))) and
 				((SpellCooldown(colossus_smash) < GCD() and Spell(ravager)) or
 					Spell(colossus_smash))) or
-			(Charges(overpower count=0) >= 1.8 and Spell(overpower)) or
+			(Charges(overpower count=0) > SpellMaxCharges(overpower) - 0.2 and Spell(overpower)) or
 			((BuffStacks(overpower) == 2 or BuffPresent(battlelord_buff) or EquippedRuneforge(enduring_blow_runeforge)) and Spell(mortal_strike))
 		) {
 			if target.DebuffPresent(colossus_smash_debuff) {

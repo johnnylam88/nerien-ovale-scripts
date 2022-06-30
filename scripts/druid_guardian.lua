@@ -443,7 +443,7 @@ AddFunction GuardianShortCdActions {
 	# Maintain at least one stack of Ironfur and don't cap on Rage.
 	if (BuffRemaining(ironfur) < 1 or RageDeficit() < 40) Spell(ironfur)
 	# Use Frenzied Regeneration between 50% and 20% health.
-	if (HealthPercent() < (50 - 20 * (2 - Charges(frenzied_regeneration count=0)))) {
+	if (HealthPercent() < (50 - 20 * (SpellMaxCharges(frenzied_regeneration) - Charges(frenzied_regeneration count=0)))) {
 		unless BuffPresent(frenzied_regeneration) Spell(frenzied_regeneration)
 	}
 	Spell(bristling_fur)

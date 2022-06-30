@@ -234,7 +234,7 @@ AddFunction BrewmasterActiveMitigationActions {
 	# Use Black Ox Brew when Celestial Brew is on cooldown and Purifying Brew has no charges.
 	if (SpellCooldown(celestial_brew) > GCD() and SpellCharges(purifying_brew count=0) < 0.75) Spell(black_ox_brew)
 	# Never let Purifying Brew sit on cooldown while tanking.
-	if (SpellCharges(purifying_brew count=0) > 1.9) Spell(purifying_brew text=cap)
+	if (SpellCharges(purifying_brew count=0) > SpellMaxCharges(purifying_brew) - 0.1) Spell(purifying_brew text=cap)
 	# Use up Purifying Brew charges if Black Ox Brew is coming off cooldown.
 	if (Talent(black_ox_brew_talent) and SpellCooldown(black_ox_brew) < GCD()) Spell(purifying_brew text=dump)
 	# Try to refresh Purified Chi with Purifying Brew.
@@ -388,7 +388,7 @@ AddFunction BrewmasterHealActions {
 	}
 	ItemHealActions()
 	# Use Healing Elixir between 60% and 30% health.
-	if (HealthPercent() < 60 - 30 * (2 - Charges(healing_elixir count=0))) Spell(healing_elixir)
+	if (HealthPercent() < 60 - 30 * (SpellMaxCharges(healing_elixir) - Charges(healing_elixir count=0))) Spell(healing_elixir)
 }
 
 ### User Interface ###

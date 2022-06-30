@@ -345,7 +345,7 @@ AddFunction BalanceMaintainDoTActions {
 
 AddFunction BalanceNewMoonActions {
 	# Don't cap on charges of New/Half/Full Moon.
-	if (Talent(new_moon_talent) and SpellCharges(new_moon) >= 2.8) {
+	if (Talent(new_moon_talent) and SpellCharges(new_moon) > SpellMaxCharges(new_moon) - 0.2) {
 		Spell(full_moon)
 		Spell(half_moon)
 		Spell(new_moon)

@@ -237,7 +237,7 @@ AddFunction FurySingleTargetActions {
 	Spell(execute)
 	Spell(bloodbath)
 	if IsEnraged() {
-		if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+		if (Charges(raging_blow count=0) > SpellMaxCharges(raging_blow) - 0.2) Spell(raging_blow)
 		Spell(onslaught)
 	}
 	Spell(raging_blow)
@@ -261,7 +261,7 @@ AddFunction FurySingleTargetShortCdActions {
 				Spell(crushing_blow) or
 				Spell(execute) or
 				Spell(bloodbath) or
-				(IsEnraged() and Charges(raging_blow count=0) >= 1.8 and Spell(raging_blow))
+				(IsEnraged() and Charges(raging_blow count=0) > SpellMaxCharges(raging_blow) - 0.2 and Spell(raging_blow))
 			) {
 				if IsEnraged() Spell(dragon_roar text=st)
 			}
@@ -284,7 +284,7 @@ AddFunction FuryMultiTargetActions {
 		}
 		unless (BuffPresent(merciless_bonegrinder_buff) and Enemies(tagged=1) >= 3) {
 			if IsEnraged() {
-				if (Charges(raging_blow count=0) >= 1.8) Spell(raging_blow)
+				if (Charges(raging_blow count=0) > SpellMaxCharges(raging_blow) - 0.2) Spell(raging_blow)
 				Spell(onslaught)
 			}
 			Spell(raging_blow)

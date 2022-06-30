@@ -393,15 +393,15 @@ AddFunction ProtectionPrecombatActiveMitigationActions {
 
 AddFunction ProtectionActiveMitigationActions {
 	if ProtectionShouldShieldBlock() {
-		# Use Shield Block immediately after Charge if at 2 charges.
-		if (ProtectionHasCharged() and Charges(shield_block count=0) > 1.9) Spell(shield_block text=cap)
+		# Use Shield Block immediately after Charge if at max charges.
+		if (ProtectionHasCharged() and Charges(shield_block count=0) > SpellMaxCharges(shield_block) - 0.1) Spell(shield_block text=cap)
 		if (EquippedRuneforge(reprisal_runeforge) and BuffRemaining(shield_block_buff) < 14) {
 			# Reprisal Charge extends Shield Block by 4 seconds.
 			if target.InRange(charge) Spell(charge text=block)
 		}
 		if (BuffRemaining(shield_block_buff) < 6) {
 			# Shield Block extends its duration by 12 seconds.
-			if (Charges(shield_block count=0) > 1.9) Spell(shield_block text=cap)
+			if (Charges(shield_block count=0) > SpellMaxCharges(shield_block) - 0.1) Spell(shield_block text=cap)
 			if (Charges(shield_block count=0) >= 1)  Spell(shield_block text=1)
 		}
 		if (Talent(bolster_talent) and BuffRemaining(shield_block_buff) < 1) {

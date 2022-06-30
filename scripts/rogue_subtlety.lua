@@ -251,7 +251,7 @@ AddFunction SubtletyCdActions {
 	# the lashing. Use it again right before the debuff expires to convert
 	# the stacks into the Haste buff.
 	#Spell(flagellation)
-	if (Charges(serrated_bone_spike count=0) > 2.9) Spell(serrated_bone_spike)
+	if (Charges(serrated_bone_spike count=0) > SpellMaxCharges(serrated_bone_spike) - 0.1) Spell(serrated_bone_spike)
 	if (not target.BuffPresent(serrated_bone_spike_debuff) and target.TimeToDie() > 21) Spell(serrated_bone_spike)
 	if ((Spell(symbols_of_death) or SpellCooldown(symbols_of_death) > 10) and SubtletyBuilderCondition()) Spell(sepsis)
 	if (ComboPoints() < 1 or target.TimeToDie() < 10) Spell(marked_for_death)
