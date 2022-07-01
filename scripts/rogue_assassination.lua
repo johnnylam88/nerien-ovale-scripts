@@ -315,19 +315,21 @@ AddFunction AssassinationExsanguinateActions {
 }
 
 AddFunction AssassinationSingleTargetCrimsonTempestActions {
-	if (not EquippedRuneforge(dashing_scoundrel_runeforge) and AssassinationEffectiveComboPoints() >= 4) {
-		if target.DebuffPresent(crimson_tempest) {
-			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
-				Spell(crimson_tempest text=plus)
+	if Talent(crimson_tempest_talent) {
+		if (not EquippedRuneforge(dashing_scoundrel_runeforge) and AssassinationEffectiveComboPoints() >= 4) {
+			if target.DebuffPresent(crimson_tempest) {
+				if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
+					Spell(crimson_tempest text=plus)
+				}
+				unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
+					# Only refresh Crimson Tempest in the final 2 seconds so combo points can
+					# be spent instead on maintaining Slice and Dice and Rupture.
+					if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
+				}
 			}
-			unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
-				# Only refresh Crimson Tempest in the final 2 seconds so combo points can
-				# be spent instead on maintaining Slice and Dice and Rupture.
-				if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
+			unless target.DebuffPresent(crimson_tempest) {
+				Spell(crimson_tempest text=new)
 			}
-		}
-		unless target.DebuffPresent(crimson_tempest) {
-			Spell(crimson_tempest text=new)
 		}
 	}
 }
@@ -396,8 +398,10 @@ AddFunction AssassinationSingleTargetActions {
 }
 
 AddFunction AssassinationMarkedForDeathActions {
-	if (AssassinationEffectiveComboPoints() <= 1) Spell(marked_for_death)
-	if (AssassinationEffectiveComboPointsDeficit() >= 2 and target.TimeToDie() < 10) Spell(marked_for_death text=snipe)
+	if Talent(marked_for_death_talent) {
+		if (AssassinationEffectiveComboPoints() <= 1) Spell(marked_for_death)
+		if (AssassinationEffectiveComboPointsDeficit() >= 2 and target.TimeToDie() < 10) Spell(marked_for_death text=snipe)
+	}
 }
 
 AddFunction AssassinationSingleTargetShortCdActions {
@@ -452,19 +456,21 @@ AddFunction AssassinationSingleTargetCdActions {
 }
 
 AddFunction AssassinationMultiTargetCrimsonTempestActions {
-	if (AssassinationEffectiveComboPoints() >= 4) {
-		if target.DebuffPresent(crimson_tempest) {
-			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
-				Spell(crimson_tempest text=plus)
+	if Talent(crimson_tempest_talent) {
+		if (AssassinationEffectiveComboPoints() >= 4) {
+			if target.DebuffPresent(crimson_tempest) {
+				if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
+					Spell(crimson_tempest text=plus)
+				}
+				unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
+					# Only refresh Crimson Tempest in the final 2 seconds so combo points can
+					# be spent instead on maintaining Slice and Dice and Rupture.
+					if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
+				}
 			}
-			unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
-				# Only refresh Crimson Tempest in the final 2 seconds so combo points can
-				# be spent instead on maintaining Slice and Dice and Rupture.
-				if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
+			unless target.DebuffPresent(crimson_tempest) {
+				Spell(crimson_tempest text=new)
 			}
-		}
-		unless target.DebuffPresent(crimson_tempest) {
-			Spell(crimson_tempest text=new)
 		}
 	}
 }
