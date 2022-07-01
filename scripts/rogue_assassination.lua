@@ -235,6 +235,7 @@ Define(serrated_bone_spike_debuff 324073)
 	SpellAddTargetDebuff(serrated_bone_spike serrated_bone_spike_debuff add=1)
 
 # Runeforge Legendary Effects
+Define(dashing_scoundrel_runeforge 7115)
 Define(deathly_shadows_runeforge 7126)
 Define(mark_of_the_master_assassin_runeforge 7111)
 
@@ -313,6 +314,24 @@ AddFunction AssassinationExsanguinateActions {
 	}
 }
 
+AddFunction AssassinationSingleTargetCrimsonTempestActions {
+	if (not EquippedRuneforge(dashing_scoundrel_runeforge) and AssassinationEffectiveComboPoints() >= 4) {
+		if target.DebuffPresent(crimson_tempest) {
+			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
+				Spell(crimson_tempest text=plus)
+			}
+			unless (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
+				# Only refresh Crimson Tempest in the final 2 seconds so combo points can
+				# be spent instead on maintaining Slice and Dice and Rupture.
+				if (target.DebuffRemaining(crimson_tempest) < 2) Spell(crimson_tempest)
+			}
+		}
+		unless target.DebuffPresent(crimson_tempest) {
+			Spell(crimson_tempest text=new)
+		}
+	}
+}
+
 AddFunction AssassinationSingleTargetGarroteActions {
 	if (AssassinationEffectiveComboPointsDeficit() > 0) {
 		if target.DebuffPresent(garrote) {
@@ -365,6 +384,7 @@ AddFunction AssassinationSingleTargetActions {
 	AssassinationSliceAndDiceMaintenanceActions()
 	AssassinationSingleTargetRuptureActions()
 	AssassinationSingleTargetGarroteActions()
+	AssassinationSingleTargetCrimsonTempestActions()
 	AssassinationSingleTargetSerratedBoneSpikeActions()
 	if (AssassinationEffectiveComboPointsDeficit() <= 1) {
 		# Pool to 80 energy if single-target before casting Envenom.
@@ -387,7 +407,8 @@ AddFunction AssassinationSingleTargetShortCdActions {
 		not BuffPresent(slice_and_dice) or
 		AssassinationSliceAndDiceMaintenanceActions() or
 		AssassinationSingleTargetRuptureActions() or
-		AssassinationSingleTargetGarroteActions()
+		AssassinationSingleTargetGarroteActions() or
+		AssassinationSingleTargetCrimsonTempestActions()
 	) {
 		if (AssassinationEffectiveComboPointsDeficit() > 1) Spell(echoing_reprimand text=st)
 		# Pool combo points to spend during Flagellation.
@@ -423,13 +444,14 @@ AddFunction AssassinationSingleTargetCdActions {
 		not BuffPresent(slice_and_dice) or
 		AssassinationSliceAndDiceMaintenanceActions() or
 		AssassinationSingleTargetRuptureActions() or
-		AssassinationSingleTargetGarroteActions()
+		AssassinationSingleTargetGarroteActions() or
+		AssassinationSingleTargetCrimsonTempestActions()
 	) {
 		if (EnergyDeficit() > 40 and target.TimeToDie() >= BaseDuration(vendetta)) Spell(vendetta text=st)
 	}
 }
 
-AddFunction AssassinationCrimsonTempestActions {
+AddFunction AssassinationMultiTargetCrimsonTempestActions {
 	if (AssassinationEffectiveComboPoints() >= 4) {
 		if target.DebuffPresent(crimson_tempest) {
 			if (PersistentMultiplier(crimson_tempest) > target.DebuffPersistentMultiplier(crimson_tempest)) {
@@ -510,7 +532,7 @@ AddFunction AssassinationMultiTargetActions {
 	unless BuffPresent(slice_and_dice) {
 		if (SpellKnown(cut_to_the_chase) or ComboPoints() >= 3) Spell(slice_and_dice text=buff)
 	}
-	AssassinationCrimsonTempestActions()
+	AssassinationMultiTargetCrimsonTempestActions()
 	AssassinationMultiTargetRuptureActions()
 	AssassinationSliceAndDiceMaintenanceActions()
 	AssassinationMultiTargetSerratedBoneSpikeActions()
@@ -536,7 +558,7 @@ AddFunction AssassinationMultiTargetShortCdActions {
 
 	unless (
 		not BuffPresent(slice_and_dice) or
-		AssassinationCrimsonTempestActions() or
+		AssassinationMultiTargetCrimsonTempestActions() or
 		AssassinationMultiTargetRuptureActions() or
 		AssassinationSliceAndDiceMaintenanceActions() or
 		AssassinationMultiTargetSerratedBoneSpikeActions()
@@ -563,7 +585,7 @@ AddFunction AssassinationMultiTargetShortCdActions {
 AddFunction AssassinationMultiTargetCdActions {
 	unless (
 		not BuffPresent(slice_and_dice) or
-		AssassinationCrimsonTempestActions() or
+		AssassinationMultiTargetCrimsonTempestActions() or
 		AssassinationMultiTargetRuptureActions() or
 		AssassinationSliceAndDiceMaintenanceActions()
 	) {
@@ -589,7 +611,7 @@ AddFunction AssassinationShivActions {
 	if (Enemies(tagged=1) > 1) {
 		unless (
 			not BuffPresent(slice_and_dice) or
-			AssassinationCrimsonTempestActions() or
+			AssassinationMultiTargetCrimsonTempestActions() or
 			AssassinationMultiTargetRuptureActions() or
 			AssassinationSliceAndDiceMaintenanceActions() or
 			(Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis))
