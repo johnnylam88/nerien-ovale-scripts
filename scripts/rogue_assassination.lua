@@ -402,9 +402,14 @@ AddFunction AssassinationSingleTargetActions {
 			unless Talent(vigor_talent)	Spell(envenom extra_energy=61 text=pool)
 		}
 	}
-	if (Talent(hidden_blades_talent) and BuffStacks(hidden_blades) >= 20) Spell(fan_of_knives)
-	if BuffPresent(blindside) Spell(ambush)
-	Spell(mutilate)
+	if (AssassinationEffectiveComboPointsDeficit() >= 1) {
+		if (Talent(hidden_blades_talent) and BuffStacks(hidden_blades) >= 20) Spell(fan_of_knives)
+		if (AssassinationEffectiveComboPointsDeficit() >= 2) {
+			if BuffPresent(blindside) Spell(ambush)
+			Spell(mutilate)
+		}
+		unless AssassinationInRange() Spell(poisoned_knife)
+	}
 }
 
 AddFunction AssassinationMarkedForDeathActions {
@@ -554,17 +559,22 @@ AddFunction AssassinationMultiTargetActions {
 	AssassinationMultiTargetSerratedBoneSpikeActions()
 	AssassinationMultiTargetGarroteActions()
 	if (AssassinationEffectiveComboPointsDeficit() <= 1) Spell(envenom)
-	if (Enemies(tagged=1) >= 4) {
-		Spell(fan_of_knives)
-	}
-	unless (Enemies(tagged=1) >= 4) {
-		if (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
-			if BuffPresent(blindside) Spell(ambush text=other)
-			Spell(mutilate text=other)
+	if (AssassinationEffectiveComboPointsDeficit() >= 1) {
+		if (Enemies(tagged=1) >= 4) {
+			Spell(fan_of_knives)
 		}
-		unless (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
-			if BuffPresent(blindside) Spell(ambush)
-			Spell(mutilate)
+		unless (Enemies(tagged=1) >= 4) {
+			if (AssassinationEffectiveComboPointsDeficit() >= 2) {
+				if (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
+					if BuffPresent(blindside) Spell(ambush text=other)
+					Spell(mutilate text=other)
+				}
+				unless (BuffPresent(deadly_poison) and DebuffCountOnAny(deadly_poison_debuff) < Enemies(tagged=1) and not target.DebuffPresent(deadly_poison_debuff)) {
+					if BuffPresent(blindside) Spell(ambush)
+					Spell(mutilate)
+				}
+			}
+			unless AssassinationInRange() Spell(poisoned_knife)
 		}
 	}
 }
@@ -624,21 +634,22 @@ AddFunction AssassinationMultiTargetCdActions {
 }
 
 AddFunction AssassinationShivActions {
-	if (Enemies(tagged=1) > 1) {
-		unless (
-			not BuffPresent(slice_and_dice) or
-			AssassinationMultiTargetCrimsonTempestActions() or
-			AssassinationMultiTargetRuptureActions() or
-			AssassinationSliceAndDiceMaintenanceActions() or
-			(Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis))
-		) {
-			Spell(shiv text=aoe)
+	if (AssassinationEffectiveComboPointsDeficit() >= 1) {
+		if (Enemies(tagged=1) > 1) {
+			unless (
+				not BuffPresent(slice_and_dice) or
+				AssassinationMultiTargetCrimsonTempestActions() or
+				AssassinationMultiTargetRuptureActions() or
+				AssassinationSliceAndDiceMaintenanceActions() or
+				(Spell(echoing_reprimand) or Spell(flagellation) or Spell(serrated_bone_spike) or Spell(sepsis))
+			) {
+				Spell(shiv text=aoe)
+			}
 		}
-	}
-	unless (Enemies(tagged=1) > 1) {
-		unless (AssassinationEffectiveComboPointsDeficit() == 0 or AssassinationSingleTargetShortCdActions())
-		{
-			if (target.DebuffRemaining(rupture) > 16 and BuffRemaining(slice_and_dice) > 12) Spell(shiv text=st)
+		unless (Enemies(tagged=1) > 1) {
+			unless AssassinationSingleTargetShortCdActions() {
+				if (target.DebuffRemaining(rupture) > 16 and BuffRemaining(slice_and_dice) > 12) Spell(shiv text=st)
+			}
 		}
 	}
 }
