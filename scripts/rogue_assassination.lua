@@ -27,6 +27,7 @@ Define(nightstalker_talent 22331)
 Define(prey_on_the_weak_talent 22115)
 Define(subterfuge_talent 22332)
 Define(venom_rush_talent 22343)
+Define(vigor_talent 19239)
 
 # Class Abilities
 Define(ambush 8676)
@@ -212,6 +213,9 @@ Define(flagellation 323654)
 	SpellRequire(flagellation unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
 	SpellRequire(flagellation unusable set=1 enabled=(not IsCovenant(venthyr)))
 	SpellAddTargetDebuff(flagellation flagellation add=1)
+	SpellAddBuff(flagellation flagellation add=1)
+Define(flagellation_buff 345569)
+	SpellInfo(flagellation_buff duration=12)
 Define(sepsis 328305)
 	SpellInfo(sepsis energy=25 cd=90 duration=10 combopoints=-1 tick=1)
 	SpellRequire(sepsis unusable set=1 enabled=(CheckBoxOff(opt_suggest_covenant_ability)))
@@ -389,8 +393,14 @@ AddFunction AssassinationSingleTargetActions {
 	AssassinationSingleTargetCrimsonTempestActions()
 	AssassinationSingleTargetSerratedBoneSpikeActions()
 	if (AssassinationEffectiveComboPointsDeficit() <= 1) {
-		# Pool to 80 energy if single-target before casting Envenom.
-		Spell(envenom extra_energy=45 text=pool)
+		# Pool to 80% energy if outside of cooldowns before casting Envenom.
+		if (BuffPresent(vendetta) or BuffPresent(flagellation) or BuffPresent(burst_haste_buff)) {
+			Spell(envenom)
+		}
+		unless (BuffPresent(vendetta) or BuffPresent(flagellation) or BuffPresent(burst_haste_buff)) {
+			if Talent(vigor_talent)	Spell(envenom extra_energy=101 text=pool)
+			unless Talent(vigor_talent)	Spell(envenom extra_energy=61 text=pool)
+		}
 	}
 	if (Talent(hidden_blades_talent) and BuffStacks(hidden_blades) >= 20) Spell(fan_of_knives)
 	if BuffPresent(blindside) Spell(ambush)
