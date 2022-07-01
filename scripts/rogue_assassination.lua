@@ -495,7 +495,7 @@ AddFunction AssassinationMultiTargetGarroteActions {
 }
 
 AddFunction AssassinationMultiTargetRuptureActions {
-	if (AssassinationEffectiveComboPoints() >= 3) {
+	if (AssassinationEffectiveComboPoints() >= 4) {
 		if (DebuffCountOnAny(rupture) < AssassinationUpToFourTargets()) {
 			unless target.DebuffPresent(rupture) Spell(rupture text=new)
 			Spell(rupture text=other)
