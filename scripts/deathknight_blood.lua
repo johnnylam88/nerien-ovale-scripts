@@ -211,7 +211,7 @@ AddFunction BloodCoreMainActions {
 	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3) Spell(marrowrend)
 	if (Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5) Spell(marrowrend text=next)
 	Spell(blooddrinker)
-	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=buff)
+	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=dot)
 	if IsCovenant(night_fae) {
 		if (2 * GCD() < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 3 * GCD()) Spell(deaths_due text=buff)
 		if (2 * GCD() < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 3 * GCD()) Spell(deaths_due text=buff)
@@ -307,7 +307,7 @@ AddFunction BloodCoreShortCdActions {
 AddFunction BloodDancingRuneWeaponMainActions {
 	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3) Spell(marrowrend)
 	if (Enemies(tagged=1) == 1 and BuffRemaining(bone_shield) < 25 and target.TimeToDie() < 5) Spell(marrowrend text=next)
-	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=buff)
+	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=dot)
 	if IsCovenant(night_fae) {
 		if (2 * GCD() < BuffRemaining(deaths_due_buff) and BuffRemaining(deaths_due_buff) < 3 * GCD()) Spell(deaths_due text=buff)
 		if (2 * GCD() < target.DebuffRemaining(deaths_due_debuff) and target.DebuffRemaining(deaths_due_debuff) < 3 * GCD()) Spell(deaths_due text=buff)
