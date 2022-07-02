@@ -293,13 +293,13 @@ AddFunction ProtectionPrecombatActiveMitigationActions {
 
 AddFunction ProtectionActiveMitigationActions {
 	if BuffPresent(divine_purpose) Spell(seraphim text=free)
-	Spell(seraphim)
+	if BuffPresent(shield_of_the_righteous_buff) Spell(seraphim)
 	# Use Word of Glory below 50% health if it's free.
 	if (HealthPercent() < 50) {
 		if (BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)) Spell(word_of_glory text=free)
 	}
 	unless (
-		(Talent(seraphim_talent) and not SpellCooldown(seraphim) > 0) or
+		(Talent(seraphim_talent) and BuffPresent(shield_of_the_righteous_buff) and not SpellCooldown(seraphim) > 0) or
 		(HealthPercent() < 50 and (BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)))
 	) {
 		if BuffPresent(divine_purpose) Spell(shield_of_the_righteous text=free)
@@ -362,7 +362,7 @@ AddFunction ProtectionOffensiveCdActions {
 			if ProtectionAshenHallowPresent() Spell(avenging_wrath text=ashen)
 			if Talent(seraphim_talent) {
 				# Synchronize Avenging Wrath with Seraphim.
-				if (BuffPresent(seraphim) or Spell(seraphim)) {
+				if (BuffPresent(shield_of_the_righteous_buff) and (BuffPresent(seraphim) or Spell(seraphim))) {
 					Spell(avenging_wrath text=burst)
 				}
 				if (SpellCooldown(seraphim) > 30) Spell(avenging_wrath)
