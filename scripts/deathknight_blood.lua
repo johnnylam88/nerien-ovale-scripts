@@ -240,9 +240,9 @@ AddFunction BloodCoreMainActions {
 		}
 	}
 	Spell(deaths_due)
-	if (TimeToRunes(4) < GCD()) Spell(heart_strike)
+	if (TimeToRunes(4) < GCD()) Spell(heart_strike text=rune)
 	if (Talent(hemostasis_talent) and BuffStacks(hemostasis_buff) < 5 and Charges(blood_boil count=0) > SpellMaxCharges(blood_boil) - 0.2) Spell(blood_boil text=cap)
-	if (Rune() >= 3) Spell(heart_strike)
+	if (Rune() >= 3) Spell(heart_strike text=rune)
 	if (BuffStacks(bone_shield) >= 6 and BuffRemaining(bone_shield) > 4.5 and SpellCooldown(dancing_rune_weapon) > 10) {
 		if IsCovenant(night_fae) {
 			if BuffPresent(death_and_decay_buff) Spell(heart_strike)
@@ -325,8 +325,8 @@ AddFunction BloodDancingRuneWeaponMainActions {
 		}
 	}
 	if BuffPresent(crimson_scourge_buff) Spell(deaths_due text=free)
-	if (TimeToRunes(4) < GCD()) Spell(heart_strike)
-	if (Rune() >= 3) Spell(heart_strike)
+	if (TimeToRunes(4) < GCD()) Spell(heart_strike text=rune)
+	if (Rune() >= 3) Spell(heart_strike text=rune)
 	if (BuffStacks(bone_shield) >= 2 and BuffRemaining(bone_shield) > 4.5) {
 		Spell(heart_strike)
 	}
