@@ -375,13 +375,13 @@ AddFunction BloodDancingRuneWeaponShortCdActions {
 }
 
 AddFunction BloodPrecombatMainActions {
-	unless BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker)
+	unless BuffPresent(dancing_rune_weapon_buff) Spell(blooddrinker text=open)
 	if (BuffRemaining(bone_shield) < 5 or BuffStacks(bone_shield) < 3) {
 		if EquippedRuneforge(crimson_rune_weapon_runeforge) {
-			if (SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend)
+			if (SpellCooldown(dancing_rune_weapon) > 0) Spell(marrowrend text=open)
 		}
 		unless EquippedRuneforge(crimson_rune_weapon_runeforge) {
-			Spell(marrowrend)
+			Spell(marrowrend text=open)
 		}
 	}
 }
@@ -397,9 +397,9 @@ AddFunction BloodMainActions {
 
 AddFunction BloodPrecombatShortCdActions {
 	PrecombatShortCdActions()
-	Spell(deaths_due)
+	Spell(deaths_due text=open)
 	# Only Rune Tap if Bone Shield is down or about to expire.
-	if (not BuffPresent(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap)
+	if (not BuffPresent(rune_tap) and BuffRemaining(bone_shield) < BaseDuration(rune_tap)) Spell(rune_tap text=open)
 }
 
 AddFunction BloodPrecombatCdActions {
@@ -413,11 +413,11 @@ AddFunction BloodShortCdActions {
 
 AddFunction BloodOffensiveCdActions {
 	unless InCombat() {
-		Spell(abomination_limb)
-		unless BuffPresent(dancing_rune_weapon) Spell(dancing_rune_weapon)
-		Spell(raise_dead)
+		Spell(abomination_limb text=open)
+		unless BuffPresent(dancing_rune_weapon) Spell(dancing_rune_weapon text=open)
+		Spell(raise_dead text=open)
 		# Sacrifice ghoul if 15 seconds left.
-		if (TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact)
+		if (TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact text=open)
 	}
 	unless BuffPresent(dancing_rune_weapon_buff) {
 		Spell(abomination_limb)
