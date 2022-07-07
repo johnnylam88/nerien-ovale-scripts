@@ -214,7 +214,7 @@ AddFunction BloodCoreMainActions {
 	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=dot)
 	if (IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)) {
 		if (BuffRemaining(deaths_due_buff) < 2 * GCD()) Spell(heart_strike text=buff)
-		if (BuffRemaining(death_and_decay_buff) < 4) Spell(heart_strike text=buff)
+		if (BuffRemaining(death_and_decay_buff) < 4 and BuffRemaining(deaths_due_buff) < 8) Spell(heart_strike text=buff)
 	}
 	if (Enemies(tagged=1) == 1) {
 		if (RunicPowerDeficit() < 20) Spell(death_strike text=dmg)
@@ -311,7 +311,7 @@ AddFunction BloodDancingRuneWeaponMainActions {
 	if (DebuffCountOnAny(blood_plague_debuff) < Enemies(tagged=1) or target.DebuffRefreshable(blood_plague_debuff)) Spell(blood_boil text=dot)
 	if (IsCovenant(night_fae) and BuffPresent(death_and_decay_buff)) {
 		if (BuffRemaining(deaths_due_buff) < 2 * GCD()) Spell(heart_strike text=buff)
-		if (BuffRemaining(death_and_decay_buff) < 4) Spell(heart_strike text=buff)
+		if (BuffRemaining(death_and_decay_buff) < 4 and BuffRemaining(deaths_due_buff) < 8) Spell(heart_strike text=buff)
 	}
 	if (Enemies(tagged=1) == 1) {
 		if (RunicPowerDeficit() < 40 and Rune() < 3) Spell(death_strike text=dmg)
