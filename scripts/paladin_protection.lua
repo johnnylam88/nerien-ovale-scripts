@@ -385,10 +385,12 @@ AddFunction ProtectionOffensiveCdActions {
 		unless (IsCovenant(kyrian) and not SpellCooldown(divine_toll) > 0) {
 			Spell(holy_avenger)
 			if (SpellCooldown(avengers_shield) > GCD()) Spell(moment_of_glory)
-			Spell(blessing_of_autumn)
-			Spell(blessing_of_spring)
-			Spell(blessing_of_summer)
-			Spell(blessing_of_winter)
+			Spell(blessing_of_autumn text=cdr)
+			Spell(blessing_of_winter text=slow)
+			Spell(blessing_of_spring text=heal)
+			# Blessing of Summer is listed last because it is considered ready
+			# if any of the other Blessing of the Season spells are ready.
+			Spell(blessing_of_summer text=dmg)
 		}
 	}
 }
