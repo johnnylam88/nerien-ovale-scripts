@@ -416,8 +416,6 @@ AddFunction BloodOffensiveCdActions {
 		Spell(abomination_limb text=open)
 		unless BuffPresent(dancing_rune_weapon) Spell(dancing_rune_weapon text=open)
 		Spell(raise_dead text=open)
-		# Sacrifice ghoul if 15 seconds left.
-		if (TotemRemaining(raise_dead) < 15) Spell(sacrificial_pact text=open)
 	}
 	unless BuffPresent(dancing_rune_weapon_buff) {
 		Spell(abomination_limb)
