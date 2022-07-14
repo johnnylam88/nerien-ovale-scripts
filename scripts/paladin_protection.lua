@@ -307,10 +307,10 @@ AddFunction ProtectionActiveMitigationActions {
 		# Don't over-cap on Holy Power.
 		if ProtectionHolyPowerWillOverCap() Spell(shield_of_the_righteous text=cap)
 		# Extend the SotR buff if it's about to drop.
-		if (BuffRemaining(shield_of_the_righteous_buff) < GCDRemaining()) Spell(shield_of_the_righteous text=buff)
+		if (BuffRemaining(shield_of_the_righteous_buff) < GCDRemaining()) Spell(shield_of_the_righteous)
 		# Don't go over the AM cap (13.5s total duration).
 		if (BuffRemaining(shield_of_the_righteous_buff) > 9) {
-			unless (BuffPresent(shining_light_free_buff) or BuffPresent(royal_decree_buff)) Spell(word_of_glory text=cap)
+			if (HealthPercent() < 50) Spell(word_of_glory)
 		}
 	}
 }
