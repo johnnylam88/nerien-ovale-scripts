@@ -367,8 +367,12 @@ AddFunction ProtectionReprisalActions {
 	# Suggest Charge and Intervene with Reprisal to apply/extend Shield Block.
 	if (EquippedRuneforge(reprisal_runeforge) and ProtectionShouldShieldBlock()) {
 		if (BuffRemaining(shield_block_buff) < 14) {
-			Spell(intervene text=block)
-			if (target.Distance() < 8) Spell(charge text=block)
+			if CheckBoxOn(opt_nerien_reprisal_intervene) Spell(intervene text=block)
+			if (Charges(charge count=0) >= 1) {
+				if target.InRange(charge) Spell(charge text=block)
+				Spell(heroic_leap text=block)
+				if (target.Distance() < 8) Texture(misc_arrowdown text=block)
+			}
 		}
 	}
 }
@@ -582,7 +586,8 @@ AddFunction ProtectionHealActions {
 
 ### User Interface ###
 
-AddCheckBox(opt_nerien_shield_block L(opt_nerien_shield_block))
+AddCheckBox(opt_nerien_shield_block L(opt_nerien_shield_block) default)
+AddCheckBox(opt_nerien_reprisal_intervene L(opt_nerien_reprisal_intervene) default)
 
 AddIcon help=interrupt size=small {
 	ProtectionInterruptActions()

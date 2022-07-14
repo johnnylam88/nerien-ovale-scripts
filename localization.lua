@@ -25,6 +25,7 @@ if Private.initialized then
 	L.mage_arcane_mini_burn = [[Mini Burn phase]]
 	L.mage_arcane_conserve = [[Conserve phase]]
 	--L.not_in_melee_range = [[Not in melee range]]
+	L.opt_nerien_reprisal_intervene = [[Always suggest Intervene with Reprisal runeforge]]
 	L.opt_nerien_shield_block = [[Always suggest Shield Block]]
 	L.trinkets = [[Trinkets]]
 	L.opt_suggest_covenant_ability= [[Suggest Covenant abilities]]
