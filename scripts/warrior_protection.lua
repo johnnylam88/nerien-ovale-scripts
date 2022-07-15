@@ -15,6 +15,12 @@ if Private.initialized then
 #     https://www.youtube.com/watch?v=yR2Vy52kpEQ
 #   - Protection Warrior Guide PART 2 | Shadowlands 9.0.5
 #     https://www.youtube.com/watch?v=5zsKpcEnPdw
+#
+# - Mazorrok:
+#   - Necrolord Protection Warrior
+#     https://www.youtube.com/watch?v=DydkI-Ohfjg
+#   - Necrolord Protection Warrior: Best Served Cold VS Booming Voice
+#     https://www.youtube.com/watch?v=fhYQDyA5Pm8
 
 Include(nerien_ovale_library)
 
@@ -359,8 +365,8 @@ AddFunction ProtectionOutburstActions {
 	# Consume Outburst as quickly as possible.
 	if BuffPresent(outburst_buff) {
 		Spell(shield_slam text=tier)
-		# Consume Outburst with Thunder Clap if Shield Slam is more than a few seconds away.
-		if (SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=tier)
+		# Consume Outburst with Thunder Clap in multi-target if Shield Slam is more than a few seconds away.
+		if (Enemies(tagged=1) > 1 and SpellCooldown(shield_slam) > 2) Spell(thunder_clap text=tier)
 	}
 	if (SpellCooldown(avatar) < 1) {
 		# Put Thunder Clap on cooldown so Outburst from Avatar is consumed by Shield Slam instead.
@@ -405,8 +411,10 @@ AddFunction ProtectionRevengeActions {
 	unless ProtectionWontOverwriteIgnorePain() {
 		# Use Execute to dump Rage.
 		if (Enemies(tagged=1) == 1 and ProtectionHasRageForExecute()) Spell(execute text=dump)
-		# Use Revenge to dump Rage outside of Execute phase.
-		if ProtectionHasRageForRevenge() Spell(revenge text=dump)
+		unless (ProtectionEquippedGloryRuneforge() and BuffPresent(conquerors_banner_buff)) {
+			# Use Revenge to dump Rage outside of Execute phase.
+			if ProtectionHasRageForRevenge() Spell(revenge text=dump)
+		}
 	}
 }
 
@@ -441,15 +449,8 @@ AddFunction ProtectionActiveMitigationActions {
 		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
 	}
 	# Ignore Pain to extend Conqueror's Banner with Glory runeforge.
-	if (
-		ProtectionEquippedGloryRuneforge() and
-		SpellCooldown(conquerors_banner) > 5 and
-		BuffPresent(conquerors_banner_buff)
-	) {
-		# If Ravager is up, dump Rage using attacks instead of Ignore Pain.
-		unless (BuffPresent(shield_block_buff) and ProtectionRavagerRemaining() > 0) {
-			if ProtectionHasRageForIgnorePain() Spell(ignore_pain text=conq)
-		}
+	if (ProtectionEquippedGloryRuneforge() and BuffPresent(conquerors_banner_buff)) {
+		if ProtectionHasRageForIgnorePain() Spell(ignore_pain text=conq)
 	}
 	ProtectionReprisalActions()
 }
@@ -476,7 +477,7 @@ AddFunction ProtectionMainActions {
 		# The single-target priority is SS > Revenge > TC.
 		Spell(shield_slam)
 		ProtectionRevengeActions()
-		Spell(thunder_clap)
+		unless BuffPresent(outburst_buff) Spell(thunder_clap)
 	}
 	# Use Devastate as filler.
 	Spell(devastate)
@@ -497,7 +498,7 @@ AddFunction ProtectionAoEActions {
 	# When Shield Block is up and Ravager is generating a lot of Rage, dump Rage into attacks.
 	if (BuffPresent(shield_block_buff) and ProtectionRavagerRemaining() > 0) ProtectionRavagerActions()
 	# Use Booming Voice on cooldown.
-	if (Talent(booming_voice_talent) and not SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout text=rage)
+	if Talent(booming_voice_talent) Spell(demoralizing_shout text=rage)
 	# Use Dragon Roar on cooldown.
 	Spell(dragon_roar)
 	# Apply Deep Wounds to targets in melee range.
@@ -526,11 +527,54 @@ AddFunction ProtectionPrecombatCdActions {
 }
 
 AddFunction ProtectionOffensiveCdActions {
-	Spell(ravager)
-	Spell(avatar)
-	Spell(spear_of_bastion)
-	Spell(conquerors_banner)
-	Spell(ancient_aftershock)
+	if ProtectionEquippedGloryRuneforge() {
+		#
+		# If the Glory runeforge is equipped, then try to sync Ravager and Last Stand
+		# (with Unnerving Focus for increased Rage generation) with Conqueror's Banner
+		# to help with extending the Conqueror's Banner buff.
+		#
+		if BuffPresent(conquerors_banner_buff) {
+			unless BuffPresent(unnerving_focus) Spell(ravager text=conq)
+			if (
+				(Conduit(unnerving_focus_conduit) and not Talent(bolster_talent)) and
+				(SpellCooldown(ravager) > 0 and not ProtectionRavagerRemaining() > 0)
+			) {
+				Spell(last_stand text=conq)
+			}
+			Spell(avatar text=conq)
+		}
+		unless BuffPresent(conquerors_banner_buff) {
+			if (SpellCooldown(conquerors_banner) > 0) {
+				if (SpellCooldown(conquerors_banner) > SpellCooldownDuration(ravager)) {
+					unless BuffPresent(unnerving_focus) Spell(ravager)
+				}
+			}
+			unless (SpellCooldown(conquerors_banner) > 0) {
+				unless BuffPresent(unnerving_focus) Spell(ravager text=sync)
+				if (
+					(Conduit(unnerving_focus_conduit) and not Talent(bolster_talent)) and
+					(SpellCooldown(ravager) > 0 and not ProtectionRavagerRemaining() > 0)
+				) {
+					Spell(last_stand text=sync)
+				}
+			}
+			Spell(avatar)
+			if (BuffPresent(unnerving_focus) or ProtectionRavagerRemaining() > 0) Spell(conquerors_banner)
+		}
+	}
+	unless ProtectionEquippedGloryRuneforge() {
+		unless BuffPresent(unnerving_focus) Spell(ravager)
+		if (
+			(Conduit(unnerving_focus_conduit) and not Talent(bolster_talent)) and
+			(SpellCooldown(ravager) > 0 and not ProtectionRavagerRemaining() > 0)
+		) {
+			Spell(last_stand text=rage)
+		}
+		Spell(avatar)
+		Spell(ancient_aftershock)
+		Spell(conquerors_banner)
+		Spell(spear_of_bastion)
+	}
 }
 
 AddFunction ProtectionMaxDamageActions {
@@ -544,9 +588,11 @@ AddFunction ProtectionMaxDamageActions {
 
 AddFunction ProtectionDefensiveCdActions {
 	unless BuffPresent(protection_defensive_buff) {
-		if (not Talent(booming_voice_talent) or SpellCooldown(shield_wall) > 0) Spell(demoralizing_shout)
-		if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) Spell(shield_wall)
-		if InCombat() Spell(fleshcraft)
+		unless Talent(booming_voice_talent) Spell(demoralizing_shout)
+		if (Talent(booming_voice_talent) or SpellCooldown(demoralizing_shout) > 0) {
+			Spell(shield_wall)
+			if InCombat() Spell(fleshcraft)
+		}
 	}
 }
 
@@ -588,8 +634,13 @@ AddFunction ProtectionDispelActions {
 AddFunction ProtectionHealActions {
 	if (HealthPercent() < 50) {
 		unless (BuffPresent(last_stand) or BuffPresent(rallying_cry)) {
-			unless Talent(bolster_talent) Spell(last_stand)
+			unless (ProtectionEquippedGloryRuneforge() and Conduit(unnerving_focus_conduit)) {
+				unless Talent(bolster_talent) Spell(last_stand)
+			}
 			Spell(rallying_cry)
+			if (ProtectionEquippedGloryRuneforge() and Conduit(unnerving_focus_conduit)) {
+				unless Talent(bolster_talent) Spell(last_stand)
+			}
 		}
 	}
 	ItemHealActions()
