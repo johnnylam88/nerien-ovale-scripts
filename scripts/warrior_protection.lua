@@ -296,6 +296,14 @@ AddFunction ProtectionHasGloryConquerorsBanner {
 	(EquippedRuneforge(glory_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))
 }
 
+AddFunction ProtectionEquippedSinfulSurgeRuneforge {
+	IsCovenant(venthyr) and (
+		EquippedRuneforge(sinful_surge_runeforge) or
+		EquippedRuneforge(unity_runeforge) or
+		HasEquippedItem(unity_belt)
+	)
+}
+
 AddFunction ProtectionRagePoolSize {
 	# 100 - 30 - 40 - 10 = 20
 	MaxRage() - RageCost(shield_block) - RageCost(ignore_pain) - 10
@@ -367,7 +375,7 @@ AddFunction ProtectionRavagerActions {
 	# Apply Deep Wounds to targets in melee range.
 	unless target.DebuffPresent(deep_wounds_debuff) Spell(revenge text=dot)
 	# Use Condemn to extend Avatar with Sinful Surge.
-	if (EquippedRuneforge(sinful_surge_runeforge) and BuffPresent(avatar)) {
+	if (ProtectionEquippedSinfulSurgeRuneforge() and BuffPresent(avatar)) {
 		if (Enemies(tagged=1) < 3) Spell(condemn text=plus)
 	}
 	if Talent(heavy_repercussions_talent) Spell(shield_slam text=heavy)
