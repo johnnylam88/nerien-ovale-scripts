@@ -440,7 +440,7 @@ AddFunction ProtectionActiveMitigationActions {
 }
 
 AddFunction ProtectionPrecombatMainActions {
-	Spell(shield_slam)
+	Spell(shield_slam text=open)
 }
 
 AddFunction ProtectionMainActions {
@@ -468,8 +468,8 @@ AddFunction ProtectionMainActions {
 }
 
 AddFunction ProtectionPrecombatAoEActions {
-	Spell(revenge)
-	Spell(thunder_clap)
+	Spell(revenge text=open)
+	Spell(thunder_clap text=open)
 }
 
 AddFunction ProtectionAoEActions {
