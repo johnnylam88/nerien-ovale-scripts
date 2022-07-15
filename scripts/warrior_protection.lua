@@ -179,6 +179,12 @@ Define(spear_of_bastion_debuff 307871)
 	SpellInfo(spear_of_bastion_debuff duration=4)
 	SpellAddTargetDebuff(spear_of_bastion spear_of_bastion_debuff add=1)
 
+# Conduits
+Define(unnerving_focus_conduit 337154)
+Define(unnerving_focus 337155)
+	SpellInfo(unnerving_focus duration=15)
+	SpellAddBuff(last_stand unnerving_focus add=1 enabled=(Conduit(unnerving_focus_conduit)))
+
 # Runeforge Legendary Effects
 Define(elysian_might_runeforge 7730)
 	SpellRequire(spear_of_bastion_debuff duration add=4
@@ -246,10 +252,15 @@ AddFunction ProtectionRagePerSecondConquerorsBanner {
 	0
 }
 
+AddFunction ProtectionRageGenerationMultiplier {
+	if BuffPresent(unnerving_focus) (1 + ConduitValue(unnerving_focus_conduit) / 100)
+	1
+}
+
 AddFunction ProtectionRagePerSecond {
 	# In N seconds, autoattacks will generate ~N Rage.
 	# In N seconds, damage taken will generate 3 rage per hit with a 1-second ICD.
-	1 + 3 + ProtectionRagePerSecondRavager() + ProtectionRagePerSecondShieldSlam() + ProtectionRagePerSecondConquerorsBanner()
+	(1 + 3 + ProtectionRagePerSecondRavager() + ProtectionRagePerSecondShieldSlam() + ProtectionRagePerSecondConquerorsBanner()) * ProtectionRageGenerationMultiplier()
 }
 
 AddFunction ProtectionRageGeneratedBeforeShieldBlock {
@@ -335,13 +346,13 @@ AddFunction ProtectionHasRageForRevenge {
 
 AddFunction ProtectionRageWillOverCap {
 	# Check whether any Rage-generating abilites are off cooldown and will cause Rage to over-cap.
-	(                              Rage()                                > ProtectionRageCapThreshold()) or
-	(Spell(avatar)             and Rage() - RageCost(avatar)             > ProtectionRageCapThreshold()) or
-	(Spell(demoralizing_shout) and Rage() - RageCost(demoralizing_shout) > ProtectionRageCapThreshold()) or
-	(Spell(dragon_roar)        and Rage() - RageCost(dragon_roar)        > ProtectionRageCapThreshold()) or
-	(Spell(shield_slam)        and Rage() - RageCost(shield_slam)        > ProtectionRageCapThreshold()) or
-	(Spell(spear_of_bastion)   and Rage() - RageCost(spear_of_bastion)   > ProtectionRageCapThreshold()) or
-	(Spell(thunder_clap)       and Rage() - RageCost(thunder_clap)       > ProtectionRageCapThreshold())
+	(                              Rage()                                                                       > ProtectionRageCapThreshold()) or
+	(Spell(avatar)             and Rage() - ProtectionRageGenerationMultiplier() * RageCost(avatar)             > ProtectionRageCapThreshold()) or
+	(Spell(demoralizing_shout) and Rage() - ProtectionRageGenerationMultiplier() * RageCost(demoralizing_shout) > ProtectionRageCapThreshold()) or
+	(Spell(dragon_roar)        and Rage() - ProtectionRageGenerationMultiplier() * RageCost(dragon_roar)        > ProtectionRageCapThreshold()) or
+	(Spell(shield_slam)        and Rage() - ProtectionRageGenerationMultiplier() * RageCost(shield_slam)        > ProtectionRageCapThreshold()) or
+	(Spell(spear_of_bastion)   and Rage() - ProtectionRageGenerationMultiplier() * RageCost(spear_of_bastion)   > ProtectionRageCapThreshold()) or
+	(Spell(thunder_clap)       and Rage() - ProtectionRageGenerationMultiplier() * RageCost(thunder_clap)       > ProtectionRageCapThreshold())
 }
 
 AddFunction ProtectionOutburstActions {
