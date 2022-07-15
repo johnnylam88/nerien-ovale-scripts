@@ -290,10 +290,12 @@ AddFunction ProtectionWontOverwriteIgnorePain {
 	(ProtectionIgnorePainCurrentAbsorb() + ProtectionIgnorePainOnCastAbsorb() < 1.3 * ProtectionIgnorePainCap())
 }
 
-AddFunction ProtectionHasGloryConquerorsBanner {
-	BuffPresent(conquerors_banner_buff) and
-	IsCovenant(necrolord) and
-	(EquippedRuneforge(glory_runeforge) or EquippedRuneforge(unity_runeforge) or HasEquippedItem(unity_belt))
+AddFunction ProtectionEquippedGloryRuneforge {
+	IsCovenant(necrolord) and (
+		EquippedRuneforge(glory_runeforge) or
+		EquippedRuneforge(unity_runeforge) or
+		HasEquippedItem(unity_belt)
+	)
 }
 
 AddFunction ProtectionEquippedSinfulSurgeRuneforge {
@@ -424,7 +426,11 @@ AddFunction ProtectionActiveMitigationActions {
 		if ProtectionHasRageForIgnorePain() Spell(ignore_pain)
 	}
 	# Ignore Pain to extend Conqueror's Banner with Glory runeforge.
-	if (SpellCooldown(conquerors_banner) > 5 and ProtectionHasGloryConquerorsBanner()) {
+	if (
+		ProtectionEquippedGloryRuneforge() and
+		SpellCooldown(conquerors_banner) > 5 and
+		BuffPresent(conquerors_banner_buff)
+	) {
 		# If Ravager is up, dump Rage using attacks instead of Ignore Pain.
 		unless (BuffPresent(shield_block_buff) and ProtectionRavagerRemaining() > 0) {
 			if ProtectionHasRageForIgnorePain() Spell(ignore_pain text=conq)
